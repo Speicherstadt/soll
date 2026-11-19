@@ -1,0 +1,250 @@
+---
+title: Projektplan
+description: >-
+  Der Plan für Soll: Ziel, Entscheidungen, Technologie, Recht, GoBD, Datenmodell, Import aus anderen
+  Tools, Anbindungen, Bauplan im Agenten-Loop und Tests.
+---
+
+# Projektplan
+
+Soll ist eine selbst gehostete Zeiterfassung mit Dienstplan für kleine Betriebe. Soll erfüllt die
+Pflicht zur Arbeitszeiterfassung, prüft jede Zeit gegen das Arbeitszeitgesetz und nennt dabei den
+Paragraphen, schließt den Monat manipulationssicher ab und gibt die Daten an DATEV und Haben weiter.
+Was im Einzelnen gebaut wird und in welcher Reihenfolge, steht in der
+[Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md).
+
+## Ziel und Positionierung
+
+Zielgruppe sind Betriebe mit 2 bis 50 Beschäftigten, vor allem mit Schichten, Minijobs oder
+Zuschlägen: Gastronomie, Einzelhandel, Handwerk, Praxen und Agenturen. Die meisten haben eine
+Steuerberatung, die den Lohn mit DATEV rechnet. Freelancer sind eine Nebenzielgruppe (Projektzeit
+im Solo-Modus), den Mittelstand ab etwa 50 Beschäftigten nimmt Soll später in den Blick.
+
+Was Soll anders macht:
+
+- **Prüfung mit Paragraph**: Jeder Befund nennt seine Norm („Pause fehlt, § 4 ArbZG“), schon beim
+  Stempeln und beim Einplanen.
+- **Nachweislich unverändert**: Audit-Log als Hash-Kette, Siegel beim Monatsabschluss.
+- **Lohn mit Zuschlägen**: DATEV-Export mit den Zuschlägen nach § 3b EStG, auch für Minijobs.
+- **Keine Kosten pro Kopf**: AGPL, selbst gehostet frei; gehostet zum Preis pro Betrieb.
+- **Daten mitnehmen**: Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister,
+  Toggl, Clockify und Excel.
+
+**Bewusst nicht**: Lohnabrechnung (Haben oder das Lohnprogramm), Bewerbermanagement, Personalakte,
+Abruf der eAU, GPS-Verfolgung, Biometrie, Dienstpläne für die Pflege, eigene Hardware-Terminals.
+
+## Markt
+
+| Werkzeug | Zielgruppe | Lücke, die Soll füllt |
+| --- | --- | --- |
+| Clockodo | Freelancer, Agenturen, KMU | DATEV-Export nur für Stundenlöhner und ohne Zuschläge ([Hilfe](https://support.clockodo.com/en/help-center/wie-verbinde-ich-die-lohnbuchhaltung-datev-mit-clockodo)); kein Dienstplan belegt |
+| Kimai | Freelancer, Agenturen | Projektzeit, keine Prüfung nach ArbZG, kein Dienstplan |
+| Personio | Mittelstand | zu groß für Kleinbetriebe |
+| Papershift, Planday, Crewmeister | Gastronomie, Handel, Handwerk | nicht Open Source, nicht selbst zu hosten, keine Prüfung mit Norm |
+
+## Entscheidungen
+
+Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
+
+| Frage | Entscheidung | Warum |
+| --- | --- | --- |
+| Mandanten | mehrere Betriebe in einer Instanz; jede Tabelle mit `betrieb_id`, Test je Endpunkt | gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) brauchen es; bewusste Abweichung von Haben |
+| Arbeitszeit und Projektzeit | getrennte Tabellen, Projektzeit kann auf eine Stempelung verweisen | eigene Regeln: Arbeitszeit wird versiegelt, Projektzeit bleibt bis „abgerechnet“ änderbar |
+| Änderungen an Stempelungen | bis zum Monatsabschluss erlaubt, mit Grund, im Audit-Log, für den Mitarbeiter sichtbar; danach versiegelt, Korrektur als Gegeneintrag | gleicher Schutz, weniger Reibung als ein Siegel ab dem Einfügen |
+| Konten | aus den Abschlüssen berechnet, nur Anpassungen von Hand gespeichert | keine doppelte Wahrheit |
+| Aussonderung | in Solls eigenem SQL: die Kette läuft über den Hash des Inhalts, sodass der Inhalt nach Ablauf der Frist entfernt werden kann | DSGVO verlangt Löschen, die GoBD Unveränderbarkeit; Haben bleibt unberührt |
+| Regeln | als Daten mit Gültigkeit (Regelversion je Zeitraum) | eine Reform des ArbZG wird eine neue Version, keine Codeänderung |
+| Rundung | nur der abrechenbaren Projektzeit, nie der Arbeitszeit | Abrunden der Arbeitszeit ginge zulasten der Beschäftigten |
+| Terminal | PWA im Kiosk-Modus auf einem Tablet; keine eigene Hardware | derselbe Code wie im Browser |
+| Haben | wird von hier aus nicht geändert; `@firsttris/gobd-kern` kommt als Release, alles andere wird mit Quellenangabe kopiert | gemeinsame Pakete werden erst herausgelöst, wenn der Code in beiden Apps stabil ist |
+| Sprachen | Deutsch und Englisch überall; Türkisch, Polnisch, Ukrainisch, Arabisch für die Ansichten der Beschäftigten | viele Beschäftigte in Gastronomie und Handwerk sprechen kein Deutsch |
+| Merge | der Loop merged selbst, wenn CI grün ist und das unabhängige Review keine Befunde mehr hat | er wartet nie auf einen Menschen |
+| Lizenz | AGPL-3.0 mit Namensnennung nach § 7(b) und kommerzieller Lizenz wie bei Haben | |
+
+## Technologie
+
+Derselbe Stack wie Kennwort, ohne Tauri. Gegenüber `tech-stack.md` aus firsttris/workflows gibt es
+drei begründete Abweichungen, sie stehen auch im CLAUDE.md.
+
+| Teil | Wahl | Begründung |
+| --- | --- | --- |
+| Monorepo | Bun Workspaces, Biome, TypeScript strict, Vitest, Playwright | wie überall |
+| Server | Bun, Hono, Drizzle, Zod, `bun build --compile` | **Abweichung von TanStack Start**, wie Kennwort: eine API für Web-App, PWA-Warteschlange, Terminal, REST und MCP |
+| Web-App | Solid 2, Vite, statische SPA/PWA; `@tanstack/solid-router` und `solid-query`, wenn sie Solid 2 tragen | **Abweichung von React**, wie Kennwort: ein Look in der Suite, kleines Bundle für Handy und Terminal; der Service Worker hält die ganze App offline |
+| Oberfläche | shadcn-Stil **ohne Abhängigkeiten**: `<dialog>`, Popover-API, CSS Anchor Positioning, eigene `cn()` und `variants()`, Tailwind 4, `lucide-solid`, Geist, Zinc-Tokens (DESIGN.md) | wie Kennwort, `packages/ui` von dort kopiert |
+| Texte | Paraglide JS, `messages/{sprache}.json` | typisiert, vom `i18n`-Check geprüft |
+| PWA | Service Worker, Offline-Warteschlange in IndexedDB, Web Push, Wake Lock, Web NFC | Stempeln am Handy und am Terminal, auch ohne Netz |
+| Datenbank | PostgreSQL mit Drizzle, Migrationen eingecheckt | **Abweichung von Kennwort (SQLite)**: viele gleichzeitige Schreiber, die Siegel und Sperren von gobd-kern sind Postgres-Trigger |
+| Unveränderbarkeit | `@firsttris/gobd-kern` (Release aus `firsttris/haben`) | Hash-Kette, Siegel, Verfahrensdokumentation fertig |
+| Anmeldung | Better Auth: Organization-Plugin (Betriebe), Passkeys, Einladungslinks, PIN für das Terminal | Stack-Vorgabe für Apps mit vielen Benutzern |
+| Validierung | Zod an jeder Grenze | |
+| Exporte | eigene Funktionen in `packages/export`: DATEV-ASCII, CSV; PDF für Stundenzettel und Regiebericht | |
+| Import | reine Funktionen in `packages/import`, Fuzzing mit fast-check | |
+| Betrieb | Docker-Image (amd64, arm64), Compose, Quadlet; Release-Workflow aus firsttris/workflows | |
+| Doku | Zensical auf GitHub Pages unter soll.work | wie Kennwort |
+
+## Projektstruktur
+
+| Pfad | Inhalt |
+| --- | --- |
+| `packages/arbeitszeit` | Prüfregeln, Feiertage, Jahreswerte, Soll/Ist, Konten, Zuschläge; reine Funktionen |
+| `packages/import` | Parser für die Exporte anderer Tools |
+| `packages/export` | DATEV, CSV, PDF |
+| `packages/ui` | Komponenten nach DESIGN.md, Vorbild Kennwort |
+| `apps/server` | Hono-API, Drizzle mit Postgres, Better Auth; Routen dünn, Logik in `src/modules` |
+| `apps/web` | Solid-SPA/PWA: App, Terminal-Ansicht, Offline-Warteschlange |
+| `e2e/` | Playwright `desktop`, `phone`, `terminal` |
+
+## Rechtlicher Rahmen
+
+Jede Regel steht mit Grenzwerten und Testfällen in `docs/regeln.md` (S-103). Die Regeln sind Daten
+mit Gültigkeit; der Gesetzeswächter (S-906) meldet, wenn sich ein Gesetzestext ändert.
+
+| Regel | Norm |
+| --- | --- |
+| Pflicht zur Erfassung von Beginn, Ende und Dauer | BAG 1 ABR 22/21; § 3 Abs. 2 Nr. 1 ArbSchG; EuGH C-55/18 |
+| Höchstarbeitszeit 8 h, bis 10 h mit Ausgleich | § 3 ArbZG |
+| Pausen 30 min ab 6 h, 45 min ab 9 h, Blöcke ab 15 min | § 4 ArbZG |
+| 11 h Ruhezeit; ein Einsatz in der Rufbereitschaft unterbricht sie | § 5 ArbZG |
+| Nachtarbeit | §§ 2, 6 ArbZG |
+| Sonn- und Feiertage, Ersatzruhetag | §§ 9 bis 11 ArbZG |
+| Aufzeichnung über 8 h, 2 Jahre aufbewahren | § 16 Abs. 2 ArbZG |
+| Bereitschaftsdienst und Rufbereitschaft | §§ 2, 5, 7 ArbZG; EuGH C-151/02, C-518/15 |
+| Minijobs und Branchen: Erfassung binnen 7 Tagen, Mindestlohn | §§ 1, 17 MiLoG; § 2a SchwarzArbG |
+| Jugendliche | §§ 8, 11 bis 14 JArbSchG |
+| Mutterschutz | §§ 4 bis 6 MuSchG |
+| Arbeit auf Abruf: Schicht 4 Tage vorher | § 12 Abs. 3 TzBfG |
+| Urlaub, Zusatzurlaub, Elternzeit | §§ 3, 5, 7 BUrlG; § 208 SGB IX; § 17 BEEG |
+| Steuerfreie Zuschläge | § 3b EStG, R 3b LStR |
+| Mitbestimmung bei technischer Überwachung | § 87 Abs. 1 Nr. 6 BetrVG |
+| Datenschutz | Art. 5, 9, 15, 17, 88 DSGVO |
+
+Vor dem Start ist der Stand der Reform des ArbZG zu prüfen (Referentenentwurf 2023, Koalitionsvertrag
+2025: elektronische Erfassung, Wochenhöchstarbeitszeit); eine Reform wird eine neue Regelversion.
+
+## GoBD und Aufbewahrung
+
+Arbeitszeiten sind steuerlich relevant, sobald sie Grundlage des Lohns sind (Stundenlohn, Minijob,
+Zuschläge; § 41 EStG, § 4 LStDV). Soll übernimmt deshalb den Kern aus `gobd-kern`:
+
+- Audit-Log als Hash-Kette für jede Tabelle;
+- Siegel beim Monatsabschluss (`seal_table` mit `locked_at`), Korrektur danach nur als Gegeneintrag;
+- Verfahrensdokumentation aus dem Stand.
+
+**Fristen je Monatsabschluss**: 2 Jahre ohne Lohnbezug (§ 16 Abs. 2 ArbZG, § 17 MiLoG), 6 Jahre als
+Lohnunterlage, 10 Jahre als Buchungsbeleg (§ 147 Abs. 3 AO); Beginn mit Ablauf des Kalenderjahres.
+Nach Ablauf entfernt die Aussonderung den Inhalt; Hash und Siegel bleiben, die Aussonderung steht
+selbst in der Kette (Art. 5 Abs. 1 lit. e, Art. 17 DSGVO). Die Kette wird dafür von Anfang an über
+den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
+
+## Datenmodell
+
+| Tabelle | Inhalt | Schutz |
+| --- | --- | --- |
+| `betriebe`, `standorte` | Name, Bundesland je Standort | Audit |
+| `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit |
+| `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit |
+| `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit; versiegelt beim Abschluss |
+| `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | versiegelt ab Einfügen |
+| `abwesenheiten` | Art, von, bis, halbe Tage, Status | Audit; im abgeschlossenen Monat gesperrt |
+| `schichten`, `schichttausch` | Plan, Rolle, Standort, veröffentlicht am | Audit |
+| `monatsabschluesse` | Summen, Befunde, Bestätigungen, Frist | versiegelt |
+| `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit |
+| `kunden`, `projekte`, `taetigkeiten`, `projektzeiten` | Sätze, Budgets, Zeiten, abgerechnet am | Audit; gesperrt ab „abgerechnet“ |
+| `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | versiegelt ab Einfügen |
+| `jahreswerte` | Mindestlohn, Minijob-Grenze, Regelversion | per Migration |
+
+Dauern in ganzen Minuten, Geld in Cent, Urlaub in halben Tagen, Zeitpunkte als `timestamptz`,
+Kalendertage in `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem die Schicht beginnt.
+
+## Import aus anderen Tools
+
+Wer wechselt, soll nichts abtippen. Jeder Import läuft gleich ab (S-701): Tool wählen, Anleitung zum
+Export, Datei oder API-Zugang, Zuordnung von Personen, Spalten, Projekten und Abwesenheitsarten,
+Vorschau mit den Befunden der Prüfregeln, Probelauf, Übernahme.
+
+| Quelle | Weg | Was übernommen wird |
+| --- | --- | --- |
+| Excel und CSV | Datei, freie Spaltenzuordnung, Vorlage zum Herunterladen | Zeiten, Projekte |
+| Clockodo | Export und REST-API | Mitarbeiter, Zeiten, Abwesenheiten, Kunden, Projekte |
+| Personio | Export und API | Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden |
+| Kimai | REST-API | Kunden, Projekte, Tätigkeiten, Zeitbuchungen |
+| Papershift, Planday, Crewmeister | Export | Mitarbeiter, Schichten, Zeiten, Abwesenheiten |
+| Toggl, Clockify | Export und API | Kunden, Projekte, Zeiten (Solo-Modus) |
+| Salden zum Stichtag | von Hand oder aus dem Import | Überstunden, Resturlaub |
+
+Regeln für jeden Import:
+
+- **Nachvollziehbar**: Die Originaldatei wird unter ihrem SHA-256 aufbewahrt, jeder Eintrag trägt
+  „übernommen aus …“ und seine Kennung im alten Tool; der Import selbst steht versiegelt in
+  `importe`.
+- **Wiederholbar**: Ein zweiter Import mit denselben Daten legt nichts doppelt an.
+- **Robust**: Kaputte oder böswillige Dateien stürzen nie ab und hängen nie (Fuzzing); ein Fehler
+  nennt die Zeile.
+- **Ehrlich**: Übernommene Zeiten werden geprüft wie eigene; Verstöße aus der Vergangenheit zeigt die
+  Vorschau, ändert sie aber nicht.
+- **Abgeschlossen bleibt abgeschlossen**: Übernommene, abgeschlossene Monate werden als übernommen
+  versiegelt.
+
+## Anbindungen
+
+| Ziel | Was fließt | Weg |
+| --- | --- | --- |
+| DATEV Lohn (LODAS, Lohn und Gehalt) | Stunden, Zuschläge nach § 3b EStG, Abwesenheiten je Personalnummer und Lohnart | ASCII-Import-Datei |
+| Haben › Zeiteinträge | abrechenbare Projektzeit je Kunde, Stundennachweis | `POST /api/v1/leistungen` mit `source` und `externalId` |
+| Kalender | veröffentlichte Schichten, genehmigte Abwesenheiten | ICS-Feed je Mitarbeiter mit geheimem Token |
+| Andere Programme, KI-Assistenten | Stempelungen, Abwesenheiten, Schichten, Projektzeit | REST-API mit Token, MCP-Server |
+| Prüfung | Zeiten je Person und Zeitraum | CSV und PDF für Zoll und Arbeitsschutz |
+
+## Bauplan im Agenten-Loop
+
+Soll wird als fertiges Produkt gebaut: Ein Agent arbeitet die
+[Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md) Punkt für Punkt ab, bis
+jedes Häkchen gesetzt und jede Prüfung grün ist. Er wartet nie auf einen Menschen.
+
+1. **Spezifikation zuerst**: `docs/regeln.md` und die Kriterien je Punkt. Ohne Kriterium kein Code.
+2. **Ein Durchlauf, ein Punkt**: reservieren (Draft-Pull-Request), Tests zuerst, umsetzen, Doku und
+   Texte nachziehen, `bun run check` grün, unabhängiges Review, CI grün, selbst mergen, abhaken.
+3. **Entscheiden statt fragen**: offene Fragen nach dem Abschnitt „Entscheidungen“; neue
+   Entscheidungen mit Grund dort eintragen.
+4. **Nicht hängen bleiben**: dreimal gescheitert heißt zurückgestellt, weiter mit dem nächsten
+   unabhängigen Punkt.
+5. **Parallel, wo es geht**: Prüfregeln und Oberfläche ab S-104; Abwesenheiten, Dienstplan,
+   Projektzeit und Terminal ab S-306; die einzelnen Importe ab S-701.
+
+Reihenfolge: 1 Fundament · 2 Prüfregeln · 3 Arbeitszeit in der App (Stempeln, Abschluss, DATEV) ·
+4 Abwesenheiten · 5 Dienstplan · 6 Projektzeit und Anbindungen · 7 Umzug aus anderen Tools ·
+8 Tablet-Terminal · 9 Härtung und Betrieb.
+
+Was nur Menschen erledigen können, steht am Ende der Bauliste: Marke, Domain, Übersetzungen durch
+Muttersprachler, juristische Durchsicht des Regelwerks, Testimport bei einer Steuerberatung, echte
+Exporte als Fixtures, Pilotbetriebe, gehostete Variante.
+
+## Tests
+
+| Art | Was geprüft wird | Werkzeug |
+| --- | --- | --- |
+| Regeln | jede Regel mit erlaubt, Grenze und Verstoß aus `docs/regeln.md` | Vitest |
+| Zeit | Zeitumstellung, Mitternacht, Jahreswechsel, Feiertage 2026 bis 2035 | Vitest |
+| Unveränderbarkeit | versiegelte Zeile per SQL ändern, manipulierte Kette, Aussonderung | Vitest mit Postgres |
+| Mandanten | kein Endpunkt liefert Daten eines anderen Betriebs | Vitest mit Postgres |
+| Exporte | DATEV und Prüfexport als Golden Files | Vitest |
+| Import | Fixtures je Tool, Fuzzing, Wiederholung ohne Dubletten | Vitest, fast-check |
+| Abläufe | Einrichtung, Stempeln, offline, Abschluss, Dienstplan, Import, Terminal | Playwright `desktop`, `phone`, `terminal` |
+| Barrierefreiheit | jede Seite | axe, `pages`-Check |
+| Sprachen | jeder Text in jeder Sprache, Arabisch von rechts nach links | `i18n`-Check, Playwright |
+| Last | 50 Betriebe mit je 50 Personen zur selben Minute | Lasttest-Skript mit Bun |
+
+## Dokumentation
+
+Zensical in `docs/`, auf GitHub Pages unter soll.work, nur Deutsch; die Startseite ist zugleich die
+Produktseite. Seiten: Überblick, Installation, Einrichtung, Stempeln, Terminal, Abwesenheiten,
+Dienstplan, Projektzeit, Umzug aus anderen Tools, DATEV, Haben, Regeln, Datenschutz und
+Betriebsvereinbarung, Verfahrensdokumentation, FAQ.
+
+## Offene Fragen
+
+- Marke „Soll“: Eintrag bei DPMA und EUIPO in den Klassen 9 und 42?
+- Erreicht der Loop die Schnittstellenbeschreibung von DATEV, oder braucht es eine Freigabe für
+  developer.datev.de?
+- Stand der Reform des ArbZG zum Start.

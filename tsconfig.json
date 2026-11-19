@@ -1,0 +1,5 @@
+{
+  // Solution file: every package and app adds itself under "references"; `tsc -b` checks them all
+  "files": [],
+  "references": [{ "path": "scripts" }]
+}

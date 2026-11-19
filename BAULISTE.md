@@ -1,0 +1,242 @@
+# Bauliste
+
+Die Liste, die der Agenten-Loop abarbeitet, in der Reihenfolge der Bauphasen aus dem
+[Projektplan](https://soll.work/plan.html). Soll 1.0 ist fertig, wenn jeder Punkt abgehakt ist und
+die Schritte für Menschen am Ende erledigt sind.
+
+## So arbeitet der Loop
+
+1. Den **ersten offenen Punkt** nehmen, dessen Abhängigkeiten (`nach:`) abgehakt sind und für den es
+   keinen offenen Pull Request gibt (Titel beginnt mit seiner Nummer). Ohne `nach:` hängt ein Punkt
+   am vorigen Punkt seiner Phase.
+2. **Sofort reservieren**: Branch von aktuellem `origin/main`, Draft-Pull-Request mit Titel
+   `S-xxx: …`, damit parallele Sessions den Punkt als vergeben sehen.
+3. **Kriterien zuerst**: Die Zeile „Fertig, wenn“ ist das Minimum. Reicht sie nicht, schärft der
+   Loop sie im selben Pull Request nach, bevor er Code schreibt; streichen darf er keins.
+4. Tests zuerst, dann Code, Doku und Texte in allen Sprachen, `bun run check` grün.
+5. **Unabhängiges Review** durch einen eigenen Sub-Agenten (`tdd-review`): ein Befund braucht einen
+   fehlschlagenden Test. Befunde fixen, bis keine mehr kommen.
+6. **CI grün → selbst mergen** (Squash), den Punkt hier im selben Pull Request abhaken. Der Loop
+   wartet nie auf einen Menschen. Offene Fragen entscheidet er nach dem Projektplan
+   („Entscheidungen“); eine neue Entscheidung schreibt er dort mit Grund hinein.
+7. **Nicht hängen bleiben**: Scheitert ein Punkt dreimal, trägt der Loop ihn mit Grund unter
+   „Zurückgestellt“ ein und macht mit dem nächsten Punkt weiter, der nicht davon abhängt. Am Ende
+   kommt er auf die zurückgestellten Punkte zurück. Was nur ein Mensch erledigen kann, steht unten
+   unter „Schritte für Menschen“ und liegt nicht auf dem Weg des Loops.
+
+**Parallel**: Ab S-104 laufen Phase 2 (Regeln, reine Funktionen) und S-301/S-302 (Oberfläche)
+unabhängig voneinander; ab S-306 können Phase 4, 5, 6 und 8 je eine eigene Session bekommen, ab
+S-701 die einzelnen Importe. Jede
+Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`.
+
+## Phase 1 – Fundament
+
+- [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`, `packages/export`,
+  `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
+  `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri; Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright
+  mit Projekten `desktop`, `phone` und `terminal`; `compose.yml` mit Postgres auf 55432;
+  `checks.json` um `i18n` und `pages` erweitern; `@firsttris/checks` in `package.json`, wo es sich
+  installieren lässt (bis dahin installiert die CI es selbst).
+  Fertig, wenn: `bun run check` auf einem frischen Klon grün ist, CI alle Workspaces prüft und eine
+  Startseite in jeder Sprache rendert, Arabisch mit `dir="rtl"` (Playwright).
+- [ ] **S-102 Datenbank und Unveränderbarkeit** – Drizzle mit Postgres; `@firsttris/gobd-kern` als
+  Abhängigkeit aus dem GitHub-Release von `firsttris/haben` (`bun add https://github.com/firsttris/haben/releases/download/gobd-kern-vX.Y.Z/…tgz`,
+  neueste Version). Die erste Migration übernimmt `vorlageSql({ praefix: "soll" })`: Audit-Log als
+  Hash-Kette, Siegel, Sperren gegen Ändern, Löschen und `TRUNCATE`; Akteur pro Transaktion. Danach
+  gehört das SQL Soll; Änderungen daran sind eigene Migrationen in Soll, nie in Haben. Die Kette wird so angelegt, dass Inhalte nach Ablauf der Frist ausgesondert werden
+  können, ohne dass die Prüfung bricht (Kette über den Hash des Inhalts, siehe Projektplan).
+  Fertig, wenn: eine versiegelte Zeile per SQL nicht änderbar ist, `TRUNCATE` scheitert, eine
+  manipulierte Zeile im Audit-Log bei der Prüfung auffällt und ein Test zeigt, dass ein Inhalt
+  entfernt werden kann und die Kette danach fehlerfrei prüft.
+- [ ] **S-103 Regelwerk** – `docs/regeln.md`: jede Regel aus dem Projektplan mit Norm, Grenzwerten,
+  Ausnahmen, Schwere (Hinweis oder Verstoß) und einer Tabelle von Testfällen.
+  Fertig, wenn: jede Norm der Tabelle „Rechtlicher Rahmen“ im Projektplan eine Regel hat und jede
+  Regel mindestens drei Fälle (erlaubt, genau an der Grenze, Verstoß), jeweils mit Quelle.
+- [ ] **S-104 Jahreswerte und Regelversionen** – Mindestlohn, Minijob-Grenze und die Version des
+  Regelwerks als Daten mit Gültigkeit in `packages/arbeitszeit`; fehlt ein Wert, heißt das Ergebnis
+  „nicht hinterlegt“.
+  nach: S-103. Fertig, wenn: ein Jahr ohne Wert nie mit dem Vorjahr rechnet (Test) und ein Wechsel
+  zum 1. Januar mitten in einer Nachtschicht richtig getrennt wird.
+- [ ] **S-105 Feiertage** – alle 16 Länder, bewegliche Feiertage nach der Osterformel, regionale
+  Feiertage nach Landesrecht, Feiertag je Standort.
+  nach: S-101. Fertig, wenn: 2026 bis 2035 gegen amtliche Listen besteht (Fixtures mit Quelle).
+- [ ] **S-106 Betriebe, Anmeldung, Rollen** – Better Auth mit Organization-Plugin (ein Betrieb je
+  Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail,
+  PIN mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
+  Extern, Gerät.
+  nach: S-102. Fertig, wenn: ein Test je Endpunkt zeigt, dass kein Betrieb Daten eines anderen sieht,
+  die PIN-Sperre greift und eine Einladung ohne E-Mail-Adresse zum Konto führt.
+
+## Phase 2 – Prüfregeln
+
+Reine Funktionen in `packages/arbeitszeit`, jede mit den Fällen aus `docs/regeln.md`; jeder Befund
+nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
+
+- [ ] **S-201 Arbeitstag aus Stempelungen** – Paare, Pausen, Schicht über Mitternacht, Zeitumstellung.
+  Fertig, wenn: 22:00 bis 6:00 über den 25.10.2026 9 h und über den 28.03.2027 7 h ergibt und der
+  Arbeitstag der Starttag ist.
+- [ ] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
+  oder 24 Wochen.
+- [ ] **S-203 Nacht, Sonn- und Feiertage** – §§ 2, 6, 9 bis 11 ArbZG, Ersatzruhetag.
+- [ ] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
+- [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
+- [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
+  Unterbrechung der Ruhezeit.
+- [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
+  Fertig, wenn: die Beispiele aus R 3b LStR und H 3b LStH als Tests bestehen.
+- [ ] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
+  Abschlüssen, Urlaub anteilig, Zusatzurlaub (§ 208 SGB IX), Kürzung bei Elternzeit (§ 17 BEEG),
+  Hinweis auf Verfall.
+
+## Phase 3 – Arbeitszeit in der App
+
+- [ ] **S-301 UI-Paket** – `packages/ui` nach DESIGN.md: Button, Input, Dialog, Menü, Popover,
+  Tooltip, Toast, Combobox, Tabs, Badge, Tabelle; native Elemente, eigene `cn()` und `variants()`,
+  Vorbild `packages/ui` in Kennwort (kopieren, Quelle nennen).
+  nach: S-101. Fertig, wenn: jede Komponente mit Tastatur bedienbar ist und axe keine Fehler findet.
+- [ ] **S-302 App-Rahmen** – Navigation, hell und dunkel, Sprachwahl, Handy mit Tab-Leiste.
+  nach: S-301. Fertig, wenn: Playwright `desktop` und `phone` jede Seite öffnet, axe grün ist und der
+  `pages`-Check jede Route kennt.
+- [ ] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
+  Vorlagen (Vollzeit, Teilzeit, Minijob), Mitarbeiter per CSV, Einladungen.
+  nach: S-106, S-302.
+- [ ] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
+  nächsten Befund; Nachtragen und Ändern mit Grund bis zum Abschluss, jede Änderung für den
+  Mitarbeiter sichtbar.
+  nach: S-303, S-202.
+- [ ] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
+  einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
+  Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der
+  Nummer auffällt.
+- [ ] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach versiegelt;
+  Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF.
+- [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push und
+  Mail; nie automatisch ausstempeln.
+- [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
+  Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
+  nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
+  und jede Feldregel ihre Quelle im Code nennt.
+- [ ] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
+  Arbeitsschutz; Auskunft nach Art. 15 DSGVO als Export.
+
+## Phase 4 – Abwesenheiten
+
+Alle Punkte: nach S-306.
+
+- [ ] **S-401 Abwesenheiten** – Urlaubsantrag mit Freigabe, Krankmeldung ohne Diagnose,
+  Sonderurlaub, halbe Tage, Überstundenabbau.
+- [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
+  Hinweises auf Verfall.
+
+## Phase 5 – Dienstplan
+
+Alle Punkte: nach S-306.
+
+- [ ] **S-501 Planung** – Schichtvorlagen, Wochenansicht, Ziehen und Ablegen, Bedarf je Rolle und
+  Standort.
+- [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
+  TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
+  Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.
+- [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token
+  (RFC 5545).
+- [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+- [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
+  Arbeitszeit, Soll aus dem Plan gegen Ist.
+
+## Phase 6 – Projektzeit und Anbindungen
+
+Alle Punkte: nach S-306.
+
+- [ ] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
+  Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
+- [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
+  Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
+- [ ] **S-603 Solo-Modus** – eine Person ohne Beschäftigte, ohne Arbeitszeitprüfung und Dienstplan.
+- [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
+  für die Beschäftigten, Einstellung im Audit-Log.
+- [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
+- [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
+  `externalId` (wiederholbar), Stundennachweis als Anlage.
+  Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
+  und Fehler.
+- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle, OpenAPI-Beschreibung,
+  MCP-Server.
+
+## Phase 7 – Umzug aus anderen Tools
+
+Wer wechselt, bringt Mitarbeiter, Zeiten, Abwesenheiten, Salden und Projekte mit. Jeder Import ist
+eine reine Funktion in `packages/import`; Datei oder API, Vorschau, Übernahme. S-702 bis S-708 nach
+S-701 und unabhängig voneinander.
+
+- [ ] **S-701 Import-Grundlage** – Ablauf: Tool wählen, Anleitung zum Export, Datei hochladen oder
+  API-Zugang eingeben, Zuordnung von Personen, Spalten, Projekten und Abwesenheitsarten, Vorschau mit
+  Befunden der Prüfregeln, Probelauf, Übernahme. Die Originaldatei wird unter ihrem SHA-256
+  aufbewahrt; jeder Eintrag trägt „übernommen aus …“ und die Kennung im alten Tool (`externalId`),
+  ein zweiter Import legt nichts doppelt an. Übernommene, abgeschlossene Monate werden als übernommen
+  versiegelt.
+  nach: S-306, S-401, S-501, S-601. Fertig, wenn: Fuzzing mit fast-check keine Datei findet, die den
+  Parser abstürzen oder hängen lässt, ein Fehler die Zeile nennt und ein wiederholter Import nichts
+  verdoppelt.
+- [ ] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
+  Tätigkeit), Datums- und Zahlenformate aus Deutschland, Vorlage zum Herunterladen.
+- [ ] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
+  Projekte, Leistungen.
+- [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
+- [ ] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
+- [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
+  Abwesenheiten.
+- [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
+- [ ] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
+  oder aus dem Import, im Audit-Log.
+
+Für S-703 bis S-707 gilt: Fertig, wenn Fixtures nach der Exportbeschreibung des Anbieters bestehen
+(Quelle im Test) und ein Playwright-Test den ganzen Ablauf zeigt. Echte, anonymisierte Dateien
+ergänzen Menschen (siehe unten).
+
+## Phase 8 – Tablet-Terminal
+
+Alle Punkte: nach S-305.
+
+- [ ] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
+  Wake Lock, Neuladen nach Fehler.
+- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der SUN-Nachricht.
+- [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
+
+## Phase 9 – Härtung und Betrieb
+
+- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 10 Jahre bei Lohnbezug),
+  Inhalte nach Ablauf entfernen, Hash und Siegel bleiben, die Aussonderung steht in der Kette.
+  Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
+- [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt, mit den Bausteinen aus
+  `gobd-kern`.
+- [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
+  Löschkonzept als Doku-Seite.
+- [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
+- [ ] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
+  Wiederherstellung, Release-Workflow aus firsttris/workflows.
+- [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
+  wenn sich etwas ändert.
+- [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
+  README aktuell.
+- [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy, Terminal.
+- [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
+  Monaten Daten an.
+
+## Zurückgestellt
+
+Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie zurück.
+
+## Schritte für Menschen
+
+Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
+
+- [ ] GitHub Pages mit Domain soll.work, DNS
+- [ ] Marke „Soll“ bei DPMA und EUIPO prüfen (Klassen 9 und 42)
+- [ ] Übersetzungen Türkisch, Polnisch, Ukrainisch und Arabisch von Muttersprachlern prüfen lassen
+- [ ] Regelwerk von einer Fachanwältin oder einem Fachanwalt für Arbeitsrecht gegenlesen lassen
+- [ ] DATEV-Export bei einer Steuerberatung testweise importieren
+- [ ] Echte, anonymisierte Exporte aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister,
+  Toggl und Clockify als Fixtures beisteuern
+- [ ] Vorlage der Betriebsvereinbarung juristisch prüfen lassen
+- [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
+- [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

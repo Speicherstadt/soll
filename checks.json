@@ -1,0 +1,6 @@
+{
+  "fileSize": {
+    "include": ["apps/*/src/**/*.{ts,tsx}", "packages/*/src/**/*.{ts,tsx}", "scripts/**/*.ts"]
+  },
+  "cycles": { "modules": ["packages/*", "apps/*"] }
+}

@@ -3,7 +3,8 @@
 Soll: self-hosted time tracking and shift planning for small businesses (2 to 50 employees), built
 around the German duty to record working time (BAG, 13.09.2022, 1 ABR 22/21). Clock in and out on
 the web, as a PWA and on a tablet terminal; every day is checked against the Arbeitszeitgesetz with
-the paragraph in each finding; the month is closed and sealed against tampering; payroll data goes
+the paragraph in each finding; the month is closed, and each employee keeps a check value that
+exposes any later change; payroll data goes
 to DATEV, project time to Haben. Part of the Speicherstadt suite, but it knows no other app: every
 connection goes through an open standard or a documented API (OpenID Connect, REST, ICS).
 
@@ -39,13 +40,14 @@ detail. Law over vendor documentation.
 - **Law**: ArbZG, ArbSchG, MiLoG, SchwarzArbG § 2a, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG, SGB IX
   § 208, BEEG § 17, EStG § 3b, BetrVG § 87, AO § 147, EStG § 41, LStDV § 4, DSGVO, all on
   gesetze-im-internet.de; BAG 1 ABR 22/21; EuGH C-55/18 (CCOO), C-151/02 (Jaeger), C-518/15 (Matzak).
-- **GoBD**: BMF-Schreiben vom 28.11.2019 (GoBD); `@firsttris/gobd-kern`, installed from its GitHub
-  release in `firsttris/haben` (SQL template for audit log, seals and locks; Verfahrensdokumentation).
-  Anything else taken from Haben is copied into Soll with the source named; extracting shared
-  packages comes later.
+- **GoBD**: BMF-Schreiben vom 28.11.2019 (GoBD), Rz. 107 ff. (Unveränderbarkeit) and 151 ff.
+  (Verfahrensdokumentation). `packages/gobd-kern` in `firsttris/haben` is a source to copy from: the
+  Prüfwert (`pruefwert.ts`), the texts of the Verfahrensdokumentation (`verfahrensdoku/`) and the
+  content-addressed file store (`dateispeicher.ts`). Copied code names its source; no dependency on
+  it, no shared package for now.
 - **Kennwort**: `Speicherstadt/kennwort` for the same stack in practice (Solid 2, Hono, Better Auth,
   Paraglide, the UI package, CI and docs).
-- **Haben**: `firsttris/haben` for Drizzle on Postgres with the gobd-kern triggers, `docs/api.md` for `POST /api/v1/leistungen`, `docs/lohn.md` for payroll, and
+- **Haben**: `firsttris/haben` for `docs/api.md` for `POST /api/v1/leistungen`, `docs/lohn.md` for payroll, and
   the Gesetzeswächter in `scripts/jahreswerte/`.
 - **DATEV**: the published interface description for importing movement data into LODAS and Lohn und
   Gehalt (ASCII import) on developer.datev.de; if it cannot be reached, say so in the pull request
@@ -56,8 +58,8 @@ detail. Law over vendor documentation.
 ## Never
 
 - Floats for money or time: durations in whole minutes, money in cents, holidays in half days.
-- Weaken a seal or lock, change a sealed row, change an existing migration, write `drizzle/meta/` by
-  hand.
+- Change a closed month or a link of the audit chain, write to the database past the chain, change
+  an existing migration, write `drizzle/meta/` by hand.
 - Round working time to the employee's disadvantage, or stamp out automatically.
 - Track location continuously, take photos or fingerprints at clock-in (Art. 9 DSGVO).
 - Show a per-person utilisation report unless the business switched it on (BetrVG § 87).
@@ -75,7 +77,7 @@ detail. Law over vendor documentation.
 
 Update what the change affects, in the same pull request, and only that:
 
-- the tests for what changed: Vitest next to the code, Postgres tests next to the module, Playwright
+- the tests for what changed: Vitest next to the code, database tests next to the module, Playwright
   for what a user does (desktop and `@phone`, the terminal in kiosk size); a bug fix starts with a
   failing test; a rule in `packages/arbeitszeit` comes with the cases from `docs/regeln.md`;
 - the docs in `docs/` that describe it (German only);
@@ -93,7 +95,7 @@ bun run typecheck && bun run lint && bun run test && bun run build
 zensical build --strict    # when docs/ or mkdocs.yml changed
 ```
 
-Postgres tests read `TEST_DATABASE_URL` (CI: a service container; locally `compose.yml`, port 55432).
+Database tests run against SQLite in a temporary file; nothing needs a running database.
 
 ## Pull requests
 
@@ -107,7 +109,7 @@ Postgres tests read `TEST_DATABASE_URL` (CI: a service container; locally `compo
 
 - Commands as root (`sudo`, `pkexec`) are run by the user; don't work around that.
 - The user's running processes are not stopped; use other ports for tests (dev: server 18200, Vite 5177;
-  e2e: server 28200, Vite 5178; Postgres 55432).
+  e2e: server 28200, Vite 5178).
 - Language: code, comments and commits in English; `README.md` and the docs in German only; the app
   through Paraglide with `messages/de.json` and `messages/en.json` for every text, and for the
   screens employees use also `tr`, `pl`, `uk` and `ar` (right to left). Findings name their norm in
@@ -116,17 +118,15 @@ Postgres tests read `TEST_DATABASE_URL` (CI: a service container; locally `compo
 ## Code style
 
 Technology choices follow `tech-stack.md` in firsttris/workflows and the stack of Kennwort (without
-Tauri), with three deviations from `tech-stack.md`:
+Tauri), with two deviations from `tech-stack.md`:
 
 - **Solid 2 instead of React**, as in Kennwort: one look and one way of building across the suite,
   and a small bundle for phones and the tablet terminal.
 - **No TanStack Start or SSR; a Hono server and a static SPA/PWA**, as in Kennwort: the same API
   serves the web app, the offline queue of the PWA and the terminal, the REST API and the MCP
   server, and the static build is cached whole by the service worker for clocking in offline.
-- **PostgreSQL instead of SQLite** (Kennwort uses SQLite): several users write at once, and the
-  seals and locks of `@firsttris/gobd-kern` are Postgres triggers.
 
-Server: Bun, Hono, Drizzle on PostgreSQL, Zod at every boundary, Better Auth (organization plugin
+Server: Bun, Hono, Drizzle on SQLite (WAL), Zod at every boundary, Better Auth (organization plugin
 for several businesses in one instance, passkeys, invitation links), `bun build --compile`. Client:
 Solid 2, `@tanstack/solid-router` and `solid-query` if they carry Solid 2 (else a small own router and
 Solid's async), Paraglide, Tailwind 4. UI in the shadcn style without a component library: native
@@ -146,14 +146,19 @@ past ~400 lines, a function past ~80. A refactor changes no behaviour.
 
 - Monorepo with Bun workspaces: `packages/arbeitszeit` (rules, holidays, target and actual time,
   accounts, surcharges; pure functions, no database), `packages/import` (parsers for other tools),
-  `packages/export` (DATEV, CSV, PDF), `packages/ui`, `apps/server` (Hono, Drizzle, Postgres,
+  `packages/export` (DATEV, CSV, PDF), `packages/ui`, `apps/server` (Hono, Drizzle, SQLite,
   Better Auth), `apps/web` (Solid SPA/PWA, terminal view).
 - Routes in `apps/server` stay thin: auth, Zod, then a call into `apps/server/src/modules/`; a module
   reaches another only through its `index.ts`.
 - Every table carries `betrieb_id`; every query filters by it; a test per endpoint proves that no
   business sees another's data.
-- Writes go through one function that sets the actor for the audit log; every new table is
-  registered for the audit log, sealed tables with `seal_table`.
+- Writes go through one function that appends to the audit chain in the same transaction (actor,
+  table, row, hash of the content, hash of the previous link); there is no other way to write. A
+  closed month locks its rows. The chain hashes the content's hash, not the content, so content can
+  be deleted after its retention period without breaking the check.
+- The protection against changes by the business itself is the Prüfwert on each employee's
+  monthly time sheet, not the server: whoever runs the server can change its database, but not the
+  Prüfwert an employee already holds.
 - Time: instants as `timestamptz`, calendar days in `Europe/Berlin`; a working day is the day the
   shift starts. DST changes are tested, not assumed.
 - Test data: "Weber Haustechnik" (SHK, Hamburg: Jonas Weber, owner; Anna, office; Sandra and Max,

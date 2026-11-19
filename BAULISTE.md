@@ -34,20 +34,20 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 - [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`, `packages/export`,
   `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
   `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri; Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright
-  mit Projekten `desktop`, `phone` und `terminal`; `compose.yml` mit Postgres auf 55432;
+  mit Projekten `desktop`, `phone` und `terminal`;
   `checks.json` um `i18n` und `pages` erweitern; `@firsttris/checks` in `package.json`, wo es sich
   installieren lässt (bis dahin installiert die CI es selbst).
   Fertig, wenn: `bun run check` auf einem frischen Klon grün ist, CI alle Workspaces prüft und eine
   Startseite in jeder Sprache rendert, Arabisch mit `dir="rtl"` (Playwright).
-- [ ] **S-102 Datenbank und Unveränderbarkeit** – Drizzle mit Postgres; `@firsttris/gobd-kern` als
-  Abhängigkeit aus dem GitHub-Release von `firsttris/haben` (`bun add https://github.com/firsttris/haben/releases/download/gobd-kern-vX.Y.Z/…tgz`,
-  neueste Version). Die erste Migration übernimmt `vorlageSql({ praefix: "soll" })`: Audit-Log als
-  Hash-Kette, Siegel, Sperren gegen Ändern, Löschen und `TRUNCATE`; Akteur pro Transaktion. Danach
-  gehört das SQL Soll; Änderungen daran sind eigene Migrationen in Soll, nie in Haben. Die Kette wird so angelegt, dass Inhalte nach Ablauf der Frist ausgesondert werden
-  können, ohne dass die Prüfung bricht (Kette über den Hash des Inhalts, siehe Projektplan).
-  Fertig, wenn: eine versiegelte Zeile per SQL nicht änderbar ist, `TRUNCATE` scheitert, eine
-  manipulierte Zeile im Audit-Log bei der Prüfung auffällt und ein Test zeigt, dass ein Inhalt
-  entfernt werden kann und die Kette danach fehlerfrei prüft.
+- [ ] **S-102 Datenbank und Audit-Kette** – Drizzle mit SQLite (WAL), Migrationen eingecheckt und im
+  Binary eingebettet. Jede Schreiboperation hängt in derselben Transaktion ein Kettenglied an
+  (Akteur, Zeitpunkt, Tabelle, Zeile, Hash des Inhalts, Hash des Vorgängers); der Inhalt liegt
+  getrennt vom Kettenglied, damit er nach der Frist ausgesondert werden kann. Prüfung der Kette und
+  Prüfwert „Nr. 1234 · <SHA-256>“ nach `pruefwert.ts` aus gobd-kern in `firsttris/haben`
+  (kopiert, Quelle im Kommentar).
+  Fertig, wenn: eine geänderte Zeile und ein geändertes Kettenglied bei der Prüfung auffallen, ein
+  entfernter Inhalt die Prüfung nicht bricht und ein Test über alle Schreibfunktionen zeigt, dass
+  keine an der Kette vorbei schreibt.
 - [ ] **S-103 Regelwerk** – `docs/regeln.md`: jede Regel aus dem Projektplan mit Norm, Grenzwerten,
   Ausnahmen, Schwere (Hinweis oder Verstoß) und einer Tabelle von Testfällen.
   Fertig, wenn: jede Norm der Tabelle „Rechtlicher Rahmen“ im Projektplan eine Regel hat und jede
@@ -108,8 +108,12 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
   Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der
   Nummer auffällt.
-- [ ] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach versiegelt;
-  Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF.
+- [ ] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
+  Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF mit dem Prüfwert der Kette, den
+  jede Person per Mail und zum Herunterladen bekommt; Prüfseite, auf der eine Person ihren Prüfwert
+  gegen den Stand prüft.
+  Fertig, wenn: eine nachträgliche Änderung an einem abgeschlossenen Monat auf der Prüfseite als
+  Abweichung erscheint (Test).
 - [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push und
   Mail; nie automatisch ausstempeln.
 - [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
@@ -173,7 +177,7 @@ S-701 und unabhängig voneinander.
   Befunden der Prüfregeln, Probelauf, Übernahme. Die Originaldatei wird unter ihrem SHA-256
   aufbewahrt; jeder Eintrag trägt „übernommen aus …“ und die Kennung im alten Tool (`externalId`),
   ein zweiter Import legt nichts doppelt an. Übernommene, abgeschlossene Monate werden als übernommen
-  versiegelt.
+  gesperrt.
   nach: S-306, S-401, S-501, S-601. Fertig, wenn: Fuzzing mit fast-check keine Datei findet, die den
   Parser abstürzen oder hängen lässt, ein Fehler die Zeile nennt und ein wiederholter Import nichts
   verdoppelt.
@@ -205,15 +209,16 @@ Alle Punkte: nach S-305.
 ## Phase 9 – Härtung und Betrieb
 
 - [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 10 Jahre bei Lohnbezug),
-  Inhalte nach Ablauf entfernen, Hash und Siegel bleiben, die Aussonderung steht in der Kette.
+  Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
+  Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
-- [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt, mit den Bausteinen aus
-  `gobd-kern`.
+- [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
+  `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle nennen).
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
 - [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
 - [ ] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
-  Wiederherstellung, Release-Workflow aus firsttris/workflows.
+  Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
 - [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,

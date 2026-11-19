@@ -24,7 +24,8 @@ Was Soll anders macht:
 
 - **Prüfung mit Paragraph**: Jeder Befund nennt seine Norm („Pause fehlt, § 4 ArbZG“), schon beim
   Stempeln und beim Einplanen.
-- **Nachweislich unverändert**: Audit-Log als Hash-Kette, Siegel beim Monatsabschluss.
+- **Nachweislich unverändert**: Audit-Log als Hash-Kette; zum Monatsabschluss bekommt jede Person
+  den Prüfwert der Kette, an dem eine spätere Änderung auffällt.
 - **Lohn mit Zuschlägen**: DATEV-Export mit den Zuschlägen nach § 3b EStG, auch für Minijobs.
 - **Keine Kosten pro Kopf**: AGPL, selbst gehostet frei; gehostet zum Preis pro Betrieb.
 - **Daten mitnehmen**: Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister,
@@ -49,14 +50,15 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Frage | Entscheidung | Warum |
 | --- | --- | --- |
 | Mandanten | mehrere Betriebe in einer Instanz; jede Tabelle mit `betrieb_id`, Test je Endpunkt | gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) brauchen es; bewusste Abweichung von Haben |
-| Arbeitszeit und Projektzeit | getrennte Tabellen, Projektzeit kann auf eine Stempelung verweisen | eigene Regeln: Arbeitszeit wird versiegelt, Projektzeit bleibt bis „abgerechnet“ änderbar |
-| Änderungen an Stempelungen | bis zum Monatsabschluss erlaubt, mit Grund, im Audit-Log, für den Mitarbeiter sichtbar; danach versiegelt, Korrektur als Gegeneintrag | gleicher Schutz, weniger Reibung als ein Siegel ab dem Einfügen |
+| Arbeitszeit und Projektzeit | getrennte Tabellen, Projektzeit kann auf eine Stempelung verweisen | eigene Regeln: Arbeitszeit wird gesperrt, Projektzeit bleibt bis „abgerechnet“ änderbar |
+| Änderungen an Stempelungen | bis zum Monatsabschluss erlaubt, mit Grund, im Audit-Log, für den Mitarbeiter sichtbar; danach gesperrt, Korrektur als Gegeneintrag | gleicher Schutz, weniger Reibung als eine Sperre ab dem Einfügen |
+| Unveränderbarkeit | eigene Hash-Kette im Code, Prüfwert auf dem Stundenzettel jeder Person, keine Datenbank-Trigger und kein gobd-kern | der Betreiber ist der Arbeitgeber und könnte Trigger abschalten; den Prüfwert in der Hand der Beschäftigten kann er nicht ändern. Die GoBD verlangen Protokollierung und Verfahrensdokumentation, keine Trigger |
 | Konten | aus den Abschlüssen berechnet, nur Anpassungen von Hand gespeichert | keine doppelte Wahrheit |
-| Aussonderung | in Solls eigenem SQL: die Kette läuft über den Hash des Inhalts, sodass der Inhalt nach Ablauf der Frist entfernt werden kann | DSGVO verlangt Löschen, die GoBD Unveränderbarkeit; Haben bleibt unberührt |
+| Aussonderung | die Kette läuft über den Hash des Inhalts, sodass der Inhalt nach Ablauf der Frist entfernt werden kann | DSGVO verlangt Löschen, die GoBD Unveränderbarkeit |
 | Regeln | als Daten mit Gültigkeit (Regelversion je Zeitraum) | eine Reform des ArbZG wird eine neue Version, keine Codeänderung |
 | Rundung | nur der abrechenbaren Projektzeit, nie der Arbeitszeit | Abrunden der Arbeitszeit ginge zulasten der Beschäftigten |
 | Terminal | PWA im Kiosk-Modus auf einem Tablet; keine eigene Hardware | derselbe Code wie im Browser |
-| Haben | wird von hier aus nicht geändert; `@firsttris/gobd-kern` kommt als Release, alles andere wird mit Quellenangabe kopiert | gemeinsame Pakete werden erst herausgelöst, wenn der Code in beiden Apps stabil ist |
+| Haben | wird von hier aus nicht geändert; Prüfwert, Texte der Verfahrensdokumentation und Dateispeicher aus gobd-kern werden mit Quellenangabe kopiert | gemeinsame Pakete werden erst herausgelöst, wenn der Code in beiden Apps stabil ist |
 | Sprachen | Deutsch und Englisch überall; Türkisch, Polnisch, Ukrainisch, Arabisch für die Ansichten der Beschäftigten | viele Beschäftigte in Gastronomie und Handwerk sprechen kein Deutsch |
 | Merge | der Loop merged selbst, wenn CI grün ist und das unabhängige Review keine Befunde mehr hat | er wartet nie auf einen Menschen |
 | Lizenz | AGPL-3.0 mit Namensnennung nach § 7(b) und kommerzieller Lizenz wie bei Haben | |
@@ -64,7 +66,7 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 ## Technologie
 
 Derselbe Stack wie Kennwort, ohne Tauri. Gegenüber `tech-stack.md` aus firsttris/workflows gibt es
-drei begründete Abweichungen, sie stehen auch im CLAUDE.md.
+zwei begründete Abweichungen, beide wie bei Kennwort; sie stehen auch im CLAUDE.md.
 
 | Teil | Wahl | Begründung |
 | --- | --- | --- |
@@ -74,8 +76,8 @@ drei begründete Abweichungen, sie stehen auch im CLAUDE.md.
 | Oberfläche | shadcn-Stil **ohne Abhängigkeiten**: `<dialog>`, Popover-API, CSS Anchor Positioning, eigene `cn()` und `variants()`, Tailwind 4, `lucide-solid`, Geist, Zinc-Tokens (DESIGN.md) | wie Kennwort, `packages/ui` von dort kopiert |
 | Texte | Paraglide JS, `messages/{sprache}.json` | typisiert, vom `i18n`-Check geprüft |
 | PWA | Service Worker, Offline-Warteschlange in IndexedDB, Web Push, Wake Lock, Web NFC | Stempeln am Handy und am Terminal, auch ohne Netz |
-| Datenbank | PostgreSQL mit Drizzle, Migrationen eingecheckt | **Abweichung von Kennwort (SQLite)**: viele gleichzeitige Schreiber, die Siegel und Sperren von gobd-kern sind Postgres-Trigger |
-| Unveränderbarkeit | `@firsttris/gobd-kern` (Release aus `firsttris/haben`) | Hash-Kette, Siegel, Verfahrensdokumentation fertig |
+| Datenbank | SQLite (WAL) mit Drizzle, Migrationen eingecheckt und im Binary | ein Container ohne Datenbankserver; Stempelungen sind kleine Schreibvorgänge, die SQLite auch bei 50 Betrieben mit je 50 Personen trägt (S-904) |
+| Unveränderbarkeit | Audit-Kette im Code, Prüfwert nach `pruefwert.ts` aus gobd-kern (kopiert) | siehe „Entscheidungen“ |
 | Anmeldung | Better Auth: Organization-Plugin (Betriebe), Passkeys, Einladungslinks, PIN für das Terminal | Stack-Vorgabe für Apps mit vielen Benutzern |
 | Validierung | Zod an jeder Grenze | |
 | Exporte | eigene Funktionen in `packages/export`: DATEV-ASCII, CSV; PDF für Stundenzettel und Regiebericht | |
@@ -91,7 +93,7 @@ drei begründete Abweichungen, sie stehen auch im CLAUDE.md.
 | `packages/import` | Parser für die Exporte anderer Tools |
 | `packages/export` | DATEV, CSV, PDF |
 | `packages/ui` | Komponenten nach DESIGN.md, Vorbild Kennwort |
-| `apps/server` | Hono-API, Drizzle mit Postgres, Better Auth; Routen dünn, Logik in `src/modules` |
+| `apps/server` | Hono-API, Drizzle mit SQLite, Better Auth; Routen dünn, Logik in `src/modules` |
 | `apps/web` | Solid-SPA/PWA: App, Terminal-Ansicht, Offline-Warteschlange |
 | `e2e/` | Playwright `desktop`, `phone`, `terminal` |
 
@@ -125,15 +127,21 @@ Vor dem Start ist der Stand der Reform des ArbZG zu prüfen (Referentenentwurf 2
 ## GoBD und Aufbewahrung
 
 Arbeitszeiten sind steuerlich relevant, sobald sie Grundlage des Lohns sind (Stundenlohn, Minijob,
-Zuschläge; § 41 EStG, § 4 LStDV). Soll übernimmt deshalb den Kern aus `gobd-kern`:
+Zuschläge; § 41 EStG, § 4 LStDV). Die GoBD verlangen dann Unveränderbarkeit durch Protokollierung
+und eine Verfahrensdokumentation (Rz. 107 ff., 151 ff.). Soll löst das so:
 
-- Audit-Log als Hash-Kette für jede Tabelle;
-- Siegel beim Monatsabschluss (`seal_table` mit `locked_at`), Korrektur danach nur als Gegeneintrag;
-- Verfahrensdokumentation aus dem Stand.
+- **Audit-Kette**: Jede Schreiboperation hängt in derselben Transaktion ein Kettenglied an (Akteur,
+  Zeitpunkt, Tabelle, Zeile, Hash des Inhalts, Hash des Vorgängers); es gibt keinen anderen Weg in
+  die Datenbank.
+- **Monatsabschluss**: Danach sind die Zeilen gesperrt; eine Korrektur ist ein Gegeneintrag mit Grund.
+- **Prüfwert bei den Beschäftigten**: Der Stundenzettel jeder Person trägt den Prüfwert der Kette
+  („Nr. 1234 · <SHA-256>“). Wer den Server betreibt, kann seine Datenbank ändern, aber nicht den
+  Prüfwert, den die Person schon hat; eine Prüfseite zeigt jede Abweichung.
+- **Verfahrensdokumentation** aus dem Stand, Texte aus gobd-kern übernommen.
 
 **Fristen je Monatsabschluss**: 2 Jahre ohne Lohnbezug (§ 16 Abs. 2 ArbZG, § 17 MiLoG), 6 Jahre als
 Lohnunterlage, 10 Jahre als Buchungsbeleg (§ 147 Abs. 3 AO); Beginn mit Ablauf des Kalenderjahres.
-Nach Ablauf entfernt die Aussonderung den Inhalt; Hash und Siegel bleiben, die Aussonderung steht
+Nach Ablauf entfernt die Aussonderung den Inhalt; die Kettenglieder bleiben, die Aussonderung steht
 selbst in der Kette (Art. 5 Abs. 1 lit. e, Art. 17 DSGVO). Die Kette wird dafür von Anfang an über
 den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 
@@ -141,17 +149,17 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 
 | Tabelle | Inhalt | Schutz |
 | --- | --- | --- |
-| `betriebe`, `standorte` | Name, Bundesland je Standort | Audit |
-| `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit |
-| `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit |
-| `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit; versiegelt beim Abschluss |
-| `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | versiegelt ab Einfügen |
+| `betriebe`, `standorte` | Name, Bundesland je Standort | Audit-Kette |
+| `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit-Kette |
+| `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
+| `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit-Kette; gesperrt beim Abschluss |
+| `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | Audit-Kette; nur anfügen |
 | `abwesenheiten` | Art, von, bis, halbe Tage, Status | Audit; im abgeschlossenen Monat gesperrt |
-| `schichten`, `schichttausch` | Plan, Rolle, Standort, veröffentlicht am | Audit |
-| `monatsabschluesse` | Summen, Befunde, Bestätigungen, Frist | versiegelt |
-| `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit |
+| `schichten`, `schichttausch` | Plan, Rolle, Standort, veröffentlicht am | Audit-Kette |
+| `monatsabschluesse` | Summen, Befunde, Bestätigungen, Prüfwert, Frist | Audit-Kette; nur anfügen |
+| `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit-Kette |
 | `kunden`, `projekte`, `taetigkeiten`, `projektzeiten` | Sätze, Budgets, Zeiten, abgerechnet am | Audit; gesperrt ab „abgerechnet“ |
-| `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | versiegelt ab Einfügen |
+| `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | Audit-Kette; nur anfügen |
 | `jahreswerte` | Mindestlohn, Minijob-Grenze, Regelversion | per Migration |
 
 Dauern in ganzen Minuten, Geld in Cent, Urlaub in halben Tagen, Zeitpunkte als `timestamptz`,
@@ -176,7 +184,7 @@ Vorschau mit den Befunden der Prüfregeln, Probelauf, Übernahme.
 Regeln für jeden Import:
 
 - **Nachvollziehbar**: Die Originaldatei wird unter ihrem SHA-256 aufbewahrt, jeder Eintrag trägt
-  „übernommen aus …“ und seine Kennung im alten Tool; der Import selbst steht versiegelt in
+  „übernommen aus …“ und seine Kennung im alten Tool; der Import selbst steht unveränderlich in
   `importe`.
 - **Wiederholbar**: Ein zweiter Import mit denselben Daten legt nichts doppelt an.
 - **Robust**: Kaputte oder böswillige Dateien stürzen nie ab und hängen nie (Fuzzing); ein Fehler
@@ -184,7 +192,7 @@ Regeln für jeden Import:
 - **Ehrlich**: Übernommene Zeiten werden geprüft wie eigene; Verstöße aus der Vergangenheit zeigt die
   Vorschau, ändert sie aber nicht.
 - **Abgeschlossen bleibt abgeschlossen**: Übernommene, abgeschlossene Monate werden als übernommen
-  versiegelt.
+  gesperrt.
 
 ## Anbindungen
 
@@ -226,8 +234,8 @@ Exporte als Fixtures, Pilotbetriebe, gehostete Variante.
 | --- | --- | --- |
 | Regeln | jede Regel mit erlaubt, Grenze und Verstoß aus `docs/regeln.md` | Vitest |
 | Zeit | Zeitumstellung, Mitternacht, Jahreswechsel, Feiertage 2026 bis 2035 | Vitest |
-| Unveränderbarkeit | versiegelte Zeile per SQL ändern, manipulierte Kette, Aussonderung | Vitest mit Postgres |
-| Mandanten | kein Endpunkt liefert Daten eines anderen Betriebs | Vitest mit Postgres |
+| Unveränderbarkeit | Schreiben an der Kette vorbei, manipulierte Zeile und Kette, Prüfwert nach Änderung, Aussonderung | Vitest mit SQLite |
+| Mandanten | kein Endpunkt liefert Daten eines anderen Betriebs | Vitest mit SQLite |
 | Exporte | DATEV und Prüfexport als Golden Files | Vitest |
 | Import | Fixtures je Tool, Fuzzing, Wiederholung ohne Dubletten | Vitest, fast-check |
 | Abläufe | Einrichtung, Stempeln, offline, Abschluss, Dienstplan, Import, Terminal | Playwright `desktop`, `phone`, `terminal` |

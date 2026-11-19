@@ -29,8 +29,8 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 
 - **Prüfung nach Paragraph**: Pausen, Ruhezeit, Höchstarbeitszeit, Jugendliche, Mutterschutz,
   Minijobs; jeder Hinweis nennt seine Norm, schon beim Stempeln und beim Einplanen.
-- **Nachweislich unverändert**: Jede Änderung steht mit Grund im Protokoll, der Monat wird
-  abgeschlossen und versiegelt.
+- **Nachweislich unverändert**: Jede Änderung steht mit Grund im Protokoll; zum Monatsabschluss
+  bekommt jede Person einen Prüfwert, an dem eine spätere Änderung auffällt.
 - **Lohn ohne Abtippen**: Export für DATEV mit Nacht-, Sonntags- und Feiertagszuschlägen.
 - **Für Schichtbetriebe und Handwerk**: Dienstplan, Tablet am Eingang, Aufträge, Stundennachweis mit
   Unterschrift.
@@ -72,7 +72,7 @@ Nein. Ein Android-Tablet an der Wand reicht; gestempelt wird mit PIN, QR-Code od
 
 ## Entwicklung
 
-Bun, Hono, Drizzle und PostgreSQL auf dem Server; Solid und Tailwind im Client. Hinweise für
+Bun, Hono, Drizzle und SQLite auf dem Server; Solid und Tailwind im Client. Hinweise für
 Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), der Plan in der
 [Dokumentation](https://soll.work/plan.html).
 

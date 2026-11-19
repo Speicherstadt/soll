@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.output/
+.vinxi/
+.tanstack/
+*.log
+.env
+.env.*
+!.env.example
+data/
+coverage/
+test-results/
+playwright-report/
+
+# Temporary Claude Code worktrees (e.g. for the TDD review)
+.claude/worktrees/
+
+# Documentation (zensical build)
+site/
+.cache/
+
+# macOS
+.DS_Store

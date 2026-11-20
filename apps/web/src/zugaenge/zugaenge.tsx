@@ -12,6 +12,8 @@ import { gueltigkeitText, kalendertag, tagVon } from "./text.ts";
 import { GUELTIGKEITEN, type Gueltigkeit, type Zugang } from "./typen.ts";
 
 const AENDERT = () => [alle(PFAD.zugaenge)];
+/** A token that expires unless chosen otherwise: a forgotten one ends by itself */
+const VORGABE: Gueltigkeit = 90;
 
 /** The form for a new token: a name and an expiry */
 const NeuerZugang = (props: { onAngelegt: (name: string, token: string) => void }) => {
@@ -49,10 +51,12 @@ const NeuerZugang = (props: { onAngelegt: (name: string, token: string) => void 
         <label for={`${id}-gueltig`} class="font-medium">
           {m.zugang_gueltigkeit()}
         </label>
-        <select id={`${id}-gueltig`} name="gueltigkeit" class={feld} value="90">
+        <select id={`${id}-gueltig`} name="gueltigkeit" class={feld}>
           <For each={GUELTIGKEITEN}>
             {(tage) => (
-              <option value={tage === null ? "" : String(tage)}>{gueltigkeitText(tage)}</option>
+              <option value={tage === null ? "" : String(tage)} selected={tage === VORGABE}>
+                {gueltigkeitText(tage)}
+              </option>
             )}
           </For>
         </select>

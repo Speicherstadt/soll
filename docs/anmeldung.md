@@ -26,6 +26,8 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 | Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung; stempelt nicht, sieht aber die eigenen Zeiten aus der Zeit davor |
 | Gerät | nur PINs am Terminal prüfen |
 
+Jede Rolle außer dem Gerät legt [Zugänge zur API](api.md) an; ein Zugang darf genau, was die Rolle seiner Person gerade darf.
+
 Die Löhne in den Arbeitszeitmodellen sehen nur Inhaber und Lohnbüro. Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen nur Inhaber, Planer, Lohnbüro und Betriebsrat; Mitarbeiter, Externe und Geräte sehen ihre eigene Rolle, aber keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
 davon darf; andere als diese sieben Rollen nimmt der Server nicht an. Jede Änderung einer Mitgliedschaft oder Rolle steht in
 der [Audit-Kette](audit-kette.md).

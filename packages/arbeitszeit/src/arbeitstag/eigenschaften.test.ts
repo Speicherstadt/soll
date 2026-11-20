@@ -119,4 +119,14 @@ describe("invariants of the working day over random stamps", () => {
       );
     }
   });
+
+  // sixth review of PR #11
+  it("(e) a stamp sent twice does not change the result", () => {
+    for (const { stempelungen, jetzt, gemischt: andere } of faelle) {
+      const nochmal = [...stempelungen, ...andere.slice(0, 1 + (stempelungen.length >> 1))];
+      expect(ergebnis(nochmal, jetzt), JSON.stringify(stempelungen)).toEqual(
+        ergebnis(stempelungen, jetzt),
+      );
+    }
+  });
 });

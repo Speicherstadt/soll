@@ -61,6 +61,30 @@ describe("unordered, repeated and unpaired stamps", () => {
     expect(arten(endeDoppelt)).toEqual(["doppelt"]);
   });
 
+  /*
+   * Sixth review of PR #11: a resent stamp was read again after the stamp of the same instant that
+   * followed it, so a Gehen resent next to the Kommen that began the next pair ended that pair, and
+   * a Pause resent next to its Pause-Ende began the break again: the open shift was hidden or
+   * reported as the wrong kind (docs/arbeitstag.md: a resent stamp is no finding).
+   */
+  it("reads a stamp resent at the instant of the next pair as the same stamp", () => {
+    const paar = [
+      kommen("2026-11-16T08:00+01:00"),
+      gehen("2026-11-16T12:00+01:00"),
+      kommen("2026-11-16T12:00+01:00"),
+    ];
+    const pausePaar = [
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      weiter("2026-11-16T12:00+01:00"),
+    ];
+    const jetzt = um("2026-11-16T13:00+01:00");
+    expect(tage([...paar, gehen("2026-11-16T12:00+01:00")], jetzt)).toEqual(tage(paar, jetzt));
+    expect(tage([...pausePaar, pause("2026-11-16T12:00+01:00")], jetzt)).toEqual(
+      tage(pausePaar, jetzt),
+    );
+  });
+
   it("reports a Gehen without Kommen once when it is resent within the minute", () => {
     const tag = einTag([gehen("2026-11-16T16:00:05+01:00"), gehen("2026-11-16T16:00:40+01:00")]);
     expect(arten(tag)).toEqual(["kommen_fehlt"]);

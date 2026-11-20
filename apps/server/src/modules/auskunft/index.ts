@@ -35,16 +35,30 @@ const HINWEISE = {
     "Keine. Soll prüft Regeln und zeigt Befunde, entscheidet aber nichts über dich (Art. 22 DSGVO).",
 };
 
+/**
+ * The tables of the reminders (S-307): the person's choices, the reminders sent after them and the
+ * devices that receive them. Only in the person's own copy: the owner sees none of them anywhere
+ * else in Soll, and they would tell the employer which reminders the person switched off, on how
+ * many devices and in which language they use the app (Art. 5 Abs. 1 lit. b and c DSGVO; konto.ts)
+ */
+const ERINNERUNGSTABELLEN: ReadonlySet<string> = new Set([
+  "pushAbos",
+  "erinnerungen",
+  "erinnerungseinstellungen",
+]);
+
 const zeilenVon = (
   nutzerId: string,
   arbeit: Arbeitsteil,
-  erinnerung: Erinnerungsteil,
+  erinnerung: Erinnerungsteil | null,
   einladungen: { einladungId: string }[],
 ) =>
   ({
-    pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
-    erinnerungen: erinnerung.erinnerungen.map(({ erinnerungId }) => ({ erinnerungId })),
-    erinnerungseinstellungen: [{ nutzerId }],
+    ...(erinnerung && {
+      pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
+      erinnerungen: erinnerung.erinnerungen.map(({ erinnerungId }) => ({ erinnerungId })),
+      erinnerungseinstellungen: [{ nutzerId }],
+    }),
     stempelungen: arbeit.stempelungen.map(({ stempelId }) => ({ stempelId })),
     korrekturen: arbeit.gegeneintraege.map(({ korrekturId }) => ({ korrekturId })),
     monatsabschluesse: arbeit.monatsabschluesse.map(({ abschlussId }) => ({ abschlussId })),
@@ -66,7 +80,10 @@ const namensgeber = (db: Db) => {
   };
 };
 
-/** `fuerSich`: the person's own copy; false when the owner gives it for someone else (konto.ts) */
+/**
+ * `fuerSich`: the person's own copy; false when the owner gives it for someone else, then without
+ * sign-in methods, the address and browser of sessions (konto.ts) and the reminders
+ */
 export const auskunftVon = (
   db: Db,
   betriebId: string,
@@ -77,7 +94,7 @@ export const auskunftVon = (
   const name = namensgeber(db);
   const konto = kontoteil(db, betriebId, nutzerId, angaben.fuerSich);
   const arbeit = arbeitsteil(db, betriebId, nutzerId, name);
-  const erinnerung = erinnerungsteil(db, betriebId, nutzerId);
+  const erinnerung = angaben.fuerSich ? erinnerungsteil(db, betriebId, nutzerId) : null;
   const kette = kettenteil(
     db,
     betriebId,
@@ -104,7 +121,12 @@ export const auskunftVon = (
           ? (pruefwerte.get(abschluss.abschlussId) ?? null)
           : null,
     })),
-    auditKette: kette.teil,
+    auditKette: angaben.fuerSich
+      ? kette.teil
+      : {
+          zuDeinenDaten: kette.teil.zuDeinenDaten,
+          vonDir: kette.teil.vonDir.filter((g) => !ERINNERUNGSTABELLEN.has(g.tabelle)),
+        },
   };
 };
 

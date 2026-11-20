@@ -71,9 +71,12 @@ Jede Person lädt unter **Einstellungen → Meine Daten** eine JSON-Datei mit al
 diesem Betrieb über sie speichert, unabhängig von Rolle und Modulen. Für eine Person, die den
 Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die Auskunft (Recht
 `auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält die
-Anmeldewege des Kontos nicht und die Sitzungen ohne Adresse und Browser: Der Inhaber sieht beides
-sonst nirgends, und es verriete dem Arbeitgeber, wo und womit sich die Person anmeldet; die
-Anmeldewege gehören zum Konto, nicht zum Betrieb (Art. 5 Abs. 1 lit. b und c DSGVO).
+Anmeldewege des Kontos nicht, die Sitzungen ohne Adresse und Browser und keine Erinnerungen
+(Wünsche, gesendete Erinnerungen, Geräte für Push-Nachrichten und die Glieder, die die Person dazu
+geschrieben hat): Der Inhaber sieht all das sonst nirgends, und es verriete dem Arbeitgeber, wo und
+womit sich die Person anmeldet, welche Erinnerungen sie abgeschaltet hat und auf wie vielen Geräten
+und in welcher Sprache sie die App nutzt; die Anmeldewege gehören zum Konto, nicht zum Betrieb
+(Art. 5 Abs. 1 lit. b und c DSGVO).
 
 | Teil | Inhalt |
 | --- | --- |
@@ -88,7 +91,7 @@ Anmeldewege gehören zum Konto, nicht zum Betrieb (Art. 5 Abs. 1 lit. b und c DS
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und
 der Einladung (sie schützen das Konto) und Daten anderer Personen: Von den Gliedern, die die Person
 für andere geschrieben hat, nennt die Auskunft weder Zeile noch Inhalt (Art. 15 Abs. 4 DSGVO).
-Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307); Abwesenheiten kommen dazu, sobald es sie gibt (S-401); ein Test hält fest,
+Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307; nur in der eigenen Auskunft); Abwesenheiten kommen dazu, sobald es sie gibt (S-401); ein Test hält fest,
 dass jede Tabelle der Datenbank in der Auskunft steht oder mit Grund ausgenommen ist.
 
 ## Schnittstelle

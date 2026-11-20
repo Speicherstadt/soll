@@ -239,6 +239,9 @@ export const monatJetzt = (
       befunde: befundeDesMonats(alle, monat, jetzt, feiertageUm(standortVon(db, betriebId), monat)),
       gegeneintraege: gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat }),
     }),
-    offeneTage: imMonat.filter((tag) => tag.ende === null).map((tag) => tag.tag),
+    // a day with a shift still open; a stamp without Kommen opens none (it is an R-01 finding)
+    offeneTage: imMonat
+      .filter((tag) => tag.schichten.some((schicht) => schicht.offen !== null))
+      .map((tag) => tag.tag),
   };
 };

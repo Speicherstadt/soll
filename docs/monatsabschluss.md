@@ -25,7 +25,8 @@ Befund mit Norm, darunter Soll, Ist und Saldo. Tage mit einer Änderung von Hand
    etwa weil sie ausgeschieden ist, geht das nur mit einem Grund; er steht auf dem Stundenzettel.
 
 Abgeschlossen wird nur ein Monat, der vorbei ist, und nur, wenn keine Schicht mehr offen ist: Fehlt
-ein Gehen, wird es zuerst nachgetragen. Soll stempelt nie selbst aus.
+ein Gehen, wird es zuerst nachgetragen. Soll stempelt nie selbst aus. Ein Gehen ohne Kommen öffnet
+keine Schicht und hält den Abschluss nicht auf; es steht als Befund (R-01) auf dem Stundenzettel.
 
 ## Danach ist der Monat gesperrt
 

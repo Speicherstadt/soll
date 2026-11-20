@@ -37,7 +37,8 @@ export const Button = (props: ButtonProps) => {
       type={props.type ?? "button"}
       class={cn(
         knopf({ variant: props.variant ?? "primary", size: props.size ?? "md" }),
-        props.variant === "icon" && cn(iconGroesse[props.size ?? "md"], "px-0"),
+        // cn() does not merge classes: px-0 must win over the padding of the size, or the icon shrinks
+        props.variant === "icon" && cn(iconGroesse[props.size ?? "md"], "px-0!"),
         props.class,
       )}
       {...rest}

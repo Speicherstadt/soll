@@ -61,6 +61,9 @@ test("stamps a day on Heute with the minutes and the next finding @phone", async
   await expect(page.getByText("· § 5 Abs. 1 ArbZG", { exact: false })).toBeVisible();
   const liste = page.getByRole("list", { name: t("stempelungen_titel") });
   await expect(liste.getByRole("listitem")).toHaveCount(4);
+  // the icon of an icon button keeps its 16 px (the padding of the button size once squeezed it)
+  const icon = await liste.getByRole("button").first().locator("svg").boundingBox();
+  expect(icon?.width).toBe(16);
   await expect(knopf(page, "stempeln_kommen")).toBeVisible();
 });
 

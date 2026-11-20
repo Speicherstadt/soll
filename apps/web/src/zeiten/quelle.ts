@@ -11,16 +11,19 @@ const TAKT_MS = 15_000;
  * function the server uses (`tagesstand`), on the server's clock: the device's clock may be wrong,
  * so the app keeps only its distance to the server's
  */
-export const tagQuelle = (
-  anfrage: () => { datum?: string | undefined; nutzerId?: string | undefined },
-) => {
+type Anfrage = { datum?: string | undefined; nutzerId?: string | undefined };
+
+export const tagQuelle = () => {
   const [ansicht, setAnsicht] = createSignal<TagAnsicht | null>(null);
   const [fehler, setFehler] = createSignal("");
   const [jetzt, setJetzt] = createSignal(Date.now());
   let abstand = 0;
   let zaehler = 0;
-  const laden = async () => {
-    const { datum, nutzerId } = anfrage();
+  let zuletzt: Anfrage = {};
+  /** Loads the day asked for; without a question the one asked last again */
+  const laden = async (anfrage: Anfrage = zuletzt) => {
+    zuletzt = anfrage;
+    const { datum, nutzerId } = anfrage;
     const parameter = new URLSearchParams({
       ...(datum ? { datum } : {}),
       ...(nutzerId ? { nutzerId } : {}),

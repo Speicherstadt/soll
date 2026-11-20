@@ -27,7 +27,7 @@ const ICONS = { kommen: LogIn, gehen: LogOut, pause_starten: Pause, pause_beende
  * button for the next step and Gehen beside it, the stamps of the day with their corrections
  */
 export const Stempeln = () => {
-  const quelle = tagQuelle(() => ({}));
+  const quelle = tagQuelle();
   const [fehler, setFehler] = createSignal("");
   const [arbeitet, setArbeitet] = createSignal(false);
   const [korrektur, setKorrektur] = createSignal<Korrektur | null>(null);

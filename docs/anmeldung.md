@@ -18,12 +18,12 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen |
-| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen |
-| Mitarbeiter | die eigenen Daten |
-| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen |
-| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG) |
-| Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren |
+| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren |
+| Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren |
+| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen |
+| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG), stempeln |
+| Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung; stempelt nicht |
 | Gerät | nur PINs am Terminal prüfen |
 
 Die Löhne in den Arbeitszeitmodellen sehen nur Inhaber und Lohnbüro. Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen nur Inhaber, Planer, Lohnbüro und Betriebsrat; Mitarbeiter, Externe und Geräte sehen ihre eigene Rolle, aber keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede

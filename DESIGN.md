@@ -38,7 +38,7 @@ Kennwort.
 | `--warning-surface` | `#fef3c7` | `#422006` | Badge „Hinweis“ |
 | `--danger` | `#b91c1c` | `#f87171` | Verstoß, Löschen, Fehler |
 
-Kein Rot/Grün als einziges Merkmal: dazu immer Text oder Icon.
+Kein Rot/Grün als einziges Merkmal: dazu immer Text oder Icon. Text auf `--warning-surface` steht in `--foreground`, auch der Nebentext: `--muted-foreground` erreicht dort keine 4,5:1.
 
 ## Schrift und Maße
 

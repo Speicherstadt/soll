@@ -26,14 +26,14 @@ const Zeiten = () => {
   const [datum, setDatum] = createSignal(tagInBerlin(Date.now()));
   const [nutzerId, setNutzerId] = createSignal<string | undefined>(undefined);
   const [personen, setPersonen] = createSignal<Person[]>([]);
-  const quelle = tagQuelle(() => ({ datum: datum(), nutzerId: nutzerId() }));
+  const quelle = tagQuelle();
   api<{ personen: Person[] }>("/api/v1/arbeitszeit/personen").then(
     (antwort) => antwort.ok && setPersonen(antwort.daten.personen),
   );
   createEffect(
-    () => [datum(), nutzerId()],
-    () => {
-      void quelle.laden();
+    () => ({ datum: datum(), nutzerId: nutzerId() }),
+    (anfrage) => {
+      void quelle.laden(anfrage);
     },
   );
   const eigene = () => {

@@ -403,6 +403,26 @@ Alle Punkte: nach S-306.
   `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
 - [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
+  Fertig, wenn: je Person höchstens eine Stoppuhr läuft, vom Server erzwungen (auch bei zwei
+  Anfragen zugleich); ein Tipp auf einen anderen Auftrag oder eine andere Tätigkeit die laufende
+  Buchung beendet und die nächste in derselben Transaktion startet, ohne Lücke und ohne
+  Überschneidung; Beginn und Ende auf die volle Minute gelten und die Dauer ganze Minuten hat;
+  jede Buchung ihren Arbeitstag (den Tag der Schicht, in die sie fällt) und das Kommen dieser
+  Schicht nennt oder keins; eine reine Funktion in `packages/arbeitszeit` einen Hinweis mit Grund
+  (gebuchte und gestempelte Minuten) gibt, wenn die Projektzeit eines Arbeitstags die gestempelte
+  Arbeitszeit übersteigt (Test, auch für eine Nachtschicht über Mitternacht und die Nacht der
+  Zeitumstellung); Buchungen derselben Person sich nicht überschneiden (409); die Person ihre
+  eigenen Buchungen ändert, nachträgt und löscht, Inhaber und Planer alle, bis eine Buchung
+  „abgerechnet“ ist (danach 409); Inhaber und Planer (später S-606) als abgerechnet markieren und
+  dabei der geltende Satz festgehalten wird; die gebuchten Minuten und Beträge `budgetStand` des
+  Auftrags speisen (Warnung und „aufgebraucht“ in der Liste der Aufträge); Kunde, Auftrag und
+  Tätigkeit mit Buchung archiviert statt gelöscht werden (409) und ein archivierter Auftrag oder
+  eine archivierte Tätigkeit keine neue Buchung annimmt; ob ein abgeschlossener Monat Projektzeit
+  sperrt, im Projektplan entschieden ist. Dazu: Schreiben über die Audit-Kette und eine neue
+  Migration; der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je
+  Endpunkt zeigt, dass kein Betrieb die Buchungen eines anderen sieht oder ändert; Playwright
+  startet, wechselt und stoppt die Stoppuhr, ändert eine Buchung und sieht den Hinweis (desktop
+  und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
 - [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
   Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte
   Person ein, schaltet Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).

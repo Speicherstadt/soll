@@ -1,5 +1,5 @@
 import { plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
-import { FEIERTAGSGESETZ, type Standort } from "./laender.ts";
+import { FEIERTAGSGESETZ, REGIONEN, type Standort } from "./laender.ts";
 import { ostersonntag } from "./ostern.ts";
 import { FEIERTAGE, type FeiertagsRegel, FRUEHESTES_JAHR, type Termin } from "./regeln.ts";
 
@@ -26,7 +26,10 @@ const giltFuer = (regel: FeiertagsRegel, jahr: number, standort: Standort): bool
   (regel.ab === undefined || jahr >= regel.ab) &&
   (regel.bis === undefined || jahr <= regel.bis) &&
   (regel.regionen === undefined ||
-    regel.regionen.some((region) => standort.regionen?.includes(region)));
+    // a region counts only in its own Land (Fronleichnam in Saxony is not Fronleichnam in Thuringia)
+    regel.regionen.some(
+      (region) => REGIONEN[region] === standort.land && standort.regionen?.includes(region),
+    ));
 
 /**
  * The legal holidays of one year at one place, sorted by day, each with the law that sets it. Years

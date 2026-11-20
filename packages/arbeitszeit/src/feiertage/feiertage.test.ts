@@ -54,6 +54,13 @@ describe("regional holidays", () => {
     const fremd = ["augsburg"] as Region[];
     expect(feiertagAm("2026-08-08", { land: "HE", regionen: fremd })).toBeNull();
   });
+
+  it("ignores the Fronleichnam region of the other Land between Saxony and Thuringia", () => {
+    const sachsen = ["fronleichnam_sachsen"] as Region[];
+    const thueringen = ["fronleichnam_thueringen"] as Region[];
+    expect(feiertagAm("2026-06-04", { land: "TH", regionen: sachsen })).toBeNull();
+    expect(feiertagAm("2026-06-04", { land: "SN", regionen: thueringen })).toBeNull();
+  });
 });
 
 describe("feiertage", () => {

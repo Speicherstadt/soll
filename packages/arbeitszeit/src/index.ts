@@ -9,6 +9,7 @@ export * from "./feiertage/index.ts";
 export * from "./heute/index.ts";
 export * from "./jahreswerte/index.ts";
 export { alterAm } from "./kalender/alter.ts";
+export { monatsfristEnde, volleMonate } from "./kalender/fristen.ts";
 export {
   ersterTag,
   istMonat,
@@ -30,6 +31,7 @@ export {
 } from "./kalender/tag.ts";
 export { eingabeInBerlin, minuteInBerlin } from "./kalender/wanduhr.ts";
 export { beginnInBerlin, tagInBerlin, zeitpunktInBerlin } from "./kalender/zeit.ts";
+export * from "./konten/index.ts";
 export {
   type Fragen,
   fragenAusModulen,
@@ -43,3 +45,4 @@ export * from "./pruefung-jugend/index.ts";
 export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-mutterschutz/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";
+export * from "./soll/index.ts";

@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page, type Route, test } from "@playwright/test";
 import { ALLE_MODULE, betriebAnlegen } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
 
@@ -106,15 +106,15 @@ const ersteListeVerzoegern = async (page: Page, pfad: string) => {
     freigeben = resolve;
   });
   let beantwortet: Promise<void> = Promise.resolve();
-  await page.route(
-    (url) => url.pathname === pfad,
-    async (route) => {
-      if (route.request().method() !== "GET") return route.continue();
-      await page.unroute((url) => url.pathname === pfad);
-      const antwort = await route.fetch();
-      beantwortet = frei.then(() => route.fulfill({ response: antwort }));
-    },
-  );
+  // unroute needs the same matcher and handler, so both are named
+  const passt = (url: URL) => url.pathname === pfad;
+  const halteAuf = async (route: Route) => {
+    if (route.request().method() !== "GET") return route.continue();
+    await page.unroute(passt, halteAuf);
+    const antwort = await route.fetch();
+    beantwortet = frei.then(() => route.fulfill({ response: antwort }));
+  };
+  await page.route(passt, halteAuf);
   return async () => {
     freigeben();
     await beantwortet;

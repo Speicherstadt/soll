@@ -129,7 +129,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   `pages`-Check jede Route kennt. Dazu: die Seitenleiste (Desktop) und die Tab-Leiste (Handy) führen
   zu jeder Seite und markieren die aktuelle mit `aria-current`, hell und dunkel und die Sprache
   bleiben nach dem Neuladen erhalten, Arabisch spiegelt das Layout, und axe ist in beiden Themen grün.
-- [ ] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
+- [x] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
   Vorlagen (Vollzeit, Teilzeit, Minijob), Mitarbeiter per CSV, Einladungen. Er beginnt mit vier
   Fragen, die die Module schalten: Beschäftigte ja oder nein (nein: nur Projektzeit; ja: Arbeitszeit
   mit Abwesenheiten, fest), Schichten oder Plan (Dienstplan), Stunden mit Kunden abrechnen

@@ -1,6 +1,6 @@
-import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
+import { istTag, plusTage, tagInBerlin } from "@soll/arbeitszeit";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createEffect, createMemo, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, Show, untrack } from "solid-js";
 import { api } from "../api.ts";
 import { type OffenerDialog, PlanDialoge } from "../dienstplan/dialoge.tsx";
 import { PlanInhalt } from "../dienstplan/inhalt.tsx";
@@ -12,12 +12,19 @@ import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Leer, Seite } from "../rahmen/seite.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { istInhaber } from "../sitzung/ziel.ts";
 
 /** Owner and planner plan; the server checks it again on every call (rollen.ts) */
 const istPlaner = () =>
   (aktuellerBetrieb()?.rolle ?? "")
     .split(",")
     .some((rolle) => ["inhaber", "planer"].includes(rolle.trim()));
+
+/** The owner keeps the data of a person the rules need (S-502) */
+const istInhaberHier = () => {
+  const betrieb = aktuellerBetrieb();
+  return betrieb !== null && istInhaber(betrieb);
+};
 
 /** The templates of the business, for whoever plans */
 const vorlagenQuelle = () => {
@@ -40,7 +47,9 @@ const vorlagenQuelle = () => {
 const Dienstplan = () => {
   const [standorte, setStandorte] = createSignal<Standort[] | null>(null);
   const [standortId, setStandortId] = createSignal("");
-  const [tag, setTag] = createSignal(tagInBerlin(Date.now()));
+  const suche = Route.useSearch();
+  // a link may name the week to open (?tag=2026-11-23); without one the plan opens this week
+  const [tag, setTag] = createSignal(untrack(() => suche().tag) ?? tagInBerlin(Date.now()));
   const [offen, setOffen] = createSignal<OffenerDialog>(null);
   const [ansage, setAnsage] = createSignal("");
   const [fehler, setFehler] = createSignal("");
@@ -90,10 +99,12 @@ const Dienstplan = () => {
           standorte={standorte() ?? []}
           standortId={standortId()}
           planer={istPlaner()}
+          inhaber={istInhaberHier()}
           onWoche={(schritt) => setTag((alt) => plusTage(alt, 7 * schritt))}
           onStandort={setStandortId}
           onVorlagen={() => setOffen({ art: "vorlagen" })}
           onBedarf={() => setOffen({ art: "bedarf" })}
+          onAngaben={() => setOffen({ art: "angaben" })}
         />
         <Fehler text={fehler() || (quelle.fehler() ? m.laden_fehler() : "")} />
         <Show when={quelle.woche()}>
@@ -131,4 +142,8 @@ const Dienstplan = () => {
   );
 };
 
-export const Route = createFileRoute("/dienstplan")({ component: Dienstplan });
+export const Route = createFileRoute("/dienstplan")({
+  component: Dienstplan,
+  validateSearch: (suche: Record<string, unknown>): { tag?: string } =>
+    typeof suche.tag === "string" && istTag(suche.tag) ? { tag: suche.tag } : {},
+});

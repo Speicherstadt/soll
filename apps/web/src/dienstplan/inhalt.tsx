@@ -2,6 +2,7 @@ import type { Tag } from "@soll/arbeitszeit";
 import { Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { Leer } from "../rahmen/seite.tsx";
+import { BefundListe } from "./befundListe.tsx";
 import { DeckungListe } from "./deckung.tsx";
 import { VorlagenLeiste } from "./leiste.tsx";
 import { type RasterProps, WochenRaster } from "./raster.tsx";
@@ -9,7 +10,8 @@ import { TagListe } from "./tagListe.tsx";
 
 /**
  * The week below the head: the templates to drag, the grid at the desktop and one day at a time on a
- * phone (DESIGN.md, "Aufbau"), then the coverage of the need
+ * phone (DESIGN.md, "Aufbau"), then for whoever plans the findings of the rules and the coverage of
+ * the need
  */
 export const PlanInhalt = (props: RasterProps & { tag: Tag; onTag: (tag: Tag) => void }) => (
   <>
@@ -33,6 +35,11 @@ export const PlanInhalt = (props: RasterProps & { tag: Tag; onTag: (tag: Tag) =>
         onNeu={props.onNeu}
       />
     </div>
+    <Show when={props.woche.befunde}>
+      {(befunde) => (
+        <BefundListe befunde={befunde()} personen={props.woche.personen} tage={props.woche.tage} />
+      )}
+    </Show>
     <DeckungListe deckung={props.woche.deckung ?? []} />
   </>
 );

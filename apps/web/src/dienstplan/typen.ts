@@ -13,6 +13,19 @@ export type Woche = {
   schichten: Schicht[];
   /** null for whoever does not plan */
   deckung: Deckung[] | null;
+  /** the findings of the rules on the shifts shown (S-502); null for whoever does not plan */
+  befunde: PlanBefund[] | null;
+};
+
+/** A finding of the plan: its rule, norm, severity, days, person and the shifts it concerns */
+export type PlanBefund = {
+  regel: string;
+  norm: string;
+  schwere: "hinweis" | "verstoss";
+  art: string;
+  tage: Tag[];
+  nutzerId: string;
+  schichtIds: string[];
 };
 
 export type Vorlage = {

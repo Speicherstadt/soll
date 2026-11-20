@@ -265,5 +265,16 @@
   "zeiten_vortag": "Poprzedni dzień",
   "zeiten_folgetag": "Następny dzień",
   "zeiten_modell": "Model czasu pracy",
-  "zeiten_modell_keins": "Brak, plan nieustalony"
+  "zeiten_modell_keins": "Brak, plan nieustalony",
+  "offline_ohne_netz": "Brak połączenia. Twoje odbicia zostają na tym urządzeniu i zostaną wysłane, gdy sieć wróci.",
+  "offline_wartend": "Jeszcze niewysłane: {anzahl}",
+  "offline_wartend_text": "Soll wyśle je samo, gdy tylko sieć wróci.",
+  "offline_abgelehnt_titel": "Nie przyjęto",
+  "offline_abgelehnt": "{art} o {uhrzeit}, nr {nummer}: serwer nie przyjął tego odbicia. W razie potrzeby dodaj je z powodem.",
+  "stempel_wartet": "czeka",
+  "stempel_offline": "offline",
+  "luecke_titel": "Luka w odbiciach urządzenia",
+  "luecke_eine": "Urządzenie {geraet}: brak nr {von}",
+  "luecke_mehrere": "Urządzenie {geraet}: brak nr od {von} do {bis}",
+  "luecke_text": "Odbicie zaginęło po drodze lub zostało usunięte na urządzeniu. Sprawdźcie dzień i w razie potrzeby dodajcie je z powodem."
 }

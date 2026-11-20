@@ -265,5 +265,16 @@
   "zeiten_vortag": "Vortag",
   "zeiten_folgetag": "Folgetag",
   "zeiten_modell": "Arbeitszeitmodell",
-  "zeiten_modell_keins": "Keins, Soll nicht hinterlegt"
+  "zeiten_modell_keins": "Keins, Soll nicht hinterlegt",
+  "offline_ohne_netz": "Keine Verbindung. Deine Stempelungen bleiben auf diesem Gerät und gehen raus, sobald das Netz zurück ist.",
+  "offline_wartend": "Noch nicht übertragen: {anzahl}",
+  "offline_wartend_text": "Soll überträgt sie von selbst, sobald das Netz zurück ist.",
+  "offline_abgelehnt_titel": "Nicht angenommen",
+  "offline_abgelehnt": "{art} um {uhrzeit}, Nr. {nummer}: der Server hat die Stempelung nicht angenommen. Trag sie bei Bedarf mit Grund nach.",
+  "stempel_wartet": "wartet",
+  "stempel_offline": "offline",
+  "luecke_titel": "Lücke in den Stempelungen eines Geräts",
+  "luecke_eine": "Gerät {geraet}: Nr. {von} fehlt",
+  "luecke_mehrere": "Gerät {geraet}: Nr. {von} bis {bis} fehlen",
+  "luecke_text": "Eine Stempelung ist auf dem Weg verloren gegangen oder wurde auf dem Gerät gelöscht. Prüft den Tag und tragt sie bei Bedarf mit Grund nach."
 }

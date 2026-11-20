@@ -265,5 +265,16 @@
   "zeiten_vortag": "Önceki gün",
   "zeiten_folgetag": "Sonraki gün",
   "zeiten_modell": "Çalışma süresi modeli",
-  "zeiten_modell_keins": "Yok, hedef kayıtlı değil"
+  "zeiten_modell_keins": "Yok, hedef kayıtlı değil",
+  "offline_ohne_netz": "Bağlantı yok. Kayıtların bu cihazda kalır ve ağ geri gelince gönderilir.",
+  "offline_wartend": "Henüz gönderilmedi: {anzahl}",
+  "offline_wartend_text": "Soll ağ geri gelince bunları kendiliğinden gönderir.",
+  "offline_abgelehnt_titel": "Kabul edilmedi",
+  "offline_abgelehnt": "{uhrzeit} {art}, no. {nummer}: sunucu bu kaydı kabul etmedi. Gerekirse gerekçeyle sonradan ekle.",
+  "stempel_wartet": "bekliyor",
+  "stempel_offline": "çevrimdışı",
+  "luecke_titel": "Bir cihazın kayıtlarında boşluk",
+  "luecke_eine": "Cihaz {geraet}: no. {von} eksik",
+  "luecke_mehrere": "Cihaz {geraet}: no. {von} ile {bis} arası eksik",
+  "luecke_text": "Bir kayıt yolda kayboldu veya cihazda silindi. Günü kontrol edin ve gerekirse gerekçeyle sonradan ekleyin."
 }

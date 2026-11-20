@@ -3,6 +3,7 @@ import { Button, Icon } from "@soll/ui";
 import { Plus } from "lucide";
 import { createSignal, Show } from "solid-js";
 import { dauerText } from "../einrichtung/werte.ts";
+import { LueckenKarte } from "../offline/hinweise.tsx";
 import { m } from "../paraglide/messages.js";
 import { BefundListe } from "./befunde.tsx";
 import { type Korrektur, KorrekturDialog } from "./korrektur.tsx";
@@ -52,6 +53,7 @@ export const TagAnsicht = (props: {
     <div class="flex max-w-2xl flex-col gap-5">
       <Summen stand={props.stand} sollMinuten={props.ansicht.sollMinuten} />
       <BefundListe befunde={props.stand.befunde} nichtHinterlegt={props.stand.nichtHinterlegt} />
+      <LueckenKarte luecken={props.ansicht.luecken} />
       <StempelListe
         stempelungen={props.ansicht.stempelungen}
         darfKorrigieren={props.darfKorrigieren}

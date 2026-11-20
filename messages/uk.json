@@ -265,5 +265,16 @@
   "zeiten_vortag": "Попередній день",
   "zeiten_folgetag": "Наступний день",
   "zeiten_modell": "Модель робочого часу",
-  "zeiten_modell_keins": "Немає, план не вказано"
+  "zeiten_modell_keins": "Немає, план не вказано",
+  "offline_ohne_netz": "Немає з'єднання. Твої відмітки залишаються на цьому пристрої й будуть надіслані, щойно мережа повернеться.",
+  "offline_wartend": "Ще не надіслано: {anzahl}",
+  "offline_wartend_text": "Soll надішле їх сам, щойно мережа повернеться.",
+  "offline_abgelehnt_titel": "Не прийнято",
+  "offline_abgelehnt": "{art} о {uhrzeit}, № {nummer}: сервер не прийняв цю відмітку. За потреби додай її з причиною.",
+  "stempel_wartet": "очікує",
+  "stempel_offline": "офлайн",
+  "luecke_titel": "Пропуск у відмітках пристрою",
+  "luecke_eine": "Пристрій {geraet}: бракує № {von}",
+  "luecke_mehrere": "Пристрій {geraet}: бракує № з {von} по {bis}",
+  "luecke_text": "Відмітка загубилася дорогою або була видалена на пристрої. Перевірте день і за потреби додайте її з причиною."
 }

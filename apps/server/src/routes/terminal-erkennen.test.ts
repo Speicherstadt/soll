@@ -114,7 +114,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const doppelt = await pinSetzen(inhaber, tom.nutzerId, "471100");
     expect(doppelt.status).toBe(409);
     expect(await json(doppelt)).toEqual({ fehler: "pin_vergeben" });
-    expect((await pinSetzen(inhaber, tom.nutzerId, "2468")).status).toBe(204);
+    expect((await pinSetzen(inhaber, tom.nutzerId, "246800")).status).toBe(204);
   });
 
   it("never stores a PIN as it is", async () => {
@@ -131,11 +131,11 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const server = neuerServer();
     const { inhaber } = await betriebMitTerminal(server);
     const extern = await server.eingeladen(inhaber, "extern", "olena");
-    await pinSetzen(inhaber, extern.nutzerId, "1357");
+    await pinSetzen(inhaber, extern.nutzerId, "135700");
     const geraet = await gekoppelt(server, inhaber);
-    expect((await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "1357" } })).status).toBe(
-      401,
-    );
+    expect(
+      (await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "135700" } })).status,
+    ).toBe(401);
   });
 
   it("refuses recognising and stamping while the module Arbeitszeit is off", async () => {

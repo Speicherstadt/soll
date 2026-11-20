@@ -31,7 +31,7 @@ Tablet zeigt beim nächsten Aufruf wieder die Kopplung.
 
 Die Tabelle **PIN und QR-Code** unter Einstellungen zeigt alle, die stempeln.
 
-- **PIN**: 4 bis 8 Ziffern, gesetzt vom Inhaber. Am Terminal erkennt die PIN die Person allein,
+- **PIN**: 6 bis 8 Ziffern, gesetzt vom Inhaber. Am Terminal erkennt die PIN die Person allein,
   deshalb gibt es jede PIN im Betrieb nur einmal; eine schon vergebene lehnt Soll ab. Gespeichert
   wird sie nur als Hash, nie im Klartext.
 - **QR-Code**: ein Zufallswert, den der Inhaber ausstellt und gleich ausdruckt. Soll speichert nur
@@ -54,10 +54,13 @@ Person, trägt die Quelle „Terminal“ und das Terminal und steht in der
 
 ## Sperre
 
-Nach **fünf falschen** PINs oder QR-Codes in Folge wartet das Terminal eine Minute, jede weitere
-Sperre doppelt so lang, höchstens 15 Minuten. Eine erkannte Person setzt die Zählung zurück. Jeder
-Versuch steht in der Audit-Kette, und der Inhaber sieht unter Einstellungen, bis wann ein Terminal
-gesperrt ist.
+Falsche PINs oder QR-Codes zählt das Terminal je Kalendertag. Nach je **fünf falschen** wartet es
+eine Minute, dann zwei, dann vier; nach dem **zwanzigsten falschen Versuch** eines Tages bleibt es bis
+Mitternacht gesperrt. Eine erkannte Person hebt nichts davon auf, sonst könnte jemand am Tablet
+zwischen zwei Rateversuchen die eigene PIN tippen. So prüft ein Terminal höchstens 20 falsche PINs am
+Tag. Jeder Versuch steht in der Audit-Kette, und der Inhaber sieht unter Einstellungen, bis wann ein
+Terminal gesperrt ist. Eine Sperre bis Mitternacht hebt er auf, indem er das Tablet entkoppelt und
+neu koppelt.
 
 ## Wach und von selbst gesund
 

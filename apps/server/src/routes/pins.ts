@@ -2,11 +2,12 @@ import { Hono } from "hono";
 import { z } from "zod";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { mitgliedschaftVon } from "../modules/mitglieder/index.ts";
-import { istPin, pinPruefen, pinSetzen } from "../modules/pin/index.ts";
+import { istNeuePin, istPin, pinPruefen, pinSetzen } from "../modules/pin/index.ts";
 import { pinKennung } from "../modules/terminal/index.ts";
 import { type Anfrage, modul, recht } from "./kontext.ts";
 
 const pinSchema = z.object({ pin: z.string().refine(istPin) }).strict();
+const neuePinSchema = z.object({ pin: z.string().refine(istNeuePin) }).strict();
 
 const kontextVon = (
   c: { get: (key: "betriebId" | "nutzerId") => string },
@@ -18,7 +19,7 @@ const kontextVon = (
 });
 
 /**
- * PUT /api/v1/pins/:nutzerId: the owner sets a member's PIN, which also lifts a lock; a PIN another
+ * PUT /api/v1/pins/:nutzerId: the owner sets a member's PIN of 6 to 8 digits, which also lifts a lock; a PIN another
  * member holds is refused (409 `pin_vergeben`), as the terminal finds a person by the PIN alone (S-801)
  */
 export const pinRouten = (
@@ -31,7 +32,7 @@ export const pinRouten = (
     const nutzerId = c.req.param("nutzerId");
     if (!mitgliedschaftVon(db, c.get("betriebId"), nutzerId))
       return c.json({ fehler: "unbekannt" }, 404);
-    const eingabe = pinSchema.safeParse(await c.req.json().catch(() => null));
+    const eingabe = neuePinSchema.safeParse(await c.req.json().catch(() => null));
     if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
     const { pin } = eingabe.data;
     const kennung = pinKennung(pinSchluessel, c.get("betriebId"), pin);

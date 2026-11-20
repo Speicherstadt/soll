@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { codeAnzeige, pinNach, pinVollstaendig, sekundenBis, tasteAus } from "./eingabe.ts";
+import {
+  codeAnzeige,
+  pinNach,
+  pinVollstaendig,
+  sekundenBis,
+  sperreBisMitternacht,
+  tasteAus,
+} from "./eingabe.ts";
 
 const ziffer = (z: string) => ({ art: "ziffer", ziffer: z }) as const;
 
@@ -14,9 +21,9 @@ describe("the number pad", () => {
     expect(pinNach("47", ziffer("x"))).toBe("47");
   });
 
-  it("confirms from four digits on", () => {
-    expect(pinVollstaendig("471")).toBe(false);
-    expect(pinVollstaendig("4711")).toBe(true);
+  it("confirms from six digits on", () => {
+    expect(pinVollstaendig("47110")).toBe(false);
+    expect(pinVollstaendig("471100")).toBe(true);
   });
 
   it("reads the keyboard", () => {
@@ -40,5 +47,12 @@ describe("seconds left", () => {
     expect(sekundenBis(61_000, 0)).toBe(61);
     expect(sekundenBis(60_001, 0)).toBe(61);
     expect(sekundenBis(0, 5)).toBe(0);
+  });
+});
+
+describe("the lock", () => {
+  it("tells the lock until midnight from one of a few minutes", () => {
+    expect(sperreBisMitternacht(4 * 60_000, 0)).toBe(false);
+    expect(sperreBisMitternacht(4 * 60_000 + 1000, 0)).toBe(true);
   });
 });

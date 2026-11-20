@@ -6,8 +6,14 @@ import { type Kontext, schreiben } from "../audit/index.ts";
 /** Wrong tries in a row after which a PIN is locked until the owner sets a new one (S-106) */
 export const MAX_FEHLVERSUCHE = 5;
 
-/** A PIN is 4 to 8 digits */
+/** A PIN as checked: 4 to 8 digits, as PINs set before S-801 may have four */
 export const istPin = (pin: string): boolean => /^\d{4,8}$/.test(pin);
+
+/**
+ * A PIN as set: 6 to 8 digits. At the terminal the PIN alone finds the person, so every guess hits
+ * any PIN of the business (docs/plan.md, "PIN am Terminal")
+ */
+export const istNeuePin = (pin: string): boolean => /^\d{6,8}$/.test(pin);
 
 const pinVon = (db: Db, betriebId: string, nutzerId: string) =>
   db

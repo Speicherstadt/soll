@@ -47,7 +47,7 @@ Hash des Links, nicht der Link selbst. Passkeys lassen sich danach zum Konto hin
 
 ## PIN
 
-Für das Terminal setzt der Inhaber jeder Person eine PIN aus 4 bis 8 Ziffern; gespeichert wird sie
+Für das Terminal setzt der Inhaber jeder Person eine PIN aus 6 bis 8 Ziffern; gespeichert wird sie
 als Hash (Argon2id). Nach **fünf falschen Versuchen in Folge** ist sie gesperrt, bis der Inhaber eine
 neue setzt; eine richtige PIN dazwischen setzt den Zähler zurück. Jeder Fehlversuch steht in der
 Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nicht mehr erkannt.
@@ -55,7 +55,8 @@ Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nich
 Am [Terminal](terminal.md) erkennt die PIN die Person allein. Deshalb gibt es jede PIN im Betrieb
 nur einmal, und Soll speichert daneben eine Kennung (HMAC-SHA-256 mit einem Schlüssel aus
 `SOLL_SECRET_KEY`), über die es die Person findet; eine gesperrte PIN gilt dort nicht. Falsche
-Versuche am Terminal sperren das Terminal, nicht die Person.
+Versuche am Terminal sperren das Terminal, nicht die Person. Eine PIN mit 4 oder 5 Ziffern von vor
+S-801 wird weiter geprüft, neu setzen lässt sich nur eine mit 6 bis 8.
 
 ## Module
 

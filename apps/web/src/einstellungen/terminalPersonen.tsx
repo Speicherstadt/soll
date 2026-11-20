@@ -48,7 +48,7 @@ const PinDialog = (props: {
           type="password"
           inputmode="numeric"
           autocomplete="off"
-          pattern="[0-9]{4,8}"
+          pattern="[0-9]{6,8}"
           required
           fehler={fehler()}
         />

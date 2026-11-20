@@ -8,14 +8,14 @@ test("waits after five wrong PINs and lets the right one through afterwards only
   browser,
 }) => {
   await weberMitTerminal(jonas, browser, test.info());
-  await pinSetzen(jonas, "Sandra Kühn", "4711");
+  await pinSetzen(jonas, "Sandra Kühn", "471100");
   const tablet = await tabletOeffnen(browser, test.info());
   await koppeln(jonas, tablet);
   for (let rest = 4; rest >= 1; rest--) {
-    await pinTippen(tablet, "0000");
+    await pinTippen(tablet, "000000");
     await expect(tablet.getByText(t("kiosk_unbekannt", { rest }))).toBeVisible();
   }
-  await pinTippen(tablet, "0000");
+  await pinTippen(tablet, "000000");
   await expect(
     tablet.getByText(/^Zu viele falsche Versuche\. Wieder möglich in \d+ s\.$/),
   ).toBeVisible();
@@ -27,19 +27,19 @@ test("waits after five wrong PINs and lets the right one through afterwards only
 
 test("a PIN another person holds is refused @terminal", async ({ page: jonas, browser }) => {
   await weberMitTerminal(jonas, browser, test.info());
-  await pinSetzen(jonas, "Sandra Kühn", "4711");
+  await pinSetzen(jonas, "Sandra Kühn", "471100");
   await jonas
     .getByRole("button", { name: t("terminal_pin_setzen_name", { name: "Max Peters" }) })
     .click();
   const dialog = jonas.getByRole("dialog");
-  await dialog.getByLabel(t("terminal_pin_feld")).fill("4711");
+  await dialog.getByLabel(t("terminal_pin_feld")).fill("471100");
   await dialog.getByRole("button", { name: t("terminal_speichern") }).click();
   await expect(dialog.getByText(t("terminal_pin_vergeben"))).toBeVisible();
 });
 
 test("a revoked tablet goes back to pairing @terminal", async ({ page: jonas, browser }) => {
   await weberMitTerminal(jonas, browser, test.info());
-  await pinSetzen(jonas, "Sandra Kühn", "4711");
+  await pinSetzen(jonas, "Sandra Kühn", "471100");
   const tablet = await tabletOeffnen(browser, test.info());
   await koppeln(jonas, tablet, "Lager");
   await jonas.reload();
@@ -47,7 +47,7 @@ test("a revoked tablet goes back to pairing @terminal", async ({ page: jonas, br
     .getByRole("button", { name: t("terminal_entkoppeln_name", { name: "Lager" }) })
     .click();
   await expect(jonas.getByText(t("terminal_keine"))).toBeVisible();
-  await pinTippen(tablet, "4711");
+  await pinTippen(tablet, "471100");
   await expect(tablet.getByRole("heading", { name: t("kiosk_koppeln_titel") })).toBeVisible();
 });
 

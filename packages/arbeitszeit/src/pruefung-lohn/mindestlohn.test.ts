@@ -116,6 +116,13 @@ describe("R-14: Mindestlohn je Monat", () => {
 });
 
 describe("R-14: the month and its input", () => {
+  it("Ausnahme Jugendliche ohne Ende: Jugendlicher ohne Berufsabschluss ohne Ende der Ausnahme, 500,00 € für 43 h – Verstoß (§ 22 Abs. 2 MiLoG gilt bis 18)", () => {
+    const ausnahmen = [{ grund: "jugendlich_ohne_abschluss" as const }];
+    expect(befundeIm(gehalt(50000), [], { ausnahmen })).toEqual([unter(50000, 9770)]);
+    const bis18 = [{ grund: "jugendlich_ohne_abschluss" as const, bis: "2026-12-01" }];
+    expect(befundeIm(gehalt(50000), [], { ausnahmen: bis18 })).toEqual([]);
+  });
+
   it("an exception Soll does not know, or with an end that is no day, excepts nothing", () => {
     const unbekannt = [{ grund: "praktikum" as never }];
     expect(befundeIm(gehalt(50000), [], { ausnahmen: unbekannt })).toHaveLength(1);

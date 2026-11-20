@@ -171,3 +171,17 @@ describe("R-32: the months it reads", () => {
     expect(minijobGrenze([monat("2026-11", gehalt(0.5))]).ok).toBe(false);
   });
 });
+
+describe("R-32: review of PR #15", () => {
+  it("steuerfreier Zuschlag über 25 € je Stunde: 20 h zu 30,00 € je Stunde und 120,00 € steuerfreier Sonntagszuschlag – Hinweis „gelegentlich überschritten“, 20,00 € des Zuschlags zählen", () => {
+    // 20 h at 30,00 € = 600,00 €; 120,00 € tax-free Sunday surcharge (50 % of 8 h at 30,00 €), of
+    // which the part on the 5,00 € above 25,00 € an hour is Arbeitsentgelt: 20,00 € → 620,00 €
+    const november = monat("2026-11", stundenlohn(3000), arbeitIm("2026-11-02", 20 * 60), {
+      zuschlaege: [{ art: "sonntag", cent: 12000, steuerfrei: true }],
+    });
+    const ergebnis = pruefe([...verlauf("2026-01", "2026-10", {}), november]);
+    expect(ergebnis.befunde).toEqual([
+      expect.objectContaining({ art: "gelegentlich", monat: "2026-11", lohnCent: 62000 }),
+    ]);
+  });
+});

@@ -177,3 +177,35 @@ describe("R-13: the stamps as they stood", () => {
     expect(aufzeichnungsfrist([kommen], Number.NaN, MINIJOB).ok).toBe(false);
   });
 });
+
+describe("R-13: review of PR #15", () => {
+  it("Privathaushalt ohne Minijob: Vollzeit im Privathaushalt, Branche nicht eingestellt, offen am 10.11. – Verstoß (§ 17 Abs. 1 Satz 3 MiLoG nimmt nur § 8a SGB IV aus)", () => {
+    const optionen = { minijob: false, privathaushalt: true };
+    expect(aufzeichnungspflichtig(optionen)).toBe(true);
+    expect(pruefe([kommen], FRIST, optionen).befunde).toEqual([verspaetet()]);
+  });
+
+  it("deleting the part of a night shift after midnight after the deadline is nachgetragen", () => {
+    const stempelungen = [
+      erfasst("kommen", "2026-11-02T22:00+01:00", "2026-11-02T22:00+01:00"),
+      erfasst("gehen", "2026-11-03T02:00+01:00", "2026-11-03T02:00+01:00"),
+      erfasst(
+        "kommen",
+        "2026-11-03T02:20+01:00",
+        "2026-11-03T02:20+01:00",
+        "2026-11-12T09:00+01:00",
+      ),
+      erfasst(
+        "gehen",
+        "2026-11-03T06:00+01:00",
+        "2026-11-03T06:00+01:00",
+        "2026-11-12T09:00+01:00",
+      ),
+    ];
+    expect(pruefe(stempelungen, SPAETER)).toEqual({
+      befunde: [],
+      nichtHinterlegt: [],
+      nachgetragen: ["2026-11-02"],
+    });
+  });
+});

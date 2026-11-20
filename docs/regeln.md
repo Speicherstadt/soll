@@ -503,6 +503,7 @@ Regel:
 | Grenze | nachgetragen am Mo 9.11. um 23:59 | kein Befund | § 17 Abs. 1 Satz 1 MiLoG („Ablauf des siebten … Kalendertages“) |
 | Verstoß | noch offen am Di 10.11. um 0:00 | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 1 MiLoG |
 | ausgenommen | Minijob im Privathaushalt, offen am 10.11. | nur R-01 | § 17 Abs. 1 Satz 3 MiLoG |
+| Privathaushalt ohne Minijob | Vollzeit im Privathaushalt, Branche nicht eingestellt, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 3 MiLoG nimmt nur § 8a SGB IV aus, also nur Minijobs |
 | vor dem Hinweis | noch offen am Fr 6.11. um 23:59 | nur R-01 | R-13, Schwere |
 | Hinweis | noch offen am Sa 7.11. um 0:00 | Hinweis „Aufzeichnung fällig“, Frist bis Mo 9.11. 23:59 | R-13, Schwere |
 | verspätet nachgetragen | Gehen erfasst am Di 10.11. um 0:00 | Verstoß „Aufzeichnung verspätet“, auch nachdem der Tag vollständig ist | § 17 Abs. 1 Satz 1 MiLoG |
@@ -549,6 +550,7 @@ Pflicht.
 | Ausnahme | Auszubildender, 500,00 € für 43 h | kein Befund | § 22 Abs. 3 MiLoG |
 | Ausnahme endet im Monat | langzeitarbeitslos, Ausnahme bis 15.11., 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“: der Monat wird ganz geprüft | § 22 Abs. 4 MiLoG; nie weniger streng als das Gesetz (BAULISTE.md, S-204) |
 | Ausnahme ohne Ende | langzeitarbeitslos ohne Ende der Ausnahme, 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 22 Abs. 4 MiLoG („in den ersten sechs Monaten“) |
+| Ausnahme Jugendliche ohne Ende | Jugendlicher ohne Berufsabschluss ohne Ende der Ausnahme, 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 22 Abs. 2 MiLoG mit § 2 Abs. 1 und 2 JArbSchG: nur bis zum 18. Geburtstag |
 
 Die Arbeitszeit des Monats sind die Minuten der geschlossenen Schichten seiner Arbeitstage (R-01
 meldet offene). Eine Schicht über den 1. Januar schuldet jede Minute zum Mindestlohn des Kalendertags,
@@ -923,6 +925,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Zeitjahr | Minijob seit 1.11.2025, je 700,00 € im November 2025, Februar und November 2026 | Hinweis „gelegentlich überschritten“ im November 2026: November 2025 liegt vor dem Zeitjahr | Geringfügigkeits-Richtlinien vom 14.12.2023 |
 | Stundenlohn | 43 h zu 14,03 € je Stunde (603,29 €) | Hinweis „gelegentlich überschritten“ | § 8 Abs. 1 Nr. 1, Abs. 1a SGB IV |
 | steuerfreier Zuschlag | 590,00 € und 20,00 € steuerfreier Sonntagszuschlag | kein Befund | § 1 Abs. 1 Satz 1 Nr. 1 SvEV |
+| steuerfreier Zuschlag über 25 € je Stunde | 20 h zu 30,00 € je Stunde und 120,00 € steuerfreier Sonntagszuschlag | Hinweis „gelegentlich überschritten“, 20,00 € des Zuschlags zählen | § 1 Abs. 1 Satz 1 Nr. 1 SvEV („soweit das Entgelt, auf dem sie berechnet werden, mehr als 25 Euro für jede Stunde beträgt“) |
 | Jahreswechsel | je 620,00 € im Dezember 2026 und im Januar 2027 (Grenze 633 €) | Hinweis „gelegentlich überschritten“ im Dezember, kein Befund im Januar | § 8 Abs. 1a SGB IV |
 | nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 

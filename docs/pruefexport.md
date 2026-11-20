@@ -70,18 +70,20 @@ abgeschlossen“, dazu die Adresse der Prüfseite.
 Jede Person lädt unter **Einstellungen → Meine Daten** eine JSON-Datei mit allem, was Soll in
 diesem Betrieb über sie speichert, unabhängig von Rolle und Modulen. Für eine Person, die den
 Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die Auskunft (Recht
-`auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält die
-Anmeldewege des Kontos nicht, die Sitzungen ohne Adresse und Browser und keine Erinnerungen
-(Wünsche, gesendete Erinnerungen, Geräte für Push-Nachrichten und die Glieder, die die Person dazu
-geschrieben hat): Der Inhaber sieht all das sonst nirgends, und es verriete dem Arbeitgeber, wo und
-womit sich die Person anmeldet, welche Erinnerungen sie abgeschaltet hat und auf wie vielen Geräten
-und in welcher Sprache sie die App nutzt; die Anmeldewege gehören zum Konto, nicht zum Betrieb
-(Art. 5 Abs. 1 lit. b und c DSGVO).
+`auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält nur, was
+der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
+Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
+Modelle mit Lohn, Schichten und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
+Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
+verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie
+abgeschaltet hat und auf wie vielen Geräten und in welcher Sprache sie die App nutzt (Art. 5 Abs. 1
+lit. b und c DSGVO).
 
 | Teil | Inhalt |
 | --- | --- |
 | `hinweise` | Zwecke, Rechtsgrundlage, Empfänger, Speicherdauer, Rechte, Herkunft, keine automatisierte Entscheidung (Art. 15 Abs. 1 lit. a bis h) |
-| `konto`, `anmeldung`, `sitzungen` | Name, E-Mail, Benutzername; Anmeldewege und Passkeys; Sitzungen in diesem Betrieb mit Adresse und Browser (beides nur in der eigenen Auskunft) |
+| `konto`, `anmeldung`, `sitzungen` | Name, E-Mail, Benutzername; Anmeldewege und Passkeys; Sitzungen in diesem Betrieb mit Adresse und Browser |
 | `mitgliedschaft`, `einladungen`, `pin` | Rolle und seit wann; die angenommene Einladung; ob eine PIN gesetzt und gesperrt ist |
 | `stempelungen` | jede Fassung jeder Stempelung mit Grund, wer und wann; nichts wird überschrieben |
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |
@@ -91,8 +93,9 @@ und in welcher Sprache sie die App nutzt; die Anmeldewege gehören zum Konto, ni
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und
 der Einladung (sie schützen das Konto) und Daten anderer Personen: Von den Gliedern, die die Person
 für andere geschrieben hat, nennt die Auskunft weder Zeile noch Inhalt (Art. 15 Abs. 4 DSGVO).
-Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307; nur in der eigenen Auskunft); Abwesenheiten kommen dazu, sobald es sie gibt (S-401); ein Test hält fest,
-dass jede Tabelle der Datenbank in der Auskunft steht oder mit Grund ausgenommen ist.
+Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307); Abwesenheiten kommen dazu, sobald es sie gibt (S-401). Ein Test hält
+fest, dass jede Tabelle der Datenbank in der eigenen Auskunft steht oder mit Grund ausgenommen ist,
+und für die Auskunft durch den Inhaber freigegeben oder mit Grund ausgelassen ist.
 
 ## Schnittstelle
 

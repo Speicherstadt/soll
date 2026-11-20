@@ -6,8 +6,9 @@ import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
 
 export { warMitglied } from "./kette.ts";
-export { ABDECKUNG } from "./tabellen.ts";
+export { ABDECKUNG, INHABERKOPIE } from "./tabellen.ts";
 
+import { kopieFuerInhaber } from "./inhaber.ts";
 import { kontoteil } from "./konto.ts";
 import { iso } from "./zeit.ts";
 
@@ -35,30 +36,16 @@ const HINWEISE = {
     "Keine. Soll prüft Regeln und zeigt Befunde, entscheidet aber nichts über dich (Art. 22 DSGVO).",
 };
 
-/**
- * The tables of the reminders (S-307): the person's choices, the reminders sent after them and the
- * devices that receive them. Only in the person's own copy: the owner sees none of them anywhere
- * else in Soll, and they would tell the employer which reminders the person switched off, on how
- * many devices and in which language they use the app (Art. 5 Abs. 1 lit. b and c DSGVO; konto.ts)
- */
-const ERINNERUNGSTABELLEN: ReadonlySet<string> = new Set([
-  "pushAbos",
-  "erinnerungen",
-  "erinnerungseinstellungen",
-]);
-
 const zeilenVon = (
   nutzerId: string,
   arbeit: Arbeitsteil,
-  erinnerung: Erinnerungsteil | null,
+  erinnerung: Erinnerungsteil,
   einladungen: { einladungId: string }[],
 ) =>
   ({
-    ...(erinnerung && {
-      pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
-      erinnerungen: erinnerung.erinnerungen.map(({ erinnerungId }) => ({ erinnerungId })),
-      erinnerungseinstellungen: [{ nutzerId }],
-    }),
+    pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
+    erinnerungen: erinnerung.erinnerungen.map(({ erinnerungId }) => ({ erinnerungId })),
+    erinnerungseinstellungen: [{ nutzerId }],
     stempelungen: arbeit.stempelungen.map(({ stempelId }) => ({ stempelId })),
     korrekturen: arbeit.gegeneintraege.map(({ korrekturId }) => ({ korrekturId })),
     monatsabschluesse: arbeit.monatsabschluesse.map(({ abschlussId }) => ({ abschlussId })),
@@ -80,21 +67,12 @@ const namensgeber = (db: Db) => {
   };
 };
 
-/**
- * `fuerSich`: the person's own copy; false when the owner gives it for someone else, then without
- * sign-in methods, the address and browser of sessions (konto.ts) and the reminders
- */
-export const auskunftVon = (
-  db: Db,
-  betriebId: string,
-  nutzerId: string,
-  angaben: { jetzt: number; fuerSich: boolean },
-) => {
-  const { jetzt } = angaben;
+/** The person's own copy: complete, everything Soll keeps about them in this business */
+const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: number) => {
   const name = namensgeber(db);
-  const konto = kontoteil(db, betriebId, nutzerId, angaben.fuerSich);
+  const konto = kontoteil(db, betriebId, nutzerId);
   const arbeit = arbeitsteil(db, betriebId, nutzerId, name);
-  const erinnerung = angaben.fuerSich ? erinnerungsteil(db, betriebId, nutzerId) : null;
+  const erinnerung = erinnerungsteil(db, betriebId, nutzerId);
   const kette = kettenteil(
     db,
     betriebId,
@@ -121,13 +99,22 @@ export const auskunftVon = (
           ? (pruefwerte.get(abschluss.abschlussId) ?? null)
           : null,
     })),
-    auditKette: angaben.fuerSich
-      ? kette.teil
-      : {
-          zuDeinenDaten: kette.teil.zuDeinenDaten,
-          vonDir: kette.teil.vonDir.filter((g) => !ERINNERUNGSTABELLEN.has(g.tabelle)),
-        },
+    auditKette: kette.teil,
   };
 };
 
-export type Auskunft = ReturnType<typeof auskunftVon>;
+export type Auskunft = ReturnType<typeof eigeneAuskunft>;
+
+/**
+ * `fuerSich`: the person's own copy, complete; false when the owner gives it for someone else, then
+ * only the parts on the owner's allowlist (inhaber.ts, tabellen.ts)
+ */
+export const auskunftVon = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  angaben: { jetzt: number; fuerSich: boolean },
+) => {
+  const eigen = eigeneAuskunft(db, betriebId, nutzerId, angaben.jetzt);
+  return angaben.fuerSich ? eigen : kopieFuerInhaber(eigen);
+};

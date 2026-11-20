@@ -30,4 +30,15 @@ describe("days in Europe/Berlin", () => {
     // before 1 April 1893 Berlin kept its local mean time, UTC+0:53:28
     expect(beginnInBerlin("1892-01-01")).toBe(utc("1891-12-31T23:06:32Z"));
   });
+
+  it("takes the first of two midnights when the clocks went back at 1:00, as on 1 October 1916", () => {
+    // tz database, Rule C-Eur 1916: Oct 1 1:00 back to CET, so 0:00 to 1:00 came twice
+    expect(beginnInBerlin("1916-10-01")).toBe(utc("1916-09-30T22:00:00Z"));
+  });
+
+  it("names and finds the days of the year 0, which istTag accepts", () => {
+    // Intl writes the year 0 as 1 BC; the day must still read 0000 (ISO 8601, proleptic Gregorian)
+    expect(tagInBerlin(utc("0000-06-01T12:00:00Z"))).toBe("0000-06-01");
+    expect(tagInBerlin(beginnInBerlin("0000-06-01"))).toBe("0000-06-01");
+  });
 });

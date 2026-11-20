@@ -111,6 +111,8 @@ describe("the tables", () => {
   });
 });
 
+const utc = (text: string) => Date.parse(text);
+
 const um = (tag: string, stunde: number) => beginnInBerlin(tag) + stunde * 3_600_000;
 
 describe("splitting a shift at a change of the yearly values", () => {
@@ -164,6 +166,25 @@ describe("splitting a shift at a change of the yearly values", () => {
       grund: "ungueltig",
     });
     expect(abschnitte(um("2026-06-10", 6), um("2026-06-10", 7) + 1, mindestlohnAm)).toEqual({
+      ok: false,
+      grund: "ungueltig",
+    });
+  });
+
+  it("counts whole minutes also when midnight was not on a whole minute (before April 1893)", () => {
+    // Berlin kept local mean time, UTC+0:53:28, so midnight fell at 23:06:32 UTC
+    const wechsel = (tag: string) => ({
+      ok: true as const,
+      wert: tag < "1892-06-01" ? 1 : 2,
+      quelle: "",
+    });
+    const teile = abschnitte(utc("1892-05-31T12:00:00Z"), utc("1892-06-01T12:00:00Z"), wechsel);
+    expect(teile.ok && teile.wert.every((teil) => Number.isInteger(teil.minuten))).toBe(true);
+    expect(teile.ok && teile.wert.reduce((summe, teil) => summe + teil.minuten, 0)).toBe(1440);
+  });
+
+  it("returns an error instead of throwing for a span past the last day istTag accepts", () => {
+    expect(abschnitte(0, 8_640_000_000_000_000, mindestlohnAm)).toEqual({
       ok: false,
       grund: "ungueltig",
     });

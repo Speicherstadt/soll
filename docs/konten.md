@@ -111,7 +111,8 @@ Soll führt Urlaub in halben Tagen und rechnet den Anspruch eines Jahres so:
    20 × 181 ÷ 365 + 12 × 184 ÷ 365 = 15,97, also 16 Tage.
 5. **Zusatzurlaub** (§ 208 SGB IX, R-25): eine Arbeitswoche, also fünf Tage bei fünf Arbeitstagen,
    vier bei vier. Besteht die Schwerbehinderung nicht die ganze Beschäftigung im Jahr, ein Zwölftel
-   je vollem Monat, für sich gerundet; wechseln die Arbeitstage je Woche, zählen nur die Tage mit
+   je vollem Monat, für sich gerundet; ein nahtlos verlängerter Bescheid zählt mit dem alten als ein
+   Zeitraum (1.2.–15.4. und 16.4.–30.6. sind fünf volle Monate, nicht zwei und zwei); wechseln die Arbeitstage je Woche, zählen nur die Tage mit
    Schwerbehinderung: zwei Tage bis 30.9.2026, fünf ab 1.10. und schwerbehindert ab 1.10. ergibt
    5 × 3 ÷ 12 = 1,25, also 1,5 Tage. Trägt der Betrieb weniger ein, gilt das Gesetz, mit Hinweis.
 6. **Elternzeit** (§ 17 Abs. 1 BEEG, R-26): Der Betrieb kann den Jahresurlaub um ein Zwölftel je

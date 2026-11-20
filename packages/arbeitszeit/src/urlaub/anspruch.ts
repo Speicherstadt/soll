@@ -196,9 +196,28 @@ const anteileMitSchwerbehinderung = (
     return von <= bis ? (anteile(modelle, { von, bis }) ?? []) : [];
   });
 
+/**
+ * Spans that touch or overlap as one: a Bescheid followed seamlessly by the next is one disability,
+ * and its full months count across both (§ 208 Abs. 2 SGB IX; §§ 187, 188 BGB), never twice
+ */
+const zusammengefasst = (spannen: readonly Tagesspanne[]): Tagesspanne[] => {
+  const liste: Tagesspanne[] = [];
+  for (const sb of [...spannen].sort((a, b) => a.von.localeCompare(b.von))) {
+    const letzte = liste.at(-1);
+    if (letzte === undefined || (letzte.bis !== null && plusTage(letzte.bis, 1) < sb.von))
+      liste.push(sb);
+    else
+      liste[liste.length - 1] = {
+        von: letzte.von,
+        bis: letzte.bis === null || sb.bis === null ? null : spaeter(letzte.bis, sb.bis),
+      };
+  }
+  return liste;
+};
+
 /** R-25 against what the business entered: below the law the law applies */
 const zusatzurlaub = (e: UrlaubsEingaben, spanne: Spanne, zwoelftel: number) => {
-  const sb = e.schwerbehinderung ?? [];
+  const sb = zusammengefasst(e.schwerbehinderung ?? []);
   const sbZwoelftel = zusatzZwoelftel(sb, spanne, zwoelftel);
   const teile = anteileMitSchwerbehinderung(e.modelle, sb, spanne);
   const gesetzlich =

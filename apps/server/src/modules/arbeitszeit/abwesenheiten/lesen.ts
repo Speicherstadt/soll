@@ -1,6 +1,7 @@
 import {
   type Abwesenheit,
   type Abwesenheitszeitraum,
+  GESUNDHEIT,
   type Tag,
   tageDesZeitraums,
   ueberschneidungErlaubt,
@@ -73,26 +74,24 @@ export const zaehlt = (zeile: Pick<AbwesenheitZeile, "status">): boolean =>
   zeile.status === "genehmigt";
 
 /**
- * The days of the rows that count, as `tagesSoll` takes them; an open sickness counts up to
- * `offenBis` (today, or the last day of a month that is over), but not on a day another absence
- * counts that it may not share (a day off approved before): until its end is known, it gives way
- * (docs/plan.md, "Überschneidungen")
+ * The days of the rows that count, as `tagesSoll` takes them, in the order of the rows; an open
+ * sickness counts up to `offenBis` (today, or the last day of a month that is over). A sickness
+ * gives way on a day another approved absence holds that it may not share (a day off approved
+ * before it), with its end open or known: so the day is counted once, ending a sickness changes no
+ * day it gave way to, and a closed month keeps its content (docs/plan.md, "Überschneidungen")
  */
 export const tageDerAbwesenheiten = (
   zeilen: readonly AbwesenheitZeile[],
   offenBis: Tag,
 ): Abwesenheit[] => {
   const zaehlend = zeilen.filter(zaehlt);
-  const fest = zaehlend
-    .filter((z) => z.bis !== null)
-    .flatMap((z) => tageDesZeitraums(alsZeitraum(z)));
-  const offen = zaehlend
-    .filter((z) => z.bis === null)
-    .flatMap((z) => tageDesZeitraums(alsZeitraum(z), offenBis))
-    .filter(
-      (tag) => !fest.some((a) => a.tag === tag.tag && !ueberschneidungErlaubt(a.art, tag.art)),
-    );
-  return [...fest, ...offen];
+  const tageVon = (z: AbwesenheitZeile) => tageDesZeitraums(alsZeitraum(z), offenBis);
+  const andere = zaehlend.filter((z) => !GESUNDHEIT.has(z.art)).flatMap(tageVon);
+  const weicht = (tag: Abwesenheit) =>
+    andere.some((a) => a.tag === tag.tag && !ueberschneidungErlaubt(a.art, tag.art));
+  return zaehlend.flatMap((z) =>
+    GESUNDHEIT.has(z.art) ? tageVon(z).filter((tag) => !weicht(tag)) : tageVon(z),
+  );
 };
 
 /** The approved absences of a person on the days from `von` to `bis` */

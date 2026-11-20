@@ -59,13 +59,15 @@ const fehler = (grund: AbwesenheitFehler): AbwesenheitErgebnis => ({ ok: false, 
  * Whether a new span collides with a request or absence in force of the person (§ 9 BUrlG aside).
  * An open end reaches to today only: a sickness whose end is not known does not block a day off
  * planned for later, nor that a day off is planned while one is sick (docs/plan.md,
- * "Überschneidungen"); until its end is known it gives way to it (`tageDerAbwesenheiten`).
+ * "Überschneidungen"); there it gives way to it (`tageDerAbwesenheiten`), also once its end is
+ * known, so the end of a sickness passes over approved days off (`weichtGenehmigten`).
  */
 const ueberschneidet = (
   db: Db,
   betriebId: string,
   neu: { nutzerId: string; art: Abwesenheitsart; von: Tag; bis: Tag | null; abwesenheitId: string },
   heute: Tag,
+  weichtGenehmigten = false,
 ): boolean => {
   const bekannt = <T extends { von: Tag; bis: Tag | null }>(z: T) => ({
     ...z,
@@ -80,6 +82,7 @@ const ueberschneidet = (
   }).some(
     (alt) =>
       alt.abwesenheitId !== neu.abwesenheitId &&
+      !(weichtGenehmigten && alt.status === "genehmigt" && !GESUNDHEIT.has(alt.art)) &&
       ueberschneiden(bekannt(alt), span) &&
       !ueberschneidungErlaubt(alt.art, neu.art),
   );
@@ -305,7 +308,9 @@ export const krankheitBeenden = (
   if (typeof zeile === "string") return fehler(zeile);
   if (bis < zeile.von || bis > plusTage(zeile.von, LAENGSTENS_TAGE - 1)) return fehler("ungueltig");
   const heute = tagInBerlin(kontext.jetzt);
-  if (ueberschneidet(db, kontext.betriebId, { ...zeile, bis }, heute))
+  // an approved day off on the way keeps its day; a request still open stays in the way, the
+  // person withdraws it
+  if (ueberschneidet(db, kontext.betriebId, { ...zeile, bis }, heute, true))
     return fehler("ueberschneidung");
   return aendern(db, schreibDb, kontext, zeile, { bis });
 };

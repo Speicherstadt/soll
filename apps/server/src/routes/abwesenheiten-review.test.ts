@@ -87,9 +87,14 @@ describe("S-401 review", () => {
       { art: "krank" },
     ]);
     expect(inhalt.summen).not.toBeNull();
-    // an end beyond the day off is refused until the business cancels it
-    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-11" })).status).toBe(409);
-    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-09" })).status).toBe(200);
+    // an end beyond the day off: the day off keeps its day, counted once (review S-401, round 2)
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-11" })).status).toBe(200);
+    const beendet = await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-12"));
+    const tage = (beendet.inhalt as { tage: Json[] }).tage;
+    expect(tage.find((t) => t.tag === "2026-12-10")?.abwesenheiten).toEqual([
+      { art: "sonderurlaub" },
+    ]);
+    expect(tage.find((t) => t.tag === "2026-12-11")?.abwesenheiten).toEqual([{ art: "krank" }]);
   });
 });
 

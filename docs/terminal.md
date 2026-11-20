@@ -59,8 +59,10 @@ eine Minute, dann zwei, dann vier; nach dem **zwanzigsten falschen Versuch** ein
 Mitternacht gesperrt. Eine erkannte Person hebt nichts davon auf, sonst könnte jemand am Tablet
 zwischen zwei Rateversuchen die eigene PIN tippen. So prüft ein Terminal höchstens 20 falsche PINs am
 Tag. Jeder Versuch steht in der Audit-Kette, und der Inhaber sieht unter Einstellungen, bis wann ein
-Terminal gesperrt ist. Eine Sperre bis Mitternacht hebt er auf, indem er das Tablet entkoppelt und
-neu koppelt.
+Terminal gesperrt ist, und hebt die Sperre dort mit **Entsperren** auf; auch das steht in der
+Audit-Kette. Die Zählung des Tages bleibt dabei: Nach fünf weiteren falschen Versuchen ist das
+Terminal wieder bis Mitternacht gesperrt, Entsperren schenkt also keinen neuen Tag zum Raten. Ein
+gesperrtes Terminal fragt alle 15 Sekunden beim Server nach, ob es entsperrt oder entkoppelt wurde.
 
 ## Wach und von selbst gesund
 
@@ -77,6 +79,7 @@ Stempeln ohne Netz am Terminal kommt mit S-803, NFC-Karten mit S-802.
 | `GET /api/v1/terminal/geraete` | Inhaber | Terminals mit Stand |
 | `POST /api/v1/terminal/geraete` | Inhaber | neues Terminal mit Kopplungscode (`{ name }`) |
 | `DELETE /api/v1/terminal/geraete/:id` | Inhaber | Terminal widerrufen |
+| `POST /api/v1/terminal/geraete/:id/entsperren` | Inhaber | Sperre aufheben; die Zählung des Tages bleibt |
 | `GET /api/v1/terminal/personen` | Inhaber | wer stempelt, mit PIN und QR-Code ja oder nein |
 | `POST`, `DELETE /api/v1/terminal/ausweise/:nutzerId` | Inhaber | QR-Code ausstellen oder entziehen |
 | `PUT /api/v1/pins/:nutzerId` | Inhaber | PIN setzen (409 `pin_vergeben`) |

@@ -24,7 +24,8 @@ const statusText = (geraet: Geraet): string => {
 
 /**
  * The owner's terminals (S-801): a pairing code for a new tablet, shown once with where to type it
- * and until when; the list of tablets with their state, each revocable at once
+ * and until when; the list of tablets with their state, each revocable at once, a locked one also
+ * to be unlocked
  */
 export const TerminalGeraete = () => {
   const [geraete, setGeraete] = createSignal<Geraet[]>([]);
@@ -52,6 +53,13 @@ export const TerminalGeraete = () => {
   const entkoppeln = async (geraet: Geraet) => {
     const antwort = await api(`/api/v1/terminal/geraete/${geraet.terminalId}`, {
       method: "DELETE",
+    });
+    if (!antwort.ok) return setFehler(m.fehler_speichern());
+    await laden();
+  };
+  const entsperren = async (geraet: Geraet) => {
+    const antwort = await api(`/api/v1/terminal/geraete/${geraet.terminalId}/entsperren`, {
+      body: {},
     });
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     await laden();
@@ -98,14 +106,26 @@ export const TerminalGeraete = () => {
                   <span class="font-medium">{geraet().name}</span>
                   <span class="text-muted-foreground">{statusText(geraet())}</span>
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-label={m.terminal_entkoppeln_name({ name: geraet().name })}
-                  onClick={() => entkoppeln(geraet())}
-                >
-                  {m.terminal_entkoppeln()}
-                </Button>
+                <span class="flex gap-2">
+                  <Show when={geraet().gesperrtBis !== null}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      aria-label={m.terminal_entsperren_name({ name: geraet().name })}
+                      onClick={() => entsperren(geraet())}
+                    >
+                      {m.terminal_entsperren()}
+                    </Button>
+                  </Show>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    aria-label={m.terminal_entkoppeln_name({ name: geraet().name })}
+                    onClick={() => entkoppeln(geraet())}
+                  >
+                    {m.terminal_entkoppeln()}
+                  </Button>
+                </span>
               </li>
             )}
           </For>

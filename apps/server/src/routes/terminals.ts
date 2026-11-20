@@ -9,6 +9,7 @@ import {
   ausweisEntziehen,
   kopplungAnlegen,
   mitAusweis,
+  terminalEntsperren,
   terminalsVon,
   terminalWiderrufen,
 } from "../modules/terminal/index.ts";
@@ -19,7 +20,8 @@ const kopplungSchema = z.object({ name: z.string().trim().min(1).max(80) }).stri
 
 /**
  * The owner's side of the terminal (S-801), below /api/v1/terminal behind the module's switch:
- * pairing codes and the list of terminals, revoking one, and the people with PIN and QR code
+ * pairing codes and the list of terminals, revoking one or lifting its lock, and the people with
+ * PIN and QR code
  */
 export const terminalRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
   new Hono<Anfrage>()
@@ -46,6 +48,11 @@ export const terminalRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number
     })
     .delete("/geraete/:terminalId", (c) =>
       terminalWiderrufen(db, schreibDb, kontextVon(c, jetzt), c.req.param("terminalId"))
+        ? c.body(null, 204)
+        : c.json({ fehler: "unbekannt" }, 404),
+    )
+    .post("/geraete/:terminalId/entsperren", (c) =>
+      terminalEntsperren(db, schreibDb, kontextVon(c, jetzt), c.req.param("terminalId"))
         ? c.body(null, 204)
         : c.json({ fehler: "unbekannt" }, 404),
     )

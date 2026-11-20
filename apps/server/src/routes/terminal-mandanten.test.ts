@@ -30,6 +30,18 @@ describe("no business sees or changes another's terminals", { timeout: 20_000 },
     expect((await geraetWeber.anfrage("/api/v1/kiosk")).status).toBe(200);
   });
 
+  it("POST /api/v1/terminal/geraete/:id/entsperren does not reach another business's terminal", async () => {
+    const { elbblick, geraetWeber } = await zwei();
+    for (let i = 0; i < 5; i++)
+      await geraetWeber.anfrage("/api/v1/kiosk/erkennen", { body: { pin: String(700000 + i) } });
+    const antwort = await elbblick.inhaber.anfrage(
+      `/api/v1/terminal/geraete/${geraetWeber.terminalId}/entsperren`,
+      { body: {} },
+    );
+    expect(antwort.status).toBe(404);
+    expect((await json(await geraetWeber.anfrage("/api/v1/kiosk"))).gesperrtBis).not.toBeNull();
+  });
+
   it("POST /api/v1/terminal/geraete pairs into one's own business", async () => {
     const { server, elbblick, weber } = await zwei();
     await elbblick.inhaber.anfrage("/api/v1/terminal/geraete", { body: { name: "Küche" } });

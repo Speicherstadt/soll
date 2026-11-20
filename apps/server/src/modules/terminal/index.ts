@@ -13,6 +13,7 @@ export {
   kopplungAnlegen,
   type Terminal,
   terminalAkteur,
+  terminalEntsperren,
   terminalsVon,
   terminalVonToken,
   terminalWiderrufen,

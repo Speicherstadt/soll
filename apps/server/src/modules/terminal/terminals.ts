@@ -121,3 +121,23 @@ export const terminalWiderrufen = (
   );
   return true;
 };
+
+/**
+ * The owner lifts a terminal's lock (review of S-801): anyone at the tablet can lock it until
+ * midnight with twenty wrong PINs. The counts of the day stay, so five more wrong tries lock it
+ * until midnight again: lifting hands out no new day of guesses. Written to the audit chain.
+ */
+export const terminalEntsperren = (
+  db: Db,
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  terminalId: string,
+): boolean => {
+  const zeile = terminalLesen(db, kontext.betriebId, terminalId);
+  if (!zeile || zeile.widerrufenAm !== null) return false;
+  if (zeile.gesperrtBis !== null && zeile.gesperrtBis > kontext.jetzt)
+    schreiben(schreibDb, kontext, (s) =>
+      s.aendern("terminals", { terminalId }, { gesperrtBis: null }),
+    );
+  return true;
+};

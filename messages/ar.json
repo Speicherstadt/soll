@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "مقفل بعد محاولات خاطئة حتى {uhrzeit}",
   "terminal_entkoppeln": "إلغاء الربط",
   "terminal_entkoppeln_name": "إلغاء ربط {name}",
+  "terminal_entsperren": "إلغاء القفل",
+  "terminal_entsperren_name": "إلغاء قفل {name}",
   "terminal_personen_titel": "رمز PIN ورمز QR",
   "terminal_personen_text": "في الجهاز الطرفي يتعرّف رمز PIN وحده على الشخص، لذلك لا يتكرر أي رمز PIN في المنشأة. اطبع رمز QR فور إصداره.",
   "terminal_spalte_name": "الاسم",

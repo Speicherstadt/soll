@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "nach falschen Versuchen gesperrt bis {uhrzeit}",
   "terminal_entkoppeln": "Entkoppeln",
   "terminal_entkoppeln_name": "{name} entkoppeln",
+  "terminal_entsperren": "Entsperren",
+  "terminal_entsperren_name": "{name} entsperren",
   "terminal_personen_titel": "PIN und QR-Code",
   "terminal_personen_text": "Am Terminal erkennt die PIN allein die Person, deshalb gibt es jede PIN im Betrieb nur einmal. Den QR-Code druckst du gleich nach dem Ausstellen aus.",
   "terminal_spalte_name": "Name",

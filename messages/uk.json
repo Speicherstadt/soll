@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "заблоковано після невдалих спроб до {uhrzeit}",
   "terminal_entkoppeln": "Від’єднати",
   "terminal_entkoppeln_name": "Від’єднати {name}",
+  "terminal_entsperren": "Розблокувати",
+  "terminal_entsperren_name": "Розблокувати {name}",
   "terminal_personen_titel": "PIN і QR-код",
   "terminal_personen_text": "На терміналі людину розпізнає лише PIN, тому кожен PIN у підприємстві лише один. QR-код друкуй одразу після видачі.",
   "terminal_spalte_name": "Ім’я",

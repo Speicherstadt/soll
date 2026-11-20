@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "zablokowany po błędnych próbach do {uhrzeit}",
   "terminal_entkoppeln": "Rozłącz",
   "terminal_entkoppeln_name": "Rozłącz {name}",
+  "terminal_entsperren": "Odblokuj",
+  "terminal_entsperren_name": "Odblokuj {name}",
   "terminal_personen_titel": "PIN i kod QR",
   "terminal_personen_text": "Na terminalu sam PIN rozpoznaje osobę, dlatego każdy PIN występuje w firmie tylko raz. Kod QR wydrukuj zaraz po wystawieniu.",
   "terminal_spalte_name": "Imię i nazwisko",

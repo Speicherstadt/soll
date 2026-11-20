@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "hatalı denemeler nedeniyle {uhrzeit} saatine kadar kilitli",
   "terminal_entkoppeln": "Eşleştirmeyi kaldır",
   "terminal_entkoppeln_name": "{name} eşleştirmesini kaldır",
+  "terminal_entsperren": "Kilidi aç",
+  "terminal_entsperren_name": "{name} kilidini aç",
   "terminal_personen_titel": "PIN ve QR kodu",
   "terminal_personen_text": "Terminalde kişiyi yalnızca PIN tanır; bu yüzden her PIN işletmede yalnızca bir kez bulunur. QR kodunu oluşturduktan hemen sonra yazdır.",
   "terminal_spalte_name": "Ad",

@@ -479,6 +479,8 @@
   "terminal_gesperrt_bis": "locked after wrong tries until {uhrzeit}",
   "terminal_entkoppeln": "Unpair",
   "terminal_entkoppeln_name": "Unpair {name}",
+  "terminal_entsperren": "Unlock",
+  "terminal_entsperren_name": "Unlock {name}",
   "terminal_personen_titel": "PIN and QR code",
   "terminal_personen_text": "At the terminal the PIN alone recognises the person, so each PIN exists only once in the business. Print the QR code right after issuing it.",
   "terminal_spalte_name": "Name",

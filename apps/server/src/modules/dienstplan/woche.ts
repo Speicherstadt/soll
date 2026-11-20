@@ -25,14 +25,16 @@ export type Wochenansicht = {
   deckung: Deckung[] | null;
 };
 
+/** Only the shifts of the week itself, without the neighbouring days read for the coverage */
 const ohneAlte = (alle: Schicht[], tage: readonly Tag[]) =>
   alle.filter((schicht) => tage.includes(schicht.tag));
 
 /**
  * The week of a site for whoever plans: drafts included, every member who can be planned as a row
  * (names of colleagues are what a plan shows, docs/plan.md "Wer die Mitgliederliste sieht"), and the
- * coverage of the need. A night shift of the Sunday before reaches into Monday's need, so it is read
- * for the coverage, not shown. No sums per person (BetrVG § 87, CLAUDE.md).
+ * coverage of the need. A night shift of the Sunday before reaches into Monday's need, and Sunday's
+ * need over midnight reaches into the next Monday's shifts, so both days are read for the coverage,
+ * not shown. No sums per person (BetrVG § 87, CLAUDE.md).
  */
 export const planerWoche = (db: Db, betriebId: string, standortId: string, tag: Tag) => {
   const { tage, kw } = planWoche(tag);
@@ -41,14 +43,15 @@ export const planerWoche = (db: Db, betriebId: string, standortId: string, tag: 
     betriebId,
     standortId,
     plusTage(tage[0] ?? tag, -1),
-    tage[6] ?? tag,
+    plusTage(tage[6] ?? tag, 1),
   );
   const personen = mitgliederMitNamen(db, betriebId)
     .filter(({ rolle }) => darf(rolle, "stempeln"))
     .map(({ nutzerId, name }) => ({ nutzerId, name }));
+  const gezeigt = ohneAlte(alle, tage);
   const namen = namenVon(
     db,
-    alle.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
+    gezeigt.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
   );
   const fehlende = [...namen]
     .filter(([nutzerId]) => !personen.some((person) => person.nutzerId === nutzerId))
@@ -58,7 +61,7 @@ export const planerWoche = (db: Db, betriebId: string, standortId: string, tag: 
     tage,
     kw,
     personen: [...personen, ...fehlende],
-    schichten: ohneAlte(alle, tage),
+    schichten: gezeigt,
     deckung: bedarfsDeckung(tage, bedarfeLesen(db, betriebId, standortId), alle),
   } satisfies Wochenansicht;
 };

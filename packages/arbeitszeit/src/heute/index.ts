@@ -8,3 +8,4 @@ export {
   type TagesstandOptionen,
   tagesstand,
 } from "./tagesstand.ts";
+export { stempelungenAm } from "./zugehoerig.ts";

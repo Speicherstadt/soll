@@ -357,3 +357,111 @@ describe("assigning a model", () => {
     expect(weg.status).toBe(409);
   });
 });
+
+describe("the history of a person who no longer stamps (review of PR #14)", () => {
+  /** Sandra's day on 19.11., then her membership changes as `danach` does */
+  const mitVergangenemTag = async (
+    danach: (welt: Awaited<ReturnType<typeof weber>>) => Promise<void>,
+  ) => {
+    const welt = await weber();
+    for (const [art, zeit] of [
+      ["kommen", "07:00"],
+      ["gehen", "15:00"],
+    ] as const)
+      await nachtrag(welt.sandra, {
+        art,
+        zeitpunkt: um(`2026-11-19T${zeit}:00`),
+        grund: "vergessen",
+      });
+    await danach(welt);
+    return welt;
+  };
+
+  const mitgliedId = async (welt: Awaited<ReturnType<typeof weber>>) => {
+    const organisation = await json(
+      await welt.jonas.anfrage(
+        `/api/auth/organization/get-full-organization?organizationId=${welt.jonas.betriebId}`,
+      ),
+    );
+    return (organisation.members as { id: string; userId: string }[]).find(
+      (m) => m.userId === welt.sandra.nutzerId,
+    )?.id;
+  };
+
+  // § 16 Abs. 2 ArbZG: the records are kept two years, whatever the person's role is now
+  it("still shows the owner the days of a member who became external staff", async () => {
+    const { jonas, sandra } = await mitVergangenemTag(async (welt) => {
+      const wechsel = await welt.jonas.anfrage("/api/auth/organization/update-member-role", {
+        body: {
+          memberId: await mitgliedId(welt),
+          role: "extern",
+          organizationId: welt.jonas.betriebId,
+        },
+      });
+      expect(wechsel.status).toBe(200);
+    });
+    const antwort = await jonas.anfrage(
+      `/api/v1/arbeitszeit/tag?datum=2026-11-19&nutzerId=${sandra.nutzerId}`,
+    );
+    expect(antwort.status).toBe(200);
+    expect((await json(antwort)).stempelungen).toHaveLength(2);
+  });
+
+  it("still shows the owner the days of a member who has left", async () => {
+    const { jonas, sandra } = await mitVergangenemTag(async (welt) => {
+      const weg = await welt.jonas.anfrage("/api/auth/organization/remove-member", {
+        body: { memberIdOrEmail: await mitgliedId(welt), organizationId: welt.jonas.betriebId },
+      });
+      expect(weg.status).toBe(200);
+    });
+    const antwort = await jonas.anfrage(
+      `/api/v1/arbeitszeit/tag?datum=2026-11-19&nutzerId=${sandra.nutzerId}`,
+    );
+    expect(antwort.status).toBe(200);
+    expect((await json(antwort)).stempelungen).toHaveLength(2);
+  });
+
+  it("shows another business nothing of a person who never stamped there", async () => {
+    const { server, sandra } = await mitVergangenemTag(async () => {});
+    const mia = await server.inhaberMitBetrieb("Café Elbblick", "elbblick");
+    const antwort = await mia.anfrage(
+      `/api/v1/arbeitszeit/tag?datum=2026-11-19&nutzerId=${sandra.nutzerId}`,
+    );
+    expect(antwort.status).toBe(404);
+  });
+});
+
+describe("a change to a night shift (review of PR #14)", () => {
+  // CLAUDE.md: a working day is the day the shift starts; S-304: every change visible to the person
+  it("shows the removal of a Gehen after midnight on the working day of the shift", async () => {
+    const { jonas, sandra } = await weber();
+    await nachtrag(sandra, {
+      art: "kommen",
+      zeitpunkt: um("2026-11-19T22:00:00"),
+      grund: "vergessen",
+    });
+    const gehen = await json(
+      await nachtrag(sandra, {
+        art: "gehen",
+        zeitpunkt: um("2026-11-20T02:00:00"),
+        grund: "vergessen",
+      }),
+    );
+    expect((await tagVon(sandra, "2026-11-19")).stempelungen).toHaveLength(2);
+    const weg = await jonas.anfrage(
+      `/api/v1/arbeitszeit/stempelungen/${gehen.stempelId}/entfernen`,
+      {
+        body: { grund: "doppelt erfasst" },
+      },
+    );
+    expect(weg.status).toBe(201);
+    const tag = await tagVon(sandra, "2026-11-19");
+    expect(tag.aenderungen).toContainEqual(
+      expect.objectContaining({
+        aktion: "entfernt",
+        vorher: { art: "gehen", zeitpunkt: um("2026-11-20T02:00:00") },
+        grund: "doppelt erfasst",
+      }),
+    );
+  });
+});

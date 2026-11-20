@@ -89,7 +89,7 @@ test("shows the employee a correction by the owner: who, what, when and why @pho
   await jonas.getByRole("button", { name: t("zeiten_vortag") }).click();
 
   const nachtragen = async (art: string, uhrzeit: string, grund: string) => {
-    await jonas.getByRole("button", { name: t("nachtragen") }).click();
+    await jonas.getByRole("button", { name: t("nachtragen"), exact: true }).click();
     const dialog = jonas.getByRole("dialog", { name: t("korrektur_titel_nachtragen") });
     await dialog.getByLabel(t("korrektur_art")).selectOption({ label: art });
     await dialog.getByLabel(t("korrektur_uhrzeit")).fill(uhrzeit);
@@ -156,7 +156,7 @@ for (const theme of ["light", "dark"] as const) {
     await knopf(page, "stempeln_kommen").click();
     await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-    await page.getByRole("button", { name: t("nachtragen") }).click();
+    await page.getByRole("button", { name: t("nachtragen"), exact: true }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

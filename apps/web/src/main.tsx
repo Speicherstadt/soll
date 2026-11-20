@@ -1,5 +1,7 @@
 import { render } from "@solidjs/web";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { abfrageCache } from "./abfragen/client.ts";
 import { applyLocale } from "./i18n.ts";
 import { liesThema, wendeThemaAn } from "./rahmen/theme.ts";
 import { routeTree } from "./routeTree.gen.ts";
@@ -22,7 +24,15 @@ try {
 }
 
 const root = document.getElementById("app");
-if (root) render(() => <RouterProvider router={router} />, root);
+if (root)
+  render(
+    () => (
+      <QueryClientProvider client={abfrageCache}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    ),
+    root,
+  );
 
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");

@@ -80,7 +80,8 @@ Hand:
 - **Korrektur**: mit Vorzeichen.
 
 Beispiel: Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30 und 5:00 ausgezahlt ergibt
-5:30. Fehlt zwischen zwei abgeschlossenen Monaten einer, nennt Soll ihn als Lücke.
+5:30. Fehlt zwischen dem Startsaldo (ohne ihn dem ersten abgeschlossenen Monat) und dem letzten
+abgeschlossenen Monat ein Abschluss, nennt Soll den Monat als Lücke.
 
 ## Urlaub
 

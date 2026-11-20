@@ -26,7 +26,10 @@ export type Kontomonat = {
 export type Ueberstundenkonto = {
   saldoMinuten: number;
   verlauf: Kontomonat[];
-  /** months between the first and the last closing that are not closed: the balance misses them */
+  /**
+   * months from the start balance (or the first closing) to the last closing that are not closed:
+   * the balance misses them
+   */
   luecken: Monat[];
 };
 
@@ -56,8 +59,9 @@ const gueltig = (abschluesse: readonly Abschluss[], anpassungen: readonly KontoA
 const wirkung = (anpassung: KontoAnpassung): number =>
   anpassung.art === "auszahlung" ? -anpassung.minuten : anpassung.minuten;
 
-const lueckenZwischen = (monate: readonly Monat[]): Monat[] => {
-  const [erster] = monate;
+/** The months from `ab` (else the first closed one) to the last closed one that are not closed */
+const lueckenZwischen = (monate: readonly Monat[], ab: Monat | undefined): Monat[] => {
+  const erster = ab ?? monate[0];
   const letzter = monate.at(-1);
   if (erster === undefined || letzter === undefined) return [];
   const vorhanden = new Set(monate);
@@ -93,6 +97,7 @@ export const ueberstundenkonto = (
     saldo += differenzMinuten + anpassungMinuten;
     return { monat, differenzMinuten, anpassungMinuten, saldoMinuten: saldo };
   });
-  const luecken = lueckenZwischen(geschlossen.map((a) => a.monat).sort());
+  const start = angepasst.find((anpassung) => anpassung.art === "startsaldo")?.monat;
+  const luecken = lueckenZwischen(geschlossen.map((a) => a.monat).sort(), start);
   return { ok: true, wert: { saldoMinuten: saldo, verlauf, luecken } };
 };

@@ -57,18 +57,25 @@ const zeileWerte = (tag: PruefTag) => [
   tag.beginn === null ? "" : dauerText(tag.pauseMinuten),
   tag.beginn === null ? "" : dauerText(tag.arbeitsMinuten),
   erfasstText(tag),
-  tag.befunde.map(befundText).join(" · "),
 ];
 
+const BEFUNDE_X = SPALTEN[6].x;
+
+/** One row per day; each finding on a line of its own, so none is cut off (same content as the CSV) */
 const tabelle = (s: Schreiber, person: PruefPerson) => {
   for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
   s.zeile();
   for (const tag of person.tage) {
-    s.platz(1);
+    const befunde = tag.befunde.map(befundText);
+    s.platz(Math.max(1, befunde.length));
     zeileWerte(tag).forEach((wert, index) => {
       const spalte = SPALTEN[index];
       const naechste = SPALTEN[index + 1];
-      if (spalte) s.text(wert, spalte.x, naechste ? { breite: naechste.x - spalte.x - 4 } : {});
+      if (spalte && naechste) s.text(wert, spalte.x, { breite: naechste.x - spalte.x - 4 });
+    });
+    befunde.forEach((befund, index) => {
+      if (index > 0) s.zeile();
+      s.text(befund, BEFUNDE_X);
     });
     s.zeile();
   }

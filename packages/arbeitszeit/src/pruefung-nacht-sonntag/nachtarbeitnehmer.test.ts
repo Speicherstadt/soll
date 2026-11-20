@@ -66,9 +66,7 @@ describe("R-06: Arbeitszeit der Nachtarbeitnehmer (§ 6 Abs. 2 ArbZG)", () => {
       standort: HAMBURG,
       wechselschicht: true,
     });
-    expect(befunde.map(({ art, schwere, ueber }) => ({ art, schwere, ueber }))).toEqual([
-      { art: "nacht_ueber_10h", schwere: "verstoss", ueber: 1 },
-    ]);
+    expect(befunde).toMatchObject([{ art: "nacht_ueber_10h", schwere: "verstoss", ueber: 1 }]);
   });
 
   it("while the period runs, a period over the average is a Hinweis with the minutes to balance", () => {

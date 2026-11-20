@@ -134,9 +134,15 @@ export type PruefwertErgebnis = "gueltig" | "unlesbar" | "unbekannt" | "abweiche
 export const pruefwertPruefen = (db: Db, betriebId: string, text: string): PruefwertErgebnis => {
   const wert = parsePruefwert(text);
   if (!wert) return "unlesbar";
-  const glieder = gliederVon(db, betriebId).filter((glied) => glied.seq <= wert.seq);
+  const alle = gliederVon(db, betriebId);
+  const glieder = alle.filter((glied) => glied.seq <= wert.seq);
   const glied = glieder.find((g) => g.seq === wert.seq);
-  if (!glied) return "unbekannt";
+  if (!glied) {
+    // A link the chain or its head went past was removed: that is a change, not an unknown number
+    const kopf = db.select().from(auditKoepfe).where(eq(auditKoepfe.betriebId, betriebId)).get();
+    const erreicht = Math.max(kopf?.seq ?? 0, alle.at(-1)?.seq ?? 0);
+    return erreicht >= wert.seq ? "abweichend" : "unbekannt";
+  }
   return glied.hash === wert.hash && gliederPruefen(glieder).length === 0
     ? "gueltig"
     : "abweichend";

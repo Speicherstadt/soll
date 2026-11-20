@@ -43,9 +43,9 @@ seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.).
 Der Prüfwert ist die Nummer und der Hash des letzten Glieds, etwa
 `Nr. 1234 · 3f9a…` (64 Zeichen). Das Format stammt aus Haben. Zum Monatsabschluss bekommt jede
 Person den Prüfwert auf ihren Stundenzettel. Wer den Server betreibt, kann die Datenbank ändern,
-aber nicht den Prüfwert, den die Person schon hat: Stimmt das Glied mit dieser Nummer nicht mehr mit
-dem Hash überein, oder ist die Kette bis dahin nicht mehr in sich stimmig, zeigt die Prüfung eine
-Abweichung.
+aber nicht den Prüfwert, den die Person schon hat: Fehlt das Glied mit dieser Nummer, obwohl die
+Kette schon weiter reichte, stimmt es nicht mehr mit dem Hash überein, oder ist die Kette bis dahin
+nicht mehr in sich stimmig, zeigt die Prüfung eine Abweichung.
 
 ## Datenbank
 

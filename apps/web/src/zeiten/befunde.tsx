@@ -14,9 +14,7 @@ export const AusblickKarte = (props: { ausblick: Ausblick }) => {
       <div class="flex flex-col gap-0.5">
         <span class="font-semibold text-[15px]">{text().titel}</span>
         {/* muted grey on the warning surface stays below 4.5:1 (axe), so the text keeps its colour */}
-        <span class="text-[13px]">
-          {`${text().text} · ${props.ausblick.norm}`}
-        </span>
+        <span class="text-[13px]">{`${text().text} · ${props.ausblick.norm}`}</span>
       </div>
     </div>
   );

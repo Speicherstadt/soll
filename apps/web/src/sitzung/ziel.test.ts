@@ -75,4 +75,12 @@ describe("where the app leads", () => {
       zielFuer({ art: "bereit", betrieb: betrieb({ eingerichtet: false }) }, "/pruefen"),
     ).toBeNull();
   });
+
+  it("nobody away from the terminal: it has no session (S-801)", () => {
+    expect(zielFuer({ art: "abgemeldet" }, "/terminal")).toBeNull();
+    expect(zielFuer({ art: "ohne_betrieb" }, "/terminal")).toBeNull();
+    expect(
+      zielFuer({ art: "bereit", betrieb: betrieb({ eingerichtet: false }) }, "/terminal"),
+    ).toBeNull();
+  });
 });

@@ -1,5 +1,6 @@
 import {
   arbeitszeitmodelle,
+  ausweise,
   bedarfe,
   betriebe,
   datevEinstellungen,
@@ -25,6 +26,7 @@ import {
   stempelungen,
   stundensaetze,
   taetigkeiten,
+  terminals,
 } from "../../db/schema.ts";
 
 /**
@@ -56,6 +58,8 @@ export const kettenTabellen = {
   schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
   schichten: { tabelle: schichten, schluessel: ["schichtId"] },
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
+  terminals: { tabelle: terminals, schluessel: ["terminalId"] },
+  ausweise: { tabelle: ausweise, schluessel: ["nutzerId"] },
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
   datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
 } as const;

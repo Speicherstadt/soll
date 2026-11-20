@@ -6,6 +6,7 @@ import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
 import { type Lohnteil, lohnteil } from "./lohn.ts";
 import { type Projektteil, projektteil } from "./projektzeit.ts";
+import { type Terminalteil, terminalteil } from "./terminal.ts";
 
 export { warMitglied } from "./kette.ts";
 export { ABDECKUNG, INHABERKOPIE } from "./tabellen.ts";
@@ -44,6 +45,7 @@ const zeilenVon = (
   erinnerung: Erinnerungsteil,
   projekt: Projektteil,
   lohn: Lohnteil,
+  terminal: Terminalteil,
   einladungen: { einladungId: string }[],
 ) =>
   ({
@@ -62,6 +64,7 @@ const zeilenVon = (
     stundensaetze: projekt.stundensaetze.map(({ satzId }) => ({ satzId })),
     projektzeiten: projekt.projektzeiten.map(({ buchungId }) => ({ buchungId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
+    ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -82,11 +85,12 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
   const erinnerung = erinnerungsteil(db, betriebId, nutzerId);
   const projekt = projektteil(db, betriebId, nutzerId);
   const lohn = lohnteil(db, betriebId, nutzerId);
+  const terminal = terminalteil(db, betriebId, nutzerId, name);
   const kette = kettenteil(
     db,
     betriebId,
     nutzerId,
-    zeilenVon(nutzerId, arbeit, erinnerung, projekt, lohn, konto.einladungen),
+    zeilenVon(nutzerId, arbeit, erinnerung, projekt, lohn, terminal, konto.einladungen),
     name,
     iso,
   );
@@ -103,6 +107,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     ...erinnerung,
     ...projekt,
     ...lohn,
+    ...terminal,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

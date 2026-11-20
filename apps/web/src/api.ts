@@ -4,18 +4,22 @@
  */
 export type Antwort<T> =
   | { ok: true; status: number; daten: T }
-  | { ok: false; status: number; fehler: string };
+  /** `koerper`: the whole answer, for refusals that say more than why (e.g. until when) */
+  | { ok: false; status: number; fehler: string; koerper?: unknown };
 
 export const api = async <T>(
   pfad: string,
-  init: { method?: string; body?: unknown } = {},
+  init: { method?: string; body?: unknown; headers?: Record<string, string> } = {},
 ): Promise<Antwort<T>> => {
   let antwort: Response;
   try {
     antwort = await fetch(pfad, {
       method: init.method ?? (init.body === undefined ? "GET" : "POST"),
       credentials: "same-origin",
-      headers: init.body === undefined ? {} : { "content-type": "application/json" },
+      headers: {
+        ...init.headers,
+        ...(init.body === undefined ? {} : { "content-type": "application/json" }),
+      },
       ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) }),
     });
   } catch {
@@ -31,5 +35,10 @@ export const api = async <T>(
   }
   if (antwort.ok) return { ok: true, status: antwort.status, daten: daten as T };
   const fehler = (daten as { fehler?: string; code?: string } | null) ?? {};
-  return { ok: false, status: antwort.status, fehler: fehler.fehler ?? fehler.code ?? "unbekannt" };
+  return {
+    ok: false,
+    status: antwort.status,
+    fehler: fehler.fehler ?? fehler.code ?? "unbekannt",
+    koerper: daten,
+  };
 };

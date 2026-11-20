@@ -34,6 +34,7 @@ export const RECHTE = [
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
+  "terminal:verwalten",
   "lohn:datev",
   "auskunft:erteilen",
 ] as const;
@@ -63,6 +64,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
+    // pairs and revokes terminals, issues QR codes (S-801): the owner, who also sets the PINs
+    "terminal:verwalten",
     // the DATEV payroll export: mapping and file (S-308)
     "lohn:datev",
     // the business answers an Art. 15 request, also of someone who left and has no access any more;

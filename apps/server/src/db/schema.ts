@@ -15,6 +15,7 @@ import {
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";
+export * from "./schema/terminal.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
@@ -128,6 +129,8 @@ export const stempelungen = sqliteTable(
     signatur: text("signatur"),
     // stamped without a network: the instant comes from the device, `erstellt_am` is the receipt
     offline: integer("offline", { mode: "boolean" }).notNull().default(false),
+    // S-801: the terminal a person stamped at, with the PIN or the QR code
+    terminalId: text("terminal_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.stempelId] }),
@@ -318,7 +321,12 @@ export const einladungen = sqliteTable(
   (t) => [primaryKey({ columns: [t.betriebId, t.einladungId] })],
 );
 
-/** A person's PIN for the terminal, as a hash; locked after five wrong tries in a row */
+/**
+ * A person's PIN for the terminal, as a hash; locked after five wrong tries in a row. `pin_kennung`
+ * is a keyed hash (HMAC-SHA-256 with a key derived from SOLL_SECRET_KEY) by which the terminal finds
+ * the person from the PIN alone (S-801), so a PIN is unique in its business; a PIN set before S-801
+ * has none until the owner sets it again.
+ */
 export const pins = sqliteTable(
   "pins",
   {
@@ -327,8 +335,12 @@ export const pins = sqliteTable(
     pinHash: text("pin_hash").notNull(),
     fehlversuche: integer("fehlversuche").notNull().default(0),
     gesperrt: integer("gesperrt", { mode: "boolean" }).notNull().default(false),
+    pinKennung: text("pin_kennung"),
   },
-  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.nutzerId] }),
+    uniqueIndex("pins_kennung").on(t.betriebId, t.pinKennung),
+  ],
 );
 
 /**

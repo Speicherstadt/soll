@@ -32,6 +32,8 @@ export const EINRICHTUNG = "/einrichtung";
 const istEinladung = (pfad: string) => pfad.startsWith("/einladung/");
 /** The check page of a Prüfwert: for everyone, signed in or not (S-306) */
 export const PRUEFSEITE = "/pruefen";
+/** The terminal on a tablet: no session at all, only the device token of its pairing (S-801) */
+export const TERMINAL = "/terminal";
 
 /** Better Auth joins several roles by commas (its parseRoles) */
 export const istInhaber = (betrieb: Betrieb): boolean =>
@@ -46,7 +48,8 @@ const imBetrieb = (betrieb: Betrieb, pfad: string): string | null => {
 
 /** The page to go to instead of `pfad`, or null to stay (pure, so the router only asks) */
 export const zielFuer = (zustand: Zustand, pfad: string): string | null => {
-  if (zustand.art === "offline" || istEinladung(pfad) || pfad === PRUEFSEITE) return null;
+  if (zustand.art === "offline" || istEinladung(pfad) || pfad === PRUEFSEITE || pfad === TERMINAL)
+    return null;
   if (zustand.art === "abgemeldet") return OFFEN.includes(pfad) ? null : "/anmelden";
   if (zustand.art === "ohne_betrieb") return pfad === EINRICHTUNG ? null : EINRICHTUNG;
   return imBetrieb(zustand.betrieb, pfad);

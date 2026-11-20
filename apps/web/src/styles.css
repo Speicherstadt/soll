@@ -1,2 +1,18 @@
 @import "@soll/ui/styles.css";
 @source "../../../packages/ui/src";
+
+/* Printing a QR card (S-801): only the card with `data-druck` is on the page */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  [data-druck],
+  [data-druck] * {
+    visibility: visible;
+  }
+  [data-druck] {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+  }
+}

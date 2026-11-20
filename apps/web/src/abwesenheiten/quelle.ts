@@ -11,7 +11,7 @@ const teamZeitraum = (heute: string) => {
   const bis = new Date(Date.parse(`${heute}T12:00:00Z`) + 27 * 86_400_000)
     .toISOString()
     .slice(0, 10);
-  return `von=${heute}&bis=${bis}`;
+  return new URLSearchParams({ von: heute, bis }).toString();
 };
 
 /**

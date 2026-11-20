@@ -25,8 +25,8 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
       api<Antwort>(`${BASIS}/antrag`, {
         body: {
           art: String(daten.get("art")),
-          von: String(daten.get("von")),
-          bis: String(daten.get("bis")),
+          von: String(daten.get("start")),
+          bis: String(daten.get("end")),
           ersterHalb: daten.get("ersterHalb") === "on",
           letzterHalb: daten.get("letzterHalb") === "on",
         },
@@ -53,12 +53,12 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
-            <label for={`${id}-von`} class="font-medium">
+            <label for={`${id}-start`} class="font-medium">
               {m.abw_von()}
             </label>
             <input
-              id={`${id}-von`}
-              name="von"
+              id={`${id}-start`}
+              name="start"
               type="date"
               class={feld}
               defaultValue={props.heute}
@@ -66,12 +66,12 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
             />
           </div>
           <div class="flex flex-col gap-1.5">
-            <label for={`${id}-bis`} class="font-medium">
+            <label for={`${id}-end`} class="font-medium">
               {m.abw_bis()}
             </label>
             <input
-              id={`${id}-bis`}
-              name="bis"
+              id={`${id}-end`}
+              name="end"
               type="date"
               class={feld}
               defaultValue={props.heute}

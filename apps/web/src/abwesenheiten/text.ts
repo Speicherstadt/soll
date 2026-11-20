@@ -42,7 +42,7 @@ export const tagText = (tag: Tag, mitJahr = false): string =>
   }).format(Date.parse(`${tag}T12:00:00Z`));
 
 /** The span of an absence: one day, from–to, or from with an open end */
-export const zeitraumText = (a: Pick<Abwesenheit, "von" | "bis">): string =>
+export const zeitraumText = (a: { von: Tag; bis: Tag | null }): string =>
   a.bis === null
     ? m.abw_ab({ von: tagText(a.von) })
     : a.bis === a.von

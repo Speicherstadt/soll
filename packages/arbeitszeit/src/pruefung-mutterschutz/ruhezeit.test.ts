@@ -59,4 +59,14 @@ describe("R-21: Ruhezeit", () => {
       expect.objectContaining({ fehlt: 60, ruhe: expect.objectContaining({ minuten: 600 }) }),
     ]);
   });
+
+  it("Ruhezeit am selben Tag: names Mo once, as R-05 does", () => {
+    const zweiSchichten = tage([
+      ...schicht(mez("2026-11-16", "0:00"), mez("2026-11-16", "4:00")),
+      ...schicht(mez("2026-11-16", "14:00"), mez("2026-11-16", "18:00")),
+    ]);
+    expect(mutterschutzRuhezeit(zweiSchichten, LEA).befunde.map((befund) => befund.tage)).toEqual([
+      ["2026-11-16"],
+    ]);
+  });
 });

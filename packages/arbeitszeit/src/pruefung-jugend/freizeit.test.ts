@@ -76,4 +76,14 @@ describe("R-18: tägliche Freizeit", () => {
       expect.objectContaining({ fehlt: 120, ruhe: expect.objectContaining({ minuten: 600 }) }),
     ]);
   });
+
+  it("am selben Tag: names Mo once, as R-05 does", () => {
+    const stempel = [
+      ...schicht("2026-11-16T00:00+01:00", "2026-11-16T04:00+01:00"),
+      ...schicht("2026-11-16T14:00+01:00", "2026-11-16T19:00+01:00"),
+    ];
+    expect(freizeit(tage(stempel), LEON).befunde.map((befund) => befund.tage)).toEqual([
+      ["2026-11-16"],
+    ]);
+  });
 });

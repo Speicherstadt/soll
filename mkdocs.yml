@@ -57,6 +57,7 @@ markdown_extensions:
       custom_checkbox: true
 nav:
   - Soll: index.md
+  - Regelwerk: regeln.md
   - Feiertage: feiertage.md
   - Entwicklung:
       - Projektplan: plan.md

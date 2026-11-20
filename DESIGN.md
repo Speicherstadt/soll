@@ -57,7 +57,12 @@ Kein Rot/Grün als einziges Merkmal: dazu immer Text oder Icon.
 **Desktop (ab `md`)**: Seitenleiste mit Betrieb und Standort, Bereichen (Heute, Zeiten, Abwesenheiten,
 Dienstplan, Projekte, Auswertungen, Einstellungen) · Inhalt mit Kopf (Titel, Zeitraum, Hauptaktion).
 
-**Handy (unter `md`)**: ein Screen zur Zeit; Tab-Leiste mit Heute, Plan, Abwesenheit, Mehr.
+Seitenleiste und Tab-Leiste zeigen nur die Bereiche der Module des Betriebs; das Terminal hat keinen
+Bereich.
+
+**Handy (unter `md`)**: ein Screen zur Zeit; Tab-Leiste mit Heute, Plan, Abwesenheit, Mehr. Fehlt
+ein Modul, rücken die nächsten Bereiche nach (Projekte, Zeiten): Heute, höchstens zwei Bereiche,
+Mehr.
 „Heute“ zeigt den Stempelknopf, die laufende Zeit, Soll und Ist des Tages und den nächsten Befund.
 Berührungsziele mindestens 44 px.
 
@@ -65,6 +70,14 @@ Berührungsziele mindestens 44 px.
 das Ziffernfeld; nach dem Erkennen Name, Kommen oder Gehen, Saldo des Tages und der nächste Befund,
 nach 5 Sekunden zurück. Keine Navigation, kein Zugriff auf andere Daten. Berührungsziele mindestens
 64 px.
+
+**Einrichtung** (ohne Seitenleiste, auf `--muted`): Kopf „Soll einrichten“, die Schritte als
+nummerierte Pillen (`aria-current="step"`), der Schritt in einer Karte, daneben „Gut zu wissen“ mit
+den Hinweisen zu den Modulen, unten „Schritt n von N“, Zurück und Weiter. Bewusst anders als im
+Mockup: kein Feld „Branche“ (nichts in Soll hängt daran), der erste Standort kommt im Schritt
+Standorte statt im ersten Schritt (ein Freelancer hat keinen), und ohne Beschäftigte entfallen die
+drei übrigen Fragen und alle weiteren Schritte. Anmelden, Konto anlegen und Einladung annehmen
+stehen in derselben Art als eine Karte.
 
 **Dienstplan**: Wochenraster, Personen als Zeilen, Tage als Spalten; Schichten als Blöcke mit
 Uhrzeit und Rolle; ein Befund erscheint am Block als Icon mit Text im Tooltip und in einer Liste

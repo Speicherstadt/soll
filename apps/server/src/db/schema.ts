@@ -15,7 +15,52 @@ export const betriebe = sqliteTable("betriebe", {
   modulDienstplan: integer("modul_dienstplan", { mode: "boolean" }).notNull().default(false),
   modulProjektzeit: integer("modul_projektzeit", { mode: "boolean" }).notNull().default(false),
   modulTerminal: integer("modul_terminal", { mode: "boolean" }).notNull().default(false),
+  // The Land of the business (ISO 3166-2 without "DE-"), the default for its sites (S-303)
+  land: text("land"),
+  // When the owner finished the setup; until then the app leads the owner there (S-303)
+  eingerichtetAm: integer("eingerichtet_am"),
 });
+
+/**
+ * Where people work: the Land and the regional holidays of the municipality decide the holidays of
+ * the site (S-105); a terminal stands at one (S-801)
+ */
+export const standorte = sqliteTable(
+  "standorte",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    standortId: text("standort_id").notNull(),
+    name: text("name").notNull(),
+    adresse: text("adresse").notNull().default(""),
+    land: text("land").notNull(),
+    // JSON array of regions of packages/arbeitszeit (REGIONEN), e.g. ["augsburg"]
+    regionen: text("regionen").notNull().default("[]"),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.standortId] })],
+);
+
+/**
+ * A working-time model: the target minutes per weekday and the wage, in whole minutes and cents
+ * (CLAUDE.md, "Never"). The wage is needed for the minimum wage, the mini-job limit and the tax-free
+ * part of surcharges (docs/plan.md, "Datenmodell"); it may still be missing ("nicht hinterlegt").
+ */
+export const arbeitszeitmodelle = sqliteTable(
+  "arbeitszeitmodelle",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    modellId: text("modell_id").notNull(),
+    name: text("name").notNull(),
+    // JSON array of seven whole minutes, Monday to Sunday
+    sollMinuten: text("soll_minuten").notNull(),
+    lohnArt: text("lohn_art", { enum: ["monat", "stunde"] }).notNull(),
+    lohnCent: integer("lohn_cent"),
+    minijob: integer("minijob", { mode: "boolean" }).notNull().default(false),
+    gueltigAb: text("gueltig_ab").notNull(),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.modellId] })],
+);
 
 /**
  * Who belongs to a business in which role, mirrored from Better Auth's members by its hooks, so every

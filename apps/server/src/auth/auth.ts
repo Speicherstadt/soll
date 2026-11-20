@@ -97,7 +97,8 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
       schema: authSchema,
       transaction: false,
     }),
-    emailAndPassword: { enabled: true },
+    // at least 10 characters, as for an account from an invitation (routes/einladungen.ts)
+    emailAndPassword: { enabled: true, minPasswordLength: 10 },
     telemetry: { enabled: false },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {

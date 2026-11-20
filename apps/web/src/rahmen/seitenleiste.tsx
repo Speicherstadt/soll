@@ -1,11 +1,12 @@
 import { Icon } from "@soll/ui";
 import { Link } from "@tanstack/solid-router";
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
-import { BEREICHE } from "./bereiche.ts";
+import { aktuelleModule, aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { bereicheFuer } from "./bereiche.ts";
 import { Darstellung } from "./darstellung.tsx";
 
-/** The sidebar from md on: the app, its areas, colours and language (DESIGN.md, "Aufbau") */
+/** The sidebar from md on: the app and the business, its areas, colours and language (DESIGN.md) */
 export const Seitenleiste = () => (
   <nav
     aria-label={m.nav_bereiche()}
@@ -14,13 +15,20 @@ export const Seitenleiste = () => (
     <div class="flex items-center gap-2.5 px-2 pb-4">
       <span
         aria-hidden="true"
-        class="flex size-7 items-center justify-center rounded-[7px] bg-primary font-bold text-primary-foreground"
+        class="flex size-7 shrink-0 items-center justify-center rounded-[7px] bg-primary font-bold text-primary-foreground"
       >
         {m.start_title().slice(0, 1)}
       </span>
-      <span class="font-semibold">{m.start_title()}</span>
+      <span class="flex min-w-0 flex-col">
+        <span class="font-semibold">{m.start_title()}</span>
+        <Show when={aktuellerBetrieb()}>
+          {(betrieb) => (
+            <span class="truncate text-[12px] text-muted-foreground">{betrieb().name}</span>
+          )}
+        </Show>
+      </span>
     </div>
-    <For each={BEREICHE}>
+    <For each={bereicheFuer(aktuelleModule())}>
       {(bereich) => (
         <Link
           to={bereich.pfad}

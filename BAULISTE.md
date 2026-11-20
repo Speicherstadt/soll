@@ -55,10 +55,13 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   lässt sich nicht schreiben, ein Fehler mitten in der Transaktion nimmt Zeile und Glied zurück, eine
   schon angewendete, später geänderte Migration verhindert den Start, und das Binary legt in einem
   leeren Datenverzeichnis die Datenbank an (CI).
-- [ ] **S-103 Regelwerk** – `docs/regeln.md`: jede Regel aus dem Projektplan mit Norm, Grenzwerten,
+- [x] **S-103 Regelwerk** – `docs/regeln.md`: jede Regel aus dem Projektplan mit Norm, Grenzwerten,
   Ausnahmen, Schwere (Hinweis oder Verstoß) und einer Tabelle von Testfällen.
   Fertig, wenn: jede Norm der Tabelle „Rechtlicher Rahmen“ im Projektplan eine Regel hat und jede
-  Regel mindestens drei Fälle (erlaubt, genau an der Grenze, Verstoß), jeweils mit Quelle.
+  Regel mindestens drei Fälle (erlaubt, genau an der Grenze, Verstoß), jeweils mit Quelle. Dazu:
+  jede Regel hat eine feste Kennung (`R-01` …), die Fälle nennen Minuten oder Cent statt Brüche, eine
+  vorsichtige Auslegung ist als solche gekennzeichnet, und ein Test prüft, dass jede Regel ihre drei
+  Fälle und jede Norm des Projektplans ihre Regel hat.
 - [ ] **S-104 Jahreswerte und Regelversionen** – Mindestlohn, Minijob-Grenze und die Version des
   Regelwerks als Daten mit Gültigkeit in `packages/arbeitszeit`; fehlt ein Wert, heißt das Ergebnis
   „nicht hinterlegt“.
@@ -266,7 +269,7 @@ Alle Punkte: nach S-305.
 
 ## Phase 9 – Härtung und Betrieb
 
-- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 10 Jahre bei Lohnbezug),
+- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
   Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.

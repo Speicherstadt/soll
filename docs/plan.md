@@ -151,7 +151,7 @@ und eine Verfahrensdokumentation (Rz. 107 ff., 151 ff.). Soll löst das so:
 - **Verfahrensdokumentation** aus dem Stand, Texte aus gobd-kern übernommen.
 
 **Fristen je Monatsabschluss**: 2 Jahre ohne Lohnbezug (§ 16 Abs. 2 ArbZG, § 17 MiLoG), 6 Jahre als
-Lohnunterlage, 10 Jahre als Buchungsbeleg (§ 147 Abs. 3 AO); Beginn mit Ablauf des Kalenderjahres.
+Lohnunterlage, 8 Jahre als Buchungsbeleg (§ 147 Abs. 3 Satz 1 AO, seit 1. Januar 2025); Beginn mit Ablauf des Kalenderjahres.
 Nach Ablauf entfernt die Aussonderung den Inhalt; die Kettenglieder bleiben, die Aussonderung steht
 selbst in der Kette (Art. 5 Abs. 1 lit. e, Art. 17 DSGVO). Die Kette wird dafür von Anfang an über
 den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.

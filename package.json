@@ -29,7 +29,7 @@
     "@inlang/plugin-message-format": "4.6.0",
     "@playwright/test": "1.65.1",
     "@types/bun": "1.4.4",
-    "@types/node": "26.6.4",
+    "@types/node": "26.6.6",
     "typescript": "7.0.2",
     "vitest": "5.1.1"
   },

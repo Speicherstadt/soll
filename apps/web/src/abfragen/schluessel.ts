@@ -16,6 +16,7 @@ export const PFAD = {
   tag: `${AZ}/tag`,
   monat: `${AZ}/monat`,
   erinnerungen: `${AZ}/erinnerungen`,
+  datev: `${AZ}/datev`,
   standorte: "/api/v1/standorte",
   woche: `${PLAN}/woche`,
   vorlagen: `${PLAN}/vorlagen`,
@@ -52,6 +53,7 @@ export const ressourcen = {
   monat: (parameter: { monat: string; nutzerId?: string | undefined }) =>
     mitParametern(PFAD.monat, parameter),
   erinnerungen: () => einfach(PFAD.erinnerungen),
+  datev: () => einfach(PFAD.datev),
   standorte: () => einfach(PFAD.standorte),
   woche: (parameter: { standortId: string; tag: string }) => mitParametern(PFAD.woche, parameter),
   vorlagen: () => einfach(PFAD.vorlagen),

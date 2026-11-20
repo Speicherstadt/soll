@@ -34,6 +34,7 @@ export const RECHTE = [
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
+  "lohn:datev",
   "auskunft:erteilen",
 ] as const;
 
@@ -62,6 +63,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
+    // the DATEV payroll export: mapping and file (S-308)
+    "lohn:datev",
     // the business answers an Art. 15 request, also of someone who left and has no access any more;
     // the Auskunft holds health data, which only the owner and payroll see (R-31)
     "auskunft:erteilen",
@@ -96,6 +99,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "zeiten:alle",
     "projekte:lesen",
     "plan:lesen",
+    // the payroll office chooses the wage types with the business and takes the file (S-308)
+    "lohn:datev",
   ],
   betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "projekte:lesen", "plan:lesen"],
   extern: ["betrieb:lesen", "projekte:lesen"],

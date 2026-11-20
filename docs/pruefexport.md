@@ -73,8 +73,8 @@ Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die
 `auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält nur, was
 der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
 Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
-Modelle mit Lohn, Schichten, Stundensätze und Buchungen der Projektzeit der Person und die Glieder
-der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+Modelle mit Lohn und Zuschlägen, Schichten, Stundensätze, Buchungen der Projektzeit und
+Personalnummer der Person und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
 draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
 Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
 verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie
@@ -88,7 +88,8 @@ lit. b und c DSGVO).
 | `mitgliedschaft`, `einladungen`, `pin` | Rolle und seit wann; die angenommene Einladung; ob eine PIN gesetzt und gesperrt ist |
 | `stempelungen` | jede Fassung jeder Stempelung mit Grund, wer und wann; nichts wird überschrieben |
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |
-| `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll und Lohn; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
+| `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll, Lohn und Sätzen der Zuschläge; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
+| `personalnummer` | die Personalnummer im Lohnprogramm für den DATEV-Export (S-308), sonst `null` |
 | `stundensaetze` | Stundensätze, die der Betrieb für die Person festgelegt hat (Projektzeit, S-601), nicht die Sätze für alle |
 | `projektzeiten` | die Buchungen der Stoppuhr und von Hand mit Auftrag, Tätigkeit, Beginn, Ende, Arbeitstag und Notiz, abgerechnete mit dem Satz der Abrechnung (S-602) |
 | `auditKette` | die Glieder der Kette zu den eigenen Zeilen (wer, wann, Hash) und die Glieder, die die Person selbst geschrieben hat, nur mit Tabelle, Aktion und Zeitpunkt |

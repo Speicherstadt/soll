@@ -65,6 +65,13 @@ describe("darf", () => {
     for (const rolle of ["extern", "geraet"]) expect(darf(rolle, "plan:lesen"), rolle).toBe(false);
   });
 
+  it("lets owner and payroll set up the DATEV export and take its file (S-308)", () => {
+    for (const rolle of ["inhaber", "lohnbuero"])
+      expect(darf(rolle, "lohn:datev"), rolle).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "lohn:datev"), rolle).toBe(false);
+  });
+
   it("lets only the owner give the Auskunft of another person (Art. 15 DSGVO)", () => {
     expect(darf("inhaber", "auskunft:erteilen")).toBe(true);
     for (const rolle of ["planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])

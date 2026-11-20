@@ -39,15 +39,33 @@ export const migrieren = (
     }
     return hash === undefined;
   });
-  for (const migration of neu) {
-    sqlite.transaction(() => {
-      for (const statement of migration.sql.split(GRENZE)) {
-        if (statement.trim() !== "") sqlite.run(statement);
-      }
-      sqlite
-        .query("INSERT INTO soll_migrationen (tag, hash, angewendet_am) VALUES (?, ?, ?)")
-        .run(migration.tag, sha256(migration.sql), jetzt);
-    })();
+  if (neu.length === 0) return [];
+  // PRAGMA foreign_keys is a no-op inside a transaction, so the one drizzle-kit writes before it
+  // rebuilds a table would not stop the DROP from cascading into the rows that reference it; foreign
+  // keys go off around the migrations and are checked before each commit instead
+  // (sqlite.org/lang_altertable.html, "Making Other Kinds Of Table Schema Changes", steps 1, 10, 12)
+  const fremdschluessel =
+    sqlite.query<{ foreign_keys: number }, []>("PRAGMA foreign_keys").get()?.foreign_keys ?? 0;
+  sqlite.run("PRAGMA foreign_keys = OFF");
+  try {
+    for (const migration of neu) anwenden(sqlite, migration, jetzt);
+  } finally {
+    sqlite.run(`PRAGMA foreign_keys = ${fremdschluessel ? "ON" : "OFF"}`);
   }
   return neu.map((migration) => migration.tag);
+};
+
+const anwenden = (sqlite: Database, migration: Migration, jetzt: number): void => {
+  sqlite.transaction(() => {
+    for (const statement of migration.sql.split(GRENZE)) {
+      if (statement.trim() !== "") sqlite.run(statement);
+    }
+    const verletzt = sqlite.query("PRAGMA foreign_key_check").all();
+    if (verletzt.length > 0) {
+      throw new Error(`migration ${migration.tag} breaks ${verletzt.length} foreign key(s)`);
+    }
+    sqlite
+      .query("INSERT INTO soll_migrationen (tag, hash, angewendet_am) VALUES (?, ?, ?)")
+      .run(migration.tag, sha256(migration.sql), jetzt);
+  })();
 };

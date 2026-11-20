@@ -62,4 +62,6 @@ nicht mehr in sich stimmig, zeigt die Prüfung eine Abweichung.
 Soll speichert in SQLite im WAL-Modus, die Datei `soll.db` liegt im Datenverzeichnis
 (`SOLL_DATA_DIR`, Standard `data`). Die Migrationen sind im Programm enthalten und laufen beim Start;
 eine schon angewendete Migration, die sich geändert hat oder im Programm fehlt (etwa eine ältere
-Version auf einer neueren Datenbank), verhindert den Start.
+Version auf einer neueren Datenbank), verhindert den Start. Während der Migrationen sind die Fremdschlüssel
+abgeschaltet, damit der Umbau einer Tabelle keine Zeilen mitlöscht, die auf sie verweisen; vor dem
+Abschluss jeder Migration prüft Soll alle Verweise und nimmt die Migration bei einem Fehler zurück.

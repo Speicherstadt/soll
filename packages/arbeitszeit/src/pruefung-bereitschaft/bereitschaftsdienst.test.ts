@@ -200,6 +200,34 @@ describe("R-11: Bereitschaftsdienst", () => {
     ]);
   });
 
+  it("über 12 h, Ausgleich verpasst: Gastronomie, § 7, Mo 30.11. 13:00, 10:30 rest, balance by the end of November – Verstoß of § 7 Abs. 9, not lost", () => {
+    // without the agreement R-05 reports „Ausgleich fehlt“ (a Verstoß); with it the shortening of
+    // § 5 Abs. 2 was never allowed (§ 7 Abs. 9 ArbZG), so the rest is a Verstoß of R-11 in its place
+    const stempel = [
+      ...schicht("2026-11-30T06:00+01:00", "2026-11-30T12:00+01:00"),
+      ...schicht("2026-12-01T06:30+01:00", "2026-12-01T12:30+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [
+        spanne("2026-11-30T12:45+01:00", "2026-11-30T18:45+01:00"),
+        spanne("2026-11-30T19:00+01:00", "2026-11-30T20:00+01:00"),
+      ],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      ausgleich: "kalendermonat",
+      jetzt: um("2026-12-01T18:00+01:00"),
+    } as const;
+    expect(kurz(pruefe(stempel, eingabe, optionen))).toEqual([
+      ["R-02", "ueber_10h", ["2026-11-30"]],
+      ["R-05", "ruhezeit_ausgleich_fehlt", ["2026-11-30", "2026-12-01"]],
+    ]);
+    expect(kurz(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual([
+      ["R-11", "ueber_10h_tarif", ["2026-11-30"]],
+      ["R-11", "ruhezeit_nach_ueber_12h", ["2026-11-30", "2026-12-01"]],
+    ]);
+  });
+
   it("über 12 h: a rest between two shifts of the day lies before its end – § 5 Abs. 2, not § 7 Abs. 9", () => {
     // § 7 Abs. 9 ArbZG: the 11 hours follow „im unmittelbaren Anschluss an die Beendigung der
     // Arbeitszeit“; the 10:30 between 6:00 and 16:30 lies before the day's work ends at 23:45

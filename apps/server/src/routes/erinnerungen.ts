@@ -6,6 +6,7 @@ import {
   aboGueltig,
   aboSpeichern,
   abosVon,
+  pushDienstErlaubt,
   regelnSetzen,
   regelnVon,
   SPRACHEN,
@@ -23,17 +24,13 @@ const base64url = z
   .max(200);
 
 /**
- * A push service's endpoint: https only, with a host name that has a dot, so no IP address,
- * localhost or bare name of the local network, as the server posts to it (RFC 8030, Section 8: a
- * push service is reached over TLS). A name that resolves into the local network is not caught.
+ * A push service's endpoint: https on one of the browsers' push services (`PUSH_DIENSTE`), as the
+ * server posts to it; a name of its own network, or one that resolves there, is refused (SSRF)
  */
 const endpoint = z
   .url({ protocol: /^https$/ })
   .max(2048)
-  .refine((wert) => {
-    const host = new URL(wert).hostname;
-    return !/^(localhost|\[.*\]|\d+\.\d+\.\d+\.\d+)$/i.test(host) && host.includes(".");
-  });
+  .refine(pushDienstErlaubt);
 
 const aboSchema = z
   .object({

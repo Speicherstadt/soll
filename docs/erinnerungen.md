@@ -77,7 +77,11 @@ des Browsers:
   mit den Werten aus Anhang A von RFC 8291.
 - **Abo**: Endpunkt und Schlüssel des Geräts liegen verschlüsselt in `push_abos`; wer sie hätte,
   könnte dem Gerät schreiben. Ein Schlüssel, der kein Punkt auf P-256 ist, wird abgelehnt, ein
-  Endpunkt muss `https` sein und einen Namen mit Punkt tragen: keine IP-Adresse, kein `localhost`, kein Name des eigenen Netzes ohne Punkt. Antwortet der
+  Endpunkt muss `https` sein und bei einem Push-Dienst der Browser liegen: Google (`fcm.googleapis.com`,
+  Chrome und die Browser auf seiner Grundlage), Mozilla (`push.services.mozilla.com`, Firefox), Apple
+  (`push.apple.com`, Safari) oder Microsoft (`notify.windows.com`, Edge). Soll schickt an den
+  Endpunkt; jede andere Adresse könnte auf das eigene Netz zielen, auch über einen Namen, der dorthin
+  auflöst. Ein Browser mit einem anderen Push-Dienst bekommt die Erinnerung per Mail. Antwortet der
   Push-Dienst mit 404 oder 410, gibt es das Abo nicht mehr, und Soll entfernt es; bei anderen Fehlern
   bleibt es, und die Erinnerung geht per Mail.
 - Der **Service Worker** zeigt die Benachrichtigung und öffnet beim Tippen die passende Seite der

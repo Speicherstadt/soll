@@ -16,6 +16,28 @@ const ZWECK = "push_abos";
 
 export type GespeichertesAbo = { aboId: string; abo: Abo; sprache: string };
 
+/**
+ * The push services of the browsers: Chrome and the browsers built on it (FCM), Firefox (Mozilla's
+ * autopush), Safari (Apple) and Edge (WNS). The server posts to the endpoint, so a check of the
+ * address alone would let any employee aim it into the server's own network with a name that
+ * resolves there (127.0.0.1.nip.io, localhost.); a browser only ever hands out these hosts.
+ */
+export const PUSH_DIENSTE = [
+  "fcm.googleapis.com",
+  "push.services.mozilla.com",
+  "push.apple.com",
+  "notify.windows.com",
+] as const;
+
+/** An https endpoint on the default port of one of the browsers' push services or below it */
+export const pushDienstErlaubt = (endpoint: string): boolean => {
+  const url = URL.parse(endpoint);
+  if (url?.protocol !== "https:" || url.port !== "") return false;
+  return PUSH_DIENSTE.some(
+    (dienst) => url.hostname === dienst || url.hostname.endsWith(`.${dienst}`),
+  );
+};
+
 /** p256dh a point on P-256 and auth 16 bytes (RFC 8291, Sections 2.1 and 7) */
 export const aboGueltig = (abo: Abo): boolean =>
   gueltigerPunkt(new Uint8Array(Buffer.from(abo.p256dh, "base64url"))) &&

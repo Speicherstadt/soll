@@ -17,6 +17,17 @@ export const centAus = (text: string): number | null => {
   return euro * 100 + cent;
 };
 
+/**
+ * Basis points of a percentage ("25" → 2500, "12,5" → 1250), the unit of the surcharges (S-207), up
+ * to 1000 %; null if it is none
+ */
+export const basispunkteAus = (text: string): number | null => {
+  const teile = /^(\d{1,4})(?:[,.](\d{1,2}))?$/.exec(text.replace(/%/g, "").trim());
+  if (!teile) return null;
+  const wert = Number(teile[1]) * 100 + Number((teile[2] ?? "").padEnd(2, "0"));
+  return wert <= 100_000 ? wert : null;
+};
+
 const WOCHE = 7 * 24 * 60;
 
 /** Minutes of decimal hours ("38,5"), only when the hundredths are whole minutes (,1 is 6, ,33 none) */

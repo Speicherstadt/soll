@@ -31,6 +31,9 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   projekte: "ausgenommen: Aufträge des Betriebs, keine Daten der Person",
   taetigkeiten: "ausgenommen: Tätigkeiten des Betriebs, keine Daten der Person",
   stundensaetze: "stundensaetze (nur die Sätze mit der Person, nicht die für alle)",
+  datev_einstellungen:
+    "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
+  datev_personalnummern: "personalnummer",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -88,6 +91,10 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   projekte: aus("keine Daten der Person (Aufträge des Betriebs)"),
   taetigkeiten: aus("keine Daten der Person (Tätigkeiten des Betriebs)"),
   stundensaetze: frei("Sätze der Person, die der Inhaber unter Projekte festlegt und sieht"),
+  datev_einstellungen: aus("keine Daten der Person (Einstellungen des Betriebs für DATEV)"),
+  datev_personalnummern: frei(
+    "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
+  ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

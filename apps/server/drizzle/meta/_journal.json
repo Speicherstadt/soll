@@ -68,8 +68,15 @@
     {
       "idx": 9,
       "version": "6",
-      "when": 1795206034253,
-      "tag": "0009_solo",
+      "when": 1795207135326,
+      "tag": "0009_datev",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1795209359099,
+      "tag": "0010_solo",
       "breakpoints": true
     }
   ]

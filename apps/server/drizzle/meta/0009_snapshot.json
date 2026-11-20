@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5615c83b-ee99-4487-9470-11b9b05c11c4",
+  "id": "84ded91c-5f38-4aeb-bc91-e20c8688b0d7",
   "prevId": "27e4df5e-bd63-46b7-a37b-99dbecae2210",
   "tables": {
     "arbeitszeitmodelle": {
@@ -56,6 +56,14 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "zuschlagssaetze": {
+          "name": "zuschlagssaetze",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'{}'"
         },
         "gueltig_ab": {
           "name": "gueltig_ab",
@@ -400,13 +408,6 @@
         },
         "eingerichtet_am": {
           "name": "eingerichtet_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pflicht_hinweis_am": {
-          "name": "pflicht_hinweis_am",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -1350,6 +1351,100 @@
             "stempel_id"
           ],
           "name": "stempelungen_betrieb_id_stempel_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "datev_einstellungen": {
+      "name": "datev_einstellungen",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "berater_nr": {
+          "name": "berater_nr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "mandanten_nr": {
+          "name": "mandanten_nr",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lohnarten": {
+          "name": "lohnarten",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'{}'"
+        },
+        "geaendert_am": {
+          "name": "geaendert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "datev_personalnummern": {
+      "name": "datev_personalnummern",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "personalnummer": {
+          "name": "personalnummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "datev_personalnummern_einmal": {
+          "name": "datev_personalnummern_einmal",
+          "columns": [
+            "betrieb_id",
+            "personalnummer"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "datev_personalnummern_betrieb_id_nutzer_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "nutzer_id"
+          ],
+          "name": "datev_personalnummern_betrieb_id_nutzer_id_pk"
         }
       },
       "uniqueConstraints": {},

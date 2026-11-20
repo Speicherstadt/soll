@@ -10,7 +10,8 @@ description: >-
 Zahlt der Betrieb Zuschläge für Nacht-, Sonn- oder Feiertagsarbeit, rechnet Soll für jeden
 [Arbeitstag](arbeitstag.md), wie viel gezahlt wird, wie viel davon nach § 3b EStG steuerfrei ist und
 was steuerpflichtig bleibt. Beide Teile gehen getrennt an die [Minijob-Grenze](mindestlohn.md) (der
-steuerfreie Teil ist kein Arbeitsentgelt, § 1 Abs. 1 Satz 1 Nr. 1 SvEV) und später an DATEV (S-308).
+steuerfreie Teil ist kein Arbeitsentgelt, § 1 Abs. 1 Satz 1 Nr. 1 SvEV) und an den
+[DATEV-Lohnexport](datev.md).
 Regel, Grenzwerte und Testfälle stehen im [Regelwerk](regeln.md#r-29-steuerfreie-zuschlage) unter
 R-29. Grundlage ist der Text von § 3b EStG auf
 [gesetze-im-internet.de](https://www.gesetze-im-internet.de/estg/__3b.html), Stand 20.11.2026, dazu

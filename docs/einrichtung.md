@@ -62,6 +62,11 @@ Minijob-Grenze und den steuerfreien Teil der Zuschläge. Die Minijob-Grenze selb
 und kommt mit den Jahreswerten; der Assistent nennt keinen Betrag. Mindestens ein Modell ist
 nötig. Die Löhne der Modelle sehen nur der Inhaber und das Lohnbüro.
 
+Unter **Zuschläge (§ 3b EStG)** trägt eine Vorlage die Sätze für Nacht (20 bis 6 Uhr), Sonntag und
+Feiertag in Prozent des Stundenlohns ein (`25`, `12,5`); leer heißt kein Zuschlag. 0 bis 4 Uhr gilt
+wie Nacht, der 25. und 26.12. und der 1.5. wie Feiertag. Soll rechnet damit die
+[Zuschläge](zuschlaege.md) und gibt sie an den [DATEV-Lohnexport](datev.md).
+
 ## 4. Mitarbeiter
 
 Eine Liste aus deiner Tabelle, als CSV-Datei oder eingefügt, oder Leute einzeln mit Name und Rolle.

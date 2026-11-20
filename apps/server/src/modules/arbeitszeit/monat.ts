@@ -60,7 +60,7 @@ export const aufzeichnungenJetzt = (
  * The holidays of a person come from the business's first site, else from its Land; a site per
  * person follows with the shift plan (docs/plan.md, "Feiertage im Monatsabschluss")
  */
-const standortVon = (db: Db, betriebId: string): Standort | null => {
+export const standortVon = (db: Db, betriebId: string): Standort | null => {
   const [erster] = standorteLesen(db, betriebId);
   if (erster) return { land: erster.land, regionen: erster.regionen };
   const land = betriebLesen(db, betriebId)?.land;

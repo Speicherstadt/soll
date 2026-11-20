@@ -10,6 +10,7 @@ import { ergaenzt } from "./liste.ts";
 import { VORLAGE_NAMEN } from "./namen.ts";
 import { VORLAGEN, type Vorlage } from "./vorlagen.ts";
 import { centAus, dauerText, euroText, minutenAus, verteilen } from "./werte.ts";
+import { ZuschlagFelder, zuschlaegeAus } from "./zuschlagFelder.tsx";
 
 type Modell = {
   modellId: string;
@@ -54,8 +55,10 @@ const VorlageKarte = (props: {
     const minuten = stunden === null ? 0 : minutenAus(String(stunden));
     const lohnText = String(daten.get("lohn")).trim();
     const lohnCent = lohnText === "" ? null : centAus(lohnText);
+    const zuschlagssaetze = zuschlaegeAus(daten);
     if (minuten === null) return setFehler(m.fehler_stunden());
     if (lohnCent === null && lohnText !== "") return setFehler(m.fehler_betrag());
+    if (zuschlagssaetze === null) return setFehler(m.fehler_prozent());
     // a second click while the first is on its way would create the model twice
     if (!props.setzeArbeitet(true)) return;
     const antwort = await api<Modell>("/api/v1/arbeitszeit/modelle", {
@@ -65,6 +68,7 @@ const VorlageKarte = (props: {
         lohnArt: props.vorlage.lohnArt,
         lohnCent,
         minijob: props.vorlage.minijob,
+        zuschlagssaetze,
       },
     });
     props.setzeArbeitet(false);
@@ -100,6 +104,7 @@ const VorlageKarte = (props: {
           inputmode="decimal"
         />
       </div>
+      <ZuschlagFelder />
       <Fehler text={fehler()} />
       <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
         {m.modell_uebernehmen({ name: name() })}

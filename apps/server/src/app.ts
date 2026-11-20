@@ -4,6 +4,7 @@ import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
+import { datevRouten } from "./routes/datev.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
@@ -82,6 +83,7 @@ export const createApp = ({
       modulRouten(db, {
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
+          "/datev": datevRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,

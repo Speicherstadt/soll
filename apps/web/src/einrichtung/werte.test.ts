@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { centAus, dauerText, euroText, minutenAus, slugAus, verteilen } from "./werte.ts";
+import {
+  basispunkteAus,
+  centAus,
+  dauerText,
+  euroText,
+  minutenAus,
+  slugAus,
+  verteilen,
+} from "./werte.ts";
 
 describe("centAus", () => {
   it("reads euros as written in German, with or without thousands and cents", () => {
@@ -85,5 +93,20 @@ describe("slugAus", () => {
     expect(slugAus("Bäckerei Größe", "q")).toBe("baeckerei-groesse-q");
     expect(slugAus("مقهى", "z9")).toBe("betrieb-z9");
     expect(slugAus("Crêperie", "z9")).toBe("creperie-z9");
+  });
+});
+
+describe("basispunkteAus", () => {
+  it("reads a percentage as basis points, whole numbers only (S-207)", () => {
+    expect(basispunkteAus("25")).toBe(2500);
+    expect(basispunkteAus("12,5")).toBe(1250);
+    expect(basispunkteAus("12.75 %")).toBe(1275);
+    expect(basispunkteAus("150")).toBe(15_000);
+    expect(basispunkteAus("0")).toBe(0);
+  });
+
+  it("refuses what is no rate: a third decimal, a sign, more than 1000 %", () => {
+    for (const text of ["", "abc", "12,555", "-5", "1000,01", "1e3"])
+      expect(basispunkteAus(text), text).toBeNull();
   });
 });

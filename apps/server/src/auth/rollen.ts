@@ -32,6 +32,7 @@ export const RECHTE = [
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
+  "lohn:datev",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -56,6 +57,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
+    // the DATEV payroll export: mapping and file (S-308)
+    "lohn:datev",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
@@ -82,6 +85,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "plan:lesen",
+    // the payroll office chooses the wage types with the business and takes the file (S-308)
+    "lohn:datev",
   ],
   betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "plan:lesen"],
   extern: ["betrieb:lesen"],

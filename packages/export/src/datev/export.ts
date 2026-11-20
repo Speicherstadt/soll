@@ -41,7 +41,7 @@ export type Fehlend =
   | { art: "lohnart"; posten: Postenart }
   | Lohnproblem;
 
-export type DatevDatei = { dateiname: string; text: string; bytes: Uint8Array };
+export type DatevDatei = { dateiname: string; text: string; bytes: Uint8Array<ArrayBuffer> };
 
 export type DatevExportErgebnis =
   | { ok: true; datei: DatevDatei }

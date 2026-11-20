@@ -46,7 +46,7 @@ const byteVon = (zeichen: string): number | undefined => {
  * The bytes of a text in Windows-1252. A character outside it is refused rather than replaced: a
  * file for payroll must say what Soll means or nothing.
  */
-export const windows1252 = (text: string): Uint8Array => {
+export const windows1252 = (text: string): Uint8Array<ArrayBuffer> => {
   const bytes: number[] = [];
   for (const zeichen of text) {
     const byte = byteVon(zeichen);

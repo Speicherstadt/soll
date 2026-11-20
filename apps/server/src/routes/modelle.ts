@@ -12,6 +12,15 @@ const minuten = z
   .min(0)
   .max(24 * 60);
 
+/**
+ * The surcharges a model pays in basis points (2500 = 25 %), whole numbers up to 1000 %; a rate left
+ * out is not paid (`Zuschlagssaetze`, docs/zuschlaege.md "Sätze des Betriebs")
+ */
+const saetzeSchema = z.partialRecord(
+  z.enum(["nacht", "nacht0bis4", "sonntag", "feiertag", "feiertag150", "heiligabend", "silvester"]),
+  z.number().int().min(0).max(100_000),
+);
+
 const modellSchema = z
   .object({
     name: z.string().trim().min(1).max(60),
@@ -19,6 +28,7 @@ const modellSchema = z
     lohnArt: z.enum(["monat", "stunde"]),
     lohnCent: z.number().int().min(0).max(100_000_000).nullable(),
     minijob: z.boolean(),
+    zuschlagssaetze: saetzeSchema.optional(),
     gueltigAb: z.string().refine(istTag).optional(),
   })
   .strict();

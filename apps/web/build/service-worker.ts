@@ -6,7 +6,8 @@ import type { Plugin } from "vite";
 /**
  * The service worker caches the whole static build, so the app opens and clocks in without a network
  * (CLAUDE.md: "the static build is cached whole by the service worker"). The API is never cached;
- * the offline queue for clocking in comes with S-305.
+ * the offline queue for clocking in comes with S-305. A push message of the server (S-307) becomes a
+ * notification, and a tap on it opens the page it names, only of the app's own origin.
  */
 export const serviceWorkerSource = (files: readonly string[], revision = ""): string => {
   const urls = ["/", ...files.map((file) => `/${file}`)].sort();
@@ -44,6 +45,40 @@ self.addEventListener("fetch", (event) => {
   // server that answers with "Vary: Origin" (vite preview, CORS middleware) would never hit the cache
   event.respondWith(
     caches.match(event.request, { ignoreVary: true }).then((hit) => hit ?? fetch(event.request)),
+  );
+});
+
+// A reminder of the server (S-307): title, text, the page to open and a tag, so a second one of the
+// same kind replaces the first instead of piling up
+self.addEventListener("push", (event) => {
+  let daten = null;
+  try {
+    daten = event.data ? event.data.json() : null;
+  } catch {
+    daten = null;
+  }
+  if (!daten || typeof daten.titel !== "string") return;
+  event.waitUntil(
+    self.registration.showNotification(daten.titel, {
+      body: typeof daten.text === "string" ? daten.text : "",
+      tag: typeof daten.tag === "string" ? daten.tag : undefined,
+      icon: "/icon.svg",
+      dir: "auto",
+      data: { ziel: typeof daten.ziel === "string" ? daten.ziel : "/" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const ziel = new URL((event.notification.data && event.notification.data.ziel) || "/", self.location.origin);
+  if (ziel.origin !== self.location.origin) return;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((fenster) => {
+      const offen = fenster.find((f) => new URL(f.url).origin === self.location.origin);
+      if (!offen) return self.clients.openWindow(ziel.href);
+      return offen.focus().then((f) => f.navigate(ziel.href));
+    }),
   );
 });
 `;

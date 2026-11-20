@@ -2,6 +2,7 @@ import type { Db } from "../../db/oeffnen.ts";
 import { betriebLesen } from "../betrieb/index.ts";
 import { namenVon } from "../mitglieder/index.ts";
 import { type Arbeitsteil, arbeitsteil } from "./arbeit.ts";
+import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
 
 export { warMitglied } from "./kette.ts";
@@ -34,8 +35,16 @@ const HINWEISE = {
     "Keine. Soll prüft Regeln und zeigt Befunde, entscheidet aber nichts über dich (Art. 22 DSGVO).",
 };
 
-const zeilenVon = (nutzerId: string, arbeit: Arbeitsteil, einladungen: { einladungId: string }[]) =>
+const zeilenVon = (
+  nutzerId: string,
+  arbeit: Arbeitsteil,
+  erinnerung: Erinnerungsteil,
+  einladungen: { einladungId: string }[],
+) =>
   ({
+    pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
+    erinnerungen: erinnerung.erinnerungen.map(({ erinnerungId }) => ({ erinnerungId })),
+    erinnerungseinstellungen: [{ nutzerId }],
     stempelungen: arbeit.stempelungen.map(({ stempelId }) => ({ stempelId })),
     korrekturen: arbeit.gegeneintraege.map(({ korrekturId }) => ({ korrekturId })),
     monatsabschluesse: arbeit.monatsabschluesse.map(({ abschlussId }) => ({ abschlussId })),
@@ -61,11 +70,12 @@ export const auskunftVon = (db: Db, betriebId: string, nutzerId: string, jetzt: 
   const name = namensgeber(db);
   const konto = kontoteil(db, betriebId, nutzerId);
   const arbeit = arbeitsteil(db, betriebId, nutzerId, name);
+  const erinnerung = erinnerungsteil(db, betriebId, nutzerId);
   const kette = kettenteil(
     db,
     betriebId,
     nutzerId,
-    zeilenVon(nutzerId, arbeit, konto.einladungen),
+    zeilenVon(nutzerId, arbeit, erinnerung, konto.einladungen),
     name,
     iso,
   );
@@ -79,6 +89,7 @@ export const auskunftVon = (db: Db, betriebId: string, nutzerId: string, jetzt: 
     hinweise: HINWEISE,
     ...konto,
     ...arbeit,
+    ...erinnerung,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

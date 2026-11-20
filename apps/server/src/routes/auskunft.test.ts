@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import * as authSchema from "../db/auth-schema.ts";
 import * as schema from "../db/schema.ts";
 import { ABDECKUNG } from "../modules/auskunft/index.ts";
+import { testAbo } from "../modules/erinnerungen/push-test.ts";
 import { abgeschlossen, type Json, json, type Person, weber } from "./monat-testhilfen.ts";
 
 const auskunft = (wer: Person, nutzerId?: string) =>
@@ -94,6 +95,28 @@ describe("GET /api/v1/auskunft", () => {
     expect(kette.vonDir.length).toBeGreaterThan(0);
     for (const glied of kette.vonDir)
       expect(Object.keys(glied).sort()).toEqual(["aktion", "nr", "tabelle", "zeitpunkt"]);
+  });
+
+  it("holds the person's reminder wishes and push devices, without the subscription", async () => {
+    const w = await weber();
+    const abo = testAbo("https://fcm.googleapis.com/fcm/send/sandra").json;
+    const pfad = "/api/v1/arbeitszeit/erinnerungen";
+    expect(
+      (await w.sandra.anfrage(`${pfad}/abos`, { body: { ...abo, sprache: "pl" } })).status,
+    ).toBeLessThan(300);
+    const wuensche = { ausstempeln: false, pause: true, monat: true, mail: false };
+    await w.sandra.anfrage(`${pfad}/wuensche`, { method: "PUT", body: wuensche });
+    const antwort = await auskunft(w.sandra);
+    const text = await antwort.clone().text();
+    const daten = await json(antwort);
+    expect(daten.erinnerungseinstellungen).toEqual(wuensche);
+    expect(liste(daten, "pushAbos")).toEqual([expect.objectContaining({ sprache: "pl" })]);
+    expect(text).not.toContain(abo.endpoint);
+    expect(text).not.toContain(abo.keys.auth);
+    const kette = daten.auditKette as { zuDeinenDaten: Json[] };
+    expect(kette.zuDeinenDaten.map((g) => g.tabelle)).toEqual(
+      expect.arrayContaining(["pushAbos", "erinnerungseinstellungen"]),
+    );
   });
 
   it("holds no secrets and nothing of other people", async () => {

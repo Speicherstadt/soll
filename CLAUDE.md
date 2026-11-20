@@ -15,6 +15,7 @@ connection goes through an open standard or a documented API (OpenID Connect, RE
 | What to build next, acceptance criteria, how the loop works | `BAULISTE.md` |
 | Why: goals, decisions, stack, law, GoBD, data model, tests | `docs/plan.md` |
 | Look and behaviour of the UI | `DESIGN.md`, the mockup in `design/mockup/` (read the screen before building it) |
+| Solid 2.0 API (before any Solid code; memory is mostly 1.x) | `docs/solid-2.0/MIGRATION.md`, `docs/solid-2.0/CHEATSHEET.md` |
 | Every rule the app checks, with its norm and test cases (before anything in `packages/arbeitszeit`) | `docs/regeln.md` (written in S-103) |
 
 The documentation is in `docs/` (<https://soll.work/>), German only. Links in the README and the docs
@@ -129,11 +130,50 @@ Tauri), with two deviations from `tech-stack.md`:
 
 Server: Bun, Hono, Drizzle on SQLite (WAL), Zod at every boundary, Better Auth (organization plugin
 for several businesses in one instance, passkeys, invitation links), `bun build --compile`. Client:
-Solid 2, `@tanstack/solid-router` and `solid-query` if they carry Solid 2 (else a small own router and
-Solid's async), Paraglide, Tailwind 4. UI in the shadcn style without a component library: native
+Solid 2 (see "Solid 2.0" below), `@tanstack/solid-router` (v2) and `@tanstack/solid-query` (v6),
+both built for Solid 2, Paraglide, Tailwind 4. UI in the shadcn style without a component library: native
 `<dialog>`, the Popover API, CSS anchor positioning, own `cn()` and `variants()`, lucide icons (data from `lucide` through `Icon` in `packages/ui`,
 as `lucide-solid` carries only Solid 1),
 Geist, zinc tokens.
+
+## Solid 2.0
+
+The client is Solid 2.0 (stable since 11/2026). Its API differs a lot from 1.x, and most of what an
+agent remembers is 1.x. Base every change to Solid code on the copied reference, not on memory:
+
+- Before working on Solid code read `docs/solid-2.0/`, above all `MIGRATION.md` and `CHEATSHEET.md`;
+  the RFCs (`01-…` to `12-…`) explain the details. When unsure, look it up there, don't guess.
+- Server data goes through `@tanstack/solid-query` (v6, built for Solid 2): `useQuery` with a key per
+  resource, `useMutation` that invalidates the keys it changes. No hand-made "effect → fetch → set
+  signal" loaders. The offline queue of the PWA (S-305) stays its own.
+- `bun run solid2` (part of `bun run check` and CI) fails on the forbidden 1.x forms below.
+
+Forbidden 1.x forms and their 2.0 replacement:
+
+| 1.x (forbidden) | 2.0 |
+| --- | --- |
+| `createResource` | async `createMemo` (or a query) under `<Loading>`; `refresh()` instead of `refetch` |
+| `Suspense`, `SuspenseList`, `ErrorBoundary` | `Loading`, `Reveal`, `Errored` |
+| `createEffect(fn)` with one function, `on(...)`, `createComputed` | `createEffect(source, fn)` (compute, then apply; return cleanup), `createMemo`, `createSignal(fn)` |
+| `onMount` | `onSettled` (may return cleanup) |
+| `onCleanup` inside a ref callback | refs are unowned: `onSettled` in the body or a ref directive factory |
+| `batch` | nothing (writes are batched); `flush()` only in tests or imperative interop |
+| reading a signal right after setting it and expecting the new value | values change after the microtask flush |
+| `classList`, `class:`/`style:` namespaces | `class` / `style` with object or array |
+| `use:` directives, `attr:`, `bool:`, `on:`, `oncapture:`, lowercase `onclick` | `ref` directive factories, plain attributes, camelCase `onClick` |
+| `/*@once*/` | reactive JSX, `defaultValue`, or `untrack` in JavaScript |
+| `Index`, `indexArray` | `<For keyed={false}>`, `mapArray(…, { keyed: false })` |
+| `mergeProps`, `splitProps` | `merge`, `omit` (an `undefined` value overrides) |
+| `unwrap`, `produce`, path setters, `createMutable` | `snapshot`, draft setters (`setStore(s => { … })`), `createStore` |
+| `startTransition`, `useTransition`, manual loading/optimistic flags | built-in transitions, `isPending`, `action`, `createOptimistic`/`createOptimisticStore` |
+| `Context.Provider`, wrapper hooks that only narrow `undefined` | `<Context value>`; `useContext` on a default-less context returns `T` |
+| `createSelector`, `createDeferred` (1.x meaning), `catchError`/`onError` | `createProjection`, new `createDeferred`, `Errored` or effect `error` option |
+| `<Dynamic component>`, `createDynamic` | `dynamic(source)` factory |
+| imports from `solid-js/web`, `solid-js/store`, `solid-js/jsx-runtime` | `@solidjs/web`, `solid-js`, `jsxImportSource: "@solidjs/web"` |
+
+Also in 2.0: reading props or signals at the top level of a component body warns (read them in JSX,
+a memo or a handler); writing a signal inside a memo or effect compute throws; a nested `createRoot`
+is disposed with its parent; built-in attributes are attributes (lowercase, booleans by presence).
 
 Clean Code, written functionally: clear names, small functions that do one thing, dependencies
 passed in, no duplication or dead code, comments that say why; the ideas behind SOLID and the design

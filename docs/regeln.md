@@ -32,6 +32,7 @@ ab dem 1. Januar 2026. Grundlage sind die Gesetzestexte auf gesetze-im-internet.
 | --- | --- | --- |
 | Arbeitszeit | Zeit vom Beginn bis zum Ende der Arbeit ohne die Ruhepausen, bei mehreren Arbeitgebern zusammengerechnet | § 2 Abs. 1 ArbZG |
 | Arbeitstag | der Kalendertag in `Europe/Berlin`, an dem die Schicht beginnt | CLAUDE.md, „Time“ |
+| Schicht | Arbeit von „Kommen“ bis „Gehen“ samt Unterbrechungen; eine Unterbrechung ab 9 h beendet sie (kürzeste Ruhezeit, die das Gesetz überhaupt zulässt), und sie reicht nie 24 h über ihren Beginn hinaus | § 5 Abs. 1, § 7 Abs. 1 Nr. 3 ArbZG; R-01 |
 | Werktag | jeder Tag außer Sonntag und gesetzlichem Feiertag, also auch der Samstag | § 3 ArbZG; § 3 Abs. 2 BUrlG |
 | Ruhepause | eine im Voraus feststehende Unterbrechung von mindestens 15 Minuten (Jugendliche ebenso) | § 4 Satz 2 ArbZG; § 11 Abs. 1 Satz 3 JArbSchG |
 | Nachtzeit | 23 bis 6 Uhr, in Bäckereien und Konditoreien 22 bis 5 Uhr | § 2 Abs. 3 ArbZG |
@@ -110,8 +111,24 @@ Regel:
   geeignete Organisation zu sorgen“); EuGH, Urteil vom 14.05.2019, C-55/18 (CCOO).
 - **Regel**: Jeder Arbeitstag hat Beginn, Ende und Dauer. Ein Tag mit „Kommen“ ohne „Gehen“ ist
   unvollständig.
+- **Arbeitstag aus Stempelungen** (S-201): Soll liest die Stempelungen in zeitlicher Reihenfolge,
+  gleich in welcher sie ankommen. „Kommen“ bis „Gehen“ und „Pause-Ende“ bis „Pause-Beginn“ sind
+  Arbeit; dazwischen liegt eine gestempelte Pause oder eine Lücke zwischen zwei Paaren. Eine
+  Unterbrechung unter 9 h gehört zur Schicht, auch über Mitternacht; die ganze Schicht zählt zum
+  Tag, an dem sie beginnt. Gezählt werden echte Minuten, auch über die Zeitumstellung. Beginne
+  zählen ab der angefangenen Minute, Enden bis zur nächsten vollen (nie zulasten der
+  Beschäftigten); eine Unterbrechung unter 15 min ist Arbeitszeit (R-04). Eine wiederholte Stempelung
+  derselben Art zählt so, dass mehr Arbeitszeit entsteht (frühester Beginn, spätestes Ende), mit
+  Hinweis; dieselbe Art zweimal in derselben Minute ist ein doppelter Tipp und kein Befund; es zählt der erste Tipp. „Kommen“
+  während einer Pause beendet die Pause. Was fehlt, ergänzt Soll nie: Ein „Gehen“ ohne „Kommen“,
+  ein „Pause-Ende“ ohne „Pause-Beginn“ und ein „Gehen“ während der Pause sind Hinweise, und die
+  Zeit, deren Ende nicht feststeht, zählt nicht.
 - **Grenzwerte**: Ein offener Tag gilt ab 0 Uhr des Folgetags als unvollständig, eine laufende
   Nachtschicht erst 16 h nach ihrem Beginn (danach ist ein vergessenes „Gehen“ wahrscheinlich).
+  Soll nimmt den späteren der beiden Zeitpunkte: Eine Schicht, die um Mitternacht noch läuft, ist
+  eine Nachtschicht. Dasselbe gilt für eine Pause ohne Ende. Spätestens 24 h nach Beginn ist es
+  ein Befund, auch wenn Mitternacht später liegt (Tag der Zeitumstellung im Oktober): Danach kann
+  keine Stempelung die Schicht mehr beenden.
 - **Ausnahmen**: keine. Soll stempelt nie selbst aus (CLAUDE.md), es erinnert nur (S-307).
 - **Schwere**: Hinweis an die Person und den Betrieb; zum Monatsabschluss sperrt ein unvollständiger
   Tag die Bestätigung, bis er nachgetragen ist.
@@ -121,6 +138,29 @@ Regel:
 | erlaubt | Mo 8:00 Kommen, 16:30 Gehen | kein Befund, Dauer 8:30 abzüglich Pausen | BAG 1 ABR 22/21, Rn. 64 (Beginn, Ende, Dauer) |
 | Grenze | Nachtschicht Mo 22:00 Kommen, Di 13:59 noch offen (15:59 h) | kein Befund | Grenzwert dieser Regel |
 | Verstoß | Mo 8:00 Kommen, kein Gehen, Di 0:00 | Hinweis „Gehen fehlt“ für Mo | § 3 Abs. 2 Nr. 1 ArbSchG |
+| Herbst | Sa 24.10.2026 22:00 Kommen, So 25.10. 6:00 Gehen | 9:00 Arbeitszeit, Arbeitstag Sa 24.10. | § 2 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit 3:00 MESZ) |
+| Frühjahr | Sa 27.03.2027 22:00 Kommen, So 28.03. 6:00 Gehen | 7:00 Arbeitszeit, Arbeitstag Sa 27.03. | § 2 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit 2:00 MEZ) |
+| doppelte Stunde | So 25.10.2026 2:30 MESZ Kommen, 2:30 MEZ Gehen | 1:00 Arbeitszeit | SoZV (die Stunde von 2 bis 3 Uhr kommt zweimal) |
+| Pause | Mo 8:00 Kommen, 12:00 Pause, 12:30 Pause-Ende, 16:30 Gehen | 8:00 Arbeitszeit, 30 min Pause (gestempelt) | § 2 Abs. 1 ArbZG |
+| Lücke | Mo 8:00 Kommen, 12:00 Gehen, 12:30 Kommen, 16:30 Gehen | 8:00 Arbeitszeit, 30 min Pause (Lücke) | § 2 Abs. 1 ArbZG |
+| Teile | Mo 8:00 Kommen, 10:00 Pause, 10:15 Pause-Ende, 12:00 Gehen, 12:30 Kommen, 16:30 Gehen | Arbeit 120, 105 und 240 min, Pausen 15 und 30 min, 7:45 Arbeitszeit | § 2 Abs. 1 ArbZG |
+| kurze Pause | Mo 8:00 Kommen, 12:00 Pause, 12:14 Pause-Ende, 16:00 Gehen | 8:00 Arbeitszeit, keine Pause | § 4 Satz 2 ArbZG |
+| über Mitternacht | Mo 18:00 Kommen, 23:30 Gehen, Di 0:15 Kommen, 3:00 Gehen | eine Schicht am Mo: 8:15 Arbeitszeit, 45 min Pause | Grundbegriff „Schicht“ |
+| zwei Schichten | Mo 5:00 Kommen, 8:00 Gehen, 17:00 Kommen, 21:00 Gehen | zwei Schichten am Mo, 7:00 Arbeitszeit, keine Pause | Grundbegriff „Schicht“; § 7 Abs. 1 Nr. 3 ArbZG |
+| neue Schicht | Mo 22:00 Kommen, Di 6:00 Gehen, Di 15:00 Kommen, 23:00 Gehen | Mo 8:00, Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 5 Abs. 1 ArbZG |
+| 24 h | Mo 8:00 Kommen, Di 8:00 Kommen, 16:00 Gehen | Hinweis „Gehen fehlt“ für Mo (0:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Gehen | Mo 8:00 Kommen, Mi 8:00 Gehen | Hinweis „Gehen fehlt“ für Mo, „Kommen fehlt“ für Mi | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Zeitumstellung | So 25.10.2026 0:30 MESZ Kommen, kein Gehen, So 23:30 MEZ | Hinweis „Gehen fehlt“ für So (24 h nach Beginn, vor Mitternacht) | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 9 h, Gehen | Mo 8:00 Kommen, 12:00 Gehen, Di 7:30 Gehen | Mo 4:00 Arbeitszeit, vollständig; Hinweis „Kommen fehlt“ für Di | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 9 h, Pause | Mo 8:00 Kommen, 12:00 Pause, Di 7:00 Kommen, 15:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo (4:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Sekunden | Mo 8:00:30 Kommen, Di 8:00:30 Gehen und Kommen, 12:00 Gehen | Mo 24:00, Di 4:00 Arbeitszeit: die Minute ab 8:00 zählt einmal, bei Di | Grundbegriff „Schicht“; CLAUDE.md (nie zulasten der Beschäftigten) |
+| ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
+| doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
+| doppelter Tipp, 9 h | Mo 7:00 Kommen, 16:00:05 und 16:00:50 Gehen, Di 1:00:20 Kommen, 5:00 Gehen | zwei Schichten wie ohne den zweiten Tipp: Mo 9:01, Di 4:00 Arbeitszeit | Grundbegriff „Schicht“; Regel dieser Seite |
+| doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |
+| Kommen fehlt | Mo 16:00 Gehen, sonst nichts | Hinweis „Kommen fehlt“ für Mo, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |
+| Pause-Ende fehlt | Mo 22:00 Kommen, 23:30 Pause, Di 6:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo, 1:30 Arbeitszeit, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |
+| Minuten | Mo 8:00:59 Kommen, 16:00:01 Gehen | 8:01 Arbeitszeit | CLAUDE.md (nie zulasten der Beschäftigten) |
 
 ### R-02 Höchstarbeitszeit am Tag
 

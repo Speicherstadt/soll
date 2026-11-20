@@ -74,8 +74,8 @@ Rollenwechsel, schaltet Soll die Arbeitszeit wieder ein und sagt dem Inhaber war
 Abgelehnt wird jede Adresse unter `/api/v1/<modul>/` (`arbeitszeit`, `dienstplan`, `projektzeit`,
 `terminal`) mit `403` und `{"fehler": "modul_aus", "modul": "…"}`. Ein Test liest alle Routen aus
 dem Server selbst und prüft jede, auch eine später hinzugekommene. Für jeden Betrieb offen bleiben
-nur der Betrieb mit seinen Modulen, die Einrichtung, Standorte, Einladungen und die
-[Prüfseite](monatsabschluss.md).
+nur der Betrieb mit seinen Modulen, die Einrichtung, Standorte, Einladungen, die Auskunft nach
+Art. 15 DSGVO und die [Prüfseite](monatsabschluss.md).
 
 ## Start des Servers
 

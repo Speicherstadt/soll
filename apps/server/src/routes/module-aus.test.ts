@@ -21,6 +21,8 @@ const OHNE_MODUL: readonly string[] = [
   "DELETE /api/v1/standorte/:standortId",
   "POST /api/v1/einladungen",
   "POST /api/v1/einladungen/liste",
+  // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
+  "GET /api/v1/auskunft",
   // public: an invitation and the check page of a Prüfwert (docs/plan.md, "Prüfseite")
   "GET /api/v1/einladung/:token",
   "POST /api/v1/einladung/:token/annehmen",

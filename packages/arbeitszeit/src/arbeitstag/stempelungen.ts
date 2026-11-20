@@ -42,10 +42,19 @@ export type Lauf = {
   offenePausen: number[];
   /** the last stamp taken, to tell a repeated stamp */
   letzte: Stempelung | null;
+  /** the last stamp read, taken or reported, to tell a double tap */
+  zuletzt: Stempelung | null;
 };
 
 const MINUTE = 60_000;
-const START: Lauf = { zustand: "aus", stuecke: [], befunde: [], offenePausen: [], letzte: null };
+const START: Lauf = {
+  zustand: "aus",
+  stuecke: [],
+  befunde: [],
+  offenePausen: [],
+  letzte: null,
+  zuletzt: null,
+};
 
 /** What each state expects next; used to order stamps of the same instant */
 const PASST: Record<Zustand, readonly Stempelart[]> = {
@@ -76,13 +85,20 @@ const beende = (lauf: Lauf, stempel: Stempelung, zustand: Zustand): Lauf => {
   return { ...lauf, zustand, stuecke, letzte: stempel };
 };
 
-/** The same kind again within the same minute is a double tap or a resent stamp, not a finding */
+const gleicheMinute = (vorher: Stempelung | null, stempel: Stempelung): boolean =>
+  vorher?.art === stempel.art &&
+  Math.floor(vorher.zeitpunkt / MINUTE) === Math.floor(stempel.zeitpunkt / MINUTE);
+
+/**
+ * The same kind again within the same minute is a double tap or a resent stamp, not a finding: of
+ * the last stamp taken, and of the last one read when that was itself reported, which then stands
+ * for both
+ */
 const wiederholt = (lauf: Lauf, stempel: Stempelung): boolean =>
-  lauf.letzte?.art === stempel.art &&
-  Math.floor(lauf.letzte.zeitpunkt / MINUTE) === Math.floor(stempel.zeitpunkt / MINUTE);
+  gleicheMinute(lauf.letzte, stempel) || gleicheMinute(lauf.zuletzt, stempel);
 
 const melde = (lauf: Lauf, art: Stempelfehler, stempel: Stempelung): Lauf =>
-  art === "doppelt" && wiederholt(lauf, stempel)
+  wiederholt(lauf, stempel)
     ? lauf
     : {
         ...lauf,
@@ -141,7 +157,7 @@ const lasseOffen = (lauf: Lauf, stempel: Stempelung): Lauf => {
  * One stamp. A repeated stamp counts in the way that gives more working time, as the cut to whole
  * minutes does: the earliest start (Kommen, Pause-Ende) and the latest end (Gehen, Pause-Beginn).
  */
-const schritt = (vorher: Lauf, stempel: Stempelung): Lauf => {
+const lies = (vorher: Lauf, stempel: Stempelung): Lauf => {
   const lauf = lasseOffen(vorher, stempel);
   const { art } = stempel;
   if (lauf.zustand === "aus") {
@@ -168,6 +184,11 @@ const schritt = (vorher: Lauf, stempel: Stempelung): Lauf => {
   // Gehen during a break: when the break ended is unknown, so the work counts up to its start
   return { ...melde(lauf, "pause_ende_fehlt", stempel), zustand: "aus", letzte: stempel };
 };
+
+const schritt = (lauf: Lauf, stempel: Stempelung): Lauf => ({
+  ...lies(lauf, stempel),
+  zuletzt: stempel,
+});
 
 const RANG: Record<Stempelart, number> = { gehen: 0, pause_beginn: 1, pause_ende: 2, kommen: 3 };
 

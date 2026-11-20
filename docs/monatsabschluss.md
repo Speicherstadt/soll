@@ -28,6 +28,13 @@ Abgeschlossen wird nur ein Monat, der vorbei ist, und nur, wenn keine Schicht me
 ein Gehen, wird es zuerst nachgetragen. Soll stempelt nie selbst aus. Ein Gehen ohne Kommen öffnet
 keine Schicht und hält den Abschluss nicht auf; es steht als Befund (R-01) auf dem Stundenzettel.
 
+Abgeschlossen wird außerdem erst **9 Stunden nach der letzten Stempelung** des Monats. So lange kann
+die letzte Schicht noch weiterlaufen: Ein Kommen am Ersten, keine 9 Stunden nach einem Gehen spät am
+letzten Tag, gehört noch zu dieser Schicht. Wäre der Monat schon gesperrt, lehnte Soll dieses Kommen
+ab, und die Arbeitszeit bliebe unaufgezeichnet. Bis dahin steht unter dem Stand „Abschließen geht ab
+…“ mit Datum und Uhrzeit. Eine Stempelung ohne Netz aus diesen 9 Stunden, die erst nach dem Abschluss
+ankommt, lehnt der Server ab; sie wird als Gegeneintrag erfasst.
+
 ## Danach ist der Monat gesperrt
 
 Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Person ändern würde:
@@ -129,10 +136,10 @@ Arbeitszeit aus ist; die Prüfseite liegt außerhalb davon.
 
 | Endpunkt | Was | Wer |
 | --- | --- | --- |
-| `GET /monat?monat=JJJJ-MM&nutzerId=` | der Monat: Inhalt (abgeschlossen oder heute), offene Tage, Bestätigung, Abschluss mit Prüfwert, geänderte Tage | selbst; andere: Inhaber, Planer, Lohnbüro |
+| `GET /monat?monat=JJJJ-MM&nutzerId=` | der Monat: Inhalt (abgeschlossen oder heute), offene Tage, Bestätigung, Abschluss mit Prüfwert, geänderte Tage, `abschliessbarAb` (vor diesem Zeitpunkt kein Abschluss, sonst `null`) | selbst; andere: Inhaber, Planer, Lohnbüro |
 | `GET /monat/stundenzettel?monat=&nutzerId=` | der Stundenzettel als PDF | wie oben |
 | `POST /monat/bestaetigen` | `{ monat }`: der eigene Monat, wie er heute steht | selbst |
-| `POST /monat/abschliessen` | `{ monat, nutzerId, grund? }`, schickt den Stundenzettel per Mail; Antwort mit `mail` | Inhaber |
+| `POST /monat/abschliessen` | `{ monat, nutzerId, grund? }`, schickt den Stundenzettel per Mail; Antwort mit `mail`; vor `abschliessbarAb` 409 `{ fehler: "schicht_kann_weiterlaufen", ab }` | Inhaber |
 | `POST /monat/gegeneintrag` | `{ nutzerId, tag, minuten, grund }` zu einem Tag eines abgeschlossenen Monats | Inhaber, Planer |
 | `POST /api/v1/pruefen` | `{ betriebId, pruefwert }` → `uebereinstimmend`, `abweichung` (mit `grund` und `tage`), `unlesbar`, `unbekannt` | alle, ohne Anmeldung |
 

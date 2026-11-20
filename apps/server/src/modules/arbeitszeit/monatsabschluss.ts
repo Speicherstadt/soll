@@ -1,4 +1,4 @@
-import { type Monat, monatVon, type Tag, tagInBerlin } from "@soll/arbeitszeit";
+import { type Monat, monatVon, NEUE_SCHICHT_AB, type Tag, tagInBerlin } from "@soll/arbeitszeit";
 import { and, asc, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { auditGlieder, monatsabschluesse } from "../../db/schema.ts";
@@ -66,6 +66,21 @@ export type MonatStatus = {
   abschluss: Abschluss | null;
   /** whether the month has ended; a running month is neither confirmed nor closed */
   vorbei: boolean;
+  /**
+   * while open: the instant before which the month cannot be closed yet, as its last shift could
+   * still go on (9 h after its last stamp); null when that has passed
+   */
+  abschliessbarAb: number | null;
+};
+
+/**
+ * 9 h after the last stamp a month records (`NEUE_SCHICHT_AB`, as the shifts are cut): before then a
+ * Kommen would continue its last shift, and the lock would refuse to record it (BAG 1 ABR 22/21;
+ * docs/plan.md, "Abschluss nach der letzten Schicht")
+ */
+const schichtEndetSicher = (inhalt: Monatsinhalt): number | null => {
+  const zeitpunkte = inhalt.tage.flatMap((tag) => tag.stempel.map(([, zeitpunkt]) => zeitpunkt));
+  return zeitpunkte.length === 0 ? null : Math.max(...zeitpunkte) + NEUE_SCHICHT_AB;
 };
 
 export const monatStatus = (
@@ -80,6 +95,7 @@ export const monatStatus = (
   const bestaetigt = schritte.filter((zeile) => zeile.schritt === "bestaetigt").at(-1);
   const jetztStand = monatJetzt(db, betriebId, nutzerId, monat, jetzt);
   const glied = geschlossen ? gliedVon(db, betriebId, geschlossen.abschlussId) : undefined;
+  const ab = geschlossen ? null : schichtEndetSicher(jetztStand.inhalt);
   return {
     monat,
     inhalt: geschlossen ? inhaltVon(geschlossen) : jetztStand.inhalt,
@@ -107,6 +123,7 @@ export const monatStatus = (
         }
       : null,
     vorbei: monat < monatVon(tagInBerlin(jetzt)),
+    abschliessbarAb: ab !== null && jetzt < ab ? ab : null,
   };
 };
 
@@ -114,11 +131,12 @@ export type AbschlussFehler =
   | "monat_laeuft"
   | "abgeschlossen"
   | "offene_schicht"
-  | "bestaetigung_fehlt";
+  | "bestaetigung_fehlt"
+  | "schicht_kann_weiterlaufen";
 
 export type SchrittErgebnis =
   | { ok: true; status: MonatStatus }
-  | { ok: false; grund: AbschlussFehler };
+  | { ok: false; grund: AbschlussFehler; ab?: number };
 
 const schrittEinfuegen = (
   schreibDb: SchreibDb,
@@ -190,6 +208,8 @@ export const monatAbschliessen = (
   const status = monatStatus(db, kontext.betriebId, angaben.nutzerId, angaben.monat, kontext.jetzt);
   const fehler = hindernis(status);
   if (fehler) return { ok: false, grund: fehler };
+  if (status.abschliessbarAb !== null)
+    return { ok: false, grund: "schicht_kann_weiterlaufen", ab: status.abschliessbarAb };
   if (!status.bestaetigung?.gueltig && angaben.grund === null)
     return { ok: false, grund: "bestaetigung_fehlt" };
   try {

@@ -41,6 +41,8 @@ export type MonatAnsicht = {
   inhalt: Monatsinhalt;
   offeneTage: Tag[];
   vorbei: boolean;
+  /** while open: closing waits until 9 h after the last stamp, as the last shift could go on */
+  abschliessbarAb: number | null;
   geaenderteTage: Tag[];
   bestaetigung: { von: string; vonName: string; am: number; gueltig: boolean } | null;
   abschluss: {

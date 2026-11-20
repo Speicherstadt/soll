@@ -8,7 +8,7 @@ import { Pruefwert } from "../monat/pruefwert.tsx";
 import { monatQuelle } from "../monat/quelle.ts";
 import { Stand } from "../monat/stand.tsx";
 import { Gegeneintraege, Summen, TageTabelle } from "../monat/tabelle.tsx";
-import { monatText, tageText } from "../monat/text.ts";
+import { monatText, tageText, zeitpunktText } from "../monat/text.ts";
 import type { MonatAnsicht } from "../monat/typen.ts";
 import { zeilenDesMonats } from "../monat/zeilen.ts";
 import { m } from "../paraglide/messages.js";
@@ -111,6 +111,13 @@ const MonatSeite = () => {
             </div>
             <Show when={!a().vorbei}>
               <p class="text-muted-foreground">{m.monat_laeuft()}</p>
+            </Show>
+            <Show when={offen(a()) && a().abschliessbarAb}>
+              {(ab) => (
+                <p class="text-muted-foreground">
+                  {m.monat_abschliessbar_ab({ zeit: zeitpunktText(ab()) })}
+                </p>
+              )}
             </Show>
             <Show when={a().offeneTage.length > 0}>
               <p class="text-warning">{m.monat_offene_tage({ tage: tageText(a().offeneTage) })}</p>

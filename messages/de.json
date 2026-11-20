@@ -308,6 +308,8 @@
   "monat_ohne_text": "{name} hat diesen Stand nicht bestätigt. Nenne den Grund; er steht auf dem Stundenzettel.",
   "monat_fehler_grund": "Bitte nenne einen Grund.",
   "monat_fehler_offen": "Eine Schicht ist noch offen. Trag erst das Gehen nach.",
+  "monat_fehler_weiterlaufen": "Die letzte Schicht kann noch weiterlaufen. Abschließen geht 9 Stunden nach dem letzten Gehen.",
+  "monat_abschliessbar_ab": "Abschließen geht ab {zeit}: Bis 9 Stunden nach dem letzten Gehen kann die letzte Schicht noch weiterlaufen.",
   "monat_fehler_abgeschlossen": "Der Monat ist schon abgeschlossen.",
   "monat_fehler_bestaetigung": "Die Person hat diesen Stand nicht bestätigt.",
   "monat_fehler_gegeneintrag_offen": "Dieser Monat ist offen: ändere die Stempelungen direkt.",

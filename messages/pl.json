@@ -308,6 +308,8 @@
   "monat_ohne_text": "{name} nie potwierdził(a) tego stanu. Podaj powód; pojawi się na karcie czasu pracy.",
   "monat_fehler_grund": "Podaj powód.",
   "monat_fehler_offen": "Zmiana jest wciąż otwarta. Najpierw dodaj wyjście.",
+  "monat_fehler_weiterlaufen": "Ostatnia zmiana może jeszcze trwać dalej. Miesiąc można zamknąć 9 godzin po ostatnim wyjściu.",
+  "monat_abschliessbar_ab": "Zamknąć miesiąc można od {zeit}: do 9 godzin po ostatnim wyjściu ostatnia zmiana może jeszcze trwać dalej.",
   "monat_fehler_abgeschlossen": "Ten miesiąc jest już zamknięty.",
   "monat_fehler_bestaetigung": "Osoba nie potwierdziła tego stanu.",
   "monat_fehler_gegeneintrag_offen": "Ten miesiąc jest otwarty: zmień odbicia bezpośrednio.",

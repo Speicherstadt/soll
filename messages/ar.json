@@ -308,6 +308,8 @@
   "monat_ohne_text": "لم يؤكّد {name} هذه الحالة. اذكر السبب؛ سيظهر في كشف الساعات.",
   "monat_fehler_grund": "يُرجى ذكر السبب.",
   "monat_fehler_offen": "لا تزال وردية مفتوحة. أضف الانصراف أولًا.",
+  "monat_fehler_weiterlaufen": "قد تستمر الوردية الأخيرة. يمكن إقفال الشهر بعد 9 ساعات من آخر انصراف.",
+  "monat_abschliessbar_ab": "يمكن إقفال الشهر ابتداءً من {zeit}: خلال 9 ساعات بعد آخر انصراف قد تستمر الوردية الأخيرة.",
   "monat_fehler_abgeschlossen": "هذا الشهر مُقفل بالفعل.",
   "monat_fehler_bestaetigung": "لم يؤكّد الشخص هذه الحالة.",
   "monat_fehler_gegeneintrag_offen": "هذا الشهر مفتوح: عدّل التسجيلات مباشرة.",

@@ -308,6 +308,8 @@
   "monat_ohne_text": "{name} bu durumu onaylamadı. Nedenini yaz; zaman çizelgesinde yer alır.",
   "monat_fehler_grund": "Lütfen bir neden yaz.",
   "monat_fehler_offen": "Bir vardiya hâlâ açık. Önce çıkışı ekle.",
+  "monat_fehler_weiterlaufen": "Son vardiya hâlâ devam edebilir. Ayı son çıkıştan 9 saat sonra kapatabilirsin.",
+  "monat_abschliessbar_ab": "Bu ayı {zeit} itibarıyla kapatabilirsin: Son çıkıştan sonraki 9 saat içinde son vardiya devam edebilir.",
   "monat_fehler_abgeschlossen": "Bu ay zaten kapatıldı.",
   "monat_fehler_bestaetigung": "Kişi bu durumu onaylamadı.",
   "monat_fehler_gegeneintrag_offen": "Bu ay açık: kayıtları doğrudan değiştir.",

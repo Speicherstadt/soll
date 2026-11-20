@@ -246,14 +246,26 @@ describe("a closed month is locked", () => {
     expect(neu.status).toBe(201);
   });
 
-  it("refuses a live stamp that would continue the night shift of the closed month", async () => {
+  it("closes only 9 h after the night shift, then refuses only a stamp added into it", async () => {
     const w = await weber();
+    // the night shift ended 1 November 2:00: until 11:00 a Kommen would continue it
     w.server.stelleUhr(um("2026-11-01T03:00:00+01:00"));
     await bestaetigen(w.sandra);
+    const zuFrueh = await abschliessen(w.jonas, w.sandra.nutzerId);
+    expect(zuFrueh.status).toBe(409);
+    expect(await json(zuFrueh)).toEqual({
+      fehler: "schicht_kann_weiterlaufen",
+      ab: um("2026-11-01T11:00:00+01:00"),
+    });
+    w.server.stelleUhr(um("2026-11-01T11:00:00+01:00"));
     expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
-    w.server.stelleUhr(um("2026-11-01T04:00:00+01:00"));
+    // a Kommen added by hand at 4:00 would continue the closed night shift
     await abgelehnt(
-      await w.sandra.anfrage("/api/v1/arbeitszeit/stempelungen", { body: { art: "kommen" } }),
+      await nachtrag(w.sandra, {
+        art: "kommen",
+        zeitpunkt: um("2026-11-01T04:00:00+01:00"),
+        grund: "x",
+      }),
     );
     w.server.stelleUhr(um("2026-11-01T12:00:00+01:00"));
     expect(

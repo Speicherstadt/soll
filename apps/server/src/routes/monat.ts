@@ -56,6 +56,7 @@ const STATUS = {
   abgeschlossen: 409,
   offene_schicht: 409,
   bestaetigung_fehlt: 409,
+  schicht_kann_weiterlaufen: 409,
 } as const;
 
 /** The days with a change by hand, so the sheet marks them (DESIGN.md, "Monatsabschluss") */
@@ -226,7 +227,8 @@ export const monatRouten = (
         monat: eingabe.data.monat,
         grund: eingabe.data.grund ?? null,
       });
-      if (!ergebnis.ok) return c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
+      if (!ergebnis.ok)
+        return c.json({ fehler: ergebnis.grund, ab: ergebnis.ab }, STATUS[ergebnis.grund]);
       const zettel = zettelVon(db, c, wer.nutzerId, ergebnis.status, optionen.url, kontext.jetzt);
       const mail = await zettelSenden(db, optionen.mail, wer.nutzerId, zettel);
       return c.json({ ...ansicht(db, c, wer.nutzerId, ergebnis.status), mail }, 201);

@@ -308,6 +308,8 @@
   "monat_ohne_text": "{name} has not confirmed this state. Give the reason; it is printed on the time sheet.",
   "monat_fehler_grund": "Please give a reason.",
   "monat_fehler_offen": "A shift is still open. Add the Gehen first.",
+  "monat_fehler_weiterlaufen": "The last shift can still go on. You can close the month 9 hours after the last Gehen.",
+  "monat_abschliessbar_ab": "You can close this month from {zeit}: until 9 hours after the last Gehen, the last shift can still go on.",
   "monat_fehler_abgeschlossen": "This month is already closed.",
   "monat_fehler_bestaetigung": "The person has not confirmed this state.",
   "monat_fehler_gegeneintrag_offen": "This month is open: change the stamps directly.",

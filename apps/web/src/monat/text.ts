@@ -32,6 +32,18 @@ export const datumText = (ms: number): string =>
     numberingSystem: "latn",
   }).format(ms);
 
+/** "1.11.2026, 07:30" for the instant from which a month can be closed */
+export const zeitpunktText = (ms: number): string =>
+  new Intl.DateTimeFormat(getLocale(), {
+    timeZone: "Europe/Berlin",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    numberingSystem: "latn",
+  }).format(ms);
+
 export const tageText = (tage: readonly string[]): string =>
   tage.map((tag) => kurzerTag(tag)).join(", ");
 
@@ -54,6 +66,7 @@ export const befundZeile = (befund: Blattbefund): string =>
 export const FEHLER: Record<string, () => string> = {
   monat_laeuft: () => m.monat_laeuft(),
   offene_schicht: () => m.monat_fehler_offen(),
+  schicht_kann_weiterlaufen: () => m.monat_fehler_weiterlaufen(),
   abgeschlossen: () => m.monat_fehler_abgeschlossen(),
   bestaetigung_fehlt: () => m.monat_fehler_bestaetigung(),
   offen: () => m.monat_fehler_gegeneintrag_offen(),

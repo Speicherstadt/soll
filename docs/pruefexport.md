@@ -70,12 +70,15 @@ abgeschlossen“, dazu die Adresse der Prüfseite.
 Jede Person lädt unter **Einstellungen → Meine Daten** eine JSON-Datei mit allem, was Soll in
 diesem Betrieb über sie speichert, unabhängig von Rolle und Modulen. Für eine Person, die den
 Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die Auskunft (Recht
-`auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`).
+`auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält die
+Anmeldewege des Kontos nicht und die Sitzungen ohne Adresse und Browser: Der Inhaber sieht beides
+sonst nirgends, und es verriete dem Arbeitgeber, wo und womit sich die Person anmeldet; die
+Anmeldewege gehören zum Konto, nicht zum Betrieb (Art. 5 Abs. 1 lit. b und c DSGVO).
 
 | Teil | Inhalt |
 | --- | --- |
 | `hinweise` | Zwecke, Rechtsgrundlage, Empfänger, Speicherdauer, Rechte, Herkunft, keine automatisierte Entscheidung (Art. 15 Abs. 1 lit. a bis h) |
-| `konto`, `anmeldung`, `sitzungen` | Name, E-Mail, Benutzername; Anmeldewege und Passkeys; Sitzungen in diesem Betrieb mit Adresse und Browser |
+| `konto`, `anmeldung`, `sitzungen` | Name, E-Mail, Benutzername; Anmeldewege und Passkeys; Sitzungen in diesem Betrieb mit Adresse und Browser (beides nur in der eigenen Auskunft) |
 | `mitgliedschaft`, `einladungen`, `pin` | Rolle und seit wann; die angenommene Einladung; ob eine PIN gesetzt und gesperrt ist |
 | `stempelungen` | jede Fassung jeder Stempelung mit Grund, wer und wann; nichts wird überschrieben |
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |

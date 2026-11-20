@@ -25,7 +25,10 @@ export const auskunftRouten = (db: Db, jetzt: () => number) =>
       if (!warMitglied(db, betriebId, ziel)) return c.json({ fehler: "unbekannt" }, 404);
     }
     const zeitpunkt = jetzt();
-    const auskunft = auskunftVon(db, betriebId, ziel, zeitpunkt);
+    const auskunft = auskunftVon(db, betriebId, ziel, {
+      jetzt: zeitpunkt,
+      fuerSich: ziel === c.get("nutzerId"),
+    });
     return c.body(`${JSON.stringify(auskunft, null, 2)}\n`, 200, {
       "content-type": "application/json; charset=utf-8",
       "content-disposition": `attachment; filename="auskunft-${tagInBerlin(zeitpunkt)}.json"`,

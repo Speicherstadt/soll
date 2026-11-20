@@ -66,9 +66,16 @@ const namensgeber = (db: Db) => {
   };
 };
 
-export const auskunftVon = (db: Db, betriebId: string, nutzerId: string, jetzt: number) => {
+/** `fuerSich`: the person's own copy; false when the owner gives it for someone else (konto.ts) */
+export const auskunftVon = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  angaben: { jetzt: number; fuerSich: boolean },
+) => {
+  const { jetzt } = angaben;
   const name = namensgeber(db);
-  const konto = kontoteil(db, betriebId, nutzerId);
+  const konto = kontoteil(db, betriebId, nutzerId, angaben.fuerSich);
   const arbeit = arbeitsteil(db, betriebId, nutzerId, name);
   const erinnerung = erinnerungsteil(db, betriebId, nutzerId);
   const kette = kettenteil(

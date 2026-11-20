@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { thema } from "./thema.ts";
 
 test.use({ locale: "de" });
 const de = messagesOf("de");
@@ -47,7 +48,7 @@ test("a person creates a token, a program uses it, she revokes it @phone", async
   await expect(zeile).toContainText(t("zugang_nie"));
 
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
+    await thema(page, theme);
     expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
   }
 

@@ -37,6 +37,35 @@ describe("unordered, repeated and unpaired stamps", () => {
     expect(tag.arbeitsMinuten).toBe(480);
   });
 
+  /*
+   * Fifth review of PR #11: a stamp that was reported did not count as read, so the same stamp
+   * tapped twice or resent within the minute was reported a second time (docs/regeln.md, R-01:
+   * the same kind twice in the same minute is a double tap and no finding).
+   */
+  it("reports a repeated stamp once when it is tapped twice in the same minute", () => {
+    const kommenDoppelt = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      kommen("2026-11-16T08:10:05+01:00"),
+      kommen("2026-11-16T08:10:40+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+    ]);
+    const endeDoppelt = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      weiter("2026-11-16T12:30+01:00"),
+      weiter("2026-11-16T12:40:05+01:00"),
+      weiter("2026-11-16T12:40:40+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+    ]);
+    expect(arten(kommenDoppelt)).toEqual(["doppelt"]);
+    expect(arten(endeDoppelt)).toEqual(["doppelt"]);
+  });
+
+  it("reports a Gehen without Kommen once when it is resent within the minute", () => {
+    const tag = einTag([gehen("2026-11-16T16:00:05+01:00"), gehen("2026-11-16T16:00:40+01:00")]);
+    expect(arten(tag)).toEqual(["kommen_fehlt"]);
+  });
+
   it("takes the earliest of repeated starts and the latest of repeated ends, with a Hinweis", () => {
     const tag = einTag([
       kommen("2026-11-16T08:00+01:00"),

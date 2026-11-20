@@ -478,6 +478,29 @@ Alle Punkte: nach S-306.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
 - [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
+  Fertig, wenn: ein Stundennachweis für einen Auftrag und eine Spanne von Arbeitstagen aus den
+  beendeten Buchungen entsteht, die noch in keinem unterschriebenen Nachweis stehen (je Zeile Tag,
+  Person, Beginn und Ende, Tätigkeit, ganze Minuten und Notiz, dazu die Summe und eine freie
+  Bemerkung für Material und Hinweise; kein Geld); Mitarbeiter nur aus ihren eigenen Buchungen,
+  Inhaber und Planer aus denen aller oder einer Person; der Kunde auf dem Handy mit seinem Namen und
+  einer Unterschrift unterschreibt, die er mit dem Finger auf eine Fläche zeichnet (Pointer Events),
+  gespeichert als Linienzug in ganzen Zahlen ohne Zeit, Druck oder Tempo (keine weiteren
+  biometrischen Merkmale), die Zeit der Unterschrift vom Server; der Nachweis nur unterschrieben
+  existiert, seinen Inhalt eingefroren hält und seine Buchungen sperrt (ändern und löschen `409
+  unterschrieben`, abrechnen weiter möglich), eine Buchung in höchstens einem Nachweis steht, vom
+  Server erzwungen (auch bei zwei Anfragen zugleich), und eine Buchung, die sich seit der Vorschau
+  geändert hat, das Unterschreiben ablehnt (`409 abweichung`); das PDF mit `pdf-lib` in
+  `packages/export` die Unterschrift als Zeichnung und den SHA-256 seines Inhalts trägt, aus
+  demselben Inhalt dieselbe Datei wird (Test) und der Hash im Glied der Audit-Kette steht; das
+  Modul eine Funktion für das PDF eines Nachweises bietet, die S-606 als Anlage an Haben schickt;
+  der Nachweis je Betrieb fortlaufend nummeriert ist; Herunterladen und Teilen vom Gerät aus gehen
+  (Web Share API mit der Datei, sonst Herunterladen), ohne öffentlichen Link, im Projektplan
+  begründet. Dazu: Schreiben über die Audit-Kette und eine neue Migration; die Auskunft entscheidet
+  über die neuen Tabellen; der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein
+  Test je Endpunkt zeigt, dass kein Betrieb die Nachweise oder Buchungen eines anderen sieht oder
+  unterschreibt; Playwright zeichnet die Unterschrift mit Pointer Events, unterschreibt und lädt das
+  PDF (desktop und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/projektzeit.md`.
 - [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung

@@ -74,7 +74,14 @@ Nein. Ein Android-Tablet an der Wand reicht; gestempelt wird mit PIN, QR-Code od
 
 Bun, Hono, Drizzle und SQLite auf dem Server; Solid und Tailwind im Client. Hinweise für
 Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), der Plan in der
-[Dokumentation](https://soll.work/plan.html).
+[Dokumentation](https://soll.work/plan.html), Aufbau und Befehle unter
+[Entwicklung](https://soll.work/entwicklung.html).
+
+```sh
+bun install
+bun run check        # Typen, Lint, Tests, Build
+bun run e2e          # Playwright: desktop, phone, terminal
+```
 
 ---
 

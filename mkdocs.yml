@@ -59,3 +59,4 @@ nav:
   - Soll: index.md
   - Entwicklung:
       - Projektplan: plan.md
+      - Aufbau und Befehle: entwicklung.md

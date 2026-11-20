@@ -1,0 +1,25 @@
+{
+  "name": "@soll/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "vite --port 5177",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@solidjs/web": "2.0.3",
+    "@soll/ui": "workspace:*",
+    "@tanstack/solid-router": "2.0.0-rc.11",
+    "solid-js": "2.0.3"
+  },
+  "devDependencies": {
+    "@solidjs/vite-plugin": "3.0.1",
+    "@tailwindcss/vite": "4.3.5",
+    "@tanstack/router-plugin": "1.169.0",
+    "tailwindcss": "4.3.5",
+    "vite": "8.3.8"
+  }
+}

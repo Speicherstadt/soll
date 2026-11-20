@@ -75,6 +75,19 @@ const feiertageIn = (tage: readonly PruefTag[], standort: Standort): Set<Tag> =>
   return new Set(liste);
 };
 
+/**
+ * The planned shifts a finding concerns: those of the days it names; for a finding that names only
+ * days already worked but the days a remedy may lie on (R-09: `von` to `bis`, the period of the
+ * Ersatzruhetag, § 11 Abs. 3 ArbZG), the planned shifts in that period, which take the free days away
+ */
+const betroffeneSchichten = (befund: Befund, tagVon: ReadonlyMap<string, Tag>): string[] => {
+  const genannt = [...tagVon].filter(([, tag]) => befund.tage.includes(tag));
+  if (genannt.length > 0) return genannt.map(([schichtId]) => schichtId);
+  const { von, bis } = befund as { von?: unknown; bis?: unknown };
+  if (typeof von !== "string" || typeof bis !== "string") return [];
+  return [...tagVon].filter(([, tag]) => tag >= von && tag <= bis).map(([schichtId]) => schichtId);
+};
+
 /** Every rule of Phase 2 that reads planned shifts, on one person's days (BAULISTE.md, S-502) */
 const alleRegeln = (
   pruefung: PlanPruefung,
@@ -149,9 +162,7 @@ export const planBefunde = (pruefung: PlanPruefung): Pruefergebnis<PlanBefund> =
   const jetzt = beginnInBerlin(plusTage(letzter, 1)) - 60_000;
   const ergebnisse = alleRegeln(pruefung, tage, geplant, jetzt);
   const befunde = nachTag(ergebnisse.flatMap((ergebnis) => ergebnis.befunde)).flatMap((befund) => {
-    const schichtIds = [...tagVon]
-      .filter(([, tag]) => befund.tage.includes(tag))
-      .map(([schichtId]) => schichtId);
+    const schichtIds = betroffeneSchichten(befund, tagVon);
     const abruf = (befund as { schichtId?: string }).schichtId;
     const betroffen = abruf ? [abruf] : schichtIds;
     return betroffen.length > 0 ? [{ ...befund, schichtIds: betroffen }] : [];

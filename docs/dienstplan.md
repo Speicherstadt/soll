@@ -106,7 +106,9 @@ Plan kommt.
 - **Plan und Ist**: Tage vor heute kommen aus den Stempelungen, heute und später aus dem Plan.
   Geprüft wird, als wäre der Plan bis zum Ende seines letzten Tages gearbeitet; so zählt die
   Ruhezeit nach der gestrigen Spätschicht ebenso wie der Durchschnitt des Ausgleichszeitraums bis
-  zum letzten geplanten Tag. Schichten an anderen Standorten zählen als Arbeitszeit mit, die
+  zum letzten geplanten Tag. Ein Befund steht an den geplanten Schichten der Tage, die er nennt; hat
+  jemand an einem vergangenen Sonntag gearbeitet und lässt der Plan in dessen Zeitraum keinen freien
+  Werktag mehr (Ersatzruhetag, R-09), steht er an den geplanten Schichten dieses Zeitraums. Schichten an anderen Standorten zählen als Arbeitszeit mit, die
   Feiertage kommen vom Standort der gezeigten Woche.
 - **Pause**: Der Plan nennt die Länge der Pause, nicht ihre Lage. Soll legt sie in die Mitte der
   Arbeitszeit, die günstigste Lage: Gemeldet wird „über 6 h ohne Pause“ nur, wenn es keine Lage gibt,

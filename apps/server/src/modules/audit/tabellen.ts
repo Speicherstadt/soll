@@ -2,6 +2,8 @@ import {
   arbeitszeitmodelle,
   bedarfe,
   betriebe,
+  datevEinstellungen,
+  datevPersonalnummern,
   einladungen,
   erinnerungen,
   erinnerungseinstellungen,
@@ -52,6 +54,8 @@ export const kettenTabellen = {
   schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
   schichten: { tabelle: schichten, schluessel: ["schichtId"] },
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
+  datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
+  datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

@@ -319,10 +319,33 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   die passende Seite (Test). Playwright in `desktop` und `phone` meldet ein Gerät mit einem Ersatz
   für den Push-Dienst des Browsers an und ab und ändert die Einstellungen; Texte in allen sechs
   Sprachen, Arabisch von rechts nach links.
-- [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
+- [x] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
   und jede Feldregel ihre Quelle im Code nennt.
+  Dazu: reine Funktionen in `packages/export/src/datev/` schreiben aus den Lohnposten eines Monats
+  die ASCII-Importdatei für LODAS (`[Allgemein]` mit `Ziel=LODAS`, `Version_SST`, `BeraterNr`,
+  `MandantenNr`, `Feldtrennzeichen`, `Zahlenkomma` und `Datumsformat`, `[Satzbeschreibung]` mit
+  `u_lod_bwd_buchung_standard`, `[Bewegungsdaten]` je Personalnummer und Lohnart mit Stunden oder
+  Betrag) und die Bewegungsdatei für Lohn und Gehalt (Satzaufbau aus den erreichbaren Quellen,
+  Entscheidung im Projektplan), in Windows-1252 mit CRLF und Dezimalkomma aus ganzen Minuten und
+  Cent ohne Gleitkommazahlen, Stunden nie zulasten der Person gerundet. Jede Feldregel nennt im
+  Code ihre Quelle; welche Quellen erreichbar waren, steht im Pull Request und in `docs/`. Je
+  Betrieb eine Zuordnung in einer neuen Tabelle mit `betrieb_id` in der Audit-Kette über eine neue
+  Migration: Berater- und Mandantennummer, Personalnummer je Person und eine Lohnart je Posten
+  (Stunden, Minijob, Feiertagsstunden, Urlaub, Krank, Kind krank, Sonderurlaub, Überstunden und die
+  Zuschläge für Nacht, Sonntag und Feiertag je steuerfrei und steuerpflichtig nach § 3b EStG aus
+  S-207); die Sätze der Zuschläge speichert das Arbeitszeitmodell. Exportiert werden nur
+  abgeschlossene Monate aus ihrem festgeschriebenen Inhalt (S-306), so dass sich die Zahlen nach
+  dem Export nicht mehr ändern; ein Monat einer Person, der nicht abgeschlossen ist, und jede
+  fehlende Angabe (Beraternummer, Personalnummer, Lohnart eines vorkommenden Postens) verhindern
+  den Export mit einer Liste dessen, was „nicht hinterlegt“ ist. Golden Files für Stundenlohn
+  (Weber Haustechnik), Minijob (Café Elbblick) und Zuschläge, je für LODAS und Lohn und Gehalt;
+  Abwesenheiten (S-401) gehen als Eingabe der reinen Funktion ein, ohne von S-401 abzuhängen.
+  Herunterladen in der App für Inhaber und Lohnbüro, ein Endpunkt des abgeschalteten Moduls
+  Arbeitszeit wird abgelehnt, ein Test je Endpunkt, dass kein Betrieb Einstellungen oder Exporte
+  eines anderen sieht oder ändert; Playwright `desktop` stellt die Zuordnung ein und lädt die
+  Datei herunter, axe grün in hell und dunkel; Texte in allen sechs Sprachen; `docs/datev.md`.
 - [x] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
   Arbeitsschutz; Auskunft nach Art. 15 DSGVO als Export.
   Fertig, wenn: der Prüfexport je Person und Arbeitstag Datum, Beginn, Ende, Pausen und Dauer in

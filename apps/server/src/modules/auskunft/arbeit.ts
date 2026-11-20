@@ -117,6 +117,7 @@ const modelleVon = (db: Db, betriebId: string, nutzerId: string) => {
         lohnArt: m.lohnArt,
         lohnCent: m.lohnCent,
         minijob: m.minijob,
+        zuschlagssaetze: JSON.parse(m.zuschlagssaetze) as Record<string, number>,
       },
     };
   });

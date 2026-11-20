@@ -2,6 +2,7 @@ import { Button } from "@soll/ui";
 import { createFileRoute, Link, useNavigate } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { api } from "../api.ts";
+import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
@@ -28,6 +29,7 @@ const Einstellungen = () => {
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
       <Erinnerungen />
+      <DatevZuordnung />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

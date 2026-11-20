@@ -12,6 +12,7 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";
 
@@ -66,6 +67,8 @@ export const arbeitszeitmodelle = sqliteTable(
     lohnArt: text("lohn_art", { enum: ["monat", "stunde"] }).notNull(),
     lohnCent: integer("lohn_cent"),
     minijob: integer("minijob", { mode: "boolean" }).notNull().default(false),
+    // JSON object of the surcharges the model pays, in basis points (`Zuschlagssaetze`, S-207/S-308)
+    zuschlagssaetze: text("zuschlagssaetze").notNull().default("{}"),
     gueltigAb: text("gueltig_ab").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
   },

@@ -94,8 +94,12 @@ const schritt = (lauf: Lauf, stempel: Stempelung): Lauf => {
   const { art } = stempel;
   if (lauf.zustand === "aus") {
     if (art === "kommen") return beginne(lauf, stempel);
-    if (art === "gehen" && lauf.letzte?.art === "gehen")
-      return beende(melde(lauf, "doppelt", stempel), stempel, "aus");
+    if (art === "gehen" && lauf.letzte?.art === "gehen") {
+      // the later Gehen counts only when the work ended with Gehen, never across a break
+      const gemeldet = melde(lauf, "doppelt", stempel);
+      const mitGehen = lauf.stuecke.at(-1)?.endetMit === "gehen";
+      return mitGehen ? beende(gemeldet, stempel, "aus") : { ...gemeldet, letzte: stempel };
+    }
     return melde(lauf, "kommen_fehlt", stempel);
   }
   if (lauf.zustand === "arbeit") {

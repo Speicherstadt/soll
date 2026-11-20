@@ -421,6 +421,35 @@ describe("the history of a person who no longer stamps (review of PR #14)", () =
     expect((await json(antwort)).stempelungen).toHaveLength(2);
   });
 
+  // Art. 15 DSGVO and docs/anmeldung.md ("Extern: die eigenen Daten"): a person keeps access to
+  // their own recorded times, read-only, after the role no longer stamps
+  it("still shows a member who became external staff their own past days, read-only", async () => {
+    const { sandra, server, jonas } = await mitVergangenemTag(async (welt) => {
+      const wechsel = await welt.jonas.anfrage("/api/auth/organization/update-member-role", {
+        body: {
+          memberId: await mitgliedId(welt),
+          role: "extern",
+          organizationId: welt.jonas.betriebId,
+        },
+      });
+      expect(wechsel.status).toBe(200);
+    });
+    const antwort = await sandra.anfrage("/api/v1/arbeitszeit/tag?datum=2026-11-19");
+    expect(antwort.status).toBe(200);
+    expect((await json(antwort)).stempelungen).toHaveLength(2);
+    // reading one's own days does not open others' days or stamping
+    expect(
+      (await sandra.anfrage(`/api/v1/arbeitszeit/tag?datum=2026-11-19&nutzerId=${jonas.nutzerId}`))
+        .status,
+    ).toBe(403);
+    const stempel = await sandra.anfrage("/api/v1/arbeitszeit/stempelungen", {
+      body: { art: "kommen" },
+    });
+    expect(stempel.status).toBe(403);
+    const fremd = await server.eingeladen(jonas, "extern", "freelancer");
+    expect((await fremd.anfrage("/api/v1/arbeitszeit/tag?datum=2026-11-19")).status).toBe(403);
+  });
+
   it("shows another business nothing of a person who never stamped there", async () => {
     const { server, sandra } = await mitVergangenemTag(async () => {});
     const mia = await server.inhaberMitBetrieb("Café Elbblick", "elbblick");
@@ -428,6 +457,35 @@ describe("the history of a person who no longer stamps (review of PR #14)", () =
       `/api/v1/arbeitszeit/tag?datum=2026-11-19&nutzerId=${sandra.nutzerId}`,
     );
     expect(antwort.status).toBe(404);
+  });
+});
+
+describe("a change that moves a stamp to another day (review of PR #14)", () => {
+  it("shows the change on the day it left and on the day it moved to", async () => {
+    const { jonas, sandra } = await weber();
+    const kommen = await json(
+      await nachtrag(sandra, {
+        art: "kommen",
+        zeitpunkt: um("2026-11-10T07:00:00"),
+        grund: "vergessen",
+      }),
+    );
+    const neu = await jonas.anfrage(`/api/v1/arbeitszeit/stempelungen/${kommen.stempelId}`, {
+      method: "PATCH",
+      body: { art: "kommen", zeitpunkt: um("2026-11-18T07:00:00"), grund: "falscher Tag" },
+    });
+    expect(neu.status).toBe(201);
+    const erwartet = expect.objectContaining({
+      aktion: "geaendert",
+      vorher: { art: "kommen", zeitpunkt: um("2026-11-10T07:00:00") },
+      nachher: { art: "kommen", zeitpunkt: um("2026-11-18T07:00:00") },
+    });
+    const alt = await tagVon(sandra, "2026-11-10");
+    expect(alt.stempelungen).toEqual([]);
+    expect(alt.aenderungen).toContainEqual(erwartet);
+    const ziel = await tagVon(sandra, "2026-11-18");
+    expect(ziel.stempelungen).toHaveLength(1);
+    expect(ziel.aenderungen).toContainEqual(erwartet);
   });
 });
 

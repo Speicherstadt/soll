@@ -22,6 +22,7 @@ describe("the Solid 2.0 check (docs/solid-2.0/MIGRATION.md)", () => {
     ["<Theme.Provider value={t}>", "Provider"],
     ['import { render } from "solid-js/web";', "1.x imports"],
     ["<button onclick={plus} />", "lowercase event"],
+    ["<Dynamic component={Editor} wert={w()} />", "Dynamic"],
   ])("finds %s", (text, regel) => {
     expect(regeln(text)).toContain(regel);
   });
@@ -43,6 +44,9 @@ describe("the Solid 2.0 check (docs/solid-2.0/MIGRATION.md)", () => {
     "// createResource was 1.x",
     "/* <Suspense> is gone */",
     "const onlineSeit = 1; // an identifier that starts with on",
+    "<img src={bild()} alt=\"\" onError={() => setKaputt(true)} />",
+    "socket.on(ereignis, verarbeiten);",
+    "const Aktiv = dynamic(() => (bearbeiten() ? Editor : Ansicht));",
   ])("leaves Solid 2.0 code alone: %s", (text) => {
     expect(regeln(text)).toEqual([]);
   });

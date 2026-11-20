@@ -346,7 +346,7 @@ Alle Punkte: nach S-306.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
+- [x] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
   Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
   Fertig, wenn: der Stundensatz eine reine Funktion in `packages/arbeitszeit` ist, deren Vorrang
   dokumentiert und für jede Stufe getestet ist (Tätigkeit vor Auftrag vor Kunde, auf jeder Stufe die

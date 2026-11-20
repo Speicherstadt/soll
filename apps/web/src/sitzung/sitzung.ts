@@ -80,12 +80,16 @@ let laufend: Promise<Zustand> | null = null;
 
 /** The session, asked of the server once per page load */
 export const sitzungLaden = (): Promise<Zustand> => {
-  laufend ??= abfragen().then((neu) => {
+  if (laufend) return laufend;
+  const diese: Promise<Zustand> = abfragen().then((neu) => {
+    // an answer to a question asked again since (sitzungNeu) was read before what changed
+    if (laufend !== diese) return laufend ?? neu;
     setZustand(neu);
     if (neu.art !== "offline") merken(neu.art === "bereit" ? neu.betrieb : null);
     return neu;
   });
-  return laufend;
+  laufend = diese;
+  return diese;
 };
 
 /** Asks the server again, after signing in or out, setting up or switching modules */

@@ -81,3 +81,72 @@ test("reloading asks first while the links are shown, which are shown once only"
   expect(await neuLadenAbgelehnt(page)).toBe(true);
   await expect(links).toHaveCount(1);
 });
+
+test("after finishing with links shown, a reload of the start page does not ask", async ({
+  page,
+}) => {
+  await zuDenEinladungen(page);
+  await weiter(page);
+  await page.getByRole("button", { name: t("einladungen_erstellen") }).click();
+  await expect(
+    page.getByRole("list", { name: t("einladungen_liste") }).getByRole("textbox"),
+  ).toHaveCount(1);
+  await page.getByRole("button", { name: t("einrichtung_abschliessen") }).click();
+  await expect(page).toHaveURL("/");
+  expect(await neuLadenAbgelehnt(page)).toBe(false);
+});
+
+/**
+ * Holds back the answer to the step's first GET of `pfad`, read before anything was added, until
+ * `freigeben` is called: a slow first load answering after a quick add
+ */
+const ersteListeVerzoegern = async (page: Page, pfad: string) => {
+  let freigeben = () => {};
+  const frei = new Promise<void>((resolve) => {
+    freigeben = resolve;
+  });
+  let beantwortet: Promise<void> = Promise.resolve();
+  await page.route(
+    (url) => url.pathname === pfad,
+    async (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      await page.unroute((url) => url.pathname === pfad);
+      const antwort = await route.fetch();
+      beantwortet = frei.then(() => route.fulfill({ response: antwort }));
+    },
+  );
+  return async () => {
+    freigeben();
+    await beantwortet;
+  };
+};
+
+test("a site added while the first load is slow stays on the list", async ({ page }) => {
+  await betriebAnlegen(page, ALLE_MODULE, false);
+  await page.goto("/einrichtung");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(t("betrieb_titel"));
+  const freigeben = await ersteListeVerzoegern(page, "/api/v1/standorte");
+  await weiter(page);
+  await page.getByLabel(t("standort_name"), { exact: true }).fill("Werkstatt");
+  await page.getByRole("button", { name: t("standort_hinzufuegen") }).click();
+  const liste = page.getByRole("list", { name: t("standorte_liste") });
+  await expect(liste).toContainText("Werkstatt");
+  await freigeben();
+  await page.waitForTimeout(200);
+  await expect(liste).toContainText("Werkstatt");
+});
+
+test("a model taken while the first load is slow stays on the list", async ({ page }) => {
+  await zuDenStandorten(page);
+  await page.getByLabel(t("standort_name"), { exact: true }).fill("Werkstatt");
+  await page.getByRole("button", { name: t("standort_hinzufuegen") }).click();
+  await expect(page.getByRole("list", { name: t("standorte_liste") })).toContainText("Werkstatt");
+  const freigeben = await ersteListeVerzoegern(page, "/api/v1/arbeitszeit/modelle");
+  await weiter(page);
+  await page.getByRole("form", { name: "Vollzeit" }).getByRole("button").click();
+  const liste = page.getByRole("list", { name: t("modelle_liste") });
+  await expect(liste).toContainText("Vollzeit");
+  await freigeben();
+  await page.waitForTimeout(200);
+  await expect(liste).toContainText("Vollzeit");
+});

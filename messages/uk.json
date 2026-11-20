@@ -1,6 +1,22 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
-  "start_tagline": "Облік робочого часу так, як вимагає закон, – на твоєму власному сервері.",
-  "start_status": "У розробці"
+  "nav_bereiche": "Розділи",
+  "nav_heute": "Сьогодні",
+  "nav_zeiten": "Час",
+  "nav_abwesenheiten": "Відсутності",
+  "nav_dienstplan": "Графік змін",
+  "nav_projekte": "Проєкти",
+  "nav_auswertungen": "Звіти",
+  "nav_einstellungen": "Налаштування",
+  "nav_plan": "План",
+  "nav_abwesenheit": "Відсутність",
+  "nav_mehr": "Більше",
+  "seite_leer": "Цей розділ скоро з’явиться.",
+  "darstellung_titel": "Вигляд",
+  "theme_label": "Кольори",
+  "theme_system": "Як на пристрої",
+  "theme_hell": "Світлий",
+  "theme_dunkel": "Темний",
+  "sprache_label": "Мова"
 }

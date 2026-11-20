@@ -1,6 +1,22 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
-  "start_tagline": "Rejestruj czas pracy tak, jak wymaga tego prawo – na własnym serwerze.",
-  "start_status": "W trakcie tworzenia"
+  "nav_bereiche": "Obszary",
+  "nav_heute": "Dziś",
+  "nav_zeiten": "Czasy",
+  "nav_abwesenheiten": "Nieobecności",
+  "nav_dienstplan": "Grafik",
+  "nav_projekte": "Projekty",
+  "nav_auswertungen": "Raporty",
+  "nav_einstellungen": "Ustawienia",
+  "nav_plan": "Grafik",
+  "nav_abwesenheit": "Nieobecność",
+  "nav_mehr": "Więcej",
+  "seite_leer": "Ten obszar pojawi się wkrótce.",
+  "darstellung_titel": "Wygląd",
+  "theme_label": "Kolory",
+  "theme_system": "Jak urządzenie",
+  "theme_hell": "Jasny",
+  "theme_dunkel": "Ciemny",
+  "sprache_label": "Język"
 }

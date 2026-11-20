@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AbwesenheitenRouteImport } from './routes/abwesenheiten'
+import { Route as AuswertungenRouteImport } from './routes/auswertungen'
+import { Route as DienstplanRouteImport } from './routes/dienstplan'
+import { Route as EinstellungenRouteImport } from './routes/einstellungen'
+import { Route as MehrRouteImport } from './routes/mehr'
+import { Route as ProjekteRouteImport } from './routes/projekte'
+import { Route as ZeitenRouteImport } from './routes/zeiten'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AbwesenheitenRoute = AbwesenheitenRouteImport.update({
+  id: '/abwesenheiten',
+  path: '/abwesenheiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuswertungenRoute = AuswertungenRouteImport.update({
+  id: '/auswertungen',
+  path: '/auswertungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DienstplanRoute = DienstplanRouteImport.update({
+  id: '/dienstplan',
+  path: '/dienstplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EinstellungenRoute = EinstellungenRouteImport.update({
+  id: '/einstellungen',
+  path: '/einstellungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MehrRoute = MehrRouteImport.update({
+  id: '/mehr',
+  path: '/mehr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjekteRoute = ProjekteRouteImport.update({
+  id: '/projekte',
+  path: '/projekte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZeitenRoute = ZeitenRouteImport.update({
+  id: '/zeiten',
+  path: '/zeiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/abwesenheiten': typeof AbwesenheitenRoute
+  '/auswertungen': typeof AuswertungenRoute
+  '/dienstplan': typeof DienstplanRoute
+  '/einstellungen': typeof EinstellungenRoute
+  '/mehr': typeof MehrRoute
+  '/projekte': typeof ProjekteRoute
+  '/zeiten': typeof ZeitenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/abwesenheiten': typeof AbwesenheitenRoute
+  '/auswertungen': typeof AuswertungenRoute
+  '/dienstplan': typeof DienstplanRoute
+  '/einstellungen': typeof EinstellungenRoute
+  '/mehr': typeof MehrRoute
+  '/projekte': typeof ProjekteRoute
+  '/zeiten': typeof ZeitenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/abwesenheiten': typeof AbwesenheitenRoute
+  '/auswertungen': typeof AuswertungenRoute
+  '/dienstplan': typeof DienstplanRoute
+  '/einstellungen': typeof EinstellungenRoute
+  '/mehr': typeof MehrRoute
+  '/projekte': typeof ProjekteRoute
+  '/zeiten': typeof ZeitenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/abwesenheiten'
+    | '/auswertungen'
+    | '/dienstplan'
+    | '/einstellungen'
+    | '/mehr'
+    | '/projekte'
+    | '/zeiten'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/abwesenheiten'
+    | '/auswertungen'
+    | '/dienstplan'
+    | '/einstellungen'
+    | '/mehr'
+    | '/projekte'
+    | '/zeiten'
+  id:
+    | '__root__'
+    | '/'
+    | '/abwesenheiten'
+    | '/auswertungen'
+    | '/dienstplan'
+    | '/einstellungen'
+    | '/mehr'
+    | '/projekte'
+    | '/zeiten'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AbwesenheitenRoute: typeof AbwesenheitenRoute
+  AuswertungenRoute: typeof AuswertungenRoute
+  DienstplanRoute: typeof DienstplanRoute
+  EinstellungenRoute: typeof EinstellungenRoute
+  MehrRoute: typeof MehrRoute
+  ProjekteRoute: typeof ProjekteRoute
+  ZeitenRoute: typeof ZeitenRoute
 }
 
 declare module '@tanstack/solid-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/abwesenheiten': {
+      id: '/abwesenheiten'
+      path: '/abwesenheiten'
+      fullPath: '/abwesenheiten'
+      preLoaderRoute: typeof AbwesenheitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auswertungen': {
+      id: '/auswertungen'
+      path: '/auswertungen'
+      fullPath: '/auswertungen'
+      preLoaderRoute: typeof AuswertungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dienstplan': {
+      id: '/dienstplan'
+      path: '/dienstplan'
+      fullPath: '/dienstplan'
+      preLoaderRoute: typeof DienstplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/einstellungen': {
+      id: '/einstellungen'
+      path: '/einstellungen'
+      fullPath: '/einstellungen'
+      preLoaderRoute: typeof EinstellungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mehr': {
+      id: '/mehr'
+      path: '/mehr'
+      fullPath: '/mehr'
+      preLoaderRoute: typeof MehrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projekte': {
+      id: '/projekte'
+      path: '/projekte'
+      fullPath: '/projekte'
+      preLoaderRoute: typeof ProjekteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zeiten': {
+      id: '/zeiten'
+      path: '/zeiten'
+      fullPath: '/zeiten'
+      preLoaderRoute: typeof ZeitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AbwesenheitenRoute: AbwesenheitenRoute,
+  AuswertungenRoute: AuswertungenRoute,
+  DienstplanRoute: DienstplanRoute,
+  EinstellungenRoute: EinstellungenRoute,
+  MehrRoute: MehrRoute,
+  ProjekteRoute: ProjekteRoute,
+  ZeitenRoute: ZeitenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

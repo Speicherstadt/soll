@@ -1,6 +1,7 @@
 import { render } from "@solidjs/web";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { applyLocale } from "./i18n.ts";
+import { liesThema, wendeThemaAn } from "./rahmen/theme.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
 
@@ -13,6 +14,12 @@ declare module "@tanstack/solid-router" {
 }
 
 applyLocale();
+// before the first render, so a dark theme never flashes light
+try {
+  wendeThemaAn(document.documentElement, liesThema(localStorage));
+} catch {
+  // storage blocked: follow the device
+}
 
 const root = document.getElementById("app");
 if (root) render(() => <RouterProvider router={router} />, root);

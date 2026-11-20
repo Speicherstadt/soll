@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "generate": "paraglide-js compile --silent --project ./project.inlang --outdir ./apps/web/src/paraglide --strategy localStorage preferredLanguage baseLocale",
+    "generate": "paraglide-js compile --silent --project ./project.inlang --outdir ./apps/web/src/paraglide --strategy localStorage cookie preferredLanguage baseLocale",
     "typecheck": "bun run generate && tsc -b",
     "lint": "biome check --error-on-warnings .",
     "format": "biome check --write .",

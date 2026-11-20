@@ -155,7 +155,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Unterbrechung der Ruhezeit.
 - [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
   Fertig, wenn: die Beispiele aus R 3b LStR und H 3b LStH als Tests bestehen.
-- [ ] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
+- [x] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
   Abschlüssen, Urlaub anteilig, Zusatzurlaub (§ 208 SGB IX), Kürzung bei Elternzeit (§ 17 BEEG),
   Hinweis auf Verfall.
   Fertig, wenn: jeder Fall von R-23 bis R-26, R-28 und R-33 in `docs/regeln.md` wörtlich als Test

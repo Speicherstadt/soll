@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Auth } from "../auth/auth.ts";
-import { ROLLEN } from "../auth/rollen.ts";
+import { ROLLEN, rollenVon } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { betriebLesen } from "../modules/betrieb/index.ts";
 import {
@@ -23,7 +23,10 @@ export const einladungRouten = (schreibDb: SchreibDb, url: string, jetzt: () => 
   new Hono<Anfrage>().post("/", recht("mitglieder:einladen"), async (c) => {
     const eingabe = einladenSchema.safeParse(await c.req.json().catch(() => null));
     if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
-    if (c.get("rolle") !== "inhaber" && !PLANER_DARF.includes(eingabe.data.rolle)) {
+    if (
+      !rollenVon(c.get("rolle")).includes("inhaber") &&
+      !PLANER_DARF.includes(eingabe.data.rolle)
+    ) {
       return c.json({ fehler: "keine_berechtigung" }, 403);
     }
     const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };

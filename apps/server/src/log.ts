@@ -19,7 +19,9 @@ export type LogSink = (line: string) => void;
  */
 export const redactUrl = (url: string): string => {
   const parsed = new URL(url, "http://soll.invalid");
-  return parsed.search.length > 1 ? `${parsed.pathname}?…` : parsed.pathname;
+  // the token of an invitation link is the only key to it (routes/einladungen.ts)
+  const pfad = parsed.pathname.replace(/\/einladung\/[^/]+/g, "/einladung/…");
+  return parsed.search.length > 1 ? `${pfad}?…` : pfad;
 };
 
 export const formatRequestLog = (entry: RequestLog): string => JSON.stringify(entry);

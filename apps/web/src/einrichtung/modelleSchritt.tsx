@@ -126,14 +126,19 @@ export const ModelleSchritt = (props: {
     setArbeitet(neu);
     return true;
   };
+  // removed before the first load answered: that answer may still list them
+  const entfernt = new Set<string>();
   api<{ modelle: Modell[] }>("/api/v1/arbeitszeit/modelle").then(
-    (a) => a.ok && setModelle((hier) => ergaenzt(a.daten.modelle, hier, (x) => x.modellId)),
+    (a) =>
+      a.ok && setModelle((hier) => ergaenzt(a.daten.modelle, hier, (x) => x.modellId, entfernt)),
   );
   const entfernen = async (modell: Modell) => {
     const antwort = await api(`/api/v1/arbeitszeit/modelle/${modell.modellId}`, {
       method: "DELETE",
     });
-    if (antwort.ok) setModelle((liste) => liste.filter((x) => x.modellId !== modell.modellId));
+    if (!antwort.ok) return;
+    entfernt.add(modell.modellId);
+    setModelle((liste) => liste.filter((x) => x.modellId !== modell.modellId));
   };
   const weiter = () => (modelle().length > 0 ? props.weiter() : setFehler(m.modell_fehlt()));
   return (

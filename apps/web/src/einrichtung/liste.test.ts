@@ -15,4 +15,10 @@ describe("ergaenzt", () => {
       { id: "c" },
     ]);
   });
+
+  it("does not bring back an entry removed on the page before the load answered", () => {
+    expect(ergaenzt([{ id: "a" }, { id: "b" }], [{ id: "b" }], id, new Set(["a"]))).toEqual([
+      { id: "b" },
+    ]);
+  });
 });

@@ -121,13 +121,18 @@ export const StandorteSchritt = (props: {
   const [standorte, setStandorte] = createSignal<Standort[]>([]);
   const [fehler, setFehler] = createSignal("");
   const [arbeitet, setArbeitet] = createSignal(false);
+  // removed before the first load answered: that answer may still list them
+  const entfernt = new Set<string>();
   api<{ standorte: Standort[] }>("/api/v1/standorte").then(
-    (a) => a.ok && setStandorte((hier) => ergaenzt(a.daten.standorte, hier, (s) => s.standortId)),
+    (a) =>
+      a.ok &&
+      setStandorte((hier) => ergaenzt(a.daten.standorte, hier, (s) => s.standortId, entfernt)),
   );
   const entfernen = async (standort: Standort) => {
     const antwort = await api(`/api/v1/standorte/${standort.standortId}`, { method: "DELETE" });
-    if (antwort.ok)
-      setStandorte((liste) => liste.filter((s) => s.standortId !== standort.standortId));
+    if (!antwort.ok) return;
+    entfernt.add(standort.standortId);
+    setStandorte((liste) => liste.filter((s) => s.standortId !== standort.standortId));
   };
   const weiter = () => (standorte().length > 0 ? props.weiter() : setFehler(m.standort_fehlt()));
   return (

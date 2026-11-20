@@ -31,6 +31,7 @@ export const RECHTE = [
   "monat:abschliessen",
   "projekte:lesen",
   "projekte:verwalten",
+  "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
 ] as const;
@@ -56,6 +57,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     // customers, orders, activities and hourly rates (S-601)
     "projekte:lesen",
     "projekte:verwalten",
+    // the times of the reminders hold for the whole business (S-307)
+    "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
   ],

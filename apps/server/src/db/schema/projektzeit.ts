@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 /*
- * The tables of the module Projektzeit (BAULISTE.md S-601): customers, orders, activities and hourly
+ * The tables of the module Projektzeit (BAULISTE.md S-601; re-exported by ../schema.ts): customers, orders, activities and hourly
  * rates. Like every table of Soll they carry `betrieb_id` and are written only through the audit chain;
  * money in whole cents, durations in whole minutes (CLAUDE.md). What an order or a rate still names is
  * archived (`archiviert_am`) instead of removed. `extern_quelle` and `extern_id` name the row in

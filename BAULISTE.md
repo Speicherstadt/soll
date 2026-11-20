@@ -291,11 +291,34 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   abgelehnt; Playwright in `desktop` und `phone` bestätigt und schließt einen Monat ab und prüft den
   Prüfwert; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Verfahrensdokumentation zum
   Prüfwert in `docs/`.
-- [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
+- [x] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
   VAPID-Schlüsseln, die die Instanz beim ersten Start erzeugt, und Mail über SMTP aus der
   Konfiguration; nie automatisch ausstempeln.
   Fertig, wenn: Tests mit einem Ersatz für den Push-Dienst und einem SMTP-Testserver jede Erinnerung
-  zeigen.
+  zeigen. Dazu: welche Erinnerung fällig ist, entscheidet eine reine Funktion aus Daten und einem
+  übergebenen Zeitpunkt (Tests mit fester Uhr, auch über beide Zeitumstellungen); eine kleine
+  Schleife im Server ruft sie jede Minute und schreibt selbst nie eine Stempelung (Test: nach jedem
+  Lauf dieselben Stempelungen). „Ausstempeln vergessen“ kommt, wenn eine Schicht eine im Betrieb
+  einstellbare Zeit offen ist (Vorgabe 10 Stunden), „Pause fällig“ eine einstellbare Zeit vor der
+  nächsten Pause nach § 4 ArbZG aus `tagesstand()` (nach 6 Stunden am Stück, 30 Minuten ab 6 und
+  45 Minuten ab 9 Stunden), „Monat bestätigen“ ab einem einstellbaren Tag des Folgemonats, solange
+  die Person den vergangenen Monat mit Aufzeichnungen nicht gültig bestätigt hat und er nicht
+  abgeschlossen ist. Jede Erinnerung geht höchstens einmal hinaus: sie wird mit Person, Art und
+  Bezug in einer neuen Tabelle mit `betrieb_id` in der Audit-Kette vermerkt, eindeutig, bevor sie
+  gesendet wird. Web Push nach RFC 8030 mit VAPID (RFC 8292) und verschlüsseltem Inhalt
+  (`aes128gcm`, RFC 8291, Test mit den Werten aus Anhang A); das Schlüsselpaar erzeugt die Instanz
+  beim ersten Start und legt den privaten Teil mit `SOLL_SECRET_KEY` verschlüsselt ab (Test: im
+  Klartext nirgends in der Datenbank, beim zweiten Start derselbe Schlüssel); ein Abo meldet sich
+  je Gerät an und ab (Endpunkt und Schlüssel verschlüsselt gespeichert, ein Schlüssel außerhalb von
+  P-256 abgelehnt), ein Abo, das der Push-Dienst mit 404 oder 410 ablehnt, wird entfernt; ohne Abo
+  oder wenn kein Push ankommt, geht die Erinnerung per Mail über SMTP aus der Konfiguration an eine
+  zustellbare Adresse. Jede Person schaltet jede Art und die Mail für sich ab, der Inhaber stellt
+  die Zeiten des Betriebs ein; ein Endpunkt des abgeschalteten Moduls Arbeitszeit wird abgelehnt,
+  und ein Test je Endpunkt zeigt, dass kein Betrieb Abos, Einstellungen oder Erinnerungen eines
+  anderen sieht oder ändert. Der Service Worker zeigt die Benachrichtigung und öffnet beim Tippen
+  die passende Seite (Test). Playwright in `desktop` und `phone` meldet ein Gerät mit einem Ersatz
+  für den Push-Dienst des Browsers an und ab und ändert die Einstellungen; Texte in allen sechs
+  Sprachen, Arabisch von rechts nach links.
 - [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen

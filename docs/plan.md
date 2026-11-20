@@ -156,11 +156,12 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
 | `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit-Kette; gesperrt beim Abschluss |
 | `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | Audit-Kette; nur anfügen |
-| `abwesenheiten` | Art, von, bis, halbe Tage, Status | Audit; im abgeschlossenen Monat gesperrt |
+| `abwesenheiten` | Art, von, bis, halbe Tage, Status, Bescheinigung liegt vor | Audit-Kette; im abgeschlossenen Monat gesperrt |
+| `bescheinigungen` | Abwesenheit, SHA-256 der Datei, Dateityp, hochgeladen von und am; Datei verschlüsselt im Dateispeicher | Audit-Kette; ausgesondert mit dem Monat |
 | `schichten`, `schichttausch` | Plan, Rolle, Standort, veröffentlicht am | Audit-Kette |
 | `monatsabschluesse` | Summen, Befunde, Bestätigungen, Prüfwert, Frist | Audit-Kette; nur anfügen |
 | `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit-Kette |
-| `kunden`, `projekte`, `taetigkeiten`, `projektzeiten` | Sätze, Budgets, Zeiten, abgerechnet am | Audit; gesperrt ab „abgerechnet“ |
+| `kunden`, `projekte`, `taetigkeiten`, `projektzeiten` | Sätze, Budgets, Zeiten, abgerechnet am | Audit-Kette; gesperrt ab „abgerechnet“ |
 | `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | Audit-Kette; nur anfügen |
 | `jahreswerte` | Mindestlohn, Minijob-Grenze, Regelversion | per Migration |
 

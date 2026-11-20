@@ -37,13 +37,13 @@ Base details on the sources, not on memory. Clone repositories shallowly (`git c
 into the scratchpad and name the source in comments, tests and commit messages where it settles a
 detail. Law over vendor documentation.
 
-- **Law**: ArbZG, ArbSchG, MiLoG, SchwarzArbG § 2a, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG, SGB IX
-  § 208, BEEG § 17, EStG § 3b, BetrVG § 87, AO § 147, EStG § 41, LStDV § 4, DSGVO, all on
+- **Law**: ArbZG, ArbSchG, MiLoG, SchwarzArbG § 2a, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG, SGB IV
+  § 109, SGB V § 45, SGB IX § 208, BEEG § 17, EStG § 3b, BetrVG § 87, AO § 147, EStG § 41, LStDV § 4, DSGVO, all on
   gesetze-im-internet.de; BAG 1 ABR 22/21; EuGH C-55/18 (CCOO), C-151/02 (Jaeger), C-518/15 (Matzak).
 - **GoBD**: BMF-Schreiben vom 28.11.2019 (GoBD), Rz. 107 ff. (Unveränderbarkeit) and 151 ff.
   (Verfahrensdokumentation). `packages/gobd-kern` in `firsttris/haben` is a source to copy from: the
-  Prüfwert (`pruefwert.ts`), the texts of the Verfahrensdokumentation (`verfahrensdoku/`) and the
-  content-addressed file store (`dateispeicher.ts`). Copied code names its source; no dependency on
+  Prüfwert (`pruefwert.ts`), the texts of the Verfahrensdokumentation (`verfahrensdoku/`), the
+  content-addressed file store (`dateispeicher.ts`) and the file type check (`dateityp.ts`). Copied code names its source; no dependency on
   it, no shared package for now.
 - **Kennwort**: `Speicherstadt/kennwort` for the same stack in practice (Solid 2, Hono, Better Auth,
   Paraglide, the UI package, CI and docs).

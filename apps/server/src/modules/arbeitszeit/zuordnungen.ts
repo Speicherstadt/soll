@@ -1,4 +1,4 @@
-import { type Tag, wochentag } from "@soll/arbeitszeit";
+import { minutenAmWochentag, type Tag } from "@soll/arbeitszeit";
 import { and, desc, eq, lte } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { modellzuordnungen } from "../../db/schema.ts";
@@ -33,7 +33,7 @@ export const modellAm = (db: Db, betriebId: string, nutzerId: string, tag: Tag):
  */
 export const sollAm = (db: Db, betriebId: string, nutzerId: string, tag: Tag): number | null => {
   const modell = modellAm(db, betriebId, nutzerId, tag);
-  return modell?.sollMinuten[(wochentag(tag) + 6) % 7] ?? null;
+  return modell === null ? null : minutenAmWochentag(modell.sollMinuten, tag);
 };
 
 export type ZuordnungErgebnis = { ok: true } | { ok: false; grund: "modell_unbekannt" };

@@ -4,7 +4,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["{apps,packages,scripts}/**/*.test.ts"],
-    // The repository starts without code; a run without tests is green until the first package lands
-    passWithNoTests: true,
+    exclude: ["**/node_modules/**", "**/dist/**"],
+    // The tests run under Bun (`bun --bun vitest`), so database tests use bun:sqlite as the server
+    // does; Bun has no IPC channel for vitest's forks, threads work
+    pool: "threads",
   },
 });

@@ -31,14 +31,17 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 
 ## Phase 1 – Fundament
 
-- [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`,
+- [x] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`,
   `packages/export`, `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
   `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri;
   Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright mit Projekten `desktop`, `phone` und
   `terminal`; `checks.json` um `i18n` und `pages` erweitern; `@firsttris/checks` in `package.json`,
   wo es sich installieren lässt (bis dahin installiert die CI es selbst).
   Fertig, wenn: `bun run check` auf einem frischen Klon grün ist, CI alle Workspaces prüft und eine
-  Startseite in jeder Sprache rendert, Arabisch mit `dir="rtl"` (Playwright).
+  Startseite in jeder Sprache rendert, Arabisch mit `dir="rtl"` (Playwright). Dazu: `/health`
+  antwortet (Test), ein Log enthält weder Query-Werte noch `Authorization`- oder Cookie-Header (Test),
+  das kompilierte Binary startet und beantwortet `/health` (CI), die Checks `i18n` und `pages` laufen
+  in der CI, und die Playwright-Projekte `desktop`, `phone` und `terminal` laufen in der CI.
 - [ ] **S-102 Datenbank und Audit-Kette** – Drizzle mit SQLite (WAL), Migrationen eingecheckt und im
   Binary eingebettet. Jede Schreiboperation hängt in derselben Transaktion ein Kettenglied an
   (Akteur, Zeitpunkt, Tabelle, Zeile, Hash des Inhalts, Hash des Vorgängers); der Inhalt liegt

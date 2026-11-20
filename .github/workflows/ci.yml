@@ -35,13 +35,35 @@ jobs:
       - run: bun run typecheck
       - run: bun run lint
       # The shared rule checks of firsttris/workflows (checks.json: files past 400 lines, functions past 80,
-      # rings of imports between packages; i18n and pages once Paraglide and the routes are in). Installed without
-      # saving, as some environments cannot fetch GitHub tarballs; S-101 moves it into package.json where it can.
+      # rings of imports between packages, every text translated and used, every page in the axe spec).
+      # Installed without saving: the agents' environment cannot fetch GitHub tarballs, so package.json
+      # cannot name it without breaking `bun install` there.
       - run: bun add --dev --no-save "github:firsttris/workflows#v1"
       - run: bunx checks
       - if: github.event_name == 'pull_request'
         run: bunx checks pr
       - run: bun run test
       - run: bun run build
+      # The compiled binary starts on its own and answers /health
+      - run: bun scripts/smoke-binary.ts
       # Known vulnerabilities in the dependencies fail the run
       - run: bun audit
+
+  e2e:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      # Projects desktop, phone and terminal (playwright.config.ts)
+      - run: bun run e2e
+      - if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report
+          path: test-results/
+          retention-days: 7

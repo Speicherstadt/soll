@@ -1,5 +1,14 @@
 {
   // Solution file: every package and app adds itself under "references"; `tsc -b` checks them all
   "files": [],
-  "references": [{ "path": "scripts" }]
+  "references": [
+    { "path": "scripts" },
+    { "path": "packages/arbeitszeit" },
+    { "path": "packages/import" },
+    { "path": "packages/export" },
+    { "path": "packages/ui" },
+    { "path": "apps/server" },
+    { "path": "apps/web" },
+    { "path": "e2e" }
+  ]
 }

@@ -109,6 +109,20 @@ describe("adding a stamp by hand (Nachtragen)", () => {
     expect((await nachtrag(max, body)).status).toBe(403);
     expect((await nachtrag(lohn, body)).status).toBe(403);
   });
+
+  it("adds nothing for external staff, who do not stamp here (docs/plan.md)", async () => {
+    const { server, jonas, anna } = await weber();
+    const extern = await server.eingeladen(jonas, "extern", "freelancer");
+    const body = {
+      nutzerId: extern.nutzerId,
+      art: "kommen",
+      zeitpunkt: um("2026-11-19T07:00:00"),
+      grund: "Baustelle",
+    };
+    expect((await nachtrag(jonas, body)).status).toBe(404);
+    expect((await nachtrag(anna, body)).status).toBe(404);
+    expect(server.sqlite.query("SELECT art FROM stempelungen").all()).toEqual([]);
+  });
 });
 
 describe("changing a stamp", () => {

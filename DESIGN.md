@@ -90,6 +90,12 @@ und der Prüfwert. Bewusst anders als im Mockup: die Tabelle zeigt nur Tage mit 
 Änderung statt einer zugeklappten Zeile, und am Handy fehlt die Spalte Pause. Die **Prüfseite**
 steht wie Anmelden als eine Karte ohne Seitenleiste.
 
+**Projekte** (kein Screen im Mockup): Reiter Aufträge, Kunden, Tätigkeiten und Sätze; Kunden und
+Sätze nur für Inhaber und Planer. Je Reiter oben ein umrandetes Formular zum Anlegen (am Desktop die
+Felder nebeneinander, am Handy untereinander), darunter die Tabelle; Archivieren, Zurückholen und
+Entfernen als Icon-Knöpfe am Ende der Zeile, „archiviert“ als Badge. Die festen internen Tätigkeiten
+tragen das Badge „intern“ und haben keine Knöpfe.
+
 ## Komponenten
 
 Eigene Komponenten in `packages/ui`, ohne Bibliothek, auf nativen Elementen, wie in Kennwort:

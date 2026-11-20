@@ -89,6 +89,12 @@ describe("no business sees or changes another's project data", () => {
     await unveraendert(weber);
   });
 
+  it("GET /saetze/personen lists one's own members only", async () => {
+    const { mia } = await zwei();
+    const personen = (await json(await mia.anfrage(`${PZ}/saetze/personen`))).personen;
+    expect(personen).toEqual([{ nutzerId: mia.nutzerId, name: "Inhaber Café Elbblick" }]);
+  });
+
   it("GET /saetze/gilt reads one's own rates only", async () => {
     const { mia, projekt, montage, weber } = await zwei();
     const antwort = await mia.anfrage(

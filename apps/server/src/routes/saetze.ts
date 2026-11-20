@@ -1,7 +1,9 @@
 import { istTag } from "@soll/arbeitszeit";
 import { Hono } from "hono";
 import { z } from "zod";
+import { darf } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
+import { mitgliederMitNamen } from "../modules/mitglieder/index.ts";
 import { saetzeLesen, satzAnlegen, satzEntfernen, satzFuer } from "../modules/projektzeit/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { antwort, koerper, kontextVon, ungueltig } from "./projektzeit-gemeinsam.ts";
@@ -34,6 +36,14 @@ export const satzRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
   new Hono<Anfrage>()
     .use(recht("projekte:verwalten"))
     .get("/", (c) => c.json({ saetze: saetzeLesen(db, c.get("betriebId")) }))
+    // the people a rate can name: whoever books project time (S-602), not a device
+    .get("/personen", (c) =>
+      c.json({
+        personen: mitgliederMitNamen(db, c.get("betriebId"))
+          .filter(({ rolle }) => darf(rolle, "projekte:lesen"))
+          .map(({ nutzerId, name }) => ({ nutzerId, name })),
+      }),
+    )
     .get("/gilt", (c) => {
       const eingabe = giltSchema.safeParse(c.req.query());
       if (!eingabe.success) return ungueltig(c);

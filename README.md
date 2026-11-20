@@ -47,7 +47,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |
 | 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung |
 | 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen, Export für Zoll und Arbeitsschutz |
-| 🛠️ Projekte | Aufträge, Stoppuhr, Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) |
+| 🛠️ Projekte | Kunden und Aufträge mit Budget in Stunden und Euro und Warnung, feste interne Tätigkeiten (Fahrt, Werkstatt, Lager, Schulung), Stundensätze nach Kunde, Auftrag, Tätigkeit und Person; Stoppuhr, Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) |
 | 🔁 Umzug | Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister, Toggl, Clockify und Excel |
 | 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |
 

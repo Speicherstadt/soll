@@ -135,6 +135,21 @@ describe("/api/v1/projektzeit/saetze", () => {
     }
   });
 
+  it("lists the people a rate can name: who books project time, not a device", async () => {
+    const { server, weber } = await weberMitAuftrag();
+    const max = await server.eingeladen(weber, "mitarbeiter", "max");
+    await server.eingeladen(weber, "geraet", "tablet");
+    const personen = (await json(await weber.anfrage(`${PZ}/saetze/personen`))).personen;
+    expect(personen).toEqual(
+      expect.arrayContaining([
+        { nutzerId: weber.nutzerId, name: "Inhaber Weber Haustechnik" },
+        { nutzerId: max.nutzerId, name: "max" },
+      ]),
+    );
+    expect(personen).toHaveLength(2);
+    expect((await max.anfrage(`${PZ}/saetze/personen`)).status).toBe(403);
+  });
+
   it("asks for the activity, the person and a valid day", async () => {
     const { weber } = await weberMitAuftrag();
     for (const query of [

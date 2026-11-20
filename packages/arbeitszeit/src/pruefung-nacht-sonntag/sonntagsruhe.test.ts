@@ -99,6 +99,20 @@ describe("R-07: Sonn- und Feiertagsruhe (§§ 9, 10 ArbZG)", () => {
     expect(sonntagsruhe(abends, { standort: HAMBURG, verschiebung: -360 }).befunde).toEqual([]);
   });
 
+  it("§ 9 Abs. 2: a moved rest lasts the 24 hours after its beginning, also on the DST days", () => {
+    // § 9 Abs. 2 ArbZG: „wenn für die auf den Beginn der Ruhezeit folgenden 24 Stunden der Betrieb
+    // ruht“ (gesetze-im-internet.de/arbzg/__9.html). Moved six hours earlier, the rest of Sunday
+    // 29.3.2026 begins Sa 18:00 CET and ends 24 h later at So 19:00 CEST; that of Sunday 25.10.2026
+    // begins Sa 18:00 CEST and ends at So 17:00 CET.
+    const optionen = { standort: HAMBURG, verschiebung: -360 };
+    const maerz = tage(schicht("2026-03-29T18:00+02:00", "2026-03-29T19:00+02:00"));
+    expect(kurz(sonntagsruhe(maerz, optionen).befunde)).toEqual([
+      { art: "sonntagsarbeit", tage: ["2026-03-29"], minuten: 60 },
+    ]);
+    const oktober = tage(schicht("2026-10-25T17:00+01:00", "2026-10-25T18:00+01:00"));
+    expect(sonntagsruhe(oktober, optionen).befunde).toEqual([]);
+  });
+
   it("§ 9 Abs. 2: a move past six hours is no move, the rest stays 0 to 24 Uhr", () => {
     const tag = tage(schicht("2026-11-14T14:00+01:00", "2026-11-14T22:00+01:00"));
     expect(sonntagsruhe(tag, { standort: HAMBURG, verschiebung: -420 }).befunde).toEqual([]);

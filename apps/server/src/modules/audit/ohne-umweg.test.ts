@@ -18,7 +18,8 @@ const TABELLEN = Object.keys(schema).join("|");
  * name), raw SQL that writes,
  * Drizzle's `sql` template and `sql.raw`, the chained tables as `kettenTabellen` exports them, and
  * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything), and
- * the writable connection oeffneDatenbank hands out as `sqlite` and `SchreibDb.verbindung`, and the
+ * the writable connection oeffneDatenbank hands out as `sqlite` and `SchreibDb.verbindung` or
+ * oeffneSqlite opens, and the
  * pragmas and DDL that lift the read-only connection or shadow a table (Drizzle's run takes a string)
  */
 const SCHREIBEN = [
@@ -30,6 +31,7 @@ const SCHREIBEN = [
   /\bsql\s*`/,
   /from\s+["']bun:sqlite["']/,
   /(?<![\w/-])(sqlite|verbindung)(?![\w-])/,
+  /\boeffneSqlite\b/,
   /\bPRAGMA\b/i,
   /\bCREATE\s+(\w+\s+)*(TABLE|VIEW|TRIGGER|INDEX)\b/i,
   /\bATTACH\s+(DATABASE\s+)?["'`$]/i,
@@ -101,6 +103,16 @@ describe("no write past the audit chain", () => {
       "schreibDb.verbindung.run(anweisung);",
     ].flatMap((zeile) => umwegeIn("x.ts", zeile));
     expect(umwege).toHaveLength(3);
+  });
+
+  it("recognises the factory in db/oeffnen.ts that opens a writable connection", () => {
+    // oeffneSqlite returns a writable bun:sqlite Database without the read-only guard; a module that
+    // opens its own connection with it (for Better Auth, a backup, a raw query) writes past the chain
+    const umwege = [
+      'import { oeffneSqlite } from "../../db/oeffnen.ts";',
+      "oeffneSqlite(pfad).run(befehl);",
+    ].flatMap((zeile) => umwegeIn("x.ts", zeile));
+    expect(umwege).toHaveLength(2);
   });
 
   it("recognises a pragma or DDL that lifts the read-only connection or shadows a table", () => {

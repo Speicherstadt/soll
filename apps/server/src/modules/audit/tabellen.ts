@@ -1,4 +1,5 @@
 import {
+  abwesenheiten,
   arbeitszeitmodelle,
   bedarfe,
   betriebe,
@@ -36,6 +37,7 @@ export const kettenTabellen = {
   geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
+  abwesenheiten: { tabelle: abwesenheiten, schluessel: ["abwesenheitId"] },
   instanzschluessel: { tabelle: instanzschluessel, schluessel: ["name"] },
   pushAbos: { tabelle: pushAbos, schluessel: ["aboId"] },
   erinnerungen: { tabelle: erinnerungen, schluessel: ["erinnerungId"] },

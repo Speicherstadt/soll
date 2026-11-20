@@ -46,6 +46,22 @@ describe("darf", () => {
       expect(darf(rolle, "zeiten:alle"), rolle).toBe(false);
   });
 
+  it("lets owner and planner approve leave, and only owner and payroll see sickness", () => {
+    const rollen = [
+      "inhaber",
+      "planer",
+      "mitarbeiter",
+      "lohnbuero",
+      "betriebsrat",
+      "extern",
+      "geraet",
+    ];
+    const mit = (recht: Parameters<typeof darf>[1]) => rollen.filter((rolle) => darf(rolle, recht));
+    expect(mit("abwesenheiten:freigeben")).toEqual(["inhaber", "planer"]);
+    expect(mit("abwesenheiten:gesundheit")).toEqual(["inhaber", "lohnbuero"]);
+    expect(mit("abwesenheiten:einstellen")).toEqual(["inhaber"]);
+  });
+
   it("lets owner and planner plan, and everyone who works for the business read the plan", () => {
     for (const rolle of ["inhaber", "planer"]) expect(darf(rolle, "plan:planen"), rolle).toBe(true);
     for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])

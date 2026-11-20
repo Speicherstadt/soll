@@ -18,7 +18,7 @@ const mitGehaltenemPruefwert = () => {
 
 /**
  * A Prüfwert names a link the chain once had. When that link is gone while the chain reached its
- * number, the Prüfwert exposes a change; "unbekannt" is for a number the chain never reached.
+ * number, the Prüfwert exposes a change (gekuerzt.test.ts covers a chain cut back below it).
  */
 describe("a Prüfwert whose link was removed past the chain", () => {
   it("is a deviation when later links remain", () => {

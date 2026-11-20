@@ -184,12 +184,13 @@ describe("pruefwertPruefen", () => {
     expect(pruefwertPruefen(db, "weber", gehalten)).toBe("abweichend");
   });
 
-  it("tells an unknown number and an unreadable text apart", () => {
+  it("shows a number past the chain as a deviation and tells an unreadable text apart", () => {
     const { db } = mitDreiGliedern();
-    expect(pruefwertPruefen(db, "weber", `Nr. 99 · ${"a".repeat(64)}`)).toBe("unbekannt");
+    // a Prüfwert comes from the chain: a number it does not reach means links were cut off
+    expect(pruefwertPruefen(db, "weber", `Nr. 99 · ${"a".repeat(64)}`)).toBe("abweichend");
     expect(pruefwertPruefen(db, "weber", "Nr. 3 · abc")).toBe("unlesbar");
     expect(pruefwertPruefen(db, "elbblick", aktuellerPruefwert(db, "weber") ?? "")).toBe(
-      "unbekannt",
+      "abweichend",
     );
   });
 });

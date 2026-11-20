@@ -134,15 +134,12 @@ export type PruefwertErgebnis = "gueltig" | "unlesbar" | "unbekannt" | "abweiche
 export const pruefwertPruefen = (db: Db, betriebId: string, text: string): PruefwertErgebnis => {
   const wert = parsePruefwert(text);
   if (!wert) return "unlesbar";
-  const alle = gliederVon(db, betriebId);
-  const glieder = alle.filter((glied) => glied.seq <= wert.seq);
+  const glieder = gliederVon(db, betriebId).filter((glied) => glied.seq <= wert.seq);
   const glied = glieder.find((g) => g.seq === wert.seq);
   if (!glied) {
-    // A link the chain or its head went past was removed: that is a change, not an unknown number
-    const kopf = db.select().from(auditKoepfe).where(eq(auditKoepfe.betriebId, betriebId)).get();
-    const erreicht = Math.max(kopf?.seq ?? 0, alle.at(-1)?.seq ?? 0);
-    // Links are numbered from 1: number 0 was never a link, so nothing can have been removed
-    return wert.seq >= 1 && erreicht >= wert.seq ? "abweichend" : "unbekannt";
+    // Soll issued the Prüfwert from the chain, so the chain once reached its number: a missing link,
+    // also one cut off together with the head, is a change. Number 0 was never a link.
+    return wert.seq >= 1 ? "abweichend" : "unbekannt";
   }
   return glied.hash === wert.hash && gliederPruefen(glieder).length === 0
     ? "gueltig"

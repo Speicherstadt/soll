@@ -3,7 +3,7 @@ import { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { describe, expect, it } from "vitest";
 import * as authSchema from "../db/auth-schema.ts";
 import * as schema from "../db/schema.ts";
-import { ABDECKUNG } from "../modules/auskunft/index.ts";
+import { ABDECKUNG, INHABERKOPIE } from "../modules/auskunft/index.ts";
 import { testAbo } from "../modules/erinnerungen/push-test.ts";
 import { abgeschlossen, type Json, json, type Person, weber } from "./monat-testhilfen.ts";
 
@@ -17,10 +17,20 @@ const tabellen = (modul: Record<string, unknown>) =>
     .map(getTableName);
 
 describe("GET /api/v1/auskunft", () => {
+  const alleTabellen = () => [...tabellen(schema), ...tabellen(authSchema)].sort();
+
   it("names every table of the database as covered or excepted with a reason", () => {
-    expect([...tabellen(schema), ...tabellen(authSchema)].sort()).toEqual(
-      Object.keys(ABDECKUNG).sort(),
-    );
+    expect(alleTabellen()).toEqual(Object.keys(ABDECKUNG).sort());
+  });
+
+  it("decides every table for the owner's copy of someone else's too: allowed or left out, with a reason", () => {
+    // a new table fails here until someone decides whether the owner may see it (docs/plan.md)
+    expect(alleTabellen()).toEqual(Object.keys(INHABERKOPIE).sort());
+    for (const [tabelle, { grund }] of Object.entries(INHABERKOPIE))
+      expect(grund.length, tabelle).toBeGreaterThan(10);
+    // what the person's own copy leaves out, the owner's copy cannot hold
+    for (const [tabelle, teil] of Object.entries(ABDECKUNG))
+      if (teil.startsWith("ausgenommen")) expect(INHABERKOPIE[tabelle]?.frei, tabelle).toBe(false);
   });
 
   it("gives Sandra everything about her: stamps with every version and reason, closing, model", async () => {

@@ -403,6 +403,43 @@ describe("shifts and working days", () => {
   });
 
   /*
+   * Third review of PR #11: a break of 9 h or more ends the shift, so a Kommen or Pause-Ende after
+   * it cannot end the break: the shift before was left in its break, as when the stamp comes 24 h
+   * after Kommen or is a second Pause. Read as the end of the break, it left Mo complete without any
+   * end stamped.
+   */
+  it("9 h: a Kommen 9 h or more after the break began leaves the break open, „Pause-Ende fehlt“", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      kommen("2026-11-17T07:00+01:00"),
+      gehen("2026-11-17T15:00+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      240,
+      false,
+      ["pause_ende_fehlt"],
+    ]);
+    expect(mo?.schichten[0]?.offen?.art).toBe("pause_ende");
+    expect([di?.arbeitsMinuten, di?.vollstaendig, di && arten(di)]).toEqual([480, true, []]);
+  });
+
+  it("9 h: a Pause-Ende 9 h or more after the break began does not end it", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      weiter("2026-11-17T07:00+01:00"),
+      gehen("2026-11-17T15:00+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      240,
+      false,
+      ["pause_ende_fehlt"],
+    ]);
+    expect([di?.vollstaendig, di && arten(di)]).toEqual([false, ["kommen_fehlt", "kommen_fehlt"]]);
+  });
+
+  /*
    * Second review of PR #11: once 24 h have passed since Kommen, no stamp can end the shift any
    * more, so the Gehen is missing for certain. Midnight after the start day can lie later than that
    * when the day has 25 hours (25.10.2026, the clocks go back at 3:00).

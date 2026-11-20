@@ -7,16 +7,13 @@ import { Aktionen, LeerText, NeuFormular, Stand } from "./teile.tsx";
 /** The customers of the business, for owner and planner (S-601) */
 export const Kunden = (props: { quelle: ProjektQuelle }) => {
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
-  const aktionen = zeilenAktionen("kunden", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("kunden", setFehler);
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
-    setArbeitet(true);
     const nummer = String(daten.get("nummer")).trim();
     const ok = await aktionen.anlegen({
       name: String(daten.get("name")).trim(),
       ...(nummer ? { nummer } : {}),
     });
-    setArbeitet(false);
     if (ok) form.reset();
   };
   return (
@@ -25,7 +22,7 @@ export const Kunden = (props: { quelle: ProjektQuelle }) => {
         label={m.kunde_anlegen()}
         knopf={m.kunde_anlegen()}
         fehler={fehler()}
-        arbeitet={arbeitet()}
+        arbeitet={aktionen.arbeitet()}
         onSubmit={anlegen}
       >
         <Input label={m.kunde_name()} name="name" required maxlength={100} class="md:w-64" />

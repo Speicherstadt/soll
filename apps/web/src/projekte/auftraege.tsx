@@ -28,15 +28,13 @@ const optional = (text: string, lesen: (text: string) => number | null) =>
 const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
   const id = createUniqueId();
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
-  const aktionen = zeilenAktionen("projekte", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("projekte", setFehler);
   const kunden = () => props.quelle.kunden().filter((kunde) => kunde.archiviertAm === null);
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
     const minuten = optional(String(daten.get("stunden")), budgetMinutenAus);
     const cent = optional(String(daten.get("euro")), centAus);
     if (minuten.ungueltig || cent.ungueltig) return setFehler("ungueltig");
     const nummer = String(daten.get("nummer")).trim();
-    setArbeitet(true);
     const ok = await aktionen.anlegen({
       kundeId: String(daten.get("kunde")),
       name: String(daten.get("name")).trim(),
@@ -45,7 +43,6 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
       budgetCent: cent.wert,
       warnungProzent: Number(daten.get("warnung")),
     });
-    setArbeitet(false);
     if (ok) form.reset();
   };
   return (
@@ -57,7 +54,7 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
         label={m.auftrag_anlegen()}
         knopf={m.auftrag_anlegen()}
         fehler={fehler()}
-        arbeitet={arbeitet()}
+        arbeitet={aktionen.arbeitet()}
         onSubmit={anlegen}
       >
         <div class="flex flex-col gap-1.5 md:w-48">
@@ -105,7 +102,7 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
 /** The orders: everyone who books project time reads them, owner and planner keep them (S-601) */
 export const Auftraege = (props: { quelle: ProjektQuelle }) => {
   const [fehler, setFehler] = createSignal("");
-  const aktionen = zeilenAktionen("projekte", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("projekte", setFehler);
   const kundeName = (kundeId: string) =>
     props.quelle.kunden().find((kunde) => kunde.kundeId === kundeId)?.name ?? "";
   return (

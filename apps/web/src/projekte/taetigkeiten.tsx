@@ -75,15 +75,12 @@ const TaetigkeitZeile = (props: {
 /** The four fixed internal activities and the business's own (S-601) */
 export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
-  const aktionen = zeilenAktionen("taetigkeiten", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("taetigkeiten", setFehler);
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
-    setArbeitet(true);
     const ok = await aktionen.anlegen({
       name: String(daten.get("name")).trim(),
       abrechenbar: daten.get("abrechenbar") === "ja",
     });
-    setArbeitet(false);
     if (ok) form.reset();
   };
   return (
@@ -93,7 +90,7 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
           label={m.taetigkeit_anlegen()}
           knopf={m.taetigkeit_anlegen()}
           fehler={fehler()}
-          arbeitet={arbeitet()}
+          arbeitet={aktionen.arbeitet()}
           onSubmit={anlegen}
         >
           <Input label={m.taetigkeit_name()} name="name" required maxlength={100} class="md:w-64" />

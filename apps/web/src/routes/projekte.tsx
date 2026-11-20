@@ -1,6 +1,6 @@
 import { type Tab, Tabs } from "@soll/ui";
 import { createFileRoute } from "@tanstack/solid-router";
-import { untrack } from "solid-js";
+import { Loading, untrack } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { Auftraege } from "../projekte/auftraege.tsx";
 import { Kunden } from "../projekte/kunden.tsx";
@@ -44,8 +44,10 @@ const Projekte = () => {
   ];
   return (
     <Seite titel={m.nav_projekte()}>
-      <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />
-      <Tabs label={m.projekte_tabs()} tabs={tabs} />
+      <Loading>
+        <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />
+        <Tabs label={m.projekte_tabs()} tabs={tabs} />
+      </Loading>
     </Seite>
   );
 };

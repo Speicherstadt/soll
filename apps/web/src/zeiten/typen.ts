@@ -8,8 +8,17 @@ export type Stempel = {
   zeitpunkt: number;
   geraetZeitpunkt: number | null;
   quelle: "app" | "terminal";
+  /** came late from a device's offline queue: the instant is the device's (S-305) */
+  offline: boolean;
+  /** the number on the device that signed it */
+  nummer: number | null;
   korrigiert: boolean;
+  /** still in this device's queue, not on the server yet */
+  wartend?: true;
 };
+
+/** Numbers missing from a device of the person (S-305) */
+export type Luecke = { geraetId: string; von: number; bis: number };
 
 /** A change by hand: who, when, what before and after, and why */
 export type Aenderung = {
@@ -34,6 +43,7 @@ export type TagAnsicht = {
   stempelungen: Stempel[];
   umfeld: Stempel[];
   aenderungen: Aenderung[];
+  luecken: Luecke[];
 };
 
 export type Person = { nutzerId: string; name: string; rolle: string; modellId: string | null };

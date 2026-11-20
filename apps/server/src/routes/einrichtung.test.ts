@@ -20,6 +20,7 @@ describe("PUT /api/v1/einrichtung/betrieb", () => {
     expect(antwort.status).toBe(200);
     expect(await json(await mia.anfrage("/api/v1/betrieb"))).toEqual({
       betriebId: mia.betriebId,
+      nutzerId: mia.nutzerId,
       name: "Café Elbblick",
       land: "HH",
       eingerichtet: false,

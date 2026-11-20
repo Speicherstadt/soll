@@ -7,7 +7,8 @@ import type { Aenderung, Stempel } from "./typen.ts";
 
 /**
  * The stamps of a day, each with Ändern and Entfernen for whoever may correct it, and a mark when a
- * person entered or changed it by hand
+ * person entered or changed it by hand, when it came from a device's offline queue, and when it still
+ * waits on this device (then there is nothing on the server to correct yet; S-305)
  */
 export const StempelListe = (props: {
   stempelungen: Stempel[];
@@ -41,8 +42,18 @@ export const StempelListe = (props: {
                   <Show when={stempel.korrigiert}>
                     <Badge>{m.stempel_korrigiert()}</Badge>
                   </Show>
+                  <Show
+                    when={stempel.wartend}
+                    fallback={
+                      <Show when={stempel.offline}>
+                        <Badge>{m.stempel_offline()}</Badge>
+                      </Show>
+                    }
+                  >
+                    <Badge ton="warning">{m.stempel_wartet()}</Badge>
+                  </Show>
                 </span>
-                <Show when={props.darfKorrigieren}>
+                <Show when={props.darfKorrigieren && !stempel.wartend}>
                   <span class="flex gap-1">
                     <Button
                       variant="icon"

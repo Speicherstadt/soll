@@ -15,5 +15,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0003_stempeln",
     "sql": "CREATE TABLE `modellzuordnungen` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`gueltig_ab` text NOT NULL,\n\t`modell_id` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`, `gueltig_ab`)\n);\n--> statement-breakpoint\nCREATE TABLE `stempelungen` (\n\t`betrieb_id` text NOT NULL,\n\t`stempel_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`zeitpunkt` integer NOT NULL,\n\t`geraet_zeitpunkt` integer,\n\t`quelle` text NOT NULL,\n\t`ersetzt` text,\n\t`entfernt` integer DEFAULT false NOT NULL,\n\t`grund` text,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `stempel_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `stempelungen_person` ON `stempelungen` (`betrieb_id`,`nutzer_id`,`zeitpunkt`);--> statement-breakpoint\nCREATE UNIQUE INDEX `stempelungen_ersetzt` ON `stempelungen` (`betrieb_id`,`ersetzt`);"
+  },
+  {
+    "tag": "0004_offline",
+    "sql": "CREATE TABLE `geraete` (\n\t`betrieb_id` text NOT NULL,\n\t`geraet_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`schluessel` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `geraet_id`)\n);\n--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `geraet_id` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `nummer` integer;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `signatur` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `offline` integer DEFAULT false NOT NULL;--> statement-breakpoint\nCREATE UNIQUE INDEX `stempelungen_geraet_nummer` ON `stempelungen` (`betrieb_id`,`geraet_id`,`nummer`);"
   }
 ];

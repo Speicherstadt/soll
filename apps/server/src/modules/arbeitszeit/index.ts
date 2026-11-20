@@ -1,6 +1,15 @@
 /** The module working time: models, assignments, stamps and the working day (S-303, S-304) */
 export { monatAbgeschlossen } from "./abschluss.ts";
 export {
+  type AnmeldeErgebnis,
+  type GeraeteLuecke,
+  geraetAnmelden,
+  lueckenVon,
+  type OeffentlicherSchluessel,
+  type SignaturErgebnis,
+  signaturPruefen,
+} from "./geraete.ts";
+export {
   type EntfernenErgebnis,
   type Modell,
   modellAnlegen,
@@ -13,7 +22,9 @@ export {
   type Aenderung,
   hatStempelungen,
   nachtragen,
+  offlineStempeln,
   type Quelle,
+  type Signiert,
   type Stempel,
   type StempelErgebnis,
   stempelAendern,

@@ -90,7 +90,10 @@ export const modellzuordnungen = sqliteTable(
  * only appended: a change or a removal is a new row naming the row it replaces in `ersetzt`, with its
  * reason, so the original stays and the audit chain shows the history. A row is in force while no
  * other row replaces it and it is no removal. `zeitpunkt` is the server's clock for a live stamp
- * (the device's goes to `geraet_zeitpunkt`, for S-305) and the time entered for a correction.
+ * (the device's goes to `geraet_zeitpunkt`), the device's time moved by its clock's error for an
+ * entry of the offline queue (`offline`, S-305), and the time entered for a correction. An entry of a
+ * device's queue keeps the device, its running number and its signature, so a second copy is
+ * recognised and a gap in the numbers shows.
  */
 export const stempelungen = sqliteTable(
   "stempelungen",
@@ -108,13 +111,38 @@ export const stempelungen = sqliteTable(
     grund: text("grund"),
     erstelltVon: text("erstellt_von").notNull(),
     erstelltAm: integer("erstellt_am").notNull(),
+    // S-305: the device that signed the entry, its number there and the signature (base64url)
+    geraetId: text("geraet_id"),
+    nummer: integer("nummer"),
+    signatur: text("signatur"),
+    // stamped without a network: the instant comes from the device, `erstellt_am` is the receipt
+    offline: integer("offline", { mode: "boolean" }).notNull().default(false),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.stempelId] }),
     index("stempelungen_person").on(t.betriebId, t.nutzerId, t.zeitpunkt),
     // a row is replaced once; a second change replaces the newest version
     uniqueIndex("stempelungen_ersetzt").on(t.betriebId, t.ersetzt),
+    // a number of a device is taken once (rows without a device have NULL and do not collide)
+    uniqueIndex("stempelungen_geraet_nummer").on(t.betriebId, t.geraetId, t.nummer),
   ],
+);
+
+/**
+ * A device that stamps for one person: the public key of its non-extractable ECDSA P-256 key pair
+ * (WebCrypto, JWK), with which the server checks every entry of its offline queue (S-305)
+ */
+export const geraete = sqliteTable(
+  "geraete",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    geraetId: text("geraet_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    // the public key as JWK, canonical JSON of kty, crv, x and y
+    schluessel: text("schluessel").notNull(),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.geraetId] })],
 );
 
 /**

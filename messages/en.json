@@ -265,5 +265,16 @@
   "zeiten_vortag": "Previous day",
   "zeiten_folgetag": "Next day",
   "zeiten_modell": "Working-time model",
-  "zeiten_modell_keins": "None, target not on file"
+  "zeiten_modell_keins": "None, target not on file",
+  "offline_ohne_netz": "No connection. Your clockings stay on this device and are sent as soon as the network is back.",
+  "offline_wartend": "Not sent yet: {anzahl}",
+  "offline_wartend_text": "Soll sends them by itself as soon as the network is back.",
+  "offline_abgelehnt_titel": "Not accepted",
+  "offline_abgelehnt": "{art} at {uhrzeit}, no. {nummer}: the server did not accept this clocking. Add it with a reason if needed.",
+  "stempel_wartet": "waiting",
+  "stempel_offline": "offline",
+  "luecke_titel": "Gap in a device's clockings",
+  "luecke_eine": "Device {geraet}: no. {von} is missing",
+  "luecke_mehrere": "Device {geraet}: nos. {von} to {bis} are missing",
+  "luecke_text": "A clocking got lost on the way or was deleted on the device. Check the day and add it with a reason if needed."
 }

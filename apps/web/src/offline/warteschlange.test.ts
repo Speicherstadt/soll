@@ -51,9 +51,15 @@ describe("the queue as data (S-305)", () => {
   });
 
   it("tries again later without a network or session and when the server fails, else gives up", () => {
-    expect([200, 201].map(folge)).toEqual(["uebertragen", "uebertragen"]);
-    expect([0, 401, 403, 408, 429, 500, 503].map(folge)).toEqual(Array(7).fill("spaeter"));
-    expect([400, 404, 409, 422].map(folge)).toEqual(Array(4).fill("abgelehnt"));
+    const nurStatus = (status: number) => folge(status);
+    expect([200, 201].map(nurStatus)).toEqual(["uebertragen", "uebertragen"]);
+    expect([0, 401, 403, 408, 429, 500, 503].map(nurStatus)).toEqual(Array(7).fill("spaeter"));
+    expect([400, 404, 409, 422].map(nurStatus)).toEqual(Array(4).fill("abgelehnt"));
+  });
+
+  it("keeps an entry whose device the session does not know: another person or business signed in meanwhile", () => {
+    expect(folge(404, "geraet_unbekannt")).toBe("spaeter");
+    expect(folge(404, "unbekannt")).toBe("abgelehnt");
   });
 
   it("shows a waiting entry on Heute at the device's time moved to the server's clock", () => {

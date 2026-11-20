@@ -75,3 +75,41 @@ test("the next person on a shared browser never sees the previous person's day o
   expect(tag.stempelungen).toEqual([]);
   expect(await eintraegeAufDemGeraet(page)).toEqual([{ nummer: 2, abgelehnt: null }]);
 });
+
+/**
+ * A tab left open on a shared browser (S-305): Sandra's Heute still shows in one tab while Max signs
+ * in in another. Her waiting stamp must not go out under his session and come back refused for
+ * good: the server knows her device only for her, so it keeps waiting until she is signed in again.
+ */
+test("a tab left open with the previous person's waiting stamp does not lose it under the next person's session", async ({
+  page,
+  browser,
+  context,
+}) => {
+  const { jonas } = await weberMitSandra(page, browser, test.info());
+  await page.goto("/");
+  await knopf(page, "stempeln_kommen").click();
+  await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
+  await ohneNetz(page, "/api/v1/arbeitszeit/stempelungen");
+  await knopf(page, "stempeln_pause_starten").click();
+  await expect(page.getByTestId("wartend")).toBeVisible();
+  await page.unrouteAll();
+
+  // in a second tab Sandra signs out and Max signs in; her tab stays open
+  const zweiterTab = await context.newPage();
+  await zweiterTab.goto("/einstellungen");
+  await zweiterTab.getByRole("button", { name: t("abmelden") }).click();
+  await expect(zweiterTab).toHaveURL(/\/anmelden$/);
+  await einladungAnnehmen(jonas, zweiterTab, "Max Brandt");
+
+  // the network comes back: Sandra's old tab tries again, under Max's session
+  const versuch = page.waitForResponse((r) =>
+    new URL(r.url()).pathname.endsWith("/api/v1/arbeitszeit/stempelungen/offline"),
+  );
+  await context.setOffline(true);
+  await context.setOffline(false);
+  expect((await versuch).status()).toBe(404);
+  await page.waitForTimeout(500);
+  expect(await eintraegeAufDemGeraet(page)).toEqual([{ nummer: 2, abgelehnt: null }]);
+  await expect(page.getByRole("heading", { name: t("offline_abgelehnt_titel") })).toHaveCount(0);
+});

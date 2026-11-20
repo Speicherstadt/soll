@@ -1,14 +1,15 @@
-import { istTag, STEMPELARTEN, type Stempelart, tagInBerlin } from "@soll/arbeitszeit";
+import { istTag, tagInBerlin } from "@soll/arbeitszeit";
 import { type Context, Hono } from "hono";
 import { z } from "zod";
 import { darf } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import {
   hatStempelungen,
+  lueckenVon,
   modellAm,
   modellZuordnen,
   nachtragen,
-  type StempelErgebnis,
+  signaturPruefen,
   stempelAendern,
   stempelEntfernen,
   stempeln,
@@ -16,16 +17,18 @@ import {
 } from "../modules/arbeitszeit/index.ts";
 import { mitgliederMitNamen, mitgliedschaftVon, namenVon } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
+import { geraeteRouten, offlineRouten, signaturFehler, signiertSchema } from "./offline.ts";
+import { antwort, art, koerper, kontextVon, zeitpunkt } from "./stempel-antwort.ts";
 
-const art = z.enum(STEMPELARTEN as [Stempelart, ...Stempelart[]]);
-/** An instant in whole UTC milliseconds (CLAUDE.md, "Time") */
-const zeitpunkt = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 /** A change by hand always says why (docs/plan.md, "Änderungen an Stempelungen") */
 const grund = z.string().trim().min(1).max(500);
 const id = z.string().min(1).max(100);
 
-// No `nutzerId` and no instant: a person stamps only for themselves, and the server's clock counts
-const stempelSchema = z.object({ art, geraetZeitpunkt: zeitpunkt.optional() }).strict();
+// No `nutzerId` and no instant: a person stamps only for themselves, and the server's clock counts;
+// a device that signs its stamps sends its number and signature along (S-305)
+const stempelSchema = z
+  .object({ art, geraetZeitpunkt: zeitpunkt.optional(), geraet: signiertSchema.optional() })
+  .strict();
 const nachtragSchema = z.object({ nutzerId: id.optional(), art, zeitpunkt, grund }).strict();
 const aenderungSchema = z.object({ art, zeitpunkt, grund }).strict();
 const entfernenSchema = z.object({ grund }).strict();
@@ -35,28 +38,6 @@ const zuordnungSchema = z
 const tagSchema = z
   .object({ datum: z.string().refine(istTag).optional(), nutzerId: id.optional() })
   .strict();
-
-const STATUS = {
-  unbekannt: 404,
-  keine_berechtigung: 403,
-  zukunft: 422,
-  abgeschlossen: 409,
-  veraltet: 409,
-} as const;
-
-const antwort = (c: Context<Anfrage>, ergebnis: StempelErgebnis) =>
-  ergebnis.ok
-    ? c.json(ergebnis.stempel, 201)
-    : c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
-
-const koerper = async <T>(c: Context<Anfrage>, schema: z.ZodType<T>) =>
-  schema.safeParse(await c.req.json().catch(() => null));
-
-const kontextVon = (c: Context<Anfrage>, jetzt: () => number) => ({
-  betriebId: c.get("betriebId"),
-  akteur: c.get("nutzerId"),
-  jetzt: jetzt(),
-});
 
 type Person =
   | { ok: true; nutzerId: string }
@@ -107,6 +88,8 @@ const tagRouten = (db: Db, jetzt: () => number) =>
     const namen = namenVon(db, [wer.nutzerId, ...ansicht.aenderungen.map((a) => a.von)]);
     return c.json({
       ...ansicht,
+      // gaps in the numbers of the person's devices (S-305), for the person and whoever reads them
+      luecken: lueckenVon(db, c.get("betriebId"), wer.nutzerId),
       nutzerId: wer.nutzerId,
       name: namen.get(wer.nutzerId) ?? "",
       aenderungen: ansicht.aenderungen.map((a) => ({ ...a, vonName: namen.get(a.von) ?? "" })),
@@ -120,15 +103,31 @@ const stempelRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
     .post("/", async (c) => {
       const eingabe = await koerper(c, stempelSchema);
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      const { art, geraetZeitpunkt, geraet } = eingabe.data;
+      // a signed stamp names the device's time it signed (stempelNachricht)
+      if (geraet && geraetZeitpunkt === undefined) return c.json({ fehler: "ungueltig" }, 400);
+      if (geraet && geraetZeitpunkt !== undefined) {
+        const eintrag = { geraetId: geraet.geraetId, nummer: geraet.nummer, art, geraetZeitpunkt };
+        const geprueft = await signaturPruefen(
+          db,
+          c.get("betriebId"),
+          c.get("nutzerId"),
+          eintrag,
+          geraet.signatur,
+        );
+        if (!geprueft.ok) return signaturFehler(c, geprueft.grund);
+      }
       return antwort(
         c,
         stempeln(db, schreibDb, kontextVon(c, jetzt), {
-          art: eingabe.data.art,
-          geraetZeitpunkt: eingabe.data.geraetZeitpunkt ?? null,
+          art,
+          geraetZeitpunkt: geraetZeitpunkt ?? null,
           quelle: "app",
+          signiert: geraet,
         }),
       );
     })
+    .route("/offline", offlineRouten(db, schreibDb, jetzt))
     .post("/nachtrag", async (c) => {
       const eingabe = await koerper(c, nachtragSchema);
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
@@ -202,4 +201,5 @@ export const zeitRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
   new Hono<Anfrage>()
     .route("/", tagRouten(db, jetzt))
     .route("/stempelungen", stempelRouten(db, schreibDb, jetzt))
+    .route("/geraete", geraeteRouten(db, schreibDb, jetzt))
     .route("/personen", personenRouten(db, schreibDb, jetzt));

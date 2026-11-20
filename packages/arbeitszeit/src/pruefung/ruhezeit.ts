@@ -40,7 +40,7 @@ export type RuhezeitBefund = Befund<
 const MINUTE = 60_000;
 
 /** A rest from the end of a working day to the next; `bis` null for the rest still running at `jetzt` */
-type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
+export type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
 
 /**
  * A piece of work a rest can follow or end: a whole shift, or a block of a shift with call-outs;
@@ -103,9 +103,9 @@ const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> => {
  * (docs/regeln.md, R-05), and the rest since the last end of work while nothing has followed yet.
  * A call-out in Rufbereitschaft ends no rest but begins a new one (R-12): the rest that counts is the
  * one after it, up to the next working day or a shift of its own on the same day. Without call-outs this is the last Gehen of one working day to the first Kommen of
- * the next.
+ * the next. The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured the same way.
  */
-const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
+export const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
   const alle = tage
     .flatMap((tag) => tag.schichten.flatMap(stellen))
     .sort((a, b) => a.beginn - b.beginn);

@@ -44,14 +44,18 @@ export type SonntagsruheBefund = Befund<
 
 const NUMMERN_ABS1 = 16;
 
+/** An exception of § 10 Abs. 1 ArbZG with a number the law has (Nr. 1 to 16); any other allows nothing */
+export const gueltigNachAbs1 = (ausnahme: Sonntagsausnahme): boolean =>
+  ausnahme.art === "abs1" &&
+  Number.isInteger(ausnahme.nummer) &&
+  ausnahme.nummer >= 1 &&
+  ausnahme.nummer <= NUMMERN_ABS1;
+
 /** Whether an exception allows any work on the day without a limit */
 const frei = (ausnahmen: readonly Sonntagsausnahme[], tag: Tag): boolean =>
   ausnahmen.some(
     (ausnahme) =>
-      (ausnahme.art === "abs1" &&
-        Number.isInteger(ausnahme.nummer) &&
-        ausnahme.nummer >= 1 &&
-        ausnahme.nummer <= NUMMERN_ABS1) ||
+      gueltigNachAbs1(ausnahme) ||
       (ausnahme.art === "bewilligung" && (ausnahme.tage === undefined || ausnahme.tage.has(tag))),
   );
 

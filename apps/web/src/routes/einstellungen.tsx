@@ -5,6 +5,7 @@ import { api } from "../api.ts";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
 import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
+import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
 import { m } from "../paraglide/messages.js";
 import { Darstellung } from "../rahmen/darstellung.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -34,6 +35,7 @@ const Einstellungen = () => {
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
+      <Erinnerungen />
       <Show when={terminal()}>
         <TerminalGeraete />
         <TerminalPersonen />

@@ -1,5 +1,7 @@
 import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+/* The tables of the terminal (S-801); re-exported by ../schema.ts */
+
 /**
  * A tablet in kiosk mode (S-801). The owner creates it with a pairing code (`kopplung_hash`, valid
  * until `kopplung_bis`, used once); the tablet trades the code for its device token

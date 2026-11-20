@@ -28,7 +28,8 @@ das [Stempeln ohne Netz](#ohne-netz).
 
 Soll stempelt **nie selbst aus**. Wer das Gehen vergisst, bleibt eingestempelt; ab Mitternacht (bei
 einer Nachtschicht 16 Stunden nach Beginn) zeigt Heute den Hinweis „Gehen fehlt“ mit
-§ 3 Abs. 2 Nr. 1 ArbSchG, bis die Zeit nachgetragen ist. Wie Soll aus den Stempelungen den Tag
+§ 3 Abs. 2 Nr. 1 ArbSchG, bis die Zeit nachgetragen ist. Vorher erinnert Soll per Benachrichtigung
+oder Mail an das Gehen und an eine fällige Pause, siehe [Erinnerungen](erinnerungen.md). Wie Soll aus den Stempelungen den Tag
 bildet, steht unter [Arbeitstag aus Stempelungen](arbeitstag.md).
 
 ## Der laufende Tag

@@ -8,6 +8,7 @@ import { betriebRouten } from "./routes/betrieb.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
+import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { modellRouten } from "./routes/modelle.ts";
@@ -32,14 +33,28 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
-  /** SOLL_SECRET_KEY, decoded: the key of the PIN lookup is derived from it (S-801) */
+  /**
+   * The key of the encrypted columns (SOLL_SECRET_KEY; the key of the PIN lookup is derived from it,
+   * S-801) and the public VAPID key (S-307)
+   */
   geheimerSchluessel: Uint8Array;
+  vapidOeffentlich: string;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
-export const createApp = (deps: AppDeps) => {
-  const { log, now, version, db, schreibDb, auth, url, mail } = deps;
-  const pinSchluessel = pinSchluesselAus(deps.geheimerSchluessel);
+export const createApp = ({
+  log,
+  now,
+  version,
+  db,
+  schreibDb,
+  auth,
+  url,
+  mail,
+  geheimerSchluessel,
+  vapidOeffentlich,
+}: AppDeps) => {
+  const pinSchluessel = pinSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -77,6 +92,11 @@ export const createApp = (deps: AppDeps) => {
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
+            geheimerSchluessel,
+            vapidOeffentlich,
+            mailKonfiguriert: mail !== null,
+          }),
           "/": zeitRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },

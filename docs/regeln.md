@@ -78,6 +78,7 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | R-29 | Steuerfreie Zuschläge | § 3b EStG; R 3b LStR | – (Berechnung) |
 | R-30 | Auswertung je Person nur eingeschaltet | § 87 Abs. 1 Nr. 6 BetrVG | Verstoß |
 | R-31 | Gesundheitsdaten, Auskunft, Löschen | Art. 5, 9, 15, 17, 88 DSGVO | Verstoß |
+| R-32 | Minijob-Grenze, gelegentliches Überschreiten | § 8 Abs. 1, 1a, 1b SGB IV | Hinweis / Verstoß |
 
 Jede Norm der Tabelle „Rechtlicher Rahmen“ im [Projektplan](plan.md#rechtlicher-rahmen) hat eine
 Regel:
@@ -102,6 +103,7 @@ Regel:
 | § 3b EStG, R 3b LStR | R-29 |
 | § 87 Abs. 1 Nr. 6 BetrVG | R-30 |
 | Art. 5, 9, 15, 17, 88 DSGVO | R-31 |
+| § 8 Abs. 1, 1a, 1b SGB IV | R-32 |
 
 ## Arbeitszeitgesetz
 
@@ -501,6 +503,36 @@ Regel:
 | Grenze | nachgetragen am Mo 9.11. um 23:59 | kein Befund | § 17 Abs. 1 Satz 1 MiLoG („Ablauf des siebten … Kalendertages“) |
 | Verstoß | noch offen am Di 10.11. um 0:00 | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 1 MiLoG |
 | ausgenommen | Minijob im Privathaushalt, offen am 10.11. | nur R-01 | § 17 Abs. 1 Satz 3 MiLoG |
+| Privathaushalt ohne Minijob | Vollzeit im Privathaushalt, Branche nicht eingestellt, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 3 MiLoG nimmt nur § 8a SGB IV aus, also nur Minijobs |
+| vor dem Hinweis | noch offen am Fr 6.11. um 23:59 | nur R-01 | R-13, Schwere |
+| Hinweis | noch offen am Sa 7.11. um 0:00 | Hinweis „Aufzeichnung fällig“, Frist bis Mo 9.11. 23:59 | R-13, Schwere |
+| verspätet nachgetragen | Gehen erfasst am Di 10.11. um 0:00 | Verstoß „Aufzeichnung verspätet“, auch nachdem der Tag vollständig ist | § 17 Abs. 1 Satz 1 MiLoG |
+| geändert nach der Frist | vollständig erfasst am Mi 4.11., Gehen am Do 12.11. geändert | kein Befund, als nachgetragen gekennzeichnet | R-13, Regel |
+| gelöscht nach der Frist | vollständig erfasst am Mi 4.11., Kommen und Gehen am Do 12.11. gelöscht | kein Befund, als nachgetragen gekennzeichnet | R-13, Regel |
+| offen gelöscht nach der Frist | Kommen erfasst am Mo 2.11., am Do 12.11. gelöscht | Verstoß „Aufzeichnung verspätet“, als nachgetragen gekennzeichnet | § 17 Abs. 1 Satz 1 MiLoG |
+| gelöscht vor der Frist | Kommen erfasst am Mo 2.11., am Mi 4.11. gelöscht | kein Befund | R-13, Regel |
+| erst nach der Frist erfasst, dann gelöscht | Kommen und Gehen am Do 12.11. erfasst, am Fr 13.11. gelöscht | Verstoß „Aufzeichnung verspätet“ wie ohne Löschen, als nachgetragen gekennzeichnet | § 17 Abs. 1 Satz 1 MiLoG |
+| Gehen ohne Kommen nach einer offenen Schicht | Kommen am Mo 2.11. offen, Gehen am Do 5.11., am Fr 20.11. gelöscht | Verstoß „Aufzeichnung verspätet“ für den 2.11. und den 5.11., 5.11. als nachgetragen gekennzeichnet | § 17 Abs. 1 Satz 1 MiLoG |
+| Gehen während der Pause nach Mitternacht | Kommen Mo 2.11. 22:00, Pause Di 1:00, Gehen Di 2:00, das Gehen am Do 12.11. gelöscht | Verstoß „Aufzeichnung verspätet“, 2.11. als nachgetragen gekennzeichnet | R-13, Regel; R-01 (ein Gehen während der Pause gehört zur Schicht) |
+| Pause-Beginn knapp 24 Stunden nach dem Kommen | Kommen Mo 2.11. 8:00:30, Pause Di 3.11. 8:00:20, die Pause am Fr 20.11. gelöscht | Verstoß „Aufzeichnung verspätet“, 2.11. als nachgetragen gekennzeichnet | R-13, Regel; R-01 (die Pause beginnt in der Schicht, die erst 24 Stunden nach dem Kommen endet) |
+| doppelt getippt nach der Ruhe | Kommen Mo 2.11. 20:00, Pause 22:00, Pause-Ende Di 3.11. 7:00:10 und 7:00:40, das zweite am Di 10.11. 12:00 erfasst | Verstoß „Aufzeichnung verspätet“ für den 2.11. und den 3.11., nicht als nachgetragen gekennzeichnet | R-13, Regel; R-01 (ein doppelter Tipp gehört zum Stempel, den er wiederholt) |
+| nach einer offenen Schicht | Kommen am Mo 2.11. offen, Mo 16.11. vollständig erfasst am 16.11., geprüft am Sa 21.11. | kein Befund für den 16.11. | R-13, Regel |
+| geändert nach einer offenen Schicht | Kommen am Mo 2.11. offen, Mo 16.11. vollständig erfasst, Gehen am Mo 30.11. geändert | 16.11. als nachgetragen gekennzeichnet | R-13, Regel |
+| Branche | Vollzeit in einer Gaststätte, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 1 MiLoG; § 2a Abs. 1 Nr. 2 SchwarzArbG |
+| andere Branche | Vollzeit, Betrieb in keiner Branche des § 2a SchwarzArbG, offen am 10.11. | nur R-01 | § 17 Abs. 1 Satz 1 MiLoG |
+| Branche nicht eingestellt | Vollzeit, Branche am Betrieb nicht eingestellt, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | nie weniger streng als das Gesetz (BAULISTE.md, S-204) |
+| Zeitumstellung | Arbeitstag Mo 19.10.2026, noch offen am Di 27.10. um 0:00 (MEZ, nach dem 25.10.) | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 1 MiLoG |
+
+Ob ein Tag rechtzeitig aufgezeichnet ist, entscheidet sein Stand zum Ablauf der Frist: Jede
+Stempelung trägt den Zeitpunkt, zu dem sie erfasst wurde, und eine geänderte den, zu dem sie ersetzt
+wurde. War der Tag zum Ablauf des siebten Folgetags vollständig, ist er rechtzeitig, auch wenn er
+danach noch geändert wird (dann „nachgetragen“); war er es nicht, bleibt der Verstoß, auch wenn der
+Tag später vollständig wird. Wer alle Stempelungen eines Tags nach der Frist löscht, lässt ihn
+nicht verschwinden: Der Tag bleibt als nachgetragen gekennzeichnet, und war er zum Ablauf der Frist
+unvollständig oder erst danach erfasst, bleibt der Verstoß. Nicht geprüft werden die Einschränkungen der
+Mindestlohndokumentationspflichtenverordnung (§ 1 MiLoDokV: Monatsentgelt über 4.461 € oder über
+2.974 € seit zwölf Monaten, mitarbeitende Ehegatten, Kinder und Eltern); ohne Einstellung gilt die
+Pflicht.
 
 ### R-14 Mindestlohn je Monat
 
@@ -522,6 +554,21 @@ Regel:
 | Grenze | 597,70 € für 43 h | genau 13,90 €/h, kein Befund | § 1 Abs. 1 MiLoG („mindestens“) |
 | Verstoß | 597,69 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 1 Abs. 1 MiLoG |
 | nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+| Stundenlohn | 43 h zu 13,90 € je Stunde | kein Befund | § 1 Abs. 1 MiLoG |
+| Stundenlohn darunter | 43 h zu 13,89 € je Stunde | Verstoß „unter dem Mindestlohn“, es fehlen 0,43 € | § 1 Abs. 1 MiLoG |
+| Sonntagszuschlag | 590,00 € und 7,70 € Sonntagszuschlag für 43 h | kein Befund | BAG, 24.05.2017, 5 AZR 431/16 |
+| Nachtzuschlag | 590,00 € und 7,70 € Nachtzuschlag für 43 h | Verstoß „unter dem Mindestlohn“, es fehlen 7,70 € | BAG, 25.05.2016, 5 AZR 135/16 |
+| Jahreswechsel | Dezember 2026: Nachtschicht 31.12. 22:00 bis 1.1. 6:00 zu 13,90 € je Stunde, Mindestlohn 2027 14,60 € | Verstoß „unter dem Mindestlohn“: 120 min zu 13,90 €, 360 min zu 14,60 €, es fehlen 4,20 € | § 1 Abs. 2 MiLoG; MiLoV5 |
+| Ausnahme | Auszubildender, 500,00 € für 43 h | kein Befund | § 22 Abs. 3 MiLoG |
+| Ausnahme endet im Monat | langzeitarbeitslos, Ausnahme bis 15.11., 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“: der Monat wird ganz geprüft | § 22 Abs. 4 MiLoG; nie weniger streng als das Gesetz (BAULISTE.md, S-204) |
+| Ausnahme ohne Ende | langzeitarbeitslos ohne Ende der Ausnahme, 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 22 Abs. 4 MiLoG („in den ersten sechs Monaten“) |
+| Ausnahme Jugendliche ohne Ende | Jugendlicher ohne Berufsabschluss ohne Ende der Ausnahme, 500,00 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 22 Abs. 2 MiLoG mit § 2 Abs. 1 und 2 JArbSchG: nur bis zum 18. Geburtstag |
+
+Die Arbeitszeit des Monats sind die Minuten der geschlossenen Schichten seiner Arbeitstage (R-01
+meldet offene). Eine Schicht über den 1. Januar schuldet jede Minute zum Mindestlohn des Kalendertags,
+auf den sie fällt ([Jahreswerte](jahreswerte.md#wechsel-mitten-in-einer-schicht)). Ein Monat, den eine
+Ausnahme nach § 22 MiLoG nur zum Teil deckt, wird ganz geprüft: Welcher Teil des Lohns auf die Tage
+nach der Ausnahme fällt, weiß Soll nicht.
 
 Die Höhe des Mindestlohns und die Minijob-Grenze stehen nicht hier, sondern als
 [Jahreswerte](jahreswerte.md) mit Quelle in `packages/arbeitszeit`.
@@ -947,6 +994,51 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | erlaubt | Person selbst sieht „krank“ | sichtbar | Art. 15 DSGVO |
 | Grenze | Lohnbüro sieht „krank“ (für Entgeltfortzahlung) | sichtbar | Art. 9 Abs. 2 lit. b DSGVO |
 | Verstoß | Planer oder Kollegin sieht „krank“ | nur „abwesend“ | Art. 9 Abs. 1 DSGVO |
+
+## Minijob
+
+### R-32 Minijob-Grenze
+
+- **Norm**: § 8 Abs. 1 Nr. 1 SGB IV: eine geringfügige Beschäftigung liegt vor, wenn das
+  Arbeitsentgelt „regelmäßig die Geringfügigkeitsgrenze nicht übersteigt“; Höhe nach § 8 Abs. 1a
+  SGB IV (Mindestlohn × 130 ÷ 3, auf volle Euro aufgerundet; Jahreswert, S-104); § 8 Abs. 1b SGB IV:
+  ein „unvorhersehbares Überschreiten“ schadet nicht, wenn die Grenze „innerhalb des … Zeitjahres in
+  nicht mehr als zwei Kalendermonaten um jeweils einen Betrag bis zur Höhe der
+  Geringfügigkeitsgrenze überschritten wird“.
+- **Regel**: Für jeden Monat, in dem das Arbeitszeitmodell ein Minijob ist: Arbeitsentgelt des
+  Monats gegen die Grenze seines Jahres, mit ganzen Zahlen ohne Rundung
+  (`lohnCent × 60 ≤ grenzeCent × 60`, beim Stundenlohn `stundenlohnCent × minuten`). Zuschläge
+  zählen mit, soweit sie nicht nach § 3b EStG steuerfrei sind (§ 1 Abs. 1 Satz 1 Nr. 1 SvEV); ein
+  steuerfreier zählt doch mit, soweit der Lohn je gearbeiteter Stunde, auf dem er berechnet wird,
+  25 € übersteigt (dort zweiter Halbsatz; dieser Teil wird aufgerundet). Das
+  Zeitjahr ist der Monat mit den elf Monaten davor (Geringfügigkeits-Richtlinien vom 14.12.2023: es
+  endet mit dem Monat des Überschreitens). Liegt der Monat über der Grenze, ist er
+  **gelegentlich**, wenn im Zeitjahr höchstens zwei Monate über der Grenze liegen, jeder um
+  höchstens die Grenze; sonst **schwankend**, wenn das Entgelt der Minijob-Monate des Zeitjahres
+  zusammen ihre Grenzen nicht übersteigt (regelmäßiges Entgelt als Durchschnitt der Jahresprognose,
+  Geringfügigkeits-Richtlinien); sonst ist es kein Minijob mehr. Fehlt die Grenze des Monats oder
+  eines Monats im Zeitjahr, heißt das Ergebnis „nicht hinterlegt“.
+- **Ausnahmen**: kurzfristige Beschäftigung (§ 8 Abs. 1 Nr. 2 SGB IV) und das Zusammenrechnen
+  mehrerer Beschäftigungen (§ 8 Abs. 2 SGB IV) prüft Soll nicht: Beides steht in keiner Stempelung.
+- **Schwere**: Hinweis bei gelegentlichem Überschreiten (erlaubt nur, wenn es nicht vorhersehbar
+  war) und bei schwankendem (erlaubt nur, wenn die Schwankung in der Jahresprognose stand); Verstoß,
+  wenn keins von beiden trägt.
+
+| Fall | Monat November 2026 (Grenze 603 €), Minijob seit 1.1.2026, in den Monaten davor je 400,00 € | Erwartet | Quelle |
+| --- | --- | --- | --- |
+| erlaubt | 580,00 € | kein Befund | § 8 Abs. 1 Nr. 1 SGB IV |
+| Grenze | 603,00 € | kein Befund | § 8 Abs. 1 Nr. 1 SGB IV („nicht übersteigt“) |
+| Verstoß | Minijob erst seit 1.9.2026, je 650,00 € im September, Oktober und November | Verstoß „kein Minijob mehr“ im November; Hinweis „gelegentlich überschritten“ im September und Oktober | § 8 Abs. 1 Nr. 1, Abs. 1b SGB IV |
+| gelegentlich | 603,01 € | Hinweis „gelegentlich überschritten“ | § 8 Abs. 1b SGB IV |
+| gelegentlich, Grenze | 1.206,00 € | Hinweis „gelegentlich überschritten“ | § 8 Abs. 1b SGB IV („bis zur Höhe der Geringfügigkeitsgrenze“) |
+| mehr als das Doppelte | 1.206,01 € | Hinweis „schwankend“: im Zeitjahr im Schnitt unter der Grenze | § 8 Abs. 1 Nr. 1 SGB IV; Geringfügigkeits-Richtlinien vom 14.12.2023 |
+| dritter Monat | je 700,00 € im Februar, Juli und November | Hinweis „schwankend“ im November | § 8 Abs. 1b SGB IV („nicht mehr als zwei Kalendermonaten“) |
+| Zeitjahr | Minijob seit 1.11.2025, je 700,00 € im November 2025, Februar und November 2026 | Hinweis „gelegentlich überschritten“ im November 2026: November 2025 liegt vor dem Zeitjahr | Geringfügigkeits-Richtlinien vom 14.12.2023 |
+| Stundenlohn | 43 h zu 14,03 € je Stunde (603,29 €) | Hinweis „gelegentlich überschritten“ | § 8 Abs. 1 Nr. 1, Abs. 1a SGB IV |
+| steuerfreier Zuschlag | 590,00 € und 20,00 € steuerfreier Sonntagszuschlag | kein Befund | § 1 Abs. 1 Satz 1 Nr. 1 SvEV |
+| steuerfreier Zuschlag über 25 € je Stunde | 20 h zu 30,00 € je Stunde und 120,00 € steuerfreier Sonntagszuschlag | Hinweis „gelegentlich überschritten“, 20,00 € des Zuschlags zählen | § 1 Abs. 1 Satz 1 Nr. 1 SvEV („soweit das Entgelt, auf dem sie berechnet werden, mehr als 25 Euro für jede Stunde beträgt“) |
+| Jahreswechsel | je 620,00 € im Dezember 2026 und im Januar 2027 (Grenze 633 €) | Hinweis „gelegentlich überschritten“ im Dezember, kein Befund im Januar | § 8 Abs. 1a SGB IV |
+| nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 
 ## Was Soll nicht prüft
 

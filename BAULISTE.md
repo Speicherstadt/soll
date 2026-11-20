@@ -128,7 +128,17 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   und die Verschiebung nach § 9 Abs. 2 sind Parameter, deren Vorgabe nie weniger streng ist als das
   Gesetz; Feiertage kommen aus S-105 nach dem Standort; ein Tag ohne Regelversion oder Feiertage wird
   „nicht hinterlegt“ statt geprüft.
-- [ ] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
+- [x] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
+  Fertig, wenn: jeder Fall von R-13, R-14 und R-32 in `docs/regeln.md` wörtlich als Test besteht,
+  auch über den 1. Januar und die Zeitumstellung. Dazu: § 17 MiLoG liest Stempelungen mit dem
+  Zeitpunkt der Erfassung und der Ersetzung (S-304) und prüft jeden Tag, wie er zum Ablauf des
+  siebten Folgetags stand, eine spätere Änderung ist „nachgetragen“; der Mindestlohn rechnet
+  `lohnCent × 60 ≥ mindestlohnCent × minuten` nur mit ganzen Zahlen, jede Minute zum Mindestlohn
+  ihres Kalendertags, mit Sonn- und Feiertagszuschlägen, ohne Nachtzuschläge; die Minijob-Grenze
+  kommt aus S-104 mit dem gelegentlichen Überschreiten nach § 8 Abs. 1b SGB IV im Zeitjahr; Branche
+  nach § 2a SchwarzArbG, Privathaushalt und Ausnahmen nach § 22 MiLoG sind Parameter, deren Vorgabe
+  nie weniger streng ist als das Gesetz; ein Jahr ohne Mindestlohn oder Grenze und ein Tag ohne
+  Regelversion werden „nicht hinterlegt“ statt mit fremden Werten geprüft.
 - [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
   Fertig, wenn: jeder Fall von R-15 bis R-21 in `docs/regeln.md` wörtlich als Test besteht, auch
   am Tag vor und am Tag des 18. Geburtstags, bei einem Geburtstag am 29. Februar, über beide

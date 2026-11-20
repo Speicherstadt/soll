@@ -10,6 +10,15 @@ export * from "./heute/index.ts";
 export * from "./jahreswerte/index.ts";
 export { alterAm } from "./kalender/alter.ts";
 export {
+  ersterTag,
+  istMonat,
+  letzterTag,
+  type Monat,
+  monatVon,
+  plusMonate,
+  tageImMonat,
+} from "./kalender/monat.ts";
+export {
   istTag,
   jahrVon,
   plusTage,
@@ -31,5 +40,6 @@ export {
 } from "./module/module.ts";
 export * from "./pruefung/index.ts";
 export * from "./pruefung-jugend/index.ts";
+export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-mutterschutz/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";

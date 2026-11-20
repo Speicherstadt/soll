@@ -1,5 +1,5 @@
 import type { Befund } from "../befund.ts";
-import { plusTage, type Tag } from "../kalender/tag.ts";
+import { type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
 import {
   arbeitsMinutenAm,
   fuerGeschuetzte,
@@ -16,23 +16,17 @@ import {
  * rounded down, `ueber` the minutes past it
  */
 export type MonatBefund = Befund<"ueber_vertrag"> & {
-  monat: string;
+  monat: Monat;
   minuten: number;
   erlaubt: number;
   ueber: number;
-};
-
-const tageImMonat = (monat: string): Tag[] => {
-  const tage: Tag[] = [];
-  for (let tag = `${monat}-01`; tag.startsWith(monat); tag = plusTage(tag, 1)) tage.push(tag);
-  return tage;
 };
 
 /**
  * Seven times the minutes allowed in a month: the contractual weekly time of each day of the month
  * in a span of the mark, a seventh of it per day; null when one of them is not known
  */
-const erlaubtMalSieben = (monat: string, optionen: MutterschutzOptionen): number | null => {
+const erlaubtMalSieben = (monat: Monat, optionen: MutterschutzOptionen): number | null => {
   let summe = 0;
   for (const tag of tageImMonat(monat).filter((tag) => inSpanne(optionen.zeitraeume, tag))) {
     const woche = optionen.wochenarbeitszeitAm?.(tag) ?? null;
@@ -59,7 +53,7 @@ export const monatsdurchschnitt = (
     optionen.zeitraeume,
     (tag) => (arbeitsMinutenAm(tag) > 0 ? [{ tag: tag.tag, minuten: arbeitsMinutenAm(tag) }] : []),
   );
-  const monate = Map.groupBy(geprueft.befunde, (tag) => tag.tag.slice(0, 7));
+  const monate = Map.groupBy(geprueft.befunde, (tag) => monatVon(tag.tag));
   const nichtHinterlegt = [...geprueft.nichtHinterlegt];
   const befunde = [...monate].flatMap(([monat, gearbeitet]): MonatBefund[] => {
     const tageDesMonats = sortiert(gearbeitet.map((tag) => tag.tag));

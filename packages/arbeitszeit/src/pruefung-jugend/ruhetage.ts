@@ -1,5 +1,6 @@
 import type { Befund } from "../befund.ts";
 import { ostersonntag } from "../feiertage/ostern.ts";
+import { type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
 import { jahrVon, plusTage, type Tag, wochenbeginn, wochentag } from "../kalender/tag.ts";
 import { beginnInBerlin, zeitpunktInBerlin } from "../kalender/zeit.ts";
 import {
@@ -83,12 +84,10 @@ const ruhetagBefunde = (tag: Arbeitstag, optionen: JugendOptionen): JugendRuheta
 };
 
 /** The Sundays of a month on which the person is a Jugendlicher */
-const sonntageImMonat = (monat: string, optionen: JugendOptionen): Tag[] => {
-  const tage: Tag[] = [];
-  for (let tag = `${monat}-01`; tag.startsWith(monat); tag = plusTage(tag, 1))
-    if (wochentag(tag) === 0) tage.push(tag);
+const sonntageImMonat = (monat: Monat, optionen: JugendOptionen): Tag[] => {
+  const sonntage = tageImMonat(monat).filter((tag) => wochentag(tag) === 0);
   return fuerJugendliche(
-    tage,
+    sonntage,
     (tag) => tag,
     optionen.geburtsdatum,
     (tag) => [tag],
@@ -101,7 +100,7 @@ const sonntageImMonat = (monat: string, optionen: JugendOptionen): Tag[] => {
  */
 const freieSonntage = (tage: readonly Arbeitstag[], optionen: JugendOptionen) => {
   const sonntage = tage.filter((tag) => wochentag(tag.tag) === 0);
-  const monate = Map.groupBy(sonntage, (tag) => tag.tag.slice(0, 7));
+  const monate = Map.groupBy(sonntage, (tag) => monatVon(tag.tag));
   return [...monate].flatMap(([monat, gearbeitet]): JugendRuhetagBefund[] => {
     const grenzen = gearbeitet[0]?.grenzen;
     if (grenzen === undefined || !sonntagErlaubt(optionen, grenzen)) return [];

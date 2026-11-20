@@ -271,3 +271,18 @@ describe("docs/regeln.md: the overview against the rules", () => {
     }
   });
 });
+
+/*
+ * Review of PR #15: the merge with main kept both versions of the decision "Uhrzeit in Berlin", one
+ * of which no longer names `eingabeInBerlin`. Each question is decided once in docs/plan.md.
+ */
+describe("docs/plan.md", () => {
+  it("decides each question once in the table Entscheidungen", () => {
+    const abschnitt = (plan.split("## Entscheidungen")[1] ?? "").split("\n## ")[0] ?? "";
+    const fragen = abschnitt
+      .split("\n")
+      .filter((zeile) => zeile.startsWith("| ") && !/^\|\s*-/.test(zeile))
+      .map((zeile) => zeile.split("|")[1]?.trim() ?? "");
+    expect(fragen.filter((frage, index) => fragen.indexOf(frage) !== index)).toEqual([]);
+  });
+});

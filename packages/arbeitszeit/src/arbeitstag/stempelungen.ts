@@ -35,6 +35,12 @@ export type Rohbefund = { art: Stempelfehler; zeitpunkt: number; stueck: number 
 
 type Zustand = "aus" | "arbeit" | "pause";
 
+/**
+ * Where a stamp read went: the stretch it began, ended or was reported with, as a repeat ignored
+ * that of the stamp it repeats; null for a stamp without Kommen, which belongs to no stretch
+ */
+export type Zuordnung = { art: Stempelart; zeitpunkt: number; stueck: number | null };
+
 /** The stamps read: the stretches, the findings and how the last stamp left the person */
 export type Lauf = {
   zustand: Zustand;
@@ -42,6 +48,8 @@ export type Lauf = {
   befunde: Rohbefund[];
   /** the stretches whose shift was left with a break running: it stays open, never ended */
   offenePausen: number[];
+  /** every stamp read, once, with where it went (R-13 files each stamp by it) */
+  zuordnungen: Zuordnung[];
 };
 
 /** The run while reading: the lists newest first, so each stamp takes constant time */
@@ -57,6 +65,7 @@ type Stand = {
   letzte: Stempelung | null;
   /** the last stamp read, taken or reported, to tell a double tap */
   zuletzt: Stempelung | null;
+  zuordnungen: Liste<Zuordnung>;
 };
 
 const MINUTE = 60_000;
@@ -69,6 +78,7 @@ const START: Stand = {
   offenePausen: null,
   letzte: null,
   zuletzt: null,
+  zuordnungen: null,
 };
 
 /** What each state expects next; used to order stamps of the same instant */
@@ -211,10 +221,29 @@ const lies = (vorher: Stand, stempel: Stempelung): Stand => {
   return { ...melde(lauf, "pause_ende_fehlt", stempel), zustand: "aus", letzte: stempel };
 };
 
-const schritt = (lauf: Stand, stempel: Stempelung): Stand => ({
-  ...lies(lauf, stempel),
-  zuletzt: stempel,
-});
+/** The stretch of the last stamp of a kind: a repeat ignored is read within its minute */
+const stueckDerArt = (zuordnungen: Liste<Zuordnung>, art: Stempelart): number | null => {
+  for (let teil = zuordnungen; teil !== null; teil = teil.rest)
+    if (teil.kopf.art === art) return teil.kopf.stueck;
+  return null;
+};
+
+/** Where a stamp went, from what reading it changed: a stretch, a finding, or nothing (a repeat) */
+const stueckVon = (vorher: Stand, nachher: Stand, art: Stempelart): number | null => {
+  if (nachher.stuecke !== vorher.stuecke) return letzterIndex(nachher);
+  if (nachher.befunde !== vorher.befunde) return nachher.befunde?.kopf.stueck ?? null;
+  return stueckDerArt(vorher.zuordnungen, art);
+};
+
+const schritt = (lauf: Stand, stempel: Stempelung): Stand => {
+  const gelesen = lies(lauf, stempel);
+  const stueck = stueckVon(lauf, gelesen, stempel.art);
+  return {
+    ...gelesen,
+    zuletzt: stempel,
+    zuordnungen: vorne(lauf.zuordnungen, { ...stempel, stueck }),
+  };
+};
 
 const RANG: Record<Stempelart, number> = { gehen: 0, pause_beginn: 1, pause_ende: 2, kommen: 3 };
 
@@ -269,5 +298,6 @@ export const durchlaufe = (stempelungen: readonly Stempelung[]): Lauf => {
     stuecke: alsArray(stand.stuecke),
     befunde: alsArray(stand.befunde),
     offenePausen: alsArray(stand.offenePausen),
+    zuordnungen: alsArray(stand.zuordnungen),
   };
 };

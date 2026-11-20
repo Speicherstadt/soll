@@ -1,4 +1,11 @@
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /*
  * Soll's tables. Every one carries `betrieb_id` (CLAUDE.md); writes to them go only through the audit
@@ -60,6 +67,54 @@ export const arbeitszeitmodelle = sqliteTable(
     angelegtAm: integer("angelegt_am").notNull(),
   },
   (t) => [primaryKey({ columns: [t.betriebId, t.modellId] })],
+);
+
+/**
+ * Which working-time model holds for a person from which day (S-304): the target of a day is the
+ * model of the latest assignment on or before it; without one the target is "nicht hinterlegt"
+ */
+export const modellzuordnungen = sqliteTable(
+  "modellzuordnungen",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    gueltigAb: text("gueltig_ab").notNull(),
+    modellId: text("modell_id").notNull(),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId, t.gueltigAb] })],
+);
+
+/**
+ * A clock stamp, or a correction of one (S-304, docs/plan.md "Änderungen an Stempelungen"). Rows are
+ * only appended: a change or a removal is a new row naming the row it replaces in `ersetzt`, with its
+ * reason, so the original stays and the audit chain shows the history. A row is in force while no
+ * other row replaces it and it is no removal. `zeitpunkt` is the server's clock for a live stamp
+ * (the device's goes to `geraet_zeitpunkt`, for S-305) and the time entered for a correction.
+ */
+export const stempelungen = sqliteTable(
+  "stempelungen",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    stempelId: text("stempel_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    art: text("art", { enum: ["kommen", "gehen", "pause_beginn", "pause_ende"] }).notNull(),
+    zeitpunkt: integer("zeitpunkt").notNull(),
+    geraetZeitpunkt: integer("geraet_zeitpunkt"),
+    quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
+    ersetzt: text("ersetzt"),
+    entfernt: integer("entfernt", { mode: "boolean" }).notNull().default(false),
+    // required for every row a person entered by hand: an addition, a change, a removal
+    grund: text("grund"),
+    erstelltVon: text("erstellt_von").notNull(),
+    erstelltAm: integer("erstellt_am").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.stempelId] }),
+    index("stempelungen_person").on(t.betriebId, t.nutzerId, t.zeitpunkt),
+    // a row is replaced once; a second change replaces the newest version
+    uniqueIndex("stempelungen_ersetzt").on(t.betriebId, t.ersetzt),
+  ],
 );
 
 /**

@@ -29,6 +29,23 @@ describe("darf", () => {
     }
   });
 
+  it("lets everyone who works for the business stamp, but no external staff and no device", () => {
+    for (const rolle of ["inhaber", "planer", "mitarbeiter", "lohnbuero", "betriebsrat"])
+      expect(darf(rolle, "stempeln"), rolle).toBe(true);
+    for (const rolle of ["extern", "geraet"]) expect(darf(rolle, "stempeln"), rolle).toBe(false);
+  });
+
+  it("lets owner and planner correct others' times, and payroll read them", () => {
+    for (const rolle of ["inhaber", "planer"])
+      expect(darf(rolle, "zeiten:korrigieren"), rolle).toBe(true);
+    for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "zeiten:korrigieren"), rolle).toBe(false);
+    for (const rolle of ["inhaber", "planer", "lohnbuero"])
+      expect(darf(rolle, "zeiten:alle"), rolle).toBe(true);
+    for (const rolle of ["mitarbeiter", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "zeiten:alle"), rolle).toBe(false);
+  });
+
   it("refuses unknown roles", () => {
     expect(darf("owner", "betrieb:lesen")).toBe(false);
   });

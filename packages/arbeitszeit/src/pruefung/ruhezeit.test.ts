@@ -264,4 +264,44 @@ describe("R-05: midnight, DST and open shifts", () => {
     ];
     expect(pruefe(stempel)).toEqual({ befunde: [], nichtHinterlegt: ["2025-12-31"] });
   });
+
+  it("measures the rest after a call-out (R-12): its end begins a rest, its start ends none", () => {
+    // a planned shift (S-505) in the shape of PruefSchicht: Mo 14:00 – 20:00, a call-out on Di
+    // 2:00 – 3:00 in the same working day by the 9 hours of S-201, then work on Di from 12:00
+    const stueck = (von: string, bis: string) => {
+      const beginn = um(von);
+      const ende = um(bis);
+      return { beginn, ende, minuten: (ende - beginn) / 60_000 };
+    };
+    const arbeit = stueck(tag("2026-11-16", "14:00"), tag("2026-11-16", "20:00"));
+    const einsatz = stueck(tag("2026-11-17", "02:00"), tag("2026-11-17", "03:00"));
+    const di = stueck(tag("2026-11-17", "12:00"), tag("2026-11-17", "16:00"));
+    const tage = [
+      {
+        tag: "2026-11-16",
+        schichten: [
+          {
+            tag: "2026-11-16",
+            beginn: arbeit.beginn,
+            ende: einsatz.ende,
+            pausen: [],
+            bloecke: [arbeit, einsatz],
+            arbeitsMinuten: 420,
+            einsaetze: [einsatz],
+          },
+        ],
+      },
+      {
+        tag: "2026-11-17",
+        schichten: [{ tag: "2026-11-17", ...di, pausen: [], bloecke: [di], arbeitsMinuten: 240 }],
+      },
+    ];
+    expect(ruhezeit(tage, { jetzt: SPAETER }).befunde).toEqual([
+      expect.objectContaining({
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: einsatz.ende, ende: di.beginn, minuten: 540 },
+        fehlt: 120,
+      }),
+    ]);
+  });
 });

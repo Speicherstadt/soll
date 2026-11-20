@@ -67,6 +67,9 @@ Zwischen ihnen liegen mindestens 9 Stunden.
 Vom letzten „Gehen“ eines Arbeitstags bis zum ersten „Kommen“ des nächsten müssen mindestens
 11 Stunden liegen. Kürzer ist ein Verstoß „Ruhezeit“ mit der Dauer der Ruhezeit und den fehlenden
 Minuten (§ 5 Abs. 1 ArbZG).
+Ein Einsatz in der Rufbereitschaft unterbricht die Ruhezeit: Gemessen wird ab seinem Ende, und eine
+zu kurze Ruhezeit danach heißt „Ruhezeit durch Einsatz unterbrochen“ (R-12, siehe
+[Bereitschaftsdienst und Rufbereitschaft](bereitschaft.md)).
 
 **Branchenausnahme** (§ 5 Abs. 2 ArbZG): Krankenhäuser und Pflege, Gastronomie und Beherbergung,
 Verkehr, Rundfunk sowie Landwirtschaft und Tierhaltung dürfen die Ruhezeit auf 10 Stunden kürzen.
@@ -123,5 +126,6 @@ In `packages/arbeitszeit` (`src/pruefung/`) nimmt jede Regel die Arbeitstage ein
 | `arbzgBefunde(tage, optionen)` | R-02 bis R-05 | alle oben |
 
 `jetzt` entscheidet, ob ein Zeitraum schon beendet ist und wie lange die Ruhezeit seit dem letzten
-„Gehen“ dauert. Die Grenzwerte stehen je Regelversion in `ARBZG_GRENZEN`. Die Prüfungen für Nacht,
+„Gehen“ dauert. Eine Schicht kann Blöcke als Einsätze der Rufbereitschaft markieren
+(`einsaetze`, S-206): Deren Ende beginnt eine Ruhezeit, ihr Beginn beendet keine. Die Grenzwerte stehen je Regelversion in `ARBZG_GRENZEN`. Die Prüfungen für Nacht,
 Sonn- und Feiertage (S-203) und für den Dienstplan (S-502) bauen auf denselben Formen auf.

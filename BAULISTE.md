@@ -142,6 +142,17 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 - [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
 - [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
   Unterbrechung der Ruhezeit.
+  Fertig, wenn: jeder Fall von R-11 und R-12 in `docs/regeln.md` wörtlich als Test besteht, auch
+  über Mitternacht, beide Zeitumstellungen und mit mehreren Einsätzen in einer Nacht. Dazu:
+  Bereitschaftsdienst und Rufbereitschaft, die ganz zählt, sind Stücke Arbeit in der Schicht und
+  gehen ohne eigene Prüfung in §§ 3 bis 5 ein, schon gestempelte Arbeit zählt nicht doppelt; die
+  Arbeitstage haben die Form `PruefTag` (für S-505 und jede Regel der Phase 2), jede Schicht nennt
+  Bereitschaft und Einsätze, jeder Tag ihre Minuten; ein Einsatz unterbricht die Ruhezeit, nach ihm
+  beginnt eine neue, und der Befund nennt den Einsatz; Reaktionszeit am Rufdienst, Tarif nach § 7
+  Abs. 1 Nr. 1 Buchst. a mit § 7 Abs. 9 und die Branche für § 5 Abs. 3 sind Einstellungen, deren
+  Vorgabe nie weniger streng ist als das Gesetz; ohne Bereitschaft bleiben die Tage aus S-201 und
+  die Befunde von S-202 unverändert; ein Tag ohne Regelversion wird „nicht hinterlegt“ statt
+  geprüft.
 - [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
   Fertig, wenn: die Beispiele aus R 3b LStR und H 3b LStH als Tests bestehen.
 - [ ] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den

@@ -35,6 +35,9 @@ ab dem 1. Januar 2026. Grundlage sind die Gesetzestexte auf gesetze-im-internet.
 | Schicht | Arbeit von „Kommen“ bis „Gehen“ samt Unterbrechungen; eine Unterbrechung ab 9 h beendet sie (kürzeste Ruhezeit, die das Gesetz überhaupt zulässt), und sie reicht nie 24 h über ihren Beginn hinaus | § 5 Abs. 1, § 7 Abs. 1 Nr. 3 ArbZG; R-01 |
 | Werktag | jeder Tag außer Sonntag und gesetzlichem Feiertag, also auch der Samstag | § 3 ArbZG; § 3 Abs. 2 BUrlG |
 | Ruhepause | eine im Voraus feststehende Unterbrechung von mindestens 15 Minuten (Jugendliche ebenso) | § 4 Satz 2 ArbZG; § 11 Abs. 1 Satz 3 JArbSchG |
+| Bereitschaftsdienst | Warten auf Arbeit an dem Ort, den der Betrieb bestimmt; Arbeitszeit wie jede andere, Arbeitsbereitschaft ebenso | § 2 Abs. 1 ArbZG; EuGH C-151/02; R-11 |
+| Rufbereitschaft | erreichbar sein, wo man will; keine Arbeitszeit, nur ihre Einsätze, außer bei einer Reaktionszeit unter 30 min | § 5 Abs. 3 ArbZG; EuGH C-518/15; R-12 |
+| Einsatz | Arbeit aus der Rufbereitschaft, vom Anruf bis zum Ende der Arbeit samt Weg hin und zurück; nach ihm beginnt eine neue Ruhezeit | § 5 ArbZG; R-12 |
 | Nachtzeit | 23 bis 6 Uhr, in Bäckereien und Konditoreien 22 bis 5 Uhr | § 2 Abs. 3 ArbZG |
 | Nachtarbeit | Arbeit mit mehr als zwei Stunden in der Nachtzeit | § 2 Abs. 4 ArbZG |
 | Nachtarbeitnehmer | wer normalerweise Nachtarbeit in Wechselschicht leistet oder an mindestens 48 Tagen im Kalenderjahr | § 2 Abs. 5 ArbZG |
@@ -57,8 +60,8 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | R-08 | 15 beschäftigungsfreie Sonntage | § 11 Abs. 1 ArbZG | Hinweis / Verstoß |
 | R-09 | Ersatzruhetag | § 11 Abs. 3 ArbZG | Hinweis / Verstoß |
 | R-10 | Aufzeichnung über 8 h und Aufbewahrung 2 Jahre | § 16 Abs. 2 ArbZG | Verstoß |
-| R-11 | Bereitschaftsdienst ist Arbeitszeit | §§ 2, 7 ArbZG; EuGH C-151/02, C-518/15 | Hinweis |
-| R-12 | Rufbereitschaft: Einsätze sind Arbeitszeit und unterbrechen die Ruhezeit | §§ 2, 5 ArbZG; EuGH C-518/15 | Verstoß |
+| R-11 | Bereitschaftsdienst ist Arbeitszeit | §§ 2, 7 ArbZG; EuGH C-151/02, C-518/15 | Hinweis / Verstoß |
+| R-12 | Rufbereitschaft: Einsätze sind Arbeitszeit und unterbrechen die Ruhezeit | §§ 2, 5 ArbZG; EuGH C-518/15 | Hinweis / Verstoß |
 | R-13 | Aufzeichnung binnen 7 Tagen bei Minijob und in Branchen | § 17 Abs. 1 MiLoG; § 2a SchwarzArbG | Hinweis / Verstoß |
 | R-14 | Mindestlohn je Monat | § 1 MiLoG | Verstoß |
 | R-15 | Jugendliche: Arbeitszeit | § 8 JArbSchG | Verstoß |
@@ -449,17 +452,36 @@ Regel:
 ### R-11 Bereitschaftsdienst
 
 - **Norm**: § 2 Abs. 1 ArbZG; § 7 Abs. 1 Nr. 1 Buchst. a ArbZG; EuGH, Urteil vom 09.09.2003, C-151/02
-  (Jaeger): Bereitschaftsdienst am Arbeitsplatz ist Arbeitszeit.
+  (Jaeger): Bereitschaftsdienst am Arbeitsplatz ist Arbeitszeit; § 7 Abs. 9 ArbZG.
 - **Regel**: Bereitschaftsdienst (am vom Betrieb bestimmten Ort) zählt voll als Arbeitszeit, für
-  R-02 bis R-06; Arbeitsbereitschaft ebenso.
-- **Schwere**: kein eigener Befund; die Zeit geht in die anderen Regeln ein. Hinweis, wenn ein
-  Bereitschaftsdienst über 10 h nur mit tariflicher Einstellung nach § 7 erlaubt ist.
+  R-02 bis R-06; Arbeitsbereitschaft ebenso. Er ist ein Stück der Schicht wie andere Arbeit: Soll
+  schneidet die Schichten wie bei Stempelungen (Grundbegriff „Schicht“), eine Ruhepause ist er nie,
+  und was schon gestempelt ist, zählt nicht doppelt.
+- **Ausnahmen**: Tarifvertrag oder Betriebsvereinbarung nach § 7 Abs. 1 Nr. 1 Buchst. a ArbZG
+  (Einstellung des Betriebs mit Fundstelle): mehr als 10 h an einem Tag, in den Bereitschaftsdienst
+  fällt. Ein Tag ohne Bereitschaftsdienst bleibt beim Grenzwert von R-02. Über 12 h muss danach eine
+  Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
+  Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG). Ohne Einstellung gilt der Grenzwert von R-02.
+- **Schwere**: kein eigener Befund ohne Einstellung; die Zeit geht in die anderen Regeln ein.
+  Hinweis, wenn ein Bereitschaftsdienst über 10 h nur mit tariflicher Einstellung nach § 7 erlaubt
+  ist; Verstoß, wenn nach mehr als 12 h keine 11 h Ruhezeit folgen.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
 | erlaubt | 6:00 Arbeit + 2:00 Bereitschaftsdienst | 8:00 Arbeitszeit, kein Befund | EuGH C-151/02 |
 | Grenze | 6:00 Arbeit + 4:00 Bereitschaftsdienst | 10:00, Hinweis nach R-02 | EuGH C-151/02; § 3 ArbZG |
 | Verstoß | 6:00 Arbeit + 4:01 Bereitschaftsdienst, ohne Einstellung nach § 7 | Verstoß nach R-02 | § 3 ArbZG; § 7 Abs. 1 Nr. 1 Buchst. a ArbZG |
+| Pause | 6:00 Arbeit + 2:00 Bereitschaftsdienst ohne Ruhepause | Verstoß nach R-04 „Pause fehlt 30 min“ und „über 6 h ohne Pause“ | § 4 ArbZG; EuGH C-151/02 (Bereitschaftsdienst ist keine Ruhezeit) |
+| gestempelt | 8:00 – 16:00 gestempelt, davon 14:00 – 16:00 Bereitschaftsdienst | 8:00 Arbeitszeit, davon 2:00 Bereitschaftsdienst, nicht doppelt | § 2 Abs. 1 ArbZG |
+| Ruhezeit | Bereitschaftsdienst Mo 22:00 – Di 6:00, Di Schicht 15:30 (9:30 Ruhe) | Verstoß nach R-05 „Ruhezeit 9:30“ | § 5 Abs. 1 ArbZG; EuGH C-151/02 |
+| Herbst | Bereitschaftsdienst Sa 24.10.2026 22:00 – So 7:00 (10:00 echte Zeit) | Hinweis nach R-02 für Sa | § 3 ArbZG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Bereitschaftsdienst Sa 27.03.2027 22:00 – So 7:00 (8:00 echte Zeit) | kein Befund nach R-02 | § 3 ArbZG; SoZV (Beginn der Sommerzeit) |
+| Tarif | 6:00 Arbeit + 6:00 Bereitschaftsdienst, Einstellung nach § 7 Abs. 1 Nr. 1 Buchst. a | Hinweis „über 10 h nur mit Tarif“ statt Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG |
+| Tarif ohne Bereitschaft | 10:01 Arbeit ohne Bereitschaftsdienst, mit derselben Einstellung | Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG („wenn in die Arbeitszeit regelmäßig und in erheblichem Umfang Arbeitsbereitschaft oder Bereitschaftsdienst fällt“) |
+| über 12 h | Gastronomie, Einstellung nach § 7, Mo 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe | Verstoß „Ruhezeit nach über 12 h“ statt Hinweis nach R-05 | § 7 Abs. 9 ArbZG |
+
+Die Fälle erlaubt, Grenze, Verstoß und Tarif nehmen die Ruhepausen nach § 4 ArbZG als gewährt an;
+ohne sie gilt der Fall „Pause“.
 
 ### R-12 Rufbereitschaft
 
@@ -470,10 +492,24 @@ Regel:
   und beendet die Ruhezeit: Nach dem Einsatz beginnt eine neue Ruhezeit von 11 h. Ist die
   Reaktionszeit am Dienst kürzer als 30 min (Einstellung am Rufdienst), wertet Soll die ganze
   Rufbereitschaft als Arbeitszeit (Matzak: wenige Minuten; die 30 min sind eine vorsichtige Grenze
-  von Soll und als solche gekennzeichnet).
+  von Soll und als solche gekennzeichnet). Ohne eingestellte Reaktionszeit wertet Soll sie ebenso
+  (vorsichtige Vorgabe: eine kurze ist nicht auszuschließen).
+- **Einsatz und Arbeitstag**: Ein Einsatz zählt zum Arbeitstag der Schicht, zu der er nach dem
+  Grundbegriff „Schicht“ gehört, also zu einer Schicht, die höchstens 9 h vorher endet, sonst zum Tag,
+  an dem er beginnt. Ein Einsatz verbindet nie zwei Stücke anderer Arbeit zu einer Schicht: Die
+  nächste Schicht ist ein eigener Arbeitstag, wenn sie nicht binnen 9 h nach anderer Arbeit beginnt.
+  Liegen weniger als 15 min zwischen einem Einsatz und anderer Arbeit, ist er ein Stück dieser Arbeit
+  (§ 4 Satz 2 ArbZG); zwei Einsätze mit weniger als 15 min Abstand sind einer.
+- **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
+  anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05. Die
+  Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue.
 - **Ausnahmen**: Krankenhäuser und Pflege dürfen Kürzungen bis zur Hälfte der Ruhezeit zu anderen
-  Zeiten ausgleichen (§ 5 Abs. 3 ArbZG); Tarif nach § 7 Abs. 2 Nr. 1 ArbZG.
-- **Schwere**: Verstoß, wenn nach einem Einsatz keine 11 h bis zur nächsten Schicht bleiben.
+  Zeiten ausgleichen (§ 5 Abs. 3 ArbZG): Dauern die Einsätze zwischen zwei Arbeitstagen zusammen
+  höchstens 5:30, unterbrechen sie die Ruhezeit nicht, Soll misst sie zwischen den Schichten und
+  erinnert an den Ausgleich; einen Zeitraum dafür nennt das Gesetz nicht. Tarif nach § 7 Abs. 2
+  Nr. 1 ArbZG als Einstellung mit Fundstelle.
+- **Schwere**: Verstoß, wenn nach einem Einsatz keine 11 h bis zur nächsten Schicht bleiben (mit
+  Branchenausnahme nach § 5 Abs. 2 wie R-05); Hinweis „Einsatz ausgleichen“ nach § 5 Abs. 3.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -481,6 +517,19 @@ Regel:
 | Grenze | Einsatz Mo 20:00 – 21:00, Di Schicht 8:00 (11:00 Ruhe) | 1:00 Arbeitszeit, kein Befund | § 5 Abs. 1 ArbZG |
 | Verstoß | Einsatz Mo 23:00 – Di 0:30, Di Schicht 8:00 (7:30 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; EuGH C-518/15 |
 | Matzak | Rufbereitschaft mit Reaktionszeit 8 min, 18:00 – 6:00 | 12:00 Arbeitszeit, R-02 meldet Verstoß | EuGH C-518/15, Rn. 66 |
+| Matzak, Grenze | Rufbereitschaft mit Reaktionszeit 30 min, 18:00 – 6:00, ohne Einsatz | 0:00 Arbeitszeit, kein Befund | Grenzwert dieser Regel (vorsichtige Grenze von Soll) |
+| ohne Reaktionszeit | Rufbereitschaft 18:00 – 6:00, Reaktionszeit nicht eingestellt | 12:00 Arbeitszeit wie bei Matzak | EuGH C-518/15; vorsichtige Vorgabe dieser Regel |
+| Einsatz in der Nacht | Mo Schicht 12:00 – 18:00, Einsatz Di 3:00 – 4:00, Di Schicht 8:00 (4:00 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ nur für Di; die Ruhezeit vor dem Einsatz (9:00) zählt nicht | § 5 Abs. 1 ArbZG |
+| zwei Einsätze | Einsätze Mo 22:00 – 23:00 und Di 2:00 – 3:00, Di Schicht 14:00 (11:00 Ruhe nach dem zweiten) | 2:00 Arbeitszeit am Mo, kein Befund | § 5 Abs. 1 ArbZG |
+| zwei Einsätze, Verstoß | Einsätze Mo 22:00 – 23:00 und Di 3:00 – 4:00, Di Schicht 14:00 (10:00 Ruhe nach dem zweiten) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo und Di | § 5 Abs. 1 ArbZG |
+| Gastronomie | Gastronomie, Einsatz Mo 23:00 – Di 0:30, Di Schicht 10:30 (10:00 Ruhe) | Hinweis nach R-05 „Ausgleich bis … nötig“ | § 5 Abs. 2 ArbZG |
+| Krankenhaus | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 (12:00 zwischen den Schichten) | Hinweis „Einsatz ausgleichen 2:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
+| Krankenhaus, Grenze | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:30 (5:30), Di Schicht 8:00 | Hinweis „Einsatz ausgleichen 5:30“, kein Verstoß | § 5 Abs. 3 ArbZG („nicht mehr als die Hälfte der Ruhezeit“) |
+| Krankenhaus, über die Hälfte | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:31 (5:31), Di Schicht 8:00 (4:29 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 3 ArbZG |
+| Herbst | Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 echte Zeit) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
+
+Die Fälle ohne Angabe der Reaktionszeit haben eine Reaktionszeit von 30 min oder mehr.
 
 ## Mindestlohn und Aufzeichnung
 

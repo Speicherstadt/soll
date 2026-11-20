@@ -3,13 +3,13 @@ import { ABWESENHEITSARTEN } from "../soll/typen.ts";
 import { sichtbareArt } from "./sichtbarkeit.ts";
 
 describe("sichtbareArt (Art. 9 DSGVO)", () => {
-  it("shows sickness and a child's sickness only as „abwesend“ without the right", () => {
+  it("shows every kind only as „abwesend“ without the right, so none tells sickness", () => {
     expect(ABWESENHEITSARTEN.map((art) => sichtbareArt(art, false))).toEqual([
-      "urlaub",
       "abwesend",
       "abwesend",
-      "sonderurlaub",
-      "ueberstundenabbau",
+      "abwesend",
+      "abwesend",
+      "abwesend",
     ]);
   });
 

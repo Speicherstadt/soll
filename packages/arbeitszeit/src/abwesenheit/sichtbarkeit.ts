@@ -8,6 +8,10 @@ export const GESUNDHEIT: ReadonlySet<Abwesenheitsart> = new Set(["krank", "kind_
 
 export type SichtbareArt = Abwesenheitsart | "abwesend";
 
-/** The kind of an absence as a reader sees it: as it is, or „abwesend“ for health data */
+/**
+ * The kind of an absence as a reader sees it: as it is with the right to see sickness, otherwise
+ * every kind „abwesend“; were leave named, „abwesend“ would mean sickness (docs/plan.md, "Wer
+ * krank sieht")
+ */
 export const sichtbareArt = (art: Abwesenheitsart, gesundheitSehen: boolean): SichtbareArt =>
-  GESUNDHEIT.has(art) && !gesundheitSehen ? "abwesend" : art;
+  gesundheitSehen ? art : "abwesend";

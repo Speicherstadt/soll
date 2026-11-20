@@ -36,13 +36,14 @@ der App mit S-402.
 | Freigeben | Inhaber oder Planer | „genehmigt“; der Urlaub zählt, die Person bekommt eine Mail |
 | Ablehnen | Inhaber oder Planer, nur mit Grund | „abgelehnt“; die Person sieht den Grund und bekommt eine Mail |
 | Zurückziehen | die Person, solange nicht entschieden ist | „zurückgezogen“ |
-| Stornieren | Inhaber oder Planer, nur mit Grund, nur genehmigter Urlaub | „storniert“; die Person sieht den Grund und bekommt eine Mail |
+| Stornieren | Inhaber, Planer nur selbst freigegebenen Urlaub; nur mit Grund, nur genehmigter Urlaub | „storniert“; die Person sieht den Grund und bekommt eine Mail |
 
 Ein Antrag für Tage, an denen schon ein Antrag oder eine Abwesenheit steht, wird abgelehnt
 („Für diese Tage gibt es schon eine Abwesenheit“). Die einzige Ausnahme ist Krankheit im Urlaub.
 Eine Krankheit mit offenem Ende zählt dabei bis heute: Sie verhindert keinen später geplanten freien
 Tag, und ein genehmigter freier Tag später verhindert die Krankmeldung nicht. An einem solchen Tag
-zählt der freie Tag, auch wenn das Ende der Krankheit später darüber hinaus eingetragen wird; nur ein
+zählt der freie Tag (bei einem halben freien Tag die andere Hälfte als krank), auch wenn das Ende
+der Krankheit später darüber hinaus eingetragen wird; nur ein
 noch offener Antrag steht dem Ende im Weg, bis die Person ihn zurückzieht.
 
 Ist das Modul Dienstplan eingeschaltet, nennt der Antrag die eigenen Schichten im Zeitraum, soweit
@@ -117,11 +118,14 @@ Daten zum Mitarbeiter gibt, zählt der Wert für zwei Eltern.
 | --- | --- |
 | die Person selbst | ihre Abwesenheiten mit Art, Bescheinigung und Kind |
 | Inhaber, Lohnbüro | die Art, die Bescheinigung und die Erinnerung an die eAU, weil sie die Entgeltfortzahlung abrechnen |
-| Planer | „abwesend“, ohne Bescheinigung, Kind und Grund; Urlaub, Sonderurlaub und Überstundenabbau mit Art, weil er sie freigibt |
-| alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als letzter gezeigter Tag, in einem Zeitraum, der erst nach heute beginnt, fehlt es; wer Urlaub freigibt, kann ihn dort stornieren |
+| Planer und alle anderen ohne dieses Recht | jede genehmigte, abgelehnte, zurückgezogene oder stornierte Abwesenheit einer anderen Person nur als „abwesend“, auch Urlaub: ohne Art, Bescheinigung, Kind, Grund, Urlaubstage der Zeile und ohne, wer entschied; ein offenes Ende steht als heute. Die Art sieht der Planer nur bei einem offenen Antrag, über den er entscheidet, und im Augenblick seiner Entscheidung |
+| alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als heute, in einem Zeitraum, der erst nach heute beginnt, fehlt es; dort storniert der Inhaber genehmigten Urlaub, der Planer nur den, den er selbst freigegeben hat |
 
-Dasselbe gilt im [Monatsabschluss](monatsabschluss.md): Wer „krank“ nicht sehen darf, liest dort
-„abwesend“, und der Hinweis „Krank im Urlaub“ fehlt.
+Hieße nur Krankheit „abwesend“, verriete das Wort sie. Deshalb verrät auch keine Antwort des
+Servers die Art: Er prüft erst das Recht, dann den Status und die Art zuletzt.
+
+Dasselbe gilt im [Monatsabschluss](monatsabschluss.md) und auf dem Stundenzettel: Wer „krank“ nicht
+sehen darf, liest dort jede Abwesenheit als „abwesend“, und der Hinweis „Krank im Urlaub“ fehlt.
 
 ## Abgeschlossener Monat
 
@@ -138,7 +142,7 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | --- | --- |
 | `GET /?nutzerId&jahr` | Abwesenheiten eines Jahres, Resturlaub, Kinderkrankentage, Fristen, Rechte des Aufrufers |
 | `GET /offen` | Anträge zur Entscheidung (Inhaber, Planer) und Erinnerungen an die eAU (Inhaber, Lohnbüro) |
-| `GET /team?von&bis` | genehmigte Abwesenheiten aller, höchstens 62 Tage, jede als „abwesend“, `bis` höchstens bis zum Ende des Zeitraums, `stornierbar` nur für Inhaber und Planer |
+| `GET /team?von&bis` | genehmigte Abwesenheiten aller, höchstens 62 Tage, jede als „abwesend“, ein offenes Ende als heute, `bis` höchstens bis zum Ende des Zeitraums, `stornierbar` nur für Inhaber und Planer (Planer: selbst freigegebener Urlaub) |
 | `POST /antrag` | Antrag: `art`, `von`, `bis`, `ersterHalb`, `letzterHalb` |
 | `POST /krank` | Krankmeldung ab heute: `art` (`krank`, `kind_krank`), `bis` (oder `null`), `kind` |
 | `POST /:id/freigeben`, `/ablehnen`, `/zurueckziehen`, `/stornieren` | Entscheidungen, Ablehnen und Stornieren mit `grund` |
@@ -151,7 +155,7 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | `tageDesZeitraums(zeitraum, offenBis)` | ein Zeitraum als Tage für `tagesSoll`, halbe Tage am Anfang und Ende |
 | `ueberschneiden`, `ueberschneidungErlaubt` | Überschneidung zweier Zeiträume; erlaubt ist nur Krankheit im Urlaub |
 | `bescheinigungFaellig`, `bescheinigungPruefen` | R-27: Fälligkeit, Stand, Erinnerung an die eAU, Befund |
-| `sichtbareArt(art, gesundheitSehen)` | „abwesend“ statt „krank“ und „Kind krank“ ohne Recht |
+| `sichtbareArt(art, gesundheitSehen)` | ohne Recht jede Art als „abwesend“ |
 
 Der Dienstplan (S-501) liefert über sein `index.ts` eine `Schichtquelle`
 (`schichtquelle` in `apps/server/src/modules/dienstplan/abwesenheit.ts`, der Typ in

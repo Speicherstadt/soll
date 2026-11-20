@@ -1,4 +1,4 @@
-import { BESCHEINIGUNG_AB_TAG, istTag, jahrVon, tagInBerlin } from "@soll/arbeitszeit";
+import { BESCHEINIGUNG_AB_TAG, GESUNDHEIT, istTag, jahrVon, tagInBerlin } from "@soll/arbeitszeit";
 import { type Context, Hono } from "hono";
 import { z } from "zod";
 import { darf } from "../auth/rollen.ts";
@@ -101,7 +101,7 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
       });
       return c.json(
         {
-          ...sicht(zeile, true),
+          ...sicht(zeile, true, heute),
           urlaubHalbtage: urlaubstageVon(grundlagen, zeile),
           urlaub: urlaubsstand(grundlagen, imJahr, jahr, heute),
           // the person's own shifts in the span, as far as they are published (S-501, S-503)
@@ -138,7 +138,7 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
         offeneSchichten: geplant,
       });
       const offeneSchichten = geplant.filter((schicht) => !schicht.entwurf);
-      return c.json({ ...sicht(zeile, true), frist, offeneSchichten }, 201);
+      return c.json({ ...sicht(zeile, true, heute), frist, offeneSchichten }, 201);
     });
 };
 
@@ -156,8 +156,12 @@ const schrittRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
     const ergebnis = tun(eingabe.data, c.req.param("id") ?? "", rechteVon(c));
     if (!ergebnis.ok) return fehlerAntwort(c, ergebnis);
     await melden?.(ergebnis.zeile);
-    const gesundheit = ergebnis.zeile.nutzerId === c.get("nutzerId") || rechteVon(c).gesundheit;
-    return c.json(sicht(ergebnis.zeile, gesundheit));
+    const { zeile } = ergebnis;
+    // the step just taken shows its kind: a planner decides only on what is no sickness, and knows
+    // its kind in that moment; afterwards the lists show it as „abwesend“ (docs/plan.md)
+    const artZeigen =
+      zeile.nutzerId === c.get("nutzerId") || rechteVon(c).gesundheit || !GESUNDHEIT.has(zeile.art);
+    return c.json(sicht(zeile, artZeigen, tagInBerlin(jetzt())));
   };
 
   return new Hono<Anfrage>()

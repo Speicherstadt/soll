@@ -231,7 +231,8 @@ describe("Sichtbarkeit von „krank“ je Rolle (Art. 9 DSGVO)", () => {
           name: "sandra",
           art: "abwesend",
           von: "2026-11-20",
-          bis: "2026-11-29",
+          // an open end reads as today (review S-401, round 3)
+          bis: "2026-11-20",
         }),
       ]);
       expect(JSON.stringify(team)).not.toContain("krank");

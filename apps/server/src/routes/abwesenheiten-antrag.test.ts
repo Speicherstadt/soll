@@ -107,7 +107,9 @@ describe("Urlaub: Antrag, Freigabe, Ablehnung, Zurückziehen, Storno (S-401)", (
 
   it("lets only the business cancel approved leave, with a reason", async () => {
     const w = await weberMitAbwesenheiten();
-    const id = await genehmigt(w, w.sandra, DEZEMBER);
+    // the planner cancels the leave they approved; other leave only the owner (review S-401)
+    const id = await angelegt(antrag(w.sandra, DEZEMBER));
+    expect((await schritt(w.anna, id, "freigeben")).status).toBe(200);
     expect((await schritt(w.sandra, id, "stornieren", { grund: "doch nicht" })).status).toBe(403);
     expect((await schritt(w.anna, id, "stornieren")).status).toBe(400);
     expect(

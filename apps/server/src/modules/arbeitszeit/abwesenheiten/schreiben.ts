@@ -210,28 +210,38 @@ export type Entscheidung =
 
 const gesundheit = (zeile: AbwesenheitZeile) => GESUNDHEIT.has(zeile.art);
 
-/** Whether the caller may take the step on the row, and from which state */
+/**
+ * Whether the caller may take the step on the row, and from which state. Neither the order of the
+ * checks nor the answer may tell a reader who does not see sickness the kind of an absence of
+ * another person (docs/plan.md, "Wer krank sieht"): the right first, then the state, the kind last.
+ */
 const erlaubt = (
   zeile: AbwesenheitZeile,
   entscheidung: Entscheidung,
   wer: { nutzerId: string; rechte: Rechte },
 ): AbwesenheitFehler | null => {
   const eigen = zeile.nutzerId === wer.nutzerId;
+  const { freigeben, gesundheit: siehtKrank } = wer.rechte;
   const regel = {
-    // the person withdraws a request not decided yet
+    // the person withdraws a request not decided yet; the kind tells them nothing new
     zurueckziehen: { darf: eigen && !gesundheit(zeile), von: "beantragt" },
-    // owner and planner decide on requests
-    freigeben: { darf: wer.rechte.freigeben && !gesundheit(zeile), von: "beantragt" },
-    ablehnen: { darf: wer.rechte.freigeben && !gesundheit(zeile), von: "beantragt" },
-    // approved leave is cancelled by the business with a reason; a sickness reported by mistake
-    // only by whoever may see it
+    // owner and planner decide on requests; a sickness is never one, it is approved with its report
+    freigeben: { darf: freigeben, von: "beantragt" },
+    ablehnen: { darf: freigeben, von: "beantragt" },
+    // approved leave is cancelled by the business with a reason: by whoever sees the kind of every
+    // absence, or by the planner who approved it and so knew it; a sickness reported by mistake only
+    // by whoever may see it
     stornieren: {
-      darf: gesundheit(zeile) ? wer.rechte.gesundheit : wer.rechte.freigeben,
+      darf: siehtKrank || (freigeben && zeile.entschiedenVon === wer.nutzerId),
       von: "genehmigt",
     },
   }[entscheidung.aktion];
   if (!regel.darf) return "keine_berechtigung";
-  return zeile.status === regel.von ? null : "status";
+  if (zeile.status !== regel.von) return "status";
+  const nurOhneKrankheit = entscheidung.aktion !== "stornieren";
+  if (gesundheit(zeile) && nurOhneKrankheit) return "keine_berechtigung";
+  if (!gesundheit(zeile) && !nurOhneKrankheit && !freigeben) return "keine_berechtigung";
+  return null;
 };
 
 const NACH = {

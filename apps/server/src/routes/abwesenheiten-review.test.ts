@@ -30,7 +30,7 @@ describe("S-401 review", () => {
     const ohne = ({ abwesenheitId: _, nutzerId: __, name: ___, von: ____, ...rest }: Json) => rest;
     // a colleague learns who is away and until when, never whether it is sickness
     expect(eintraege.map(ohne)).toEqual([
-      { art: "abwesend", bis: "2026-11-29", ersterHalb: false, letzterHalb: false },
+      { art: "abwesend", bis: "2026-11-20", ersterHalb: false, letzterHalb: false },
       { art: "abwesend", bis: "2026-11-24", ersterHalb: false, letzterHalb: false },
     ]);
   });
@@ -114,10 +114,10 @@ describe("S-401 review, round 2", () => {
     // a year on, only an open end still reaches here: it would tell the sickness by its length
     const maerz = await team(w.max, "von=2027-03-01&bis=2027-03-31");
     expect(maerz.map((eintrag) => eintrag.nutzerId)).toEqual([w.max.nutzerId]);
-    // while today is shown, the open end stays the last day shown, as for any absence beyond it
+    // while today is shown, the open end reads as today, in every window (review S-401, round 3)
     const heute = await team(w.max, "von=2026-11-16&bis=2026-11-29");
     expect(heute.map((eintrag) => [eintrag.nutzerId, eintrag.bis])).toEqual([
-      [w.sandra.nutzerId, "2026-11-29"],
+      [w.sandra.nutzerId, "2026-11-20"],
     ]);
   });
 

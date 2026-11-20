@@ -58,8 +58,10 @@ const liste = (db: Db, c: Context<Anfrage>, nutzerId: string, imJahr: number, he
       einstellen: darf(c.get("rolle"), "abwesenheiten:einstellen"),
     },
     abwesenheiten: zeilen.map((zeile) => ({
-      ...sicht(zeile, gesundheit),
-      urlaubHalbtage: urlaubstageVon(grundlagen, zeile),
+      ...sicht(zeile, gesundheit, heute),
+      // the leave days of a row would tell leave from sickness where its kind is not shown
+      urlaubHalbtage:
+        gesundheit || zeile.status === "beantragt" ? urlaubstageVon(grundlagen, zeile) : null,
       frist: gesundheit ? bescheinigungVon(db, zeile, heute, grundlagen) : null,
     })),
     urlaub: urlaubsstand(grundlagen, zaehlend, imJahr, heute),
@@ -103,7 +105,7 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
       );
       return c.json({
         antraege: antraege.map((zeile) => ({
-          ...sicht(zeile, siehtGesundheit(c, zeile.nutzerId)),
+          ...sicht(zeile, siehtGesundheit(c, zeile.nutzerId), heute),
           name: namen.get(zeile.nutzerId) ?? "",
           urlaubHalbtage: urlaubstageVon(sollGrundlagen(db, betriebId, zeile.nutzerId), zeile),
         })),
@@ -120,29 +122,43 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
         return c.json({ fehler: "keine_berechtigung" }, 403);
       const betriebId = c.get("betriebId");
       const freigeben = darf(c.get("rolle"), "abwesenheiten:freigeben");
+      const siehtKrank = darf(c.get("rolle"), "abwesenheiten:gesundheit");
+      const ich = c.get("nutzerId");
       const mitglieder = new Map(mitgliederMitNamen(db, betriebId).map((m) => [m.nutzerId, m]));
-      // an open end reaches no further than today: in a window that begins later only a sickness
-      // would still be there, a year on as well, and tell itself by its length (review S-401)
+      // an open end reaches no further than today, in every window: shown to the end of a window
+      // from today but gone from one from tomorrow, it would tell itself apart from long leave, and
+      // only a sickness has one (review S-401)
       const heute = tagInBerlin(jetzt());
+      const ende = (zeile: { bis: Tag | null }): Tag => {
+        // days as text compare by their order, so no Math.min
+        const bekannt = zeile.bis ?? heute;
+        if (bekannt > bis) return bis;
+        return bekannt;
+      };
       return c.json({
         von,
         bis,
         // the team calendar and the plan show every absence only as „abwesend“, to everyone: were
-        // leave named, „abwesend“ would mean sickness (Art. 9 DSGVO, S-401); an open end shows as
-        // the end of what is shown, like any absence reaching beyond it
+        // leave named, „abwesend“ would mean sickness (Art. 9 DSGVO, S-401)
         abwesenheiten: abwesenheitenIn(db, betriebId, { von, bis, status: ["genehmigt"] })
-          .filter((zeile) => mitglieder.has(zeile.nutzerId) && (zeile.bis !== null || von <= heute))
+          .filter((zeile) => mitglieder.has(zeile.nutzerId) && ende(zeile) >= von)
           .map((zeile) => ({
             abwesenheitId: zeile.abwesenheitId,
             nutzerId: zeile.nutzerId,
             name: mitglieder.get(zeile.nutzerId)?.name ?? "",
             art: "abwesend" as const,
             von: zeile.von,
-            bis: zeile.bis === null || zeile.bis > bis ? bis : zeile.bis,
+            bis: ende(zeile),
             ersterHalb: zeile.ersterHalb,
             letzterHalb: zeile.letzterHalb && zeile.bis !== null && zeile.bis <= bis,
-            // whoever approves leave cancels it here; they see its kind elsewhere anyway
-            ...(freigeben ? { stornierbar: !GESUNDHEIT.has(zeile.art) } : {}),
+            // whoever sees every kind cancels leave here; a planner only the leave they approved
+            // and so knew (docs/plan.md, "Wer krank sieht")
+            ...(freigeben
+              ? {
+                  stornierbar:
+                    !GESUNDHEIT.has(zeile.art) && (siehtKrank || zeile.entschiedenVon === ich),
+                }
+              : {}),
           })),
       });
     });

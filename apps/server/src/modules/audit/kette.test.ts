@@ -8,13 +8,13 @@ const elbblick = { betriebId: "elbblick", akteur: "mia", jetzt: 1_790_000_000_00
 /** Weber Haustechnik with three links: inserted, renamed, renamed again */
 const mitDreiGliedern = () => {
   const t = testDatenbank();
-  schreiben(t.db, weber, (s) =>
+  schreiben(t.schreibDb, weber, (s) =>
     s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
   );
-  schreiben(t.db, weber, (s) =>
+  schreiben(t.schreibDb, weber, (s) =>
     s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber Haustechnik" }),
   );
-  schreiben(t.db, weber, (s) =>
+  schreiben(t.schreibDb, weber, (s) =>
     s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber Haustechnik GmbH" }),
   );
   return t;
@@ -36,15 +36,15 @@ describe("schreiben", () => {
   });
 
   it("checks a deleted row as deleted", () => {
-    const { db } = mitDreiGliedern();
-    schreiben(db, weber, (s) => s.loeschen("betriebe", { betriebId: "weber" }));
+    const { db, schreibDb } = mitDreiGliedern();
+    schreiben(schreibDb, weber, (s) => s.loeschen("betriebe", { betriebId: "weber" }));
     expect(kettePruefen(db, "weber")).toEqual([]);
   });
 
   it("rolls back the row and its link together", () => {
-    const { db, sqlite } = testDatenbank();
+    const { sqlite, schreibDb } = testDatenbank();
     expect(() =>
-      schreiben(db, weber, (s) => {
+      schreiben(schreibDb, weber, (s) => {
         s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 });
         throw new Error("abgebrochen");
       }),
@@ -54,10 +54,10 @@ describe("schreiben", () => {
   });
 
   it("refuses asynchronous work, whose writes after an await would escape the transaction", async () => {
-    const { db, sqlite } = testDatenbank();
+    const { sqlite, schreibDb } = testDatenbank();
     let ergebnis: Promise<unknown> | undefined;
     expect(() => {
-      ergebnis = schreiben(db, weber, async (s) => {
+      ergebnis = schreiben(schreibDb, weber, async (s) => {
         await Promise.resolve();
         s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 });
         throw new Error("abgebrochen");
@@ -70,26 +70,26 @@ describe("schreiben", () => {
   });
 
   it("refuses rows of another business", () => {
-    const { db } = mitDreiGliedern();
+    const { db, schreibDb } = mitDreiGliedern();
     expect(() =>
-      schreiben(db, elbblick, (s) =>
+      schreiben(schreibDb, elbblick, (s) =>
         s.einfuegen("betriebe", { betriebId: "weber", name: "x", angelegtAm: 1 }),
       ),
     ).toThrow(/another business/);
     expect(() =>
-      schreiben(db, elbblick, (s) =>
+      schreiben(schreibDb, elbblick, (s) =>
         s.aendern("betriebe", { betriebId: "weber" }, { name: "gekapert" }),
       ),
     ).toThrow(/expected one row/);
     expect(() =>
-      schreiben(db, elbblick, (s) => s.loeschen("betriebe", { betriebId: "weber" })),
+      schreiben(schreibDb, elbblick, (s) => s.loeschen("betriebe", { betriebId: "weber" })),
     ).toThrow(/expected one row/);
     expect(kettePruefen(db, "weber")).toEqual([]);
   });
 
   it("keeps one chain per business", () => {
-    const { db } = mitDreiGliedern();
-    schreiben(db, elbblick, (s) =>
+    const { db, schreibDb } = mitDreiGliedern();
+    schreiben(schreibDb, elbblick, (s) =>
       s.einfuegen("betriebe", { betriebId: "elbblick", name: "Café", angelegtAm: 1 }),
     );
     expect(aktuellerPruefwert(db, "elbblick")).toMatch(/^Nr\. 1 · /);
@@ -128,7 +128,7 @@ describe("kettePruefen", () => {
 
   it("finds a link whose hash was recomputed, as the next one no longer points to it", () => {
     const { db, sqlite } = mitDreiGliedern();
-    sqlite.run("UPDATE audit_glieder SET hash = '" + "f".repeat(64) + "' WHERE seq = 2");
+    sqlite.run(`UPDATE audit_glieder SET hash = '${"f".repeat(64)}' WHERE seq = 2`);
     expect(kettePruefen(db, "weber")).toEqual(
       expect.arrayContaining([
         { art: "glied", seq: 2, grund: "hash" },
@@ -169,9 +169,9 @@ describe("kettePruefen", () => {
 
 describe("pruefwertPruefen", () => {
   it("accepts a Prüfwert a person holds, also after later writes", () => {
-    const { db } = mitDreiGliedern();
+    const { db, schreibDb } = mitDreiGliedern();
     const gehalten = aktuellerPruefwert(db, "weber") ?? "";
-    schreiben(db, weber, (s) =>
+    schreiben(schreibDb, weber, (s) =>
       s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber KG" }),
     );
     expect(pruefwertPruefen(db, "weber", gehalten)).toBe("gueltig");

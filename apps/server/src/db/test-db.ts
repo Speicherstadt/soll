@@ -13,7 +13,7 @@ export const testDatenbank = () => {
   const pfad = join(ordner, "soll.db");
   const offen = oeffneDatenbank(pfad, 0);
   afterEach(() => {
-    offen.sqlite.close();
+    offen.schliessen();
     rmSync(ordner, { recursive: true, force: true });
   });
   return { ...offen, pfad };

@@ -8,8 +8,10 @@ description: >-
 # Audit-Kette und Prüfwert
 
 Jede Schreiboperation in Soll hängt in derselben Transaktion ein **Kettenglied** an. Einen anderen
-Weg in die Tabellen von Soll gibt es nicht; ein Test prüft den Quellcode darauf, dass keine Datei an
-der Kette vorbei schreibt. Schlägt eine Schreiboperation fehl, etwa weil ihr Kettenglied nicht
+Weg in die Tabellen von Soll gibt es nicht: Die Module des Servers lesen über eine Verbindung, die
+SQLite nur lesend öffnet, und die einzige schreibende Verbindung hat die Funktion, die das Glied
+anhängt. Ein Test prüft zusätzlich den Quellcode darauf, dass keine Datei an der Kette vorbei
+schreibt. Schlägt eine Schreiboperation fehl, etwa weil ihr Kettenglied nicht
 angehängt werden kann, bleibt von ihr nichts in der Datenbank, auch wenn der aufrufende Code den
 Fehler abfängt und weiterschreibt.
 

@@ -10,11 +10,11 @@ const weber = { betriebId: "weber", akteur: "jonas", jetzt: 1_790_000_000_000 };
  */
 describe("a write after a link was cut off at the end", () => {
   it("keeps the cut visible in the check", () => {
-    const { db, sqlite } = testDatenbank();
-    schreiben(db, weber, (s) =>
+    const { db, sqlite, schreibDb } = testDatenbank();
+    schreiben(schreibDb, weber, (s) =>
       s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
     );
-    schreiben(db, weber, (s) =>
+    schreiben(schreibDb, weber, (s) =>
       s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber Haustechnik" }),
     );
     // Past the chain: drop the last link with its content and undo its change
@@ -23,7 +23,7 @@ describe("a write after a link was cut off at the end", () => {
     sqlite.run("UPDATE betriebe SET name = 'Weber'");
     expect(kettePruefen(db, "weber")).toEqual([{ art: "kopf", grund: "abweichend" }]);
 
-    schreiben(db, weber, (s) =>
+    schreiben(schreibDb, weber, (s) =>
       s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber Haustechnik GmbH" }),
     );
     expect(kettePruefen(db, "weber")).not.toEqual([]);

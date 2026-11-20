@@ -7,8 +7,8 @@ const weber = { betriebId: "weber", akteur: "jonas", jetzt: 1_790_000_000_000 };
 /** A write that fails must leave nothing behind, even when `arbeit` catches its error and goes on */
 describe("schreiben with a failed write that arbeit catches", () => {
   it("keeps the row of a write whose link could not be appended out of the database", () => {
-    const { db, sqlite } = testDatenbank();
-    schreiben(db, weber, (s) => {
+    const { db, sqlite, schreibDb } = testDatenbank();
+    schreiben(schreibDb, weber, (s) => {
       try {
         s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1.5 });
       } catch {
@@ -20,11 +20,11 @@ describe("schreiben with a failed write that arbeit catches", () => {
   });
 
   it("keeps the change of a failed update out of the database", () => {
-    const { db, sqlite } = testDatenbank();
-    schreiben(db, weber, (s) =>
+    const { db, sqlite, schreibDb } = testDatenbank();
+    schreiben(schreibDb, weber, (s) =>
       s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
     );
-    schreiben(db, weber, (s) => {
+    schreiben(schreibDb, weber, (s) => {
       try {
         s.aendern("betriebe", { betriebId: "weber" }, { angelegtAm: 2.5 });
       } catch {

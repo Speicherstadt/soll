@@ -12,9 +12,9 @@ describe("schreiben with a string SQLite cannot store as given", () => {
     ["akteur", { betriebId: "weber", akteur: "jonas\uD800", jetzt: 1_790_000_000_000 }],
     ["betriebId", { betriebId: "weber\uDC00", akteur: "jonas", jetzt: 1_790_000_000_000 }],
   ])("refuses a lone surrogate in %s and writes nothing", (_feld, kontext) => {
-    const { db, sqlite } = testDatenbank();
+    const { db, sqlite, schreibDb } = testDatenbank();
     expect(() =>
-      schreiben(db, kontext, (s) =>
+      schreiben(schreibDb, kontext, (s) =>
         s.einfuegen("betriebe", { betriebId: kontext.betriebId, name: "Weber", angelegtAm: 1 }),
       ),
     ).toThrow(/well-formed/);

@@ -6,10 +6,10 @@ const weber = { betriebId: "weber", akteur: "jonas", jetzt: 1_790_000_000_000 };
 
 const mitZweiGliedern = () => {
   const t = testDatenbank();
-  schreiben(t.db, weber, (s) =>
+  schreiben(t.schreibDb, weber, (s) =>
     s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
   );
-  schreiben(t.db, weber, (s) =>
+  schreiben(t.schreibDb, weber, (s) =>
     s.aendern("betriebe", { betriebId: "weber" }, { name: "Weber Haustechnik" }),
   );
   return t;

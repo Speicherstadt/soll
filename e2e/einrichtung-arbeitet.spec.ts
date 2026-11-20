@@ -150,3 +150,45 @@ test("a model taken while the first load is slow stays on the list", async ({ pa
   await page.waitForTimeout(200);
   await expect(liste).toContainText("Vollzeit");
 });
+
+test("a site deleted while the first load is slow does not come back", async ({ page }) => {
+  await betriebAnlegen(page, ALLE_MODULE, false);
+  await page.goto("/einrichtung");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(t("betrieb_titel"));
+  // the first GET reaches the server only after the add and answers only after the delete
+  let lesen = () => {};
+  const gelesen = new Promise<void>((resolve) => {
+    lesen = resolve;
+  });
+  let freigeben = () => {};
+  const frei = new Promise<void>((resolve) => {
+    freigeben = resolve;
+  });
+  let beantwortet: Promise<void> = Promise.resolve();
+  const pfad = (url: URL) => url.pathname === "/api/v1/standorte";
+  let gehalten = false;
+  await page.route(pfad, async (route) => {
+    if (route.request().method() !== "GET" || gehalten) return route.continue();
+    gehalten = true;
+    beantwortet = gelesen.then(async () => {
+      const antwort = await route.fetch();
+      await frei;
+      await route.fulfill({ response: antwort });
+    });
+  });
+  await weiter(page);
+  await page.getByLabel(t("standort_name"), { exact: true }).fill("Werkstatt");
+  await page.getByRole("button", { name: t("standort_hinzufuegen") }).click();
+  const liste = page.getByRole("list", { name: t("standorte_liste") });
+  await expect(liste).toContainText("Werkstatt");
+  lesen();
+  await page.waitForTimeout(200);
+  await page
+    .getByRole("button", { name: t("standort_entfernen").replace("{name}", "Werkstatt") })
+    .click();
+  await expect(liste).toBeHidden();
+  freigeben();
+  await beantwortet;
+  await page.waitForTimeout(200);
+  await expect(liste).toBeHidden();
+});

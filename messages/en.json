@@ -501,6 +501,7 @@
   "terminal_qr_ausstellen": "Issue",
   "terminal_qr_neu": "Issue anew",
   "terminal_qr_ausstellen_name": "Issue QR code for {name}",
+  "terminal_qr_neu_name": "Issue anew: QR code for {name}",
   "terminal_qr_entziehen": "Revoke",
   "terminal_qr_entziehen_name": "Revoke QR code of {name}",
   "terminal_qr_titel": "QR code for {name}",

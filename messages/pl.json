@@ -501,6 +501,7 @@
   "terminal_qr_ausstellen": "Wystaw",
   "terminal_qr_neu": "Wystaw ponownie",
   "terminal_qr_ausstellen_name": "Wystaw kod QR dla: {name}",
+  "terminal_qr_neu_name": "Wystaw ponownie kod QR dla: {name}",
   "terminal_qr_entziehen": "Unieważnij",
   "terminal_qr_entziehen_name": "Unieważnij kod QR: {name}",
   "terminal_qr_titel": "Kod QR dla: {name}",

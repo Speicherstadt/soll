@@ -138,7 +138,9 @@ export const TerminalPersonen = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        aria-label={m.terminal_qr_ausstellen_name({ name: person().name })}
+                        aria-label={(person().ausweis
+                          ? m.terminal_qr_neu_name
+                          : m.terminal_qr_ausstellen_name)({ name: person().name })}
                         onClick={() => ausstellen(person())}
                       >
                         {person().ausweis ? m.terminal_qr_neu() : m.terminal_qr_ausstellen()}

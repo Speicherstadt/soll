@@ -501,6 +501,7 @@
   "terminal_qr_ausstellen": "Видати",
   "terminal_qr_neu": "Видати знову",
   "terminal_qr_ausstellen_name": "Видати QR-код для {name}",
+  "terminal_qr_neu_name": "Видати знову QR-код для {name}",
   "terminal_qr_entziehen": "Відкликати",
   "terminal_qr_entziehen_name": "Відкликати QR-код {name}",
   "terminal_qr_titel": "QR-код для {name}",

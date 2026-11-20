@@ -111,7 +111,7 @@ Daten zum Mitarbeiter gibt, zählt der Wert für zwei Eltern.
 | die Person selbst | ihre Abwesenheiten mit Art, Bescheinigung und Kind |
 | Inhaber, Lohnbüro | die Art, die Bescheinigung und die Erinnerung an die eAU, weil sie die Entgeltfortzahlung abrechnen |
 | Planer | „abwesend“, ohne Bescheinigung, Kind und Grund; Urlaub, Sonderurlaub und Überstundenabbau mit Art, weil er sie freigibt |
-| alle im Teamkalender und im Dienstplan | nur „abwesend“, auch der Inhaber |
+| alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als letzter gezeigter Tag; wer Urlaub freigibt, kann ihn dort stornieren |
 
 Dasselbe gilt im [Monatsabschluss](monatsabschluss.md): Wer „krank“ nicht sehen darf, liest dort
 „abwesend“, und der Hinweis „Krank im Urlaub“ fehlt.
@@ -129,7 +129,7 @@ Storno, eine Bescheinigung, ein neues Ende), lehnt der Server ab; korrigiert wir
 | --- | --- |
 | `GET /?nutzerId&jahr` | Abwesenheiten eines Jahres, Resturlaub, Kinderkrankentage, Fristen, Rechte des Aufrufers |
 | `GET /offen` | Anträge zur Entscheidung (Inhaber, Planer) und Erinnerungen an die eAU (Inhaber, Lohnbüro) |
-| `GET /team?von&bis` | genehmigte Abwesenheiten aller, höchstens 62 Tage, „krank“ als „abwesend“ |
+| `GET /team?von&bis` | genehmigte Abwesenheiten aller, höchstens 62 Tage, jede als „abwesend“, `bis` höchstens bis zum Ende des Zeitraums, `stornierbar` nur für Inhaber und Planer |
 | `POST /antrag` | Antrag: `art`, `von`, `bis`, `ersterHalb`, `letzterHalb` |
 | `POST /krank` | Krankmeldung ab heute: `art` (`krank`, `kind_krank`), `bis` (oder `null`), `kind` |
 | `POST /:id/freigeben`, `/ablehnen`, `/zurueckziehen`, `/stornieren` | Entscheidungen, Ablehnen und Stornieren mit `grund` |
@@ -148,4 +148,4 @@ Der Dienstplan (S-501) gibt `createApp` eine `Schichtquelle`
 (`apps/server/src/modules/arbeitszeit/abwesenheiten/plan.ts`): Sie liefert die geplanten Schichten
 einer Person in einem Zeitraum, für den Antrag und die offenen Schichten einer Krankmeldung.
 Umgekehrt liest der Plan mit `abwesenheitenIn` die genehmigten Abwesenheiten eines Tags und zeigt
-sie mit `sichtbareArt(art, false)`.
+jede nur als „abwesend“, wie der Teamkalender.

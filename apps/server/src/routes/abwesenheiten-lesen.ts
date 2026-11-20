@@ -1,4 +1,11 @@
-import { istTag, jahrVon, type Tag, tageZwischen, tagInBerlin } from "@soll/arbeitszeit";
+import {
+  GESUNDHEIT,
+  istTag,
+  jahrVon,
+  type Tag,
+  tageZwischen,
+  tagInBerlin,
+} from "@soll/arbeitszeit";
 import { type Context, Hono } from "hono";
 import { z } from "zod";
 import { darf } from "../auth/rollen.ts";
@@ -112,27 +119,27 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
       if (!darf(c.get("rolle"), "stempeln") && !darf(c.get("rolle"), "zeiten:alle"))
         return c.json({ fehler: "keine_berechtigung" }, 403);
       const betriebId = c.get("betriebId");
+      const freigeben = darf(c.get("rolle"), "abwesenheiten:freigeben");
       const mitglieder = new Map(mitgliederMitNamen(db, betriebId).map((m) => [m.nutzerId, m]));
       return c.json({
         von,
         bis,
-        // the team calendar and the plan show sickness only as „abwesend“, to everyone (S-401)
+        // the team calendar and the plan show every absence only as „abwesend“, to everyone: were
+        // leave named, „abwesend“ would mean sickness (Art. 9 DSGVO, S-401); an open end shows as
+        // the end of what is shown, like any absence reaching beyond it
         abwesenheiten: abwesenheitenIn(db, betriebId, { von, bis, status: ["genehmigt"] })
           .filter((zeile) => mitglieder.has(zeile.nutzerId))
-          .map((zeile) => {
-            const { abwesenheitId, nutzerId, art, ersterHalb, letzterHalb } = sicht(zeile, false);
-            return {
-              abwesenheitId,
-              nutzerId,
-              name: mitglieder.get(nutzerId)?.name ?? "",
-              art,
-              von: zeile.von,
-              // an open sickness reaches to the end of what is shown, marked as open
-              bis: zeile.bis ?? bis,
-              offen: zeile.bis === null,
-              ersterHalb,
-              letzterHalb,
-            };
-          }),
+          .map((zeile) => ({
+            abwesenheitId: zeile.abwesenheitId,
+            nutzerId: zeile.nutzerId,
+            name: mitglieder.get(zeile.nutzerId)?.name ?? "",
+            art: "abwesend" as const,
+            von: zeile.von,
+            bis: zeile.bis === null || zeile.bis > bis ? bis : zeile.bis,
+            ersterHalb: zeile.ersterHalb,
+            letzterHalb: zeile.letzterHalb && zeile.bis !== null && zeile.bis <= bis,
+            // whoever approves leave cancels it here; they see its kind elsewhere anyway
+            ...(freigeben ? { stornierbar: !GESUNDHEIT.has(zeile.art) } : {}),
+          })),
       });
     });

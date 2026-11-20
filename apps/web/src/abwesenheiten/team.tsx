@@ -7,8 +7,6 @@ import type { AbwesenheitQuelle } from "./quelle.ts";
 import { ART, zeitraumText } from "./text.ts";
 import type { Abwesenheit, TeamEintrag } from "./typen.ts";
 
-const STORNIERBAR = new Set(["urlaub", "sonderurlaub", "ueberstundenabbau"]);
-
 const alsAbwesenheit = (e: TeamEintrag): Abwesenheit & { name: string } => ({
   ...e,
   status: "genehmigt",
@@ -18,7 +16,7 @@ const alsAbwesenheit = (e: TeamEintrag): Abwesenheit & { name: string } => ({
 });
 
 /**
- * Who is away in the next four weeks: sickness only as „abwesend“, for everyone (Art. 9 DSGVO);
+ * Who is away in the next four weeks: every absence only as „abwesend“, for everyone (Art. 9 DSGVO);
  * owner and planner cancel approved leave here, with a reason
  */
 export const Team = (props: { quelle: AbwesenheitQuelle }) => {
@@ -34,12 +32,9 @@ export const Team = (props: { quelle: AbwesenheitQuelle }) => {
             {(e) => (
               <li class="flex flex-wrap items-center justify-between gap-2 border-border border-t py-2 first:border-t-0">
                 <span>
-                  <span class="font-medium">{e.name}</span> · {ART[e.art]()} ·{" "}
-                  {e.offen
-                    ? m.abw_ab({ von: zeitraumText({ von: e.von, bis: e.von }) })
-                    : zeitraumText(e)}
+                  <span class="font-medium">{e.name}</span> · {ART[e.art]()} · {zeitraumText(e)}
                 </span>
-                <Show when={props.quelle.liste()?.rechte.freigeben && STORNIERBAR.has(e.art)}>
+                <Show when={e.stornierbar === true}>
                   <Button variant="outline" onClick={() => setStorno(e)}>
                     {m.abw_stornieren()}
                   </Button>

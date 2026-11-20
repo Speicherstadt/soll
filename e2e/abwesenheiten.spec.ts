@@ -43,7 +43,7 @@ test("Sandra asks for leave and the owner approves it @phone", async ({ page, br
   );
   await expect(offen).toContainText(t("abw_offen_keine"));
   await expect(jonas.getByRole("region", { name: t("abw_team_titel") })).toContainText(
-    `Sandra Kühn · ${t("abw_art_urlaub")}`,
+    `Sandra Kühn · ${t("abw_art_abwesend")}`,
   );
 
   await page.reload();

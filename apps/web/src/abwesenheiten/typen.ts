@@ -62,12 +62,15 @@ export type TeamEintrag = {
   abwesenheitId: string;
   nutzerId: string;
   name: string;
-  art: SichtbareArt;
+  /** every absence reads „abwesend“ in the team calendar (Art. 9 DSGVO) */
+  art: "abwesend";
   von: Tag;
+  /** an end beyond what is shown, or an open one, reads as the last day shown */
   bis: Tag;
-  offen: boolean;
   ersterHalb: boolean;
   letzterHalb: boolean;
+  /** only for whoever approves leave: whether it can be cancelled here */
+  stornierbar?: boolean;
 };
 
 export type GeplanteSchicht = { schichtId: string; tag: Tag; bezeichnung: string };

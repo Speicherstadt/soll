@@ -5,7 +5,7 @@ import type { Tag } from "@soll/arbeitszeit";
  * request shows the person's own shifts in its span, and a sickness reports its planned shifts as
  * open, both through this source. The plan module passes its own source to `createApp`; until then
  * there are none (`ohnePlan`). The plan in turn asks `abwesenheitenIn` (lesen.ts) which approved
- * absences fall on a day, and shows them with `sichtbareArt(art, false)`: only „abwesend“.
+ * absences fall on a day, and shows each only as „abwesend“, like the team calendar.
  */
 export type GeplanteSchicht = {
   schichtId: string;

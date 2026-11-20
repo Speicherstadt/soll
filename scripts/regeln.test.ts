@@ -215,4 +215,17 @@ describe("docs/regeln.md against the law", () => {
     expect(regel("R-21")).toMatch(/Behinderung/);
     expect(faelle(regel("R-21")).some((z) => /Fehlgeburt/.test(z[1] ?? ""))).toBe(true);
   });
+
+  it("R-23: a twelfth per month applies to at most six full months; seven months earn the full leave", () => {
+    // § 5 Abs. 1 BUrlG: Teilurlaub only (a) when the Wartezeit of § 4 is not fulfilled in the year,
+    // which needs a start after 1 July (at most five full months), (b) on leaving before the
+    // Wartezeit (under six months) or (c) on leaving in the first half of the year (at most six).
+    // Seven full months in a year mean the Wartezeit was fulfilled and the full leave is owed
+    // (start 1.6.: Wartezeit ends 30.11.), never 7/12 of it.
+    for (const z of faelle(regel("R-23")).filter((r) => /Monate/.test(r[1] ?? ""))) {
+      const monate = Number(/(\d+) volle Monate/.exec(z.join(" "))?.[1] ?? 0);
+      if (monate > 6) expect(z[2], z.join(" | ")).toMatch(/^20 Tage/);
+    }
+    expect(faelle(regel("R-23")).some((z) => /Wartezeit/.test(z.join(" ")))).toBe(true);
+  });
 });

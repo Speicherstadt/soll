@@ -561,7 +561,8 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Grenze | 5-Tage-Woche, 20 Urlaubstage | kein Befund | § 3 Abs. 1 BUrlG (24 × 5 ÷ 6 = 20) |
 | Verstoß | 5-Tage-Woche, 19,5 Urlaubstage | Hinweis „unter dem gesetzlichen Mindesturlaub“ | § 3 Abs. 1 BUrlG |
 | Teilurlaub | Eintritt 1.8., 20 Tage, 5 volle Monate | 5 × 20 ÷ 12 = 8,33 → 8,5 Tage (nicht abgerundet; Soll führt halbe Tage und rundet zugunsten der Person auf) | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG; BAG, 26.01.1989, 8 AZR 730/87 |
-| Rundung | 7 volle Monate bei 20 Tagen: 11,67 | 12 Tage | § 5 Abs. 2 BUrlG |
+| Rundung | Austritt 30.4. nach erfüllter Wartezeit, 20 Tage, 4 volle Monate: 6,67 | 7 Tage | § 5 Abs. 1 Buchst. c, Abs. 2 BUrlG |
+| Wartezeit | Eintritt 1.6., 20 Tage, 7 volle Monate (Wartezeit am 30.11. erfüllt) | 20 Tage, kein Teilurlaub | §§ 4, 5 Abs. 1 Buchst. a BUrlG |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).

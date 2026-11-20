@@ -1,7 +1,13 @@
 import { istTag, plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
 import { FEIERTAGSGESETZ, REGIONEN, type Standort } from "./laender.ts";
 import { ostersonntag } from "./ostern.ts";
-import { FEIERTAGE, type FeiertagsRegel, FRUEHESTES_JAHR, type Termin } from "./regeln.ts";
+import {
+  FEIERTAGE,
+  type FeiertagsRegel,
+  FRUEHESTES_JAHR,
+  SPAETESTES_JAHR,
+  type Termin,
+} from "./regeln.ts";
 
 export type Feiertag = { tag: Tag; schluessel: string; name: string; norm: string };
 
@@ -33,10 +39,11 @@ const giltFuer = (regel: FeiertagsRegel, jahr: number, standort: Standort): bool
 
 /**
  * The legal holidays of one year at one place, sorted by day, each with the law that sets it. Years
- * before FRUEHESTES_JAHR are "nicht hinterlegt": Soll does not guess from later law.
+ * before FRUEHESTES_JAHR are "nicht hinterlegt": Soll does not guess from later law; years past
+ * SPAETESTES_JAHR have no `YYYY-MM-DD` day.
  */
 export const feiertage = (jahr: number, standort: Standort): FeiertageErgebnis => {
-  if (!Number.isInteger(jahr) || jahr < FRUEHESTES_JAHR)
+  if (!Number.isInteger(jahr) || jahr < FRUEHESTES_JAHR || jahr > SPAETESTES_JAHR)
     return { ok: false, grund: "nicht_hinterlegt" };
   const liste = FEIERTAGE.filter((regel) => giltFuer(regel, jahr, standort))
     .map((regel) => ({

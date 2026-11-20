@@ -181,3 +181,5 @@ export const FEIERTAGE: readonly FeiertagsRegel[] = [
 
 /** The first year whose holidays the data covers */
 export const FRUEHESTES_JAHR = 1995;
+/** The last year with a four-digit `YYYY-MM-DD` day */
+export const SPAETESTES_JAHR = 9999;

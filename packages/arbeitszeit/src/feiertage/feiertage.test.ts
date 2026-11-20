@@ -117,3 +117,11 @@ describe("feiertagAm before the data", () => {
     });
   });
 });
+
+describe("feiertage past the four-digit years", () => {
+  // A Tag is `YYYY-MM-DD`: a year past 9999 has no such day, and past 275759 Date gives NaN
+  it("says nicht hinterlegt instead of returning days that are no Tag", () => {
+    expect(feiertage(10000, { land: "HH" })).toEqual({ ok: false, grund: "nicht_hinterlegt" });
+    expect(feiertage(300000, { land: "HH" })).toEqual({ ok: false, grund: "nicht_hinterlegt" });
+  });
+});

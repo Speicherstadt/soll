@@ -140,7 +140,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   nie weniger streng ist als das Gesetz; ein Jahr ohne Mindestlohn oder Grenze und ein Tag ohne
   Regelversion werden „nicht hinterlegt“ statt mit fremden Werten geprüft.
 - [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
-- [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
+- [x] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
   Unterbrechung der Ruhezeit.
   Fertig, wenn: jeder Fall von R-11 und R-12 in `docs/regeln.md` wörtlich als Test besteht, auch
   über Mitternacht, beide Zeitumstellungen und mit mehreren Einsätzen in einer Nacht. Dazu:

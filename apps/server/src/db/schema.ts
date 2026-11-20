@@ -12,6 +12,8 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/erinnerungen.ts";
+
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
   betriebId: text("betrieb_id").primaryKey(),
@@ -101,7 +103,9 @@ export const stempelungen = sqliteTable(
     betriebId: text("betrieb_id").notNull(),
     stempelId: text("stempel_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
-    art: text("art", { enum: ["kommen", "gehen", "pause_beginn", "pause_ende"] }).notNull(),
+    art: text("art", {
+      enum: ["kommen", "gehen", "pause_beginn", "pause_ende"],
+    }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
     quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
@@ -144,7 +148,9 @@ export const monatsabschluesse = sqliteTable(
     abschlussId: text("abschluss_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
     monat: text("monat").notNull(),
-    schritt: text("schritt", { enum: ["bestaetigt", "abgeschlossen"] }).notNull(),
+    schritt: text("schritt", {
+      enum: ["bestaetigt", "abgeschlossen"],
+    }).notNull(),
     inhalt: text("inhalt").notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     grund: text("grund"),
@@ -331,7 +337,9 @@ export const auditGlieder = sqliteTable(
     akteur: text("akteur").notNull(),
     tabelle: text("tabelle").notNull(),
     zeile: text("zeile").notNull(),
-    aktion: text("aktion", { enum: ["einfuegen", "aendern", "loeschen"] }).notNull(),
+    aktion: text("aktion", {
+      enum: ["einfuegen", "aendern", "loeschen"],
+    }).notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     vorgaengerHash: text("vorgaenger_hash").notNull(),
     hash: text("hash").notNull(),

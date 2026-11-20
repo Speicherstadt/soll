@@ -50,6 +50,13 @@
       "when": 1795185937485,
       "tag": "0006_dienstplan",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1795189957180,
+      "tag": "0007_erinnerungen",
+      "breakpoints": true
     }
   ]
 }

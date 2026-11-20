@@ -1,5 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "../../node_modules/.tsbuild/ui" },
+  "compilerOptions": {
+    "outDir": "../../node_modules/.tsbuild/ui",
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web"
+  },
   "include": ["src"]
 }

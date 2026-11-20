@@ -101,7 +101,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
 ## Phase 3 – Arbeitszeit in der App
 
-- [ ] **S-301 UI-Paket** – `packages/ui` nach DESIGN.md: Button, Input, Dialog, Menü, Popover,
+- [x] **S-301 UI-Paket** – `packages/ui` nach DESIGN.md: Button, Input, Dialog, Menü, Popover,
   Tooltip, Toast, Combobox, Tabs, Badge, Tabelle; native Elemente, eigene `cn()` und `variants()`,
   Vorbild `packages/ui` in Kennwort (kopieren, Quelle nennen).
   nach: S-101. Fertig, wenn: jede Komponente mit Tastatur bedienbar ist und axe keine Fehler findet.

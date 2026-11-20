@@ -67,6 +67,7 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Was sich in der CI nicht echt testen lässt | Ersatz für `NDEFReader`, Push-Dienst, SMTP, Haben-API und die APIs der Import-Quellen, nach deren Doku gebaut | die Kriterien für „fertig“ bleiben erfüllbar |
 | Übersetzungen | der Loop übersetzt `tr`, `pl`, `uk` und `ar` selbst; Muttersprachler prüfen später | er wartet nicht auf Menschen |
 | Merge | der Loop merged selbst, wenn CI grün ist und das unabhängige Review keine Befunde mehr hat | er wartet nie auf einen Menschen |
+| Icons | Daten aus `lucide` mit eigener `Icon`-Komponente in `packages/ui` statt `lucide-solid` | `lucide-solid` trägt nur Solid 1 (`peerDependencies` `solid-js ^1.4.7`); die Icon-Daten sind dieselben |
 | Lizenz | AGPL-3.0 mit Namensnennung nach § 7(b) und kommerzieller Lizenz wie bei Haben | |
 
 ## Technologie

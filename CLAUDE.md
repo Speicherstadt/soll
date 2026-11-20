@@ -131,7 +131,8 @@ Server: Bun, Hono, Drizzle on SQLite (WAL), Zod at every boundary, Better Auth (
 for several businesses in one instance, passkeys, invitation links), `bun build --compile`. Client:
 Solid 2, `@tanstack/solid-router` and `solid-query` if they carry Solid 2 (else a small own router and
 Solid's async), Paraglide, Tailwind 4. UI in the shadcn style without a component library: native
-`<dialog>`, the Popover API, CSS anchor positioning, own `cn()` and `variants()`, `lucide-solid`,
+`<dialog>`, the Popover API, CSS anchor positioning, own `cn()` and `variants()`, lucide icons (data from `lucide` through `Icon` in `packages/ui`,
+as `lucide-solid` carries only Solid 1),
 Geist, zinc tokens.
 
 Clean Code, written functionally: clear names, small functions that do one thing, dependencies

@@ -49,7 +49,8 @@ Kein Rot/Grün als einziges Merkmal: dazu immer Text oder Icon.
 - Größen: 12 px Nebentext, 13 px Text am Desktop, 15 px am Handy, 28 px Titel am Handy; die laufende
   Zeit beim Stempeln 40 px, am Terminal 64 px.
 - Abstände im 4-px-Raster; Radien 6 px Knöpfe, 8 px Felder, 12 px Karten.
-- Icons: `lucide-solid`, 16 px am Desktop, 20–24 px am Handy und Terminal.
+- Icons: aus `lucide` über `Icon` in `packages/ui` (`lucide-solid` trägt kein Solid 2), 16 px am
+  Desktop, 20–24 px am Handy und Terminal.
 
 ## Aufbau
 

@@ -60,7 +60,7 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   „nicht hinterlegt“.
   nach: S-103. Fertig, wenn: ein Jahr ohne Wert nie mit dem Vorjahr rechnet (Test) und ein Wechsel
   zum 1. Januar mitten in einer Nachtschicht richtig getrennt wird.
-- [ ] **S-105 Feiertage** – alle 16 Länder, bewegliche Feiertage nach der Osterformel, regionale
+- [x] **S-105 Feiertage** – alle 16 Länder, bewegliche Feiertage nach der Osterformel, regionale
   Feiertage nach Landesrecht, Feiertag je Standort.
   nach: S-101. Fertig, wenn: 2026 bis 2035 gegen amtliche Listen besteht (Fixtures mit Quelle). Dazu:
   Ostersonntag nach Gauß mit Lichtenbergs Formel stimmt für 1900 bis 2100 mit einer unabhängigen

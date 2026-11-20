@@ -81,8 +81,10 @@ Yusuf Yılmaz;
 - Rollen auf Deutsch oder Englisch: Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat, Extern,
   auch in der weiblichen Form. Ohne Rolle gilt Mitarbeiter. Ein Gerät (Terminal) wird nicht
   importiert.
+- Hat die Datei nur eine Spalte, bleibt ein Komma im Namen stehen (`Weber, Jonas`).
 - Höchstens 200 Personen auf einmal. Eine Zeile, die Soll nicht lesen kann, nennt es mit ihrer
-  Nummer und dem Grund; die übrigen übernimmt es.
+  Nummer und dem Grund; die übrigen übernimmt es. Schließt ein Anführungszeichen nicht, nennt Soll
+  die Zeile, in der es steht, und übernimmt nichts ab dort.
 
 ## 5. Einladungen
 

@@ -136,6 +136,7 @@
   "csv_zu_viele": "Wiersz {zeile}: najwyżej 200 osób naraz.",
   "csv_name_fehlt": "Wiersz {zeile}: brak imienia i nazwiska.",
   "csv_name_zu_lang": "Wiersz {zeile}: imię i nazwisko ma ponad 100 znaków.",
+  "csv_unlesbar": "Wiersz {zeile}: cudzysłów nie został zamknięty; od tego miejsca pliku nie da się odczytać.",
   "csv_rolle_unbekannt": "Wiersz {zeile}: Soll nie zna roli „{wert}”.",
   "person_name": "Imię i nazwisko",
   "person_rolle": "Rola",

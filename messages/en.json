@@ -136,6 +136,7 @@
   "csv_zu_viele": "Line {zeile}: at most 200 people at once.",
   "csv_name_fehlt": "Line {zeile}: the name is missing.",
   "csv_name_zu_lang": "Line {zeile}: the name is longer than 100 characters.",
+  "csv_unlesbar": "Line {zeile}: a quotation mark is never closed; the file cannot be read from here on.",
   "csv_rolle_unbekannt": "Line {zeile}: Soll does not know the role “{wert}”.",
   "person_name": "Name",
   "person_rolle": "Role",

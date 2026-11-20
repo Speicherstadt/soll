@@ -136,6 +136,7 @@
   "csv_zu_viele": "Satır {zeile}: bir seferde en fazla 200 kişi.",
   "csv_name_fehlt": "Satır {zeile}: ad eksik.",
   "csv_name_zu_lang": "Satır {zeile}: ad 100 karakterden uzun.",
+  "csv_unlesbar": "Satır {zeile}: bir tırnak işareti kapatılmamış; dosya buradan itibaren okunamıyor.",
   "csv_rolle_unbekannt": "Satır {zeile}: Soll “{wert}” rolünü tanımıyor.",
   "person_name": "Ad",
   "person_rolle": "Rol",

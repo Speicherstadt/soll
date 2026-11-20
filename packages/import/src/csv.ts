@@ -3,7 +3,12 @@
  * CRLF or LF, a field in double quotes may hold the separator, line breaks and "" for one quote.
  * Excel in a German locale separates by semicolon, so the separator is passed in.
  */
-export type CsvZeile = { zeile: number; felder: string[] };
+export type CsvZeile = {
+  zeile: number;
+  felder: string[];
+  /** The file ends inside a quote opened on this record: its fields cannot be told apart */
+  offen?: true;
+};
 
 type Stand = {
   zeilen: CsvZeile[];
@@ -57,16 +62,22 @@ export const csvZeilen = (text: string, trenner: string): CsvZeile[] => {
       stand.feld += zeichen;
     }
   }
+  const offen = stand.inAnfuehrung;
   zeileAbschliessen(stand);
+  const letzte = stand.zeilen.at(-1);
+  if (offen && letzte) letzte.offen = true;
   return stand.zeilen;
 };
 
-/** The separator of a file: the one of semicolon, comma and tab found most often in its first line */
+/**
+ * The separator of a file: the one of semicolon, comma and tab found most often in its first line, or
+ * "" (which matches no character) when it has none: a file of one column keeps "Weber, Jonas" whole
+ */
 export const trennzeichenVon = (text: string): string => {
   const erste = text.split("\n", 1)[0] ?? "";
-  const zaehlen = (zeichen: string) => erste.split(zeichen).length - 1;
+  const zaehlen = (zeichen: string) => (zeichen === "" ? 0 : erste.split(zeichen).length - 1);
   return [";", "\t", ","].reduce(
     (best, zeichen) => (zaehlen(zeichen) > zaehlen(best) ? zeichen : best),
-    ",",
+    "",
   );
 };

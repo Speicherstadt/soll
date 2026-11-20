@@ -136,6 +136,7 @@
   "csv_zu_viele": "Zeile {zeile}: Höchstens 200 Personen auf einmal.",
   "csv_name_fehlt": "Zeile {zeile}: Der Name fehlt.",
   "csv_name_zu_lang": "Zeile {zeile}: Der Name ist länger als 100 Zeichen.",
+  "csv_unlesbar": "Zeile {zeile}: Ein Anführungszeichen wird nicht geschlossen; ab hier ist die Datei nicht lesbar.",
   "csv_rolle_unbekannt": "Zeile {zeile}: Die Rolle „{wert}“ kennt Soll nicht.",
   "person_name": "Name",
   "person_rolle": "Rolle",

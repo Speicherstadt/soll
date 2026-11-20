@@ -19,7 +19,7 @@ export type CsvRolle = (typeof CSV_ROLLEN)[number];
 
 export type CsvPerson = { zeile: number; name: string; rolle: CsvRolle };
 export type CsvFehler =
-  | { zeile: number; grund: "kein_kopf" | "zu_viele" | "name_fehlt" | "name_zu_lang" }
+  | { zeile: number; grund: "kein_kopf" | "zu_viele" | "unlesbar" | "name_fehlt" | "name_zu_lang" }
   | { zeile: number; grund: "rolle_unbekannt"; wert: string };
 export type CsvErgebnis = { personen: CsvPerson[]; fehler: CsvFehler[] };
 
@@ -88,6 +88,8 @@ const feld = (zeile: CsvZeile, index: number | undefined): string =>
   (index === undefined ? "" : (zeile.felder[index] ?? "")).replace(/\s+/g, " ").trim();
 
 const personAus = (zeile: CsvZeile, kopf: Kopf): CsvPerson | CsvFehler => {
+  // a quote never closed swallows the lines after it: no name read from them could be trusted
+  if (zeile.offen) return { zeile: zeile.zeile, grund: "unlesbar" };
   const name =
     feld(zeile, kopf.name) ||
     [feld(zeile, kopf.vorname), feld(zeile, kopf.nachname)].filter(Boolean).join(" ");
@@ -103,6 +105,7 @@ export const mitarbeiterAusCsv = (text: string): CsvErgebnis => {
   const ohneBom = text.replace(/^﻿/, "");
   const [kopfZeile, ...zeilen] = csvZeilen(ohneBom, trennzeichenVon(ohneBom));
   const kopf = kopfZeile && kopfAus(kopfZeile.felder);
+  if (kopfZeile?.offen) return { personen: [], fehler: [{ zeile: 1, grund: "unlesbar" }] };
   if (!kopf) return { personen: [], fehler: [{ zeile: 1, grund: "kein_kopf" }] };
   if (zeilen.length > MAX_PERSONEN) {
     const zuViel = zeilen[MAX_PERSONEN] as CsvZeile;

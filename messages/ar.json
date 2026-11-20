@@ -136,6 +136,7 @@
   "csv_zu_viele": "السطر {zeile}: 200 شخص على الأكثر في المرة الواحدة.",
   "csv_name_fehlt": "السطر {zeile}: الاسم مفقود.",
   "csv_name_zu_lang": "السطر {zeile}: الاسم أطول من 100 حرف.",
+  "csv_unlesbar": "السطر {zeile}: علامة اقتباس غير مغلقة؛ لا يمكن قراءة الملف من هنا.",
   "csv_rolle_unbekannt": "السطر {zeile}: لا يعرف Soll الدور «{wert}».",
   "person_name": "الاسم",
   "person_rolle": "الدور",

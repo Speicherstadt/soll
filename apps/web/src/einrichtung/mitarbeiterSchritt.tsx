@@ -15,6 +15,7 @@ const fehlerText = (fehler: CsvFehler): string => {
   const texte = {
     kein_kopf: m.csv_kein_kopf,
     zu_viele: m.csv_zu_viele,
+    unlesbar: m.csv_unlesbar,
     name_fehlt: m.csv_name_fehlt,
     name_zu_lang: m.csv_name_zu_lang,
   };

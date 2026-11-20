@@ -136,6 +136,7 @@
   "csv_zu_viele": "Рядок {zeile}: щонайбільше 200 осіб за раз.",
   "csv_name_fehlt": "Рядок {zeile}: бракує імені.",
   "csv_name_zu_lang": "Рядок {zeile}: ім’я довше за 100 символів.",
+  "csv_unlesbar": "Рядок {zeile}: лапки не закрито; далі файл неможливо прочитати.",
   "csv_rolle_unbekannt": "Рядок {zeile}: Soll не знає ролі «{wert}».",
   "person_name": "Ім’я",
   "person_rolle": "Роль",

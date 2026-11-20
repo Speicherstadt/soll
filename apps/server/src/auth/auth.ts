@@ -121,7 +121,7 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
           : organizationId ||
             (sitzung.session as { activeOrganizationId?: string | null }).activeOrganizationId;
         const mitglied = betriebId && mitgliedschaftVon(db, betriebId, sitzung.user.id);
-        if (mitglied && !darf(mitglied.rolle, "betrieb:lesen"))
+        if (mitglied && !darf(mitglied.rolle, "mitglieder:lesen"))
           throw new APIError("FORBIDDEN", { message: "not allowed to read the members" });
       }),
       // Leaving a business has no organization hook in Better Auth (1.7.26, routes/crud-members

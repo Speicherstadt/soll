@@ -17,6 +17,7 @@ export type Rolle = (typeof ROLLEN)[number];
 export const RECHTE = [
   "betrieb:lesen",
   "betrieb:module",
+  "mitglieder:lesen",
   "mitglieder:einladen",
   "mitglieder:rolle",
   "pin:setzen",
@@ -29,14 +30,17 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
   inhaber: [
     "betrieb:lesen",
     "betrieb:module",
+    "mitglieder:lesen",
     "mitglieder:einladen",
     "mitglieder:rolle",
     "pin:setzen",
   ],
-  planer: ["betrieb:lesen", "mitglieder:einladen"],
+  // the member list with e-mail addresses: for managing people, payroll and the works council
+  // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
+  planer: ["betrieb:lesen", "mitglieder:lesen", "mitglieder:einladen"],
   mitarbeiter: ["betrieb:lesen"],
-  lohnbuero: ["betrieb:lesen"],
-  betriebsrat: ["betrieb:lesen"],
+  lohnbuero: ["betrieb:lesen", "mitglieder:lesen"],
+  betriebsrat: ["betrieb:lesen", "mitglieder:lesen"],
   extern: ["betrieb:lesen"],
   // the terminal checks PINs and nothing else (S-801)
   geraet: ["pin:pruefen"],

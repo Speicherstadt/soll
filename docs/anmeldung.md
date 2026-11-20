@@ -19,14 +19,14 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 | Rolle | Darf |
 | --- | --- |
 | Inhaber | alles: Module schalten, einladen, Rollen ändern, PINs setzen |
-| Planer | lesen, Mitarbeiter und Externe einladen |
+| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen |
 | Mitarbeiter | die eigenen Daten |
-| Lohnbüro | lesen (Lohndaten folgen mit dem DATEV-Export) |
-| Betriebsrat | lesen |
-| Extern | lesen, ohne Pflicht zur Arbeitszeiterfassung |
+| Lohnbüro | lesen, die Mitgliederliste (Lohndaten folgen mit dem DATEV-Export) |
+| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG) |
+| Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung |
 | Gerät | nur PINs am Terminal prüfen |
 
-Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Ein Gerät sieht dort keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
+Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen nur Inhaber, Planer, Lohnbüro und Betriebsrat; Mitarbeiter, Externe und Geräte sehen ihre eigene Rolle, aber keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
 davon darf; andere als diese sieben Rollen nimmt der Server nicht an. Jede Änderung einer Mitgliedschaft oder Rolle steht in
 der [Audit-Kette](audit-kette.md).
 

@@ -52,3 +52,45 @@ describe("a device", () => {
     expect(inhaber.status).toBe(200);
   });
 });
+
+// Employees see their own data (docs/anmeldung.md); the member list with every e-mail address is for
+// those who manage people or need them for their task: owner, planner, payroll office, works council
+// (BetrVG § 80 Abs. 2). Decision in docs/plan.md, "Entscheidungen".
+describe("an employee or an external worker", () => {
+  it.each(["mitarbeiter", "extern"])("as %s does not read the member list", async (rolle) => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    await einladen(server, weber, rolle, "sandra");
+    const sandra = server.browser();
+    await sandra.anfrage("/api/auth/sign-in/username", {
+      body: { username: "sandra", password: PASSWORT },
+    });
+    await sandra.anfrage("/api/auth/organization/set-active", {
+      body: { organizationId: weber.betriebId },
+    });
+    for (const pfad of [
+      "/api/auth/organization/get-full-organization",
+      "/api/auth/organization/list-members",
+      `/api/auth/organization/get-active-member-role?userId=${weber.nutzerId}`,
+    ]) {
+      const antwort = await sandra.anfrage(pfad);
+      expect(antwort.status, pfad).toBe(403);
+    }
+    // the own role stays readable
+    expect((await sandra.anfrage("/api/auth/organization/get-active-member-role")).status).toBe(200);
+  });
+
+  it.each(["planer", "lohnbuero", "betriebsrat"])("as %s reads the member list", async (rolle) => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    await einladen(server, weber, rolle, "anna");
+    const anna = server.browser();
+    await anna.anfrage("/api/auth/sign-in/username", {
+      body: { username: "anna", password: PASSWORT },
+    });
+    await anna.anfrage("/api/auth/organization/set-active", {
+      body: { organizationId: weber.betriebId },
+    });
+    expect((await anna.anfrage("/api/auth/organization/list-members")).status).toBe(200);
+  });
+});

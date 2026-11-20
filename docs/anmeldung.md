@@ -26,7 +26,7 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 | Extern | lesen, ohne Pflicht zur Arbeitszeiterfassung |
 | Gerät | nur PINs am Terminal prüfen |
 
-Die Rechte prüft der Server bei jedem Aufruf. Hat eine Person mehrere Rollen, darf sie, was jede
+Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Ein Gerät sieht dort keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
 davon darf; andere als diese sieben Rollen nimmt der Server nicht an. Jede Änderung einer Mitgliedschaft oder Rolle steht in
 der [Audit-Kette](audit-kette.md).
 

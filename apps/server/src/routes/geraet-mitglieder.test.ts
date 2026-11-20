@@ -40,6 +40,7 @@ describe("a device", () => {
       "/api/auth/organization/get-full-organization?organizationSlug=weber",
       "/api/auth/organization/list-members",
       "/api/auth/organization/list-members?organizationSlug=weber",
+      "/api/auth/organization/list-members?organizationId=",
       `/api/auth/organization/get-active-member-role?userId=${weber.nutzerId}`,
     ]) {
       const antwort = await terminal.anfrage(pfad);

@@ -2,14 +2,18 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware, getSessionFromCtx } from "better-auth/api";
 import { organization, username } from "better-auth/plugins";
 import { defaultAc } from "better-auth/plugins/organization/access";
 import * as authSchema from "../db/auth-schema.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { arbeitszeitPflichtWahren, betriebAnlegen } from "../modules/betrieb/index.ts";
-import { mitgliedschaftEntfernen, mitgliedschaftSpiegeln } from "../modules/mitglieder/index.ts";
-import { istRolle, ROLLEN, rollenVon } from "./rollen.ts";
+import {
+  mitgliedschaftEntfernen,
+  mitgliedschaftSpiegeln,
+  mitgliedschaftVon,
+} from "../modules/mitglieder/index.ts";
+import { darf, istRolle, ROLLEN, rollenVon } from "./rollen.ts";
 
 export type AuthDeps = {
   db: Db;
@@ -43,6 +47,16 @@ const RECHTE_IN_BETTER_AUTH: Partial<
     ac: ["read"],
   },
 };
+
+/**
+ * Better Auth's routes that show other members (names, e-mail addresses, roles): it asks only for
+ * membership, Soll for the right to read the business, which a device lacks (rollen.ts)
+ */
+const MITGLIEDER_LESEN: readonly string[] = [
+  "/organization/get-full-organization",
+  "/organization/list-members",
+  "/organization/get-active-member-role",
+];
 
 /** The actor of a change through Better Auth when no signed-in person made it */
 const AKTEUR = "anmeldung";
@@ -86,6 +100,30 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
     emailAndPassword: { enabled: true },
     telemetry: { enabled: false },
     hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        if (!MITGLIEDER_LESEN.includes(ctx.path)) return;
+        const sitzung = await getSessionFromCtx(ctx);
+        if (!sitzung) return;
+        // the business as Better Auth picks it: slug, then id, then the active one (each if not empty)
+        const { organizationSlug, organizationId, userId } = (ctx.query ?? {}) as Record<
+          string,
+          string
+        >;
+        // one's own role is no one else's data
+        if (ctx.path === "/organization/get-active-member-role" && !userId) return;
+        const betriebId = organizationSlug
+          ? (
+              await ctx.context.adapter.findOne<{ id: string }>({
+                model: "organization",
+                where: [{ field: "slug", value: organizationSlug }],
+              })
+            )?.id
+          : organizationId ||
+            (sitzung.session as { activeOrganizationId?: string | null }).activeOrganizationId;
+        const mitglied = betriebId && mitgliedschaftVon(db, betriebId, sitzung.user.id);
+        if (mitglied && !darf(mitglied.rolle, "betrieb:lesen"))
+          throw new APIError("FORBIDDEN", { message: "not allowed to read the members" });
+      }),
       // Leaving a business has no organization hook in Better Auth (1.7.26, routes/crud-members
       // leaveOrganization), so the mirror follows it here; otherwise the member's other sessions
       // would keep the business

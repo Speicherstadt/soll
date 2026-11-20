@@ -18,11 +18,11 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren |
-| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren |
-| Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren |
-| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen |
-| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG), stempeln |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
+| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, den Dienstplan planen |
+| Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, den veröffentlichten Dienstplan sehen |
+| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, den veröffentlichten Dienstplan sehen |
+| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG), stempeln, den veröffentlichten Dienstplan sehen |
 | Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung; stempelt nicht, sieht aber die eigenen Zeiten aus der Zeit davor |
 | Gerät | nur PINs am Terminal prüfen |
 

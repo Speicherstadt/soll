@@ -323,8 +323,25 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
   und jede Feldregel ihre Quelle im Code nennt.
-- [ ] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
+- [x] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
   Arbeitsschutz; Auskunft nach Art. 15 DSGVO als Export.
+  Fertig, wenn: der Prüfexport je Person und Arbeitstag Datum, Beginn, Ende, Pausen und Dauer in
+  ganzen Minuten, den Zeitpunkt der Erfassung (§ 17 Abs. 1 MiLoG), die Änderungen von Hand mit Grund,
+  wer und wann, die Gegeneinträge, die Befunde mit Norm und den Prüfwert des abgeschlossenen Monats
+  zeigt; das CSV ist eine reine Funktion in `packages/export` (RFC 4180, UTF-8 mit BOM, Semikolon,
+  CRLF; eine Zelle, die mit `=`, `+`, `-`, `@`, Tab oder CR beginnt, bekommt ein Hochkomma davor,
+  Entscheidung im Projektplan), das PDF mit `pdf-lib` zeigt denselben Inhalt, beide mit
+  Golden-File-Tests; Zeitraum (höchstens zwei Jahre) und Personen wählt, wer alle Zeiten sehen darf
+  (`zeiten:alle`), jede Person exportiert ihre eigenen Tage; ein Endpunkt des abgeschalteten Moduls
+  Arbeitszeit wird abgelehnt. Die Auskunft nach Art. 15 DSGVO gibt der Person alles, was Soll im
+  Betrieb über sie speichert (Konto ohne Kennwort, Mitgliedschaft, Stempelungen mit allen Fassungen
+  und Gründen, Gegeneinträge, Abschlüsse mit Prüfwert, Modelle, Schichten, Geräte, PIN ohne Hash,
+  Einladung, Glieder der Audit-Kette), als JSON, ohne Daten anderer Personen; ein Test hält fest, dass
+  jede Tabelle in der Auskunft steht oder mit Grund ausgenommen ist; der Inhaber erteilt sie auch
+  einer Person, die den Betrieb verlassen hat. Ein Test je Endpunkt, dass kein Betrieb Daten eines
+  anderen sieht und niemand ohne Recht die einer anderen Person; Playwright in `desktop` und `phone`
+  lädt beide Exporte herunter; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/`.
 
 ## Phase 4 – Abwesenheiten
 

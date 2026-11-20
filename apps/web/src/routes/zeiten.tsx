@@ -88,6 +88,9 @@ const Zeiten = () => {
         <Link to="/monat" class={knopfLink}>
           {m.monat_titel()}
         </Link>
+        <Link to="/export" class={knopfLink}>
+          {m.pruefexport_titel()}
+        </Link>
         <Loading>
           <Show when={hatRolle("inhaber") && quelle.ansicht()}>
             {(ansicht) => (

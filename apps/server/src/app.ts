@@ -3,6 +3,7 @@ import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
+import { auskunftRouten } from "./routes/auskunft.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
@@ -16,6 +17,7 @@ import { monatRouten } from "./routes/monat.ts";
 import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
 import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
+import { pruefexportRouten } from "./routes/pruefexport.ts";
 import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
@@ -76,6 +78,7 @@ export const createApp = ({
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db))
     .route("/betrieb", betriebRouten(db, schreibDb, now))
+    .route("/auskunft", auskunftRouten(db, now))
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
@@ -87,6 +90,7 @@ export const createApp = ({
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,
             vapidOeffentlich,

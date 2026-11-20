@@ -65,6 +65,12 @@ describe("darf", () => {
     for (const rolle of ["extern", "geraet"]) expect(darf(rolle, "plan:lesen"), rolle).toBe(false);
   });
 
+  it("lets only the owner give the Auskunft of another person (Art. 15 DSGVO)", () => {
+    expect(darf("inhaber", "auskunft:erteilen")).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "auskunft:erteilen"), rolle).toBe(false);
+  });
+
   it("refuses unknown roles", () => {
     expect(darf("owner", "betrieb:lesen")).toBe(false);
   });

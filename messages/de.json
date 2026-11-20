@@ -1,6 +1,22 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
-  "start_tagline": "Arbeitszeit erfassen, wie es das Gesetz verlangt – auf deinem eigenen Server.",
-  "start_status": "In Entwicklung"
+  "nav_bereiche": "Bereiche",
+  "nav_heute": "Heute",
+  "nav_zeiten": "Zeiten",
+  "nav_abwesenheiten": "Abwesenheiten",
+  "nav_dienstplan": "Dienstplan",
+  "nav_projekte": "Projekte",
+  "nav_auswertungen": "Auswertungen",
+  "nav_einstellungen": "Einstellungen",
+  "nav_plan": "Plan",
+  "nav_abwesenheit": "Abwesenheit",
+  "nav_mehr": "Mehr",
+  "seite_leer": "Dieser Bereich kommt bald.",
+  "darstellung_titel": "Darstellung",
+  "theme_label": "Farben",
+  "theme_system": "Wie das Gerät",
+  "theme_hell": "Hell",
+  "theme_dunkel": "Dunkel",
+  "sprache_label": "Sprache"
 }

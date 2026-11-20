@@ -1,6 +1,22 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
-  "start_tagline": "Çalışma süresini yasanın istediği gibi kaydet – kendi sunucunda.",
-  "start_status": "Geliştirme aşamasında"
+  "nav_bereiche": "Bölümler",
+  "nav_heute": "Bugün",
+  "nav_zeiten": "Süreler",
+  "nav_abwesenheiten": "Devamsızlıklar",
+  "nav_dienstplan": "Vardiya planı",
+  "nav_projekte": "Projeler",
+  "nav_auswertungen": "Raporlar",
+  "nav_einstellungen": "Ayarlar",
+  "nav_plan": "Plan",
+  "nav_abwesenheit": "Devamsızlık",
+  "nav_mehr": "Daha fazla",
+  "seite_leer": "Bu bölüm yakında geliyor.",
+  "darstellung_titel": "Görünüm",
+  "theme_label": "Renkler",
+  "theme_system": "Cihaz gibi",
+  "theme_hell": "Açık",
+  "theme_dunkel": "Koyu",
+  "sprache_label": "Dil"
 }

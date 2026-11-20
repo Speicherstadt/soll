@@ -185,3 +185,20 @@ test("Table: a named table with column headers", async ({ page }) => {
     "ascending",
   );
 });
+
+test("fields and tabs reached by keyboard show their focus", async ({ page }) => {
+  await oeffnen(page);
+  const ziele = [
+    page.getByLabel("Beginn"),
+    page.getByRole("combobox", { name: "Person" }),
+    page.getByRole("tab", { name: "Tag" }),
+  ];
+  for (const ziel of ziele) {
+    await ziel.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(ziel).toBeFocused();
+    const stil = await ziel.evaluate((el) => getComputedStyle(el).outlineStyle);
+    expect(stil).not.toBe("none");
+  }
+});

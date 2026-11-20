@@ -46,6 +46,15 @@ Komponente nimmt ihre Texte über Props; die Tastaturbedienung folgt den ARIA Au
 Pfeile spiegeln sich bei Arabisch. Die Musterseite `apps/web/muster.html` zeigt alle, nur im
 Entwicklungsserver (`?theme=dark`, `?dir=rtl`); Playwright prüft dort Tastatur und axe.
 
+## App
+
+Die App hat am Desktop eine Seitenleiste mit den Bereichen Heute, Zeiten, Abwesenheiten,
+Dienstplan, Projekte, Auswertungen und Einstellungen, am Handy eine Tab-Leiste mit Heute, Plan,
+Abwesenheit und Mehr. Unter „Mehr“ und in den Einstellungen stehen Farben (hell, dunkel, wie das
+Gerät) und Sprache; beides merkt sich der Browser. Die Routen liegen in `apps/web/src/routes/`, der
+Routenbaum `routeTree.gen.ts` entsteht beim Build oder im Entwicklungsserver neu und ist
+eingecheckt, damit der Typcheck ihn kennt. Jede Seite steht in `e2e/accessibility.spec.ts`.
+
 ## Server
 
 Der Server liest seine Einstellungen aus der Umgebung:

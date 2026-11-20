@@ -55,7 +55,7 @@ export const Combobox = (props: ComboboxProps) => {
         aria-activedescendant={markiert() >= 0 ? `${id}-option-${markiert()}` : undefined}
         value={text()}
         style={{ "anchor-name": anker }}
-        class="h-9 rounded-md border border-border bg-background px-3 outline-none focus-visible:outline-2 focus-visible:outline-foreground"
+        class="h-9 rounded-md border border-border bg-background px-3 outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground"
         onInput={(event) => {
           setText(event.currentTarget.value);
           setMarkiert(-1);

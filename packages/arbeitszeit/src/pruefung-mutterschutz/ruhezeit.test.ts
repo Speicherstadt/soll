@@ -48,4 +48,25 @@ describe("R-21: Ruhezeit", () => {
     const ohne = { ...LEA, zeitraeume: [{ von: "2026-11-18", bis: null }] };
     expect(mutterschutzRuhezeit(moDi("19:30", "6:29"), ohne).befunde).toEqual([]);
   });
+
+  it("am selben Tag: Mo 0:00 – 4:00, Mo 14:00 – 18:00 (10:00) – „Ruhezeit 10:00“", () => {
+    // two shifts 10 hours apart are two working days by the 9 hours of S-201, measured as in R-05
+    const zweiSchichten = tage([
+      ...schicht(mez("2026-11-16", "0:00"), mez("2026-11-16", "4:00")),
+      ...schicht(mez("2026-11-16", "14:00"), mez("2026-11-16", "18:00")),
+    ]);
+    expect(mutterschutzRuhezeit(zweiSchichten, LEA).befunde).toEqual([
+      expect.objectContaining({ fehlt: 60, ruhe: expect.objectContaining({ minuten: 600 }) }),
+    ]);
+  });
+
+  it("Ruhezeit am selben Tag: names Mo once, as R-05 does", () => {
+    const zweiSchichten = tage([
+      ...schicht(mez("2026-11-16", "0:00"), mez("2026-11-16", "4:00")),
+      ...schicht(mez("2026-11-16", "14:00"), mez("2026-11-16", "18:00")),
+    ]);
+    expect(mutterschutzRuhezeit(zweiSchichten, LEA).befunde.map((befund) => befund.tage)).toEqual([
+      ["2026-11-16"],
+    ]);
+  });
 });

@@ -41,6 +41,7 @@ export {
   moduleAusFragen,
 } from "./module/module.ts";
 export * from "./pruefung/index.ts";
+export * from "./pruefung-bereitschaft/index.ts";
 export * from "./pruefung-jugend/index.ts";
 export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-mutterschutz/index.ts";

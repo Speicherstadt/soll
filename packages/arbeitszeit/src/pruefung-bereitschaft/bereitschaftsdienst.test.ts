@@ -1,0 +1,294 @@
+import { describe, expect, it } from "vitest";
+import {
+  kurz,
+  MO,
+  mitBereitschaft,
+  pause,
+  pruefe,
+  schicht,
+  spanne,
+  uhr,
+  um,
+  weiter,
+} from "./testhilfen.ts";
+
+/*
+ * docs/regeln.md, R-11 (cases taken literally): Bereitschaftsdienst at the place the business
+ * decides is working time (§ 2 Abs. 1 ArbZG; EuGH C-151/02, Jaeger) and enters §§ 3 to 5 ArbZG like
+ * any other work. The cases erlaubt, Grenze and Verstoß grant the breaks of § 4 ArbZG.
+ */
+const TARIF = { tarif: { fundstelle: "TV-Ärzte/VKA § 10 Abs. 1" } };
+
+/** 6:00 Arbeit from 8:00, then `pause` minutes off, then Bereitschaftsdienst until `bis` */
+const sechsStundenUnd = (pauseBis: string, bis: string) => ({
+  stempel: schicht(uhr(MO, "8:00"), uhr(MO, "14:00")),
+  eingabe: { bereitschaftsdienste: [spanne(uhr(MO, pauseBis), uhr(MO, bis))] },
+});
+
+describe("R-11: Bereitschaftsdienst", () => {
+  it("erlaubt: 6:00 Arbeit + 2:00 Bereitschaftsdienst – 8:00 Arbeitszeit, no finding", () => {
+    const { stempel, eingabe } = sechsStundenUnd("14:30", "16:30");
+    const [tag] = mitBereitschaft(stempel, eingabe);
+    expect(tag).toMatchObject({
+      tag: "2026-11-16",
+      arbeitsMinuten: 480,
+      bereitschaftsMinuten: 120,
+      bereitschaftsdienstMinuten: 120,
+    });
+    expect(pruefe(stempel, eingabe)).toEqual({ befunde: [], nichtHinterlegt: [] });
+  });
+
+  it("Grenze: 6:00 Arbeit + 4:00 Bereitschaftsdienst – 10:00, Hinweis of R-02", () => {
+    const { stempel, eingabe } = sechsStundenUnd("14:45", "18:45");
+    expect(pruefe(stempel, eingabe).befunde).toEqual([
+      {
+        regel: "R-02",
+        norm: "§ 3 Satz 2 ArbZG",
+        schwere: "hinweis",
+        art: "ueber_8h",
+        tage: ["2026-11-16"],
+        minuten: 600,
+        ueber: 120,
+      },
+    ]);
+  });
+
+  it("Verstoß: 6:00 Arbeit + 4:01 Bereitschaftsdienst without § 7 – Verstoß of R-02", () => {
+    const { stempel, eingabe } = sechsStundenUnd("14:45", "18:46");
+    expect(pruefe(stempel, eingabe).befunde).toEqual([
+      {
+        regel: "R-02",
+        norm: "§ 3 Satz 2 ArbZG",
+        schwere: "verstoss",
+        art: "ueber_10h",
+        tage: ["2026-11-16"],
+        minuten: 601,
+        ueber: 1,
+      },
+    ]);
+  });
+
+  it("Pause: 6:00 Arbeit + 2:00 Bereitschaftsdienst without a Ruhepause – Verstöße of R-04", () => {
+    const { stempel, eingabe } = sechsStundenUnd("14:00", "16:00");
+    expect(kurz(pruefe(stempel, eingabe))).toEqual([
+      ["R-04", "pause_fehlt", ["2026-11-16"]],
+      ["R-04", "ohne_pause", ["2026-11-16"]],
+    ]);
+    expect(pruefe(stempel, eingabe).befunde[0]).toMatchObject({ fehlt: 30, arbeitsMinuten: 480 });
+  });
+
+  it("gestempelt: 8:00 – 16:00 stamped, 14:00 – 16:00 of it Bereitschaftsdienst – 8:00, not twice", () => {
+    const stempel = schicht(uhr(MO, "8:00"), uhr(MO, "16:00"));
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "14:00"), uhr(MO, "16:00"))] };
+    const [tag] = mitBereitschaft(stempel, eingabe);
+    expect(tag).toMatchObject({ arbeitsMinuten: 480, bereitschaftsMinuten: 120 });
+    expect(tag?.schichten).toHaveLength(1);
+  });
+
+  it("gestempelt: Bereitschaftsdienst in a stamped break is no Ruhepause", () => {
+    const stempel = [
+      ...schicht(uhr(MO, "8:00"), uhr(MO, "16:30")).slice(0, 1),
+      pause(uhr(MO, "12:00")),
+      weiter(uhr(MO, "12:30")),
+      ...schicht(uhr(MO, "8:00"), uhr(MO, "16:30")).slice(1),
+    ];
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "12:00"), uhr(MO, "12:30"))] };
+    const [tag] = mitBereitschaft(stempel, eingabe);
+    expect(tag).toMatchObject({ arbeitsMinuten: 510, bereitschaftsMinuten: 30 });
+    expect(tag?.schichten[0]?.pausen).toEqual([]);
+  });
+
+  it("Ruhezeit: Bereitschaftsdienst Mo 22:00 – Di 6:00, Di Schicht 15:30 – Verstoß of R-05 „Ruhezeit 9:30“", () => {
+    const stempel = schicht(uhr("17", "15:30"), uhr("17", "19:30"));
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "22:00"), uhr("17", "6:00"))] };
+    const ruhe = pruefe(stempel, eingabe).befunde.filter((befund) => befund.regel === "R-05");
+    expect(ruhe).toEqual([
+      {
+        regel: "R-05",
+        norm: "§ 5 Abs. 1 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_zu_kurz",
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: um(uhr("17", "6:00")), ende: um(uhr("17", "15:30")), minuten: 570 },
+        mindestens: 660,
+        fehlt: 90,
+      },
+    ]);
+  });
+
+  it("Herbst: Bereitschaftsdienst Sa 24.10.2026 22:00 – So 7:00 (10:00) – Hinweis of R-02 for Sa", () => {
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2026-10-24T22:00+02:00", "2026-10-25T07:00+01:00")],
+    };
+    const [tag] = mitBereitschaft([], eingabe);
+    expect(tag).toMatchObject({
+      tag: "2026-10-24",
+      arbeitsMinuten: 600,
+      bereitschaftsMinuten: 600,
+    });
+    const ergebnis = pruefe([], eingabe);
+    expect(ergebnis.befunde.filter((befund) => befund.regel === "R-02")).toMatchObject([
+      { art: "ueber_8h", tage: ["2026-10-24"], minuten: 600 },
+    ]);
+  });
+
+  it("Frühjahr: Bereitschaftsdienst Sa 27.03.2027 22:00 – So 7:00 is 8:00 – no finding of R-02", () => {
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2027-03-27T22:00+01:00", "2027-03-28T07:00+02:00")],
+    };
+    expect(mitBereitschaft([], eingabe)[0]).toMatchObject({
+      tag: "2027-03-27",
+      arbeitsMinuten: 480,
+    });
+    expect(pruefe([], eingabe).befunde.filter((befund) => befund.regel === "R-02")).toEqual([]);
+  });
+
+  it("Tarif: 6:00 Arbeit + 6:00 Bereitschaftsdienst with § 7 – Hinweis of R-11 instead of a Verstoß", () => {
+    const stempel = schicht(uhr(MO, "8:00"), uhr(MO, "14:00"));
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "14:45"), uhr(MO, "20:45"))] };
+    expect(pruefe(stempel, eingabe, TARIF).befunde).toEqual([
+      {
+        regel: "R-11",
+        norm: "§ 7 Abs. 1 Nr. 1 Buchst. a ArbZG",
+        schwere: "hinweis",
+        art: "ueber_10h_tarif",
+        tage: ["2026-11-16"],
+        minuten: 720,
+        ueber: 120,
+        fundstelle: "TV-Ärzte/VKA § 10 Abs. 1",
+      },
+    ]);
+  });
+
+  it("Tarif ohne Bereitschaft: 10:01 Arbeit with the same setting – Verstoß of R-02", () => {
+    const stempel = [
+      ...schicht(uhr(MO, "8:00"), uhr(MO, "14:00")),
+      ...schicht(uhr(MO, "14:45"), uhr(MO, "18:46")),
+    ];
+    expect(kurz(pruefe(stempel, {}, TARIF))).toEqual([["R-02", "ueber_10h", ["2026-11-16"]]]);
+  });
+
+  it("über 12 h: Gastronomie, § 7, 6:00 + 7:00 Bereitschaftsdienst, then 10:30 rest – Verstoß of § 7 Abs. 9", () => {
+    const stempel = [
+      ...schicht(uhr(MO, "6:00"), uhr(MO, "12:00")),
+      ...schicht(uhr("17", "6:30"), uhr("17", "12:30")),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [
+        spanne(uhr(MO, "12:45"), uhr(MO, "18:45")),
+        spanne(uhr(MO, "19:00"), uhr(MO, "20:00")),
+      ],
+    };
+    const optionen = { ...TARIF, branche: "gastronomie_beherbergung" } as const;
+    expect(pruefe(stempel, eingabe, optionen).befunde).toEqual([
+      expect.objectContaining({ regel: "R-11", art: "ueber_10h_tarif", minuten: 780 }),
+      {
+        regel: "R-11",
+        norm: "§ 7 Abs. 9 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_nach_ueber_12h",
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: um(uhr(MO, "20:00")), ende: um(uhr("17", "6:30")), minuten: 630 },
+        mindestens: 660,
+        fehlt: 30,
+        fundstelle: "TV-Ärzte/VKA § 10 Abs. 1",
+      },
+    ]);
+    // without the agreement the day is a Verstoß of R-02, and the shortened rest a Hinweis of R-05
+    expect(kurz(pruefe(stempel, eingabe, { branche: "gastronomie_beherbergung" }))).toEqual([
+      ["R-02", "ueber_10h", ["2026-11-16"]],
+    ]);
+  });
+
+  it("über 12 h, Ausgleich verpasst: Gastronomie, § 7, Mo 30.11. 13:00, 10:30 rest, balance by the end of November – Verstoß of § 7 Abs. 9, not lost", () => {
+    // without the agreement R-05 reports „Ausgleich fehlt“ (a Verstoß); with it the shortening of
+    // § 5 Abs. 2 was never allowed (§ 7 Abs. 9 ArbZG), so the rest is a Verstoß of R-11 in its place
+    const stempel = [
+      ...schicht("2026-11-30T06:00+01:00", "2026-11-30T12:00+01:00"),
+      ...schicht("2026-12-01T06:30+01:00", "2026-12-01T12:30+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [
+        spanne("2026-11-30T12:45+01:00", "2026-11-30T18:45+01:00"),
+        spanne("2026-11-30T19:00+01:00", "2026-11-30T20:00+01:00"),
+      ],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      ausgleich: "kalendermonat",
+      jetzt: um("2026-12-01T18:00+01:00"),
+    } as const;
+    expect(kurz(pruefe(stempel, eingabe, optionen))).toEqual([
+      ["R-02", "ueber_10h", ["2026-11-30"]],
+      ["R-05", "ruhezeit_ausgleich_fehlt", ["2026-11-30", "2026-12-01"]],
+    ]);
+    expect(kurz(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual([
+      ["R-11", "ueber_10h_tarif", ["2026-11-30"]],
+      ["R-11", "ruhezeit_nach_ueber_12h", ["2026-11-30", "2026-12-01"]],
+    ]);
+  });
+
+  it("über 12 h, Ausgleich: Beherbergung, § 7, Sa 28.11. 12:45, then two 10:30 rests and one 12-hour rest by the end of November – it balances the second rest, not the one § 7 Abs. 9 forbids", () => {
+    // the 10:30 after Saturday is no shortening under § 5 Abs. 2 at all (§ 7 Abs. 9 ArbZG), so it
+    // takes no balance; the only 12-hour rest by 30.11. (from Mo 11:30) balances Sunday's 10:30
+    const stempel = [
+      ...schicht("2026-11-28T10:00+01:00", "2026-11-28T16:00+01:00"),
+      ...schicht("2026-11-29T09:30+01:00", "2026-11-29T15:30+01:00"),
+      ...schicht("2026-11-29T16:00+01:00", "2026-11-29T19:30+01:00"),
+      ...schicht("2026-11-30T06:00+01:00", "2026-11-30T11:30+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2026-11-28T16:15+01:00", "2026-11-28T23:00+01:00")],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      ausgleich: "kalendermonat",
+      jetzt: um("2026-12-02T12:00+01:00"),
+    } as const;
+    const ruhen = (ergebnis: ReturnType<typeof pruefe>) =>
+      kurz(ergebnis).filter(([, art]) => String(art).startsWith("ruhezeit"));
+    // without the agreement the 12-hour rest balances Saturday's 10:30 and Sunday's lacks one
+    expect(ruhen(pruefe(stempel, eingabe, optionen))).toEqual([
+      ["R-05", "ruhezeit_ausgleich_fehlt", ["2026-11-29", "2026-11-30"]],
+    ]);
+    expect(ruhen(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual([
+      ["R-11", "ruhezeit_nach_ueber_12h", ["2026-11-28", "2026-11-29"]],
+    ]);
+  });
+
+  it("über 12 h: a rest between two shifts of the day lies before its end – § 5 Abs. 2, not § 7 Abs. 9", () => {
+    // § 7 Abs. 9 ArbZG: the 11 hours follow „im unmittelbaren Anschluss an die Beendigung der
+    // Arbeitszeit“; the 10:30 between 6:00 and 16:30 lies before the day's work ends at 23:45
+    const stempel = [
+      ...schicht(uhr(MO, "0:00"), uhr(MO, "6:00")),
+      ...schicht(uhr(MO, "16:30"), uhr(MO, "22:30")),
+      ...schicht(uhr("17", "12:00"), uhr("17", "14:00")),
+    ];
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "22:45"), uhr(MO, "23:45"))] };
+    const optionen = { ...TARIF, branche: "gastronomie_beherbergung" } as const;
+    const ruhen = kurz(pruefe(stempel, eingabe, optionen)).filter(([, art]) =>
+      String(art).startsWith("ruhezeit"),
+    );
+    // the shortened rest is balanced by the 12:15 after the day's work: no finding of a rest
+    expect(ruhen).toEqual([]);
+  });
+
+  it("über 12 h: a day no rule version covers is no day past 12 hours – the Hinweis of R-05 stays", () => {
+    // 31.12.2025 lies before the first rule version: § 7 Abs. 9 is „nicht hinterlegt“ for it and
+    // must not take the shortened rest of R-05 (rule version 2026-1, the day it ends on) away
+    const stempel = [
+      ...schicht("2025-12-31T16:00+01:00", "2025-12-31T20:00+01:00"),
+      ...schicht("2026-01-01T06:30+01:00", "2026-01-01T10:00+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2025-12-31T18:00+01:00", "2025-12-31T20:00+01:00")],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      jetzt: um("2026-01-01T12:00+01:00"),
+    } as const;
+    const ohneTarif = kurz(pruefe(stempel, eingabe, optionen));
+    expect(ohneTarif).toEqual([["R-05", "ruhezeit_verkuerzt", ["2025-12-31", "2026-01-01"]]]);
+    expect(kurz(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual(ohneTarif);
+  });
+});

@@ -246,6 +246,32 @@ describe("R-05: midnight, DST and open shifts", () => {
     ]);
   });
 
+  it("am selben Tag: Mo 0:00 – 4:00, Mo 14:00 – 22:00 (10:00) – Verstoß „Ruhezeit 10:00“", () => {
+    // two shifts on one calendar day 10 hours apart are two working days by the 9 hours of S-201;
+    // Di 6:00 – 12:00 lies 8 hours after 22:00 and belongs to the second
+    const stempel = [
+      ...schicht(tag("2026-11-16", "00:00"), tag("2026-11-16", "04:00")),
+      ...schicht(tag("2026-11-16", "14:00"), tag("2026-11-16", "22:00")),
+      ...schicht(tag("2026-11-17", "06:00"), tag("2026-11-17", "12:00")),
+    ];
+    expect(pruefe(stempel).befunde).toEqual([
+      {
+        regel: "R-05",
+        norm: "§ 5 Abs. 1 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_zu_kurz",
+        tage: ["2026-11-16"],
+        ruhe: {
+          beginn: um(tag("2026-11-16", "04:00")),
+          ende: um(tag("2026-11-16", "14:00")),
+          minuten: 600,
+        },
+        mindestens: 660,
+        fehlt: 60,
+      },
+    ]);
+  });
+
   it("does not measure the rest after an open shift; its Kommen ends the rest before it", () => {
     const stempel = [
       ...schicht(tag("2026-11-16", "14:00"), tag("2026-11-16", "22:00")),
@@ -263,5 +289,45 @@ describe("R-05: midnight, DST and open shifts", () => {
       ...schicht("2025-12-31T09:00+01:00", "2025-12-31T12:00+01:00"),
     ];
     expect(pruefe(stempel)).toEqual({ befunde: [], nichtHinterlegt: ["2025-12-31"] });
+  });
+
+  it("measures the rest after a call-out (R-12): its end begins a rest, its start ends none", () => {
+    // a planned shift (S-505) in the shape of PruefSchicht: Mo 14:00 – 20:00, a call-out on Di
+    // 2:00 – 3:00 in the same working day by the 9 hours of S-201, then work on Di from 12:00
+    const stueck = (von: string, bis: string) => {
+      const beginn = um(von);
+      const ende = um(bis);
+      return { beginn, ende, minuten: (ende - beginn) / 60_000 };
+    };
+    const arbeit = stueck(tag("2026-11-16", "14:00"), tag("2026-11-16", "20:00"));
+    const einsatz = stueck(tag("2026-11-17", "02:00"), tag("2026-11-17", "03:00"));
+    const di = stueck(tag("2026-11-17", "12:00"), tag("2026-11-17", "16:00"));
+    const tage = [
+      {
+        tag: "2026-11-16",
+        schichten: [
+          {
+            tag: "2026-11-16",
+            beginn: arbeit.beginn,
+            ende: einsatz.ende,
+            pausen: [],
+            bloecke: [arbeit, einsatz],
+            arbeitsMinuten: 420,
+            einsaetze: [einsatz],
+          },
+        ],
+      },
+      {
+        tag: "2026-11-17",
+        schichten: [{ tag: "2026-11-17", ...di, pausen: [], bloecke: [di], arbeitsMinuten: 240 }],
+      },
+    ];
+    expect(ruhezeit(tage, { jetzt: SPAETER }).befunde).toEqual([
+      expect.objectContaining({
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: einsatz.ende, ende: di.beginn, minuten: 540 },
+        fehlt: 120,
+      }),
+    ]);
   });
 });

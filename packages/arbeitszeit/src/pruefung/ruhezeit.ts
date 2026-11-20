@@ -3,7 +3,7 @@ import type { Befund } from "../befund.ts";
 import { plusTage, type Tag, tagAus } from "../kalender/tag.ts";
 import { beginnInBerlin, tagInBerlin } from "../kalender/zeit.ts";
 import { type ArbzgGrenzen, arbzgGrenzenAm, type Branche } from "./grenzen.ts";
-import { type Pruefergebnis, type PruefTag, sortiert } from "./typen.ts";
+import { type Pruefergebnis, type PruefSchicht, type PruefTag, sortiert } from "./typen.ts";
 import { spaeterer } from "./zeitraeume.ts";
 
 /**
@@ -20,6 +20,12 @@ export type RuhezeitOptionen = {
   branche?: Branche;
   /** default "beide" */
   ausgleich?: RuhezeitAusgleich;
+  /**
+   * The beginnings of rests § 5 Abs. 2 ArbZG may not shorten (§ 7 Abs. 9, R-11): a rest too short
+   * even for § 5 stays a Verstoß; a shortening gets no finding here and takes no balance from
+   * another shortened rest, the rule that forbids it reports it. Default none.
+   */
+  ohneVerkuerzung?: ReadonlySet<number>;
 };
 
 /**
@@ -42,45 +48,85 @@ const MINUTE = 60_000;
 /** A rest from the end of a working day to the next; `bis` null for the rest still running at `jetzt` */
 export type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
 
-/** The first Kommen and the last Gehen of a day; no end while one of its shifts is open */
-const rahmen = (tag: PruefTag) => ({
-  beginn: tag.schichten[0]?.beginn ?? 0,
-  ende: tag.schichten.some((schicht) => schicht.ende === null)
-    ? null
-    : (tag.schichten.at(-1)?.ende ?? null),
-});
+/**
+ * A piece of work a rest can follow or end: a whole shift, or a block of a shift with call-outs;
+ * `ersteDerSchicht` for the first piece of its shift that is not a call-out
+ */
+type Stelle = {
+  tag: Tag;
+  beginn: number;
+  ende: number | null;
+  einsatz: boolean;
+  ersteDerSchicht: boolean;
+};
+
+const imEinsatz = (schicht: PruefSchicht, block: Stueck): boolean =>
+  (schicht.einsaetze ?? []).some(
+    (einsatz) => einsatz.beginn <= block.beginn && block.ende <= einsatz.ende,
+  );
 
 /**
- * The rests between consecutive working days, from the last Gehen of one to the first Kommen of the
- * next (docs/regeln.md, R-05), and the rest since the last Gehen while no shift has followed yet.
- * The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured the same way.
+ * The pieces of a shift: the whole shift (no end while it is open), or, when it holds call-outs in
+ * Rufbereitschaft (R-12), each block, so that a call-out's end begins a rest of its own
+ */
+const stellen = (schicht: PruefSchicht): Stelle[] => {
+  const { tag } = schicht;
+  if (schicht.ende === null || (schicht.einsaetze ?? []).length === 0)
+    return [
+      { tag, beginn: schicht.beginn, ende: schicht.ende, einsatz: false, ersteDerSchicht: true },
+    ];
+  const bloecke = schicht.bloecke.map((block) => ({ block, einsatz: imEinsatz(schicht, block) }));
+  const erste = bloecke.find((teil) => !teil.einsatz);
+  return bloecke.map((teil) => ({
+    tag,
+    beginn: teil.block.beginn,
+    ende: teil.block.ende,
+    einsatz: teil.einsatz,
+    ersteDerSchicht: teil === erste,
+  }));
+};
+
+/**
+ * The pieces whose start ends the rest before them: the first piece of each shift that is not a
+ * call-out, whatever its calendar day (two shifts of one day are two working days by the 9 hours of
+ * S-201); after a call-out a new rest begins (R-12)
+ */
+const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> =>
+  new Set(stellen.filter((stelle) => stelle.ersteDerSchicht && !stelle.einsatz));
+
+/**
+ * The rests before each working day (each shift), from the last end of work before it to its first
+ * Kommen (docs/regeln.md, R-05), and the rest since the last end of work while nothing has followed
+ * yet. A call-out in Rufbereitschaft ends no rest but begins a new one (R-12): the rest that counts
+ * is the one after it, up to the next shift. Without call-outs this is the last Gehen of one shift
+ * to the first Kommen of the next. The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured
+ * the same way.
  */
 export const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
-  const mitArbeit = [...tage]
-    .filter((tag) => tag.schichten.length > 0)
-    .sort((a, b) => a.tag.localeCompare(b.tag));
-  const ruhen = mitArbeit.slice(1).flatMap((nach, index): Ruhe[] => {
-    const vor = mitArbeit[index] as PruefTag;
-    const ende = rahmen(vor).ende;
-    if (ende === null) return [];
-    const beginn = rahmen(nach).beginn;
+  const alle = tage
+    .flatMap((tag) => tag.schichten.flatMap(stellen))
+    .sort((a, b) => a.beginn - b.beginn);
+  const erste = ersteArbeit(alle);
+  const ruhen = alle.flatMap((nach, index): Ruhe[] => {
+    const vor = alle[index - 1];
+    if (!erste.has(nach) || vor === undefined || vor.ende === null) return [];
     return [
       {
         von: vor.tag,
         bis: nach.tag,
-        beginn: ende,
-        ende: beginn,
-        minuten: (beginn - ende) / MINUTE,
+        beginn: vor.ende,
+        ende: nach.beginn,
+        minuten: (nach.beginn - vor.ende) / MINUTE,
       },
     ];
   });
-  const letzter = mitArbeit.at(-1);
-  const seit = letzter === undefined ? null : rahmen(letzter).ende;
-  if (letzter === undefined || seit === null || jetzt <= seit) return ruhen;
+  const letzte = alle.at(-1);
+  const seit = letzte?.ende ?? null;
+  if (letzte === undefined || seit === null || jetzt <= seit) return ruhen;
   const minuten = Math.floor((jetzt - seit) / MINUTE);
   return [
     ...ruhen,
-    { von: letzter.tag, bis: null, beginn: seit, ende: seit + minuten * MINUTE, minuten },
+    { von: letzte.tag, bis: null, beginn: seit, ende: seit + minuten * MINUTE, minuten },
   ];
 };
 
@@ -128,7 +174,7 @@ const befund = (
   norm,
   schwere: art === "ruhezeit_verkuerzt" ? "hinweis" : "verstoss",
   art,
-  tage: [ruhe.von, ruhe.bis as Tag],
+  tage: sortiert([ruhe.von, ruhe.bis as Tag]),
   ruhe: { beginn: ruhe.beginn, ende: ruhe.ende, minuten: ruhe.minuten },
   mindestens,
   fehlt,
@@ -141,7 +187,7 @@ const befund = (
  */
 export const ruhezeit = (
   tage: readonly PruefTag[],
-  { jetzt, branche = "andere", ausgleich = "beide" }: RuhezeitOptionen,
+  { jetzt, branche = "andere", ausgleich = "beide", ohneVerkuerzung = new Set() }: RuhezeitOptionen,
 ): Pruefergebnis<RuhezeitBefund> => {
   const ruhen = ruhenAus(tage, jetzt);
   const befunde: RuhezeitBefund[] = [];
@@ -162,6 +208,7 @@ export const ruhezeit = (
       befunde.push(befund("ruhezeit_zu_kurz", ruhe, norm, mindestens, mindestens - ruhe.minuten));
       continue;
     }
+    if (ohneVerkuerzung.has(ruhe.beginn)) continue;
     const bis = ausgleichBis(ruhe, ausgleich, grenzen);
     verkuerzungen.push({ ruhe, grenzen, bis, fensterEnde: beginnInBerlin(plusTage(bis, 1)) });
   }

@@ -9,7 +9,9 @@ description: >-
 
 Jede Schreiboperation in Soll hängt in derselben Transaktion ein **Kettenglied** an. Einen anderen
 Weg in die Tabellen von Soll gibt es nicht; ein Test prüft den Quellcode darauf, dass keine Datei an
-der Kette vorbei schreibt.
+der Kette vorbei schreibt. Schlägt eine Schreiboperation fehl, etwa weil ihr Kettenglied nicht
+angehängt werden kann, bleibt von ihr nichts in der Datenbank, auch wenn der aufrufende Code den
+Fehler abfängt und weiterschreibt.
 
 ## Was ein Kettenglied enthält
 

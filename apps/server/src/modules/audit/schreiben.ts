@@ -144,6 +144,19 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
   },
 });
 
+/**
+ * Each write in its own savepoint: a write whose link cannot be appended leaves no row behind, even
+ * when `arbeit` catches the error and the transaction commits
+ */
+const einzeln = (tx: Tx, kontext: Kontext): Schreiber => ({
+  einfuegen: (name, werte) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).einfuegen(name, werte)),
+  aendern: (name, schluessel, werte) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).aendern(name, schluessel, werte)),
+  loeschen: (name, schluessel) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).loeschen(name, schluessel)),
+});
+
 const istVersprechen = (wert: unknown): wert is PromiseLike<unknown> =>
   typeof (wert as { then?: unknown } | null)?.then === "function";
 
@@ -180,7 +193,7 @@ export const schreiben = <T>(db: Db, kontext: Kontext, arbeit: (schreiber: Schre
   try {
     return db.transaction(
       (tx) => {
-        const ergebnis = arbeit(nurWaehrend(schreiberFuer(tx, kontext), () => offen));
+        const ergebnis = arbeit(nurWaehrend(einzeln(tx, kontext), () => offen));
         if (istVersprechen(ergebnis)) {
           ergebnis.then(undefined, () => undefined);
           throw new Error("schreiben: arbeit must be synchronous");

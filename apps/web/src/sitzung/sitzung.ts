@@ -97,3 +97,14 @@ export const sitzungNeu = (): Promise<Zustand> => {
   laufend = null;
   return sitzungLaden();
 };
+
+/**
+ * The server ended the session: what this device stored of the business goes now, whatever the
+ * next question to the server brings, so the next person here never sees it, not even offline
+ */
+export const abgemeldet = (): void => {
+  merken(null);
+  const neu: Zustand = { art: "abgemeldet" };
+  setZustand(neu);
+  laufend = Promise.resolve(neu);
+};

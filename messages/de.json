@@ -36,6 +36,7 @@
   "registrieren_vergeben": "Zu dieser E-Mail gibt es schon ein Konto. Melde dich an.",
   "registrieren_konto": "Schon ein Konto?",
   "fehler_netz": "Keine Verbindung zum Server. Versuch es gleich noch einmal.",
+  "fehler_abmelden": "Abmelden hat nicht geklappt. Versuch es gleich noch einmal.",
   "fehler_speichern": "Das ließ sich nicht speichern. Prüfe deine Angaben.",
   "fehler_arbeitszeit_pflicht": "Arbeitszeit bleibt an, solange der Betrieb Beschäftigte hat (Pflicht zur Erfassung, BAG 1 ABR 22/21).",
   "fehler_stunden": "Stunden als 40, 38,5 oder 19:30 eingeben.",

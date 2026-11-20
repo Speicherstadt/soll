@@ -36,6 +36,7 @@
   "registrieren_vergeben": "There is already an account for this e-mail. Sign in instead.",
   "registrieren_konto": "Already have an account?",
   "fehler_netz": "No connection to the server. Try again in a moment.",
+  "fehler_abmelden": "Signing out did not work. Try again in a moment.",
   "fehler_speichern": "This could not be saved. Check your details.",
   "fehler_arbeitszeit_pflicht": "Working time stays on while the business has employees (duty to record, BAG 1 ABR 22/21).",
   "fehler_stunden": "Enter hours as 40, 38.5 or 19:30.",

@@ -36,6 +36,7 @@
   "registrieren_vergeben": "Bu e-posta için zaten bir hesap var. Giriş yap.",
   "registrieren_konto": "Zaten hesabın var mı?",
   "fehler_netz": "Sunucuya bağlantı yok. Birazdan tekrar dene.",
+  "fehler_abmelden": "Çıkış yapılamadı. Birazdan tekrar dene.",
   "fehler_speichern": "Kaydedilemedi. Bilgilerini kontrol et.",
   "fehler_arbeitszeit_pflicht": "İşletmede çalışan olduğu sürece çalışma süresi açık kalır (kayıt yükümlülüğü, BAG 1 ABR 22/21).",
   "fehler_stunden": "Saatleri 40, 38,5 veya 19:30 şeklinde gir.",

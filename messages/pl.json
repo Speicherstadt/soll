@@ -36,6 +36,7 @@
   "registrieren_vergeben": "Dla tego adresu e-mail istnieje już konto. Zaloguj się.",
   "registrieren_konto": "Masz już konto?",
   "fehler_netz": "Brak połączenia z serwerem. Spróbuj ponownie za chwilę.",
+  "fehler_abmelden": "Wylogowanie się nie udało. Spróbuj ponownie za chwilę.",
   "fehler_speichern": "Nie udało się zapisać. Sprawdź dane.",
   "fehler_arbeitszeit_pflicht": "Czas pracy pozostaje włączony, dopóki firma ma pracowników (obowiązek ewidencji, BAG 1 ABR 22/21).",
   "fehler_stunden": "Podaj godziny jako 40, 38,5 lub 19:30.",

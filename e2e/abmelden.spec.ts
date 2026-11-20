@@ -70,7 +70,7 @@ test("a sign-out the server refused says so and does not pretend @phone", async 
   await expect(page).toHaveURL(/\/einstellungen$/);
 });
 
-test("a double click on Abmelden signs out once and lands on the sign-in @phone", async ({
+test("a double click on Abmelden lands on the sign-in without an error @phone", async ({
   page,
 }) => {
   await betriebAnlegen(page);

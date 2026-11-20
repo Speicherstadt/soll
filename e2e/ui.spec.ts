@@ -121,6 +121,14 @@ test("Combobox: typing filters, arrows mark, Enter chooses, Esc closes", async (
   await expect(feld).toHaveAttribute("aria-expanded", "false");
 });
 
+test("Combobox: axe finds nothing while the list shows no match", async ({ page }) => {
+  await oeffnen(page);
+  await page.getByRole("combobox", { name: "Person" }).fill("xyz");
+  await expect(page.getByText("Niemand gefunden")).toBeVisible();
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+});
+
 test("Tabs: one tab stop, arrows choose, the panel follows", async ({ page }) => {
   await oeffnen(page);
   const tag = page.getByRole("tab", { name: "Tag" });
@@ -144,4 +152,9 @@ test("Table: a named table with column headers", async ({ page }) => {
   await oeffnen(page);
   const tabelle = page.getByRole("table", { name: "Zeiten" });
   await expect(tabelle.getByRole("columnheader")).toHaveText(["Tag", "Dauer"]);
+  // the attributes a part accepts reach the element, e.g. the sort order of a column
+  await expect(tabelle.getByRole("columnheader", { name: "Tag" })).toHaveAttribute(
+    "aria-sort",
+    "ascending",
+  );
 });

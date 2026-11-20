@@ -85,37 +85,37 @@ export const Combobox = (props: ComboboxProps) => {
         }}
       />
       <div
-        id={`${id}-liste`}
         ref={(el) => {
           liste = el;
         }}
         popover="manual"
-        role="listbox"
-        aria-label={props.label}
         style={{ ...verankert(anker), "min-width": "anchor-size(width)" }}
         class="max-h-64 overflow-y-auto rounded-lg border border-border bg-background p-1 text-foreground shadow-lg"
       >
-        <For each={treffer()}>
-          {(option, index) => (
-            // biome-ignore lint/a11y/useFocusableInteractive: focus stays in the field, aria-activedescendant points here (ARIA combobox pattern)
-            <div
-              id={`${id}-option-${index()}`}
-              role="option"
-              aria-selected={markiert() === index() ? "true" : "false"}
-              class={[
-                "flex h-8 items-center rounded-sm px-2",
-                { "bg-accent": markiert() === index() },
-              ]}
-              onMouseDown={(event) => {
-                // keep focus in the field, so blur does not close the list before the choice
-                event.preventDefault();
-                waehlen(option);
-              }}
-            >
-              {option.label}
-            </div>
-          )}
-        </For>
+        {/* a listbox may own options only, so the note for no match sits next to it (axe aria-required-children) */}
+        <div id={`${id}-liste`} role="listbox" aria-label={props.label}>
+          <For each={treffer()}>
+            {(option, index) => (
+              // biome-ignore lint/a11y/useFocusableInteractive: focus stays in the field, aria-activedescendant points here (ARIA combobox pattern)
+              <div
+                id={`${id}-option-${index()}`}
+                role="option"
+                aria-selected={markiert() === index() ? "true" : "false"}
+                class={[
+                  "flex h-8 items-center rounded-sm px-2",
+                  { "bg-accent": markiert() === index() },
+                ]}
+                onMouseDown={(event) => {
+                  // keep focus in the field, so blur does not close the list before the choice
+                  event.preventDefault();
+                  waehlen(option);
+                }}
+              >
+                {option.label}
+              </div>
+            )}
+          </For>
+        </div>
         <Show when={treffer().length === 0}>
           <p class="px-2 py-1.5 text-muted-foreground">{props.leer}</p>
         </Show>

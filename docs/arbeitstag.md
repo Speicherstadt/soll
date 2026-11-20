@@ -59,13 +59,13 @@ Soll ergänzt nie eine Stempelung und stempelt nie selbst aus.
 
 | Was | Ergebnis |
 | --- | --- |
-| Kommen ohne Gehen | Die Schicht bleibt offen, ihre Zeit zählt noch nicht. Ab dem späteren von zwei Zeitpunkten, 0 Uhr des Folgetags oder 16 Stunden nach Beginn, ist das der Hinweis „Gehen fehlt“: Eine Nachtschicht darf noch laufen. |
+| Kommen ohne Gehen | Die Schicht bleibt offen, ihre Zeit zählt noch nicht. Ab dem späteren von zwei Zeitpunkten, 0 Uhr des Folgetags oder 16 Stunden nach Beginn, ist das der Hinweis „Gehen fehlt“: Eine Nachtschicht darf noch laufen. Spätestens 24 Stunden nach Beginn ist es der Hinweis, denn danach kann kein Gehen die Schicht mehr beenden (am Tag der Zeitumstellung im Oktober liegt Mitternacht sonst später). |
 | Pause ohne Pause-Ende | ebenso, Hinweis „Pause-Ende fehlt“; die Arbeit bis zur Pause zählt |
 | Gehen während der Pause | Hinweis „Pause-Ende fehlt“; gezählt wird die Arbeit bis zur Pause |
 | Gehen ohne Kommen | Hinweis „Kommen fehlt“ an dem Tag, nichts wird gezählt |
 | Pause-Ende ohne Pause | Hinweis „Pause-Beginn fehlt“, die Stempelung zählt nicht |
 | dieselbe Art zweimal in einer Minute | ein doppelter Tipp oder eine erneut gesendete Stempelung, kein Hinweis |
-| dieselbe Art zweimal mit Abstand | Hinweis „doppelt“; es zählt der früheste Beginn und das späteste Ende |
+| dieselbe Art zweimal mit Abstand | Hinweis „doppelt“; es zählt der früheste Beginn und das späteste Ende. Ein Gehen oder eine Pause 9 Stunden oder mehr nach dem letzten Ende wiederholt es nicht: Die Stempelung zählt, als liefe keine Schicht. |
 
 Jeder dieser Hinweise nennt § 3 Abs. 2 Nr. 1 ArbSchG (Pflicht zur Erfassung, BAG 1 ABR 22/21). Bis
 er nachgetragen ist, ist der Tag unvollständig und sperrt die Bestätigung des Monats. Ein doppelter

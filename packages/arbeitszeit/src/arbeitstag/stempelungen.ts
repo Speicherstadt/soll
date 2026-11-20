@@ -1,4 +1,4 @@
-import { LAENGSTE_SCHICHT, schichtgruppen } from "./schichten.ts";
+import { LAENGSTE_SCHICHT, NEUE_SCHICHT_AB, schichtgruppen } from "./schichten.ts";
 
 /**
  * Reads clock stamps in time order into stretches of work (docs/regeln.md, R-01). Nothing here is
@@ -105,11 +105,23 @@ const nachDerSchicht = (lauf: Lauf, { art, zeitpunkt }: Stempelung): boolean => 
 };
 
 /**
+ * Whether an end comes 9 h or more after the last stretch ended: that much time off ends the shift
+ * (`schichtgruppen`), so the end cannot repeat the last one
+ */
+const nachDerRuhe = (lauf: Lauf, { zeitpunkt }: Stempelung): boolean => {
+  const ende = lauf.stuecke.at(-1)?.ende;
+  return ende !== null && ende !== undefined && zeitpunkt - ende >= NEUE_SCHICHT_AB;
+};
+
+/**
  * A stamp outside a running shift cannot end it (docs/regeln.md, Grundbegriff "Schicht"): the shift
  * is left as it is, open, and the stamp is read as if none were running. Nothing is guessed.
  */
 const lasseOffen = (lauf: Lauf, stempel: Stempelung): Lauf => {
-  if (lauf.zustand === "aus" || !nachDerSchicht(lauf, stempel)) return lauf;
+  const ausserhalb =
+    nachDerSchicht(lauf, stempel) ||
+    (lauf.zustand === "pause" && stempel.art === "pause_beginn" && nachDerRuhe(lauf, stempel));
+  if (lauf.zustand === "aus" || !ausserhalb) return lauf;
   const letztes = lauf.stuecke.length - 1;
   const offenePausen =
     lauf.zustand === "pause" ? [...lauf.offenePausen, letztes] : lauf.offenePausen;
@@ -125,7 +137,8 @@ const schritt = (vorher: Lauf, stempel: Stempelung): Lauf => {
   const { art } = stempel;
   if (lauf.zustand === "aus") {
     if (art === "kommen") return beginne(lauf, stempel);
-    if (art === "gehen" && lauf.letzte?.art === "gehen" && !nachDerSchicht(lauf, stempel)) {
+    const wiederholbar = !nachDerSchicht(lauf, stempel) && !nachDerRuhe(lauf, stempel);
+    if (art === "gehen" && lauf.letzte?.art === "gehen" && wiederholbar) {
       // the later Gehen counts only when the work ended with Gehen, never across a break
       const gemeldet = melde(lauf, "doppelt", stempel);
       const mitGehen = lauf.stuecke.at(-1)?.endetMit === "gehen";

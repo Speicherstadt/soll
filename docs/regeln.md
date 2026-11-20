@@ -126,7 +126,9 @@ Regel:
 - **Grenzwerte**: Ein offener Tag gilt ab 0 Uhr des Folgetags als unvollständig, eine laufende
   Nachtschicht erst 16 h nach ihrem Beginn (danach ist ein vergessenes „Gehen“ wahrscheinlich).
   Soll nimmt den späteren der beiden Zeitpunkte: Eine Schicht, die um Mitternacht noch läuft, ist
-  eine Nachtschicht. Dasselbe gilt für eine Pause ohne Ende.
+  eine Nachtschicht. Dasselbe gilt für eine Pause ohne Ende. Spätestens 24 h nach Beginn ist es
+  ein Befund, auch wenn Mitternacht später liegt (Tag der Zeitumstellung im Oktober): Danach kann
+  keine Stempelung die Schicht mehr beenden.
 - **Ausnahmen**: keine. Soll stempelt nie selbst aus (CLAUDE.md), es erinnert nur (S-307).
 - **Schwere**: Hinweis an die Person und den Betrieb; zum Monatsabschluss sperrt ein unvollständiger
   Tag die Bestätigung, bis er nachgetragen ist.
@@ -148,6 +150,8 @@ Regel:
 | neue Schicht | Mo 22:00 Kommen, Di 6:00 Gehen, Di 15:00 Kommen, 23:00 Gehen | Mo 8:00, Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 5 Abs. 1 ArbZG |
 | 24 h | Mo 8:00 Kommen, Di 8:00 Kommen, 16:00 Gehen | Hinweis „Gehen fehlt“ für Mo (0:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | 24 h, Gehen | Mo 8:00 Kommen, Mi 8:00 Gehen | Hinweis „Gehen fehlt“ für Mo, „Kommen fehlt“ für Mi | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Zeitumstellung | So 25.10.2026 0:30 MESZ Kommen, kein Gehen, So 23:30 MEZ | Hinweis „Gehen fehlt“ für So (24 h nach Beginn, vor Mitternacht) | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 9 h, Gehen | Mo 8:00 Kommen, 12:00 Gehen, Di 7:30 Gehen | Mo 4:00 Arbeitszeit, vollständig; Hinweis „Kommen fehlt“ für Di | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
 | doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
 | doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |

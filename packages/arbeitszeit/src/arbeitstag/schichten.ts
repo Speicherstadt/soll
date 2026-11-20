@@ -41,7 +41,10 @@ const STUNDE = 60 * MINUTE;
 export const NEUE_SCHICHT_AB = 9 * STUNDE;
 /** A shift never reaches 24 hours past its start: § 3 ArbZG counts the Werktag from its beginning */
 export const LAENGSTE_SCHICHT = 24 * STUNDE;
-/** R-01: an open night shift is reported 16 h after it began, a day shift at midnight */
+/**
+ * R-01: an open night shift is reported 16 h after it began, a day shift at midnight, and any shift
+ * 24 h after it began at the latest: from then on no stamp can end it (a day of 25 hours)
+ */
 const OFFEN_HOECHSTENS = 16 * STUNDE;
 /** § 4 Satz 2 ArbZG: Ruhepausen in blocks of at least 15 minutes */
 const KLEINSTE_RUHEPAUSE = 15;
@@ -137,7 +140,10 @@ const offenAus = (
   tag: Tag,
   beginn: number,
 ): Offen | null => {
-  const faellig = Math.max(beginnInBerlin(plusTage(tag, 1)), beginn + OFFEN_HOECHSTENS);
+  const faellig = Math.min(
+    Math.max(beginnInBerlin(plusTage(tag, 1)), beginn + OFFEN_HOECHSTENS),
+    beginn + LAENGSTE_SCHICHT,
+  );
   if (letztes.ende === null) return { art: "gehen", seit: letztes.beginn, faellig };
   if (pauseLaeuft) return { art: "pause_ende", seit: letztes.ende, faellig };
   return null;

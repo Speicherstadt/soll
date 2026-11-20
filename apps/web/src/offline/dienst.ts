@@ -1,7 +1,7 @@
 import { type Stempelart, stempelNachricht } from "@soll/arbeitszeit";
 import type { Antwort } from "../api.ts";
 import type { Ablage, Geraet } from "./ablage.ts";
-import { anfrageFuer, type Eintrag, folge, wartende } from "./warteschlange.ts";
+import { anfrageFuer, type Eintrag, folge, kontoSchluessel, wartende } from "./warteschlange.ts";
 
 /**
  * The offline queue at work (S-305): an entry is numbered and signed on the device and stored before
@@ -52,9 +52,29 @@ const signieren = async (abh: Abhaengigkeiten, privat: CryptoKey, eintrag: Eintr
     ),
   );
 
-/** Registers the device's public key once; false while the server cannot take it */
+/**
+ * Whether the session is the person the device belongs to: a tab left open on a shared browser may
+ * already send under the next person's session, and a key registered there would make the previous
+ * person's stamps that person's
+ */
+const sitzungVon = async (abh: Abhaengigkeiten, konto: string): Promise<boolean> => {
+  const antwort = await abh.api("/api/v1/betrieb", { method: "GET" });
+  if (!antwort.ok) return false;
+  const sitzung = antwort.daten as { betriebId?: unknown; nutzerId?: unknown } | null;
+  return (
+    typeof sitzung?.betriebId === "string" &&
+    typeof sitzung.nutzerId === "string" &&
+    kontoSchluessel({ betriebId: sitzung.betriebId, nutzerId: sitzung.nutzerId }) === konto
+  );
+};
+
+/**
+ * Registers the device's public key for its own person; false while the server cannot take it or
+ * someone else is signed in
+ */
 const anmelden = async (abh: Abhaengigkeiten, geraet: Geraet): Promise<boolean> => {
   if (geraet.angemeldet) return true;
+  if (!(await sitzungVon(abh, geraet.konto))) return false;
   const antwort = await abh.api(`/api/v1/arbeitszeit/geraete/${geraet.geraetId}`, {
     method: "PUT",
     body: { schluessel: geraet.schluessel },
@@ -62,6 +82,20 @@ const anmelden = async (abh: Abhaengigkeiten, geraet: Geraet): Promise<boolean> 
   if (!antwort.ok) return false;
   await abh.ablage.geraetSetzen({ ...geraet, angemeldet: true });
   return true;
+};
+
+/**
+ * Registers the device again after the server answered that it does not know it: either the server
+ * lost it (e.g. its database went back to a backup taken before the device registered), then the
+ * stamps go out again, or someone else is signed in, then anmelden refuses and the entries wait for
+ * their person
+ */
+const neuAnmelden = async (abh: Abhaengigkeiten, konto: string): Promise<boolean> => {
+  const geraet = await abh.ablage.geraet(konto);
+  if (!geraet) return false;
+  const neu = { ...geraet, angemeldet: false };
+  await abh.ablage.geraetSetzen(neu);
+  return anmelden(abh, neu);
 };
 
 /**
@@ -120,11 +154,16 @@ export const warteschlange = (abh: Abhaengigkeiten) => {
       const geraet = await abh.ablage.geraet(konto);
       if (offen.length === 0 || !geraet || !(await anmelden(abh, geraet)))
         return { uebertragen: 0, wartend: offen.length };
-      let uebertragen = 0;
-      for (const [index, eintrag] of offen.entries()) {
+      const senden = (eintrag: Eintrag) => {
         const jetzt = abh.jetzt();
         const { pfad, body } = anfrageFuer(eintrag, liveNoch(eintrag, live, jetzt), jetzt);
-        const antwort = await abh.api(pfad, { body });
+        return abh.api(pfad, { body });
+      };
+      let uebertragen = 0;
+      for (const [index, eintrag] of offen.entries()) {
+        let antwort = await senden(eintrag);
+        if (!antwort.ok && antwort.fehler === "geraet_unbekannt" && (await neuAnmelden(abh, konto)))
+          antwort = await senden(eintrag);
         const was = folge(antwort.status, antwort.ok ? "" : antwort.fehler);
         if (was === "spaeter") return { uebertragen, wartend: offen.length - index };
         if (was === "uebertragen") await abh.ablage.eintragEntfernen(eintrag);

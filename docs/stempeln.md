@@ -95,7 +95,9 @@ Person:
 - ein Gerät einer anderen Person oder eines anderen Betriebs gilt als unbekannt; sendet ein noch
   offener Tab die wartenden Stempelungen der vorigen Person, während auf dem geteilten Browser
   schon jemand anderes angemeldet ist, bleiben sie deshalb wartend und gehen hinaus, sobald sie sich
-  dort wieder anmeldet;
+  dort wieder anmeldet; ein Gerät meldet die App nur unter der Sitzung seiner eigenen Person an;
+- kennt der Server ein Gerät nicht mehr (etwa nach dem Zurückspielen einer älteren Sicherung), meldet
+  die App es unter der Sitzung seiner Person neu an und sendet die wartenden Stempelungen danach;
 - dieselbe Stempelung zweimal (etwa weil die Antwort unterwegs verloren ging) ergibt eine
   Stempelung; eine andere Stempelung unter einer schon vergebenen Nummer lehnt der Server ab;
 - auch eine Stempelung mit Netz trägt Nummer und Signatur, damit die Nummern eines Geräts lückenlos

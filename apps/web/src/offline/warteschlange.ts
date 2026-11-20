@@ -49,7 +49,7 @@ export const anfrageFuer = (
  * What an answer means for the entry: taken (2xx, also the same entry again), wait and try later
  * (no network, signed out, no right just now, the server failing, or a session that does not know
  * the device: another person or business signed in meanwhile, e.g. from a tab left open on a shared
- * browser), or refused for good (the server named what is wrong with this entry)
+ * browser, or the server lost it and the device registers again), or refused for good (the server named what is wrong with this entry)
  */
 export const folge = (status: number, fehler = ""): "uebertragen" | "spaeter" | "abgelehnt" => {
   if (status >= 200 && status < 300) return "uebertragen";

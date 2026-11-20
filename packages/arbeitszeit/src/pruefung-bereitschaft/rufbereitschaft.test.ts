@@ -303,4 +303,32 @@ describe("R-12: Rufbereitschaft", () => {
       ["R-12", "einsatz_ausgleich", ["2026-11-16"]],
     ]);
   });
+
+  it("Krankenhaus, Einsatz nach über 12 h: a call-out of its own after 10 h ends the rest § 7 Abs. 9 wants – Verstoß of R-11", () => {
+    // § 7 Abs. 9 ArbZG: 11 hours „im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“;
+    // the call-out at 6:00 (a shift of its own, 10 h after 20:00) ends that rest after 10:00, so the
+    // shortening of § 5 Abs. 2 for the rest after it does not save the day
+    const stempel = [...schicht(uhr(MO, "7:00"), uhr(MO, "14:00")), ...diSchicht("17:00", "22:00")];
+    const eingabe = {
+      einsaetze: [spanne(uhr(DI, "6:00"), uhr(DI, "7:00"))],
+      bereitschaftsdienste: [spanne(uhr(MO, "14:00"), uhr(MO, "20:00"))],
+    };
+    const optionen = { ...KRANKENHAUS, tarif: { fundstelle: "TV-Ärzte/VKA § 10 Abs. 1" } };
+    const ruhen = pruefe(stempel, eingabe, optionen).befunde.filter(
+      (befund) => befund.regel !== "R-04" && befund.art !== "ueber_10h_tarif",
+    );
+    expect(ruhen).toEqual([
+      {
+        regel: "R-11",
+        norm: "§ 7 Abs. 9 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_nach_ueber_12h",
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: um(uhr(MO, "20:00")), ende: um(uhr(DI, "6:00")), minuten: 600 },
+        mindestens: 660,
+        fehlt: 60,
+        fundstelle: "TV-Ärzte/VKA § 10 Abs. 1",
+      },
+    ]);
+  });
 });

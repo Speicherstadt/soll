@@ -55,6 +55,35 @@ describe("R-12: Rufbereitschaft", () => {
     );
   });
 
+  describe("Matzak mit Tarif: § 7 Abs. 1 Nr. 1 Buchst. a ArbZG names only Arbeitsbereitschaft and Bereitschaftsdienst", () => {
+    // a Rufbereitschaft that counts fully is working time for every limit, but no
+    // Bereitschaftsdienst: it does not open the agreement (docs/plan.md, Entscheidungen)
+    const TARIF = { tarif: { fundstelle: "TV-Ärzte/VKA § 10 Abs. 1" } };
+    const tageslimit = (ergebnis: ReturnType<typeof pruefe>) =>
+      kurz(ergebnis).filter(([regel]) => regel === "R-02" || regel === "R-11");
+
+    it("reaction time 8 min or none, 18:00 – 6:00 with an agreement – Verstoß of R-02 stays", () => {
+      for (const dienst of [{ reaktionMinuten: 8 }, {}]) {
+        const ruf = { ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), ...dienst };
+        expect(tageslimit(pruefe([], { rufdienste: [ruf] }, TARIF))).toEqual([
+          ["R-02", "ueber_10h", ["2026-11-16"]],
+        ]);
+      }
+    });
+
+    it("Bereitschaftsdienst 17:00 – 18:00 before it opens the agreement – Hinweis of R-11", () => {
+      const eingabe = {
+        bereitschaftsdienste: [spanne(uhr(MO, "17:00"), uhr(MO, "18:00"))],
+        rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 8 }],
+      };
+      const [mo] = mitBereitschaft([], eingabe);
+      expect(mo).toMatchObject({ arbeitsMinuten: 780, bereitschaftsMinuten: 780 });
+      expect(tageslimit(pruefe([], eingabe, TARIF))).toEqual([
+        ["R-11", "ueber_10h_tarif", ["2026-11-16"]],
+      ]);
+    });
+  });
+
   it("Matzak, Grenze: reaction time 30 min, 18:00 – 6:00 without a call-out – 0:00, no finding", () => {
     const eingabe = {
       rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 30 }],

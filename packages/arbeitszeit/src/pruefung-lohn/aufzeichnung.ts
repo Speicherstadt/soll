@@ -16,9 +16,9 @@ export type ErfassteStempelung = Stempelung & { erfasst: number; ersetzt?: numbe
 
 /**
  * Whom § 17 Abs. 1 MiLoG covers. `minijob` comes from the working-time model (§ 8 Abs. 1 SGB IV);
- * `privathaushalt` (§ 8a SGB IV, excepted by Satz 3) defaults to no; `branche` is the business's
- * industry under § 2a SchwarzArbG and, until the business sets it, counts as one of them: the duty
- * applies, never less strictly than the law.
+ * `privathaushalt` (§ 8a SGB IV, excepted by Satz 3: a mini-job in a private household only)
+ * defaults to no; `branche` is the business's industry under § 2a SchwarzArbG and, until the
+ * business sets it, counts as one of them: the duty applies, never less strictly than the law.
  */
 export type AufzeichnungOptionen = {
   minijob: boolean;
@@ -44,7 +44,7 @@ export const aufzeichnungspflichtig = ({
   minijob,
   privathaushalt = false,
   branche,
-}: AufzeichnungOptionen): boolean => !privathaushalt && (minijob || branche !== "andere");
+}: AufzeichnungOptionen): boolean => (minijob ? !privathaushalt : branche !== "andere");
 
 const gueltig = (stempelungen: readonly ErfassteStempelung[], jetzt: number): boolean =>
   Number.isSafeInteger(jetzt) &&

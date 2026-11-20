@@ -462,7 +462,7 @@ Alle Punkte: nach S-306.
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
-- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
+- [x] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
   OpenAPI-Beschreibung, MCP-Server.
   Fertig, wenn: jede Person eines Betriebs (nicht das Gerät des Terminals) unter Einstellungen
   persönliche Zugänge anlegt, mit Namen und wahlweise einem Ablauf (30, 90 oder 365 Tage oder

@@ -49,7 +49,8 @@ abrechenbar.
 Ein Stundensatz ist ein Betrag in ganzen Cent je Stunde, gültig ab einem Tag. Er kann eine
 Tätigkeit, einen Auftrag oder einen Kunden und eine Person nennen, jede Angabe auch weglassen; ein
 Satz ohne Angabe ist der Satz des Betriebs. Ein Satz nennt nie Auftrag und Kunde zugleich, weil der
-Auftrag seinen Kunden mitbringt.
+Auftrag seinen Kunden mitbringt. Als Person nennt ein Satz nur, wer Projektzeit bucht, kein Gerät
+(`422 person_unbekannt`).
 
 Für eine Buchung gilt der **genaueste passende Satz**:
 

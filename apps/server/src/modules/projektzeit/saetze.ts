@@ -1,5 +1,6 @@
 import { type SatzErgebnis, stundensatz, tagInBerlin } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
+import { darf } from "../../auth/rollen.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { stundensaetze } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
@@ -35,6 +36,12 @@ export const saetzeLesen = (db: Db, betriebId: string): Stundensatz[] =>
     .all()
     .map(alsSatz);
 
+/** Whether a member books project time (S-602), as GET /saetze/personen lists them: not a device */
+const bucht = (db: Db, betriebId: string, nutzerId: string): boolean => {
+  const mitglied = mitgliedschaftVon(db, betriebId, nutzerId);
+  return mitglied !== undefined && darf(mitglied.rolle, "projekte:lesen");
+};
+
 /** Whether a row a rate names is known to the business and not archived, or why not */
 const bezugPruefen = (db: Db, betriebId: string, bezug: SatzBezug): Grund | null => {
   const pruefungen: [
@@ -48,7 +55,7 @@ const bezugPruefen = (db: Db, betriebId: string, bezug: SatzBezug): Grund | null
     [
       bezug.nutzerId,
       "person_unbekannt",
-      (id) => (mitgliedschaftVon(db, betriebId, id) ? { archiviertAm: null } : undefined),
+      (id) => (bucht(db, betriebId, id) ? { archiviertAm: null } : undefined),
     ],
   ];
   for (const [id, unbekannt, lesen] of pruefungen) {

@@ -61,7 +61,10 @@ type Person =
   | { ok: true; nutzerId: string }
   | { ok: false; status: 403 | 404; fehler: "keine_berechtigung" | "unbekannt" };
 
-/** The person a call is about: oneself, or a member of the business for whoever may */
+/**
+ * The person a call is about: oneself, or a member of the business who stamps, for whoever may;
+ * external staff and devices do not stamp here (docs/plan.md, "Wer Stempelungen ändert")
+ */
 const person = (
   db: Db,
   c: Context<Anfrage>,
@@ -72,7 +75,8 @@ const person = (
   if (ziel === c.get("nutzerId")) return { ok: true, nutzerId: ziel };
   if (!darf(c.get("rolle"), benoetigt))
     return { ok: false, status: 403, fehler: "keine_berechtigung" };
-  if (!mitgliedschaftVon(db, c.get("betriebId"), ziel))
+  const mitglied = mitgliedschaftVon(db, c.get("betriebId"), ziel);
+  if (!mitglied || !darf(mitglied.rolle, "stempeln"))
     return { ok: false, status: 404, fehler: "unbekannt" };
   return { ok: true, nutzerId: ziel };
 };

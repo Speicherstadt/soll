@@ -57,6 +57,13 @@
       "when": 1795189957180,
       "tag": "0007_erinnerungen",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1795197783321,
+      "tag": "0008_projektzeit",
+      "breakpoints": true
     }
   ]
 }

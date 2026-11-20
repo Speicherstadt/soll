@@ -9,12 +9,16 @@ import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladung
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
+import { kundenRouten } from "./routes/kunden.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
 import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
+import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
+import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
+import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
 
 export type AppDeps = {
@@ -89,6 +93,12 @@ export const createApp = ({
             mailKonfiguriert: mail !== null,
           }),
           "/": zeitRouten(db, schreibDb, now),
+        },
+        projektzeit: {
+          "/kunden": kundenRouten(db, schreibDb, now),
+          "/projekte": projektRouten(db, schreibDb, now),
+          "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
+          "/saetze": satzRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
       }),

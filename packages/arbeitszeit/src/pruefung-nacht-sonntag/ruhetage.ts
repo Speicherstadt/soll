@@ -34,13 +34,18 @@ const RUHE_VERSCHOBEN = 24 * 60;
 /**
  * The rest of a Sunday or holiday: from 0 to 24 Uhr (§ 9 Abs. 1 ArbZG), wall-clock times, so the
  * day of a DST change has 23 or 25 hours. In a business with regular day and night shifts its
- * beginning may be moved by up to six hours (§ 9 Abs. 2 ArbZG, `verschiebung` in minutes, negative
- * = earlier), and then it lasts „die auf den Beginn der Ruhezeit folgenden 24 Stunden“: real hours.
+ * beginning and end may be moved by up to six hours (§ 9 Abs. 2 ArbZG, `verschiebung` in minutes,
+ * negative = earlier), „wenn für die auf den Beginn der Ruhezeit folgenden 24 Stunden der Betrieb
+ * ruht“: the moved rest lasts at least 24 real hours (23 on the clock in March are not enough),
+ * and keeps the 25 of October, whose end may not move more than six hours either.
  */
 export const ruhezeitraum = (tag: Tag, verschiebung: number): Stueck => {
   const beginn = uhrzeit(tag, verschiebung);
+  const verschobenesEnde = uhrzeit(plusTage(tag, 1), verschiebung);
   const ende =
-    verschiebung === 0 ? uhrzeit(plusTage(tag, 1), 0) : beginn + RUHE_VERSCHOBEN * MINUTE;
+    verschiebung === 0
+      ? verschobenesEnde
+      : Math.max(verschobenesEnde, beginn + RUHE_VERSCHOBEN * MINUTE);
   return { beginn, ende, minuten: (ende - beginn) / MINUTE };
 };
 

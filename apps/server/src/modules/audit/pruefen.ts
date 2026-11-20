@@ -141,7 +141,8 @@ export const pruefwertPruefen = (db: Db, betriebId: string, text: string): Pruef
     // A link the chain or its head went past was removed: that is a change, not an unknown number
     const kopf = db.select().from(auditKoepfe).where(eq(auditKoepfe.betriebId, betriebId)).get();
     const erreicht = Math.max(kopf?.seq ?? 0, alle.at(-1)?.seq ?? 0);
-    return erreicht >= wert.seq ? "abweichend" : "unbekannt";
+    // Links are numbered from 1: number 0 was never a link, so nothing can have been removed
+    return wert.seq >= 1 && erreicht >= wert.seq ? "abweichend" : "unbekannt";
   }
   return glied.hash === wert.hash && gliederPruefen(glieder).length === 0
     ? "gueltig"

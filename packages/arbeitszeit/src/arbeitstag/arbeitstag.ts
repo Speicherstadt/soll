@@ -65,7 +65,8 @@ const schichtenAus = (lauf: Lauf): { schichten: Schicht[]; schichtVon: Map<numbe
   const schichten = gruppen.map((gruppe, index) =>
     schichtAus(
       gruppe.map((stueck) => lauf.stuecke[stueck] as Lauf["stuecke"][number]),
-      lauf.zustand === "pause" && index === gruppen.length - 1,
+      lauf.offenePausen.includes(gruppe.at(-1) as number) ||
+        (lauf.zustand === "pause" && index === gruppen.length - 1),
     ),
   );
   const schichtVon = new Map(

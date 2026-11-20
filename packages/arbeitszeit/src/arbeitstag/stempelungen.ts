@@ -1,3 +1,5 @@
+import { LAENGSTE_SCHICHT, schichtgruppen } from "./schichten.ts";
+
 /**
  * Reads clock stamps in time order into stretches of work (docs/regeln.md, R-01). Nothing here is
  * guessed: a stamp that does not fit is reported, never replaced by an invented one, and an open
@@ -32,12 +34,14 @@ export type Lauf = {
   zustand: Zustand;
   stuecke: Rohstueck[];
   befunde: Rohbefund[];
+  /** the stretches whose shift was left with a break running: it stays open, never ended */
+  offenePausen: number[];
   /** the last stamp taken, to tell a repeated stamp */
   letzte: Stempelung | null;
 };
 
 const MINUTE = 60_000;
-const START: Lauf = { zustand: "aus", stuecke: [], befunde: [], letzte: null };
+const START: Lauf = { zustand: "aus", stuecke: [], befunde: [], offenePausen: [], letzte: null };
 
 /** What each state expects next; used to order stamps of the same instant */
 const PASST: Record<Zustand, readonly Stempelart[]> = {
@@ -87,14 +91,41 @@ const melde = (lauf: Lauf, art: Stempelfehler, stempel: Stempelung): Lauf =>
       };
 
 /**
+ * Whether a stamp lies outside the last shift: an end may fall 24 h after its start at the latest, a
+ * start from 24 h on begins a new shift, as `schichtgruppen` cuts them
+ */
+const nachDerSchicht = (lauf: Lauf, { art, zeitpunkt }: Stempelung): boolean => {
+  const erstes = schichtgruppen(lauf.stuecke).at(-1)?.[0];
+  const beginn = erstes === undefined ? undefined : lauf.stuecke[erstes]?.beginn;
+  if (beginn === undefined) return false;
+  const beginnt = art === "kommen" || art === "pause_ende";
+  return (
+    zeitpunkt - beginn > LAENGSTE_SCHICHT || (beginnt && zeitpunkt - beginn >= LAENGSTE_SCHICHT)
+  );
+};
+
+/**
+ * A stamp outside a running shift cannot end it (docs/regeln.md, Grundbegriff "Schicht"): the shift
+ * is left as it is, open, and the stamp is read as if none were running. Nothing is guessed.
+ */
+const lasseOffen = (lauf: Lauf, stempel: Stempelung): Lauf => {
+  if (lauf.zustand === "aus" || !nachDerSchicht(lauf, stempel)) return lauf;
+  const letztes = lauf.stuecke.length - 1;
+  const offenePausen =
+    lauf.zustand === "pause" ? [...lauf.offenePausen, letztes] : lauf.offenePausen;
+  return { ...lauf, zustand: "aus", offenePausen };
+};
+
+/**
  * One stamp. A repeated stamp counts in the way that gives more working time, as the cut to whole
  * minutes does: the earliest start (Kommen, Pause-Ende) and the latest end (Gehen, Pause-Beginn).
  */
-const schritt = (lauf: Lauf, stempel: Stempelung): Lauf => {
+const schritt = (vorher: Lauf, stempel: Stempelung): Lauf => {
+  const lauf = lasseOffen(vorher, stempel);
   const { art } = stempel;
   if (lauf.zustand === "aus") {
     if (art === "kommen") return beginne(lauf, stempel);
-    if (art === "gehen" && lauf.letzte?.art === "gehen") {
+    if (art === "gehen" && lauf.letzte?.art === "gehen" && !nachDerSchicht(lauf, stempel)) {
       // the later Gehen counts only when the work ended with Gehen, never across a break
       const gemeldet = melde(lauf, "doppelt", stempel);
       const mitGehen = lauf.stuecke.at(-1)?.endetMit === "gehen";

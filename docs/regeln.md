@@ -146,6 +146,8 @@ Regel:
 | über Mitternacht | Mo 18:00 Kommen, 23:30 Gehen, Di 0:15 Kommen, 3:00 Gehen | eine Schicht am Mo: 8:15 Arbeitszeit, 45 min Pause | Grundbegriff „Schicht“ |
 | zwei Schichten | Mo 5:00 Kommen, 8:00 Gehen, 17:00 Kommen, 21:00 Gehen | zwei Schichten am Mo, 7:00 Arbeitszeit, keine Pause | Grundbegriff „Schicht“; § 7 Abs. 1 Nr. 3 ArbZG |
 | neue Schicht | Mo 22:00 Kommen, Di 6:00 Gehen, Di 15:00 Kommen, 23:00 Gehen | Mo 8:00, Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 5 Abs. 1 ArbZG |
+| 24 h | Mo 8:00 Kommen, Di 8:00 Kommen, 16:00 Gehen | Hinweis „Gehen fehlt“ für Mo (0:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Gehen | Mo 8:00 Kommen, Mi 8:00 Gehen | Hinweis „Gehen fehlt“ für Mo, „Kommen fehlt“ für Mi | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
 | doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
 | doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |

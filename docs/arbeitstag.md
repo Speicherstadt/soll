@@ -26,7 +26,9 @@ etwa aus der Warteschlange eines Handys, das offline war.
   beginnt eine neue Schicht: Kürzer darf eine Ruhezeit nach dem Arbeitszeitgesetz nie sein (11
   Stunden, nach § 7 Abs. 1 Nr. 3 ArbZG um höchstens 2 Stunden gekürzt). Ob die Ruhezeit reicht,
   prüft danach § 5 ArbZG.
-- Eine Schicht reicht nie 24 Stunden über ihren Beginn hinaus.
+- Eine Schicht reicht nie 24 Stunden über ihren Beginn hinaus. Eine Stempelung danach beendet sie
+  nicht: Die Schicht bleibt offen („Gehen fehlt“ oder „Pause-Ende fehlt“), und die Stempelung zählt,
+  als liefe keine Schicht, ein „Gehen“ also als „Kommen fehlt“.
 - Der **Arbeitstag** ist der Kalendertag in Berlin, an dem die Schicht beginnt. Eine Nachtschicht
   vom Montag, 22 Uhr, bis Dienstag, 6 Uhr, zählt ganz zum Montag. Beginnen an einem Tag zwei
   Schichten, etwa 5 bis 8 Uhr und 17 bis 21 Uhr, gehören beide zu diesem Tag.

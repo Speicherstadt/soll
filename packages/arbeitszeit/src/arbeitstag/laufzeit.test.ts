@@ -14,12 +14,16 @@ const START = Date.parse("2026-11-16T06:00:00Z");
 const ANZAHL = 5000;
 const SCHRANKE_MS = 200;
 
+/** The fastest of three runs: other test files running at the same time only slow a run down */
 const dauer = (stempelungen: Stempelung[]): number => {
   arbeitstage(stempelungen.slice(0, 100), START);
-  const vorher = performance.now();
-  const ergebnis = arbeitstage(stempelungen, START + 10_000 * TAG);
-  expect(ergebnis.ok).toBe(true);
-  return performance.now() - vorher;
+  const laeufe = [1, 2, 3].map(() => {
+    const vorher = performance.now();
+    const ergebnis = arbeitstage(stempelungen, START + 10_000 * TAG);
+    expect(ergebnis.ok).toBe(true);
+    return performance.now() - vorher;
+  });
+  return Math.min(...laeufe);
 };
 
 const ARBEITSTAG: readonly Stempelart[] = ["kommen", "pause_beginn", "pause_ende", "gehen"];

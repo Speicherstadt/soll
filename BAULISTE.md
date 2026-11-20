@@ -62,11 +62,13 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   jede Regel hat eine feste Kennung (`R-01` …), die Fälle nennen Minuten oder Cent statt Brüche, eine
   vorsichtige Auslegung ist als solche gekennzeichnet, und ein Test prüft, dass jede Regel ihre drei
   Fälle und jede Norm des Projektplans ihre Regel hat.
-- [ ] **S-104 Jahreswerte und Regelversionen** – Mindestlohn, Minijob-Grenze und die Version des
+- [x] **S-104 Jahreswerte und Regelversionen** – Mindestlohn, Minijob-Grenze und die Version des
   Regelwerks als Daten mit Gültigkeit in `packages/arbeitszeit`; fehlt ein Wert, heißt das Ergebnis
   „nicht hinterlegt“.
   nach: S-103. Fertig, wenn: ein Jahr ohne Wert nie mit dem Vorjahr rechnet (Test) und ein Wechsel
-  zum 1. Januar mitten in einer Nachtschicht richtig getrennt wird.
+  zum 1. Januar mitten in einer Nachtschicht richtig getrennt wird. Dazu: jeder Wert nennt seine Quelle,
+  die Minijob-Grenze passt in jedem Zeitraum zur Formel aus § 8 Abs. 1a SGB IV (Test), und der Teil
+  einer Schicht in einem Jahr ohne Wert ist „nicht hinterlegt“.
 - [x] **S-105 Feiertage** – alle 16 Länder, bewegliche Feiertage nach der Osterformel, regionale
   Feiertage nach Landesrecht, Feiertag je Standort.
   nach: S-101. Fertig, wenn: 2026 bis 2035 gegen amtliche Listen besteht (Fixtures mit Quelle). Dazu:

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { istTag, plusTage, tagAus, tagInBerlin, wochentag } from "./tag.ts";
+import { istTag, plusTage, tagAus, wochentag } from "./tag.ts";
+import { tagInBerlin } from "./zeit.ts";
 
 describe("Tag", () => {
   it("writes a day with leading zeros", () => {

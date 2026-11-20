@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dateiText, exportPfad, weberMitOktober } from "./datev-testhilfen.ts";
+import { dateiText, exportPfad, PFAD, weberMitOktober, ZUORDNUNG } from "./datev-testhilfen.ts";
 import { json, nachtrag, um } from "./monat-testhilfen.ts";
 
 /* Findings of the independent review of S-308 (PR #35) */
@@ -70,5 +70,44 @@ describe("a person who left before the month was closed", () => {
     const datei = await w.lohn.anfrage(exportPfad("2026-10", "lodas"));
     expect(datei.status).toBe(200);
     expect(await dateiText(datei)).toContain("1;01.10.2026;102;1000;1;4,00;");
+  });
+});
+
+/* Findings of the second round of the independent review of S-308 (PR #35) */
+
+describe("a person who left another business", () => {
+  it("gets no number here and is not listed, though their month there is closed", async () => {
+    const w = await weberMitOktober();
+    await entfernen(w, w.sandra.nutzerId);
+    const mia = await w.server.inhaberMitBetrieb("Café Elbblick", "elbblick");
+    const ansicht = await json(await mia.anfrage(PFAD));
+    expect((ansicht.personen as { nutzerId: string }[]).map((p) => p.nutzerId)).not.toContain(
+      w.sandra.nutzerId,
+    );
+    const fremd = await mia.anfrage(PFAD, {
+      method: "PUT",
+      body: { ...ZUORDNUNG, personalnummern: { [w.sandra.nutzerId]: "7" } },
+    });
+    expect(fremd.status).toBe(404);
+  });
+});
+
+describe("a person who stamped in the month without a model and left", () => {
+  it("keeps the export from being written instead of being left out silently", async () => {
+    const w = await weberMitOktober();
+    await w.zuordnung();
+    for (const [art, zeit] of [
+      ["kommen", "2026-10-07T08:00:00+02:00"],
+      ["gehen", "2026-10-07T12:00:00+02:00"],
+    ] as const)
+      expect((await nachtrag(w.anna, { art, zeitpunkt: um(zeit), grund: "Zettel" })).status).toBe(
+        201,
+      );
+    await entfernen(w, w.anna.nutzerId);
+    const antwort = await w.lohn.anfrage(exportPfad("2026-10", "lodas"));
+    expect(antwort.status).toBe(409);
+    expect((await json(antwort)).fehlend).toContainEqual(
+      expect.objectContaining({ nutzerId: w.anna.nutzerId }),
+    );
   });
 });

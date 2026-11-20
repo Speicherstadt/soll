@@ -29,6 +29,9 @@ describe("/api/v1/dienstplan/vorlagen", () => {
       { pauseMinuten: -5 },
       { endeMinute: SPAET.beginnMinute },
       { name: "" },
+      // a break as long as the template's shift, also over midnight
+      { beginnMinute: 600, endeMinute: 630, pauseMinuten: 30 },
+      { beginnMinute: 1430, endeMinute: 10, pauseMinuten: 20 },
     ])
       expect(
         (await lea.anfrage("/api/v1/dienstplan/vorlagen", { body: { ...SPAET, ...falsch } }))

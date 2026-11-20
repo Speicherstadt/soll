@@ -71,7 +71,10 @@ export const projektAnlegen = (
   );
 };
 
-/** Changes name, number, budget, threshold or the archive; the customer of an order stays */
+/**
+ * Changes name, number, budget, threshold or the archive; the customer of an order stays, and an
+ * order of an archived customer is restored only after its customer
+ */
 export const projektAendern = (
   db: Db,
   schreibDb: SchreibDb,
@@ -79,8 +82,12 @@ export const projektAendern = (
   projektId: string,
   aenderung: ProjektAenderung,
 ): Ergebnis<Projekt> => {
-  if (!projektLesen(db, kontext.betriebId, projektId)) return nein("unbekannt");
+  const projekt = projektLesen(db, kontext.betriebId, projektId);
+  if (!projekt) return nein("unbekannt");
   const { archiviert, ...felder } = aenderung;
+  // restoring an order would give an archived customer an active order again
+  const kunde = kundeLesen(db, kontext.betriebId, projekt.kundeId);
+  if (archiviert === false && (kunde?.archiviertAm ?? null) !== null) return nein("archiviert");
   return ok(
     schreiben(schreibDb, kontext, (s) =>
       s.aendern(

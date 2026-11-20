@@ -42,6 +42,14 @@ const bucht = (db: Db, betriebId: string, nutzerId: string): boolean => {
   return mitglied !== undefined && darf(mitglied.rolle, "projekte:lesen");
 };
 
+/** An order counts as archived while its customer is: the order brings its customer to the rate */
+const projektMitKunde = (db: Db, betriebId: string, projektId: string) => {
+  const projekt = projektLesen(db, betriebId, projektId);
+  if (!projekt) return undefined;
+  const kunde = kundeLesen(db, betriebId, projekt.kundeId);
+  return { archiviertAm: projekt.archiviertAm ?? kunde?.archiviertAm ?? null };
+};
+
 /** Whether a row a rate names is known to the business and not archived, or why not */
 const bezugPruefen = (db: Db, betriebId: string, bezug: SatzBezug): Grund | null => {
   const pruefungen: [
@@ -50,7 +58,7 @@ const bezugPruefen = (db: Db, betriebId: string, bezug: SatzBezug): Grund | null
     (id: string) => { archiviertAm: number | null } | undefined,
   ][] = [
     [bezug.kundeId, "kunde_unbekannt", (id) => kundeLesen(db, betriebId, id)],
-    [bezug.projektId, "projekt_unbekannt", (id) => projektLesen(db, betriebId, id)],
+    [bezug.projektId, "projekt_unbekannt", (id) => projektMitKunde(db, betriebId, id)],
     [bezug.taetigkeitId, "taetigkeit_unbekannt", (id) => taetigkeitLesen(db, betriebId, id)],
     [
       bezug.nutzerId,

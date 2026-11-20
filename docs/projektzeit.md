@@ -93,7 +93,9 @@ Stoppuhr (S-602).
 Was noch etwas nennt, wird archiviert statt gelöscht: einen Kunden mit Auftrag oder Satz, einen
 Auftrag oder eine Tätigkeit mit Satz lehnt der Server beim Löschen ab (`409 verwendet`). Ein
 archivierter Kunde bekommt keine neuen Aufträge, ein archivierter Auftrag oder eine archivierte
-Tätigkeit keine neuen Sätze (`409 archiviert`); zurückholen geht jederzeit. Jede Änderung steht in der
+Tätigkeit keine neuen Sätze (`409 archiviert`). Die Aufträge eines archivierten Kunden zählen dabei
+mit: Sie bekommen keine neuen Sätze, und ein archivierter Auftrag kommt erst nach seinem Kunden
+zurück. Sonst geht zurückholen jederzeit. Jede Änderung steht in der
 [Audit-Kette](audit-kette.md).
 
 ## API

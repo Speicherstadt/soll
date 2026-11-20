@@ -291,7 +291,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   abgelehnt; Playwright in `desktop` und `phone` bestätigt und schließt einen Monat ab und prüft den
   Prüfwert; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Verfahrensdokumentation zum
   Prüfwert in `docs/`.
-- [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
+- [x] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
   VAPID-Schlüsseln, die die Instanz beim ersten Start erzeugt, und Mail über SMTP aus der
   Konfiguration; nie automatisch ausstempeln.
   Fertig, wenn: Tests mit einem Ersatz für den Push-Dienst und einem SMTP-Testserver jede Erinnerung

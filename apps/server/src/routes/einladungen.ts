@@ -47,7 +47,7 @@ const annehmenSchema = z
       .string()
       .trim()
       .regex(/^[a-zA-Z0-9_.]{3,30}$/),
-    passwort: z.string().min(10).max(200),
+    passwort: z.string().min(10).max(128),
   })
   .strict();
 

@@ -32,6 +32,7 @@ export const RECHTE = [
   "abwesenheiten:freigeben",
   "abwesenheiten:gesundheit",
   "abwesenheiten:einstellen",
+  "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
 ] as const;
@@ -58,6 +59,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "abwesenheiten:freigeben",
     "abwesenheiten:gesundheit",
     "abwesenheiten:einstellen",
+    // the times of the reminders hold for the whole business (S-307)
+    "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
   ],

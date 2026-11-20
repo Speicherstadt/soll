@@ -2,29 +2,27 @@ import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
+import { vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
 
-/**
- * A server on a fresh test database with Better Auth, and helpers to act as people over HTTP, as a
- * browser would (cookies between calls)
- */
-export const testServer = (
-  optionen: {
-    log?: (line: string) => void;
-    uhr?: () => number;
-    mail?: Mailer | null;
-    schichten?: Schichtquelle;
-  } = {},
-) => {
+type Optionen = {
+  log?: (line: string) => void;
+  uhr?: () => number;
+  mail?: Mailer | null;
+  schichten?: Schichtquelle;
+};
+
+/** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
+const testApp = (optionen: Optionen, jetzt: () => number) => {
   const datenbank = testDatenbank();
-  let uhr = 1_790_000_000_000;
-  const jetzt = optionen.uhr ?? (() => uhr);
+  const geheimerSchluessel = crypto.getRandomValues(new Uint8Array(32));
+  const vapid = vapidLaden(datenbank.db, datenbank.schreibDb, geheimerSchluessel, 0);
   const auth = createAuth({
     db: datenbank.db,
     schreibDb: datenbank.schreibDb,
-    geheimerSchluessel: crypto.getRandomValues(new Uint8Array(32)),
+    geheimerSchluessel,
     url: TEST_URL,
     jetzt,
   });
@@ -38,7 +36,20 @@ export const testServer = (
     url: TEST_URL,
     mail: optionen.mail ?? null,
     ...(optionen.schichten ? { schichten: optionen.schichten } : {}),
+    geheimerSchluessel,
+    vapidOeffentlich: vapid.oeffentlich,
   });
+  return { datenbank, geheimerSchluessel, vapid, auth, app };
+};
+
+/**
+ * A server on a fresh test database with Better Auth, and helpers to act as people over HTTP, as a
+ * browser would (cookies between calls)
+ */
+export const testServer = (optionen: Optionen = {}) => {
+  let uhr = 1_790_000_000_000;
+  const jetzt = optionen.uhr ?? (() => uhr);
+  const { datenbank, geheimerSchluessel, vapid, auth, app } = testApp(optionen, jetzt);
 
   /** A browser of one person: keeps its cookies */
   const browser = () => {
@@ -115,6 +126,9 @@ export const testServer = (
     app,
     auth,
     browser,
+    geheimerSchluessel,
+    vapid,
+    jetzt,
     inhaberMitBetrieb,
     eingeladen,
     stelleUhr: (ms: number) => {

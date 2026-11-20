@@ -1,5 +1,7 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+/* The table of absences (S-401); re-exported by ../schema.ts */
+
 /**
  * An absence of a person from `von` to `bis`, both included (S-401): leave and the other kinds a
  * request asks for are `beantragt` until the business approves or refuses them, the person may

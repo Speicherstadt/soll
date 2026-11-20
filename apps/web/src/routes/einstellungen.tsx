@@ -4,6 +4,7 @@ import { createSignal } from "solid-js";
 import { api } from "../api.ts";
 import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
+import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
 import { m } from "../paraglide/messages.js";
 import { Darstellung } from "../rahmen/darstellung.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -27,6 +28,7 @@ const Einstellungen = () => {
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
       <BescheinigungEinstellung />
+      <Erinnerungen />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

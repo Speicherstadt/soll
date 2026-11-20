@@ -10,6 +10,7 @@ import { betriebRouten } from "./routes/betrieb.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
+import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
@@ -34,6 +35,9 @@ export type AppDeps = {
   mail: Mailer | null;
   /** The planned shifts for absences (S-401); the plan itself (S-501) unless a test passes one */
   schichten?: Schichtquelle;
+  /** The key of the encrypted columns (SOLL_SECRET_KEY) and the public VAPID key (S-307) */
+  geheimerSchluessel: Uint8Array;
+  vapidOeffentlich: string;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -47,6 +51,8 @@ export const createApp = ({
   url,
   mail,
   schichten,
+  geheimerSchluessel,
+  vapidOeffentlich,
 }: AppDeps) => {
   const app = new Hono();
 
@@ -86,6 +92,11 @@ export const createApp = ({
           "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
             mail,
             schichten: schichten ?? schichtquelle(db),
+          }),
+          "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
+            geheimerSchluessel,
+            vapidOeffentlich,
+            mailKonfiguriert: mail !== null,
           }),
           "/": zeitRouten(db, schreibDb, now),
         },

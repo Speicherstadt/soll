@@ -114,8 +114,8 @@ const ruheNach = (tag: Tag, schichten: readonly BereitschaftsSchicht[]): RuheNac
 /**
  * § 7 Abs. 9 ArbZG: the rest after a day of more than 12 hours is at least 11 hours, without the
  * shortening of § 5 Abs. 2. `befunde` are those of R-05 (and R-12) as the business may shorten; a
- * rest after such a day under 11 hours is a Verstoß of R-11, in place of the Hinweis of R-05 on the
- * same rest, unless R-05 or R-12 already reports a Verstoß for it.
+ * rest after such a day under 11 hours is a Verstoß of R-11, in place of a shortening of R-05 on the
+ * same rest (Hinweis or „Ausgleich fehlt“), unless R-05 or R-12 already reports it as too short.
  */
 export const ruheNachTarif = (
   befunde: readonly (RuhezeitBefund | EinsatzRuhezeitBefund)[],
@@ -127,8 +127,13 @@ export const ruheNachTarif = (
   const schichten = tage.flatMap((tag) => tag.schichten).sort((a, b) => a.beginn - b.beginn);
   const nach = [...ueber12].flatMap((tag) => ruheNach(tag, schichten) ?? []);
   const beginne = new Set(nach.map(({ ruhe }) => ruhe.beginn));
+  // a rest too short even for § 5 (R-05, R-12) keeps its Verstoß; a shortening § 7 Abs. 9 does
+  // not allow, balanced or not („Ausgleich fehlt“), gives way to R-11
+  const verkuerzt = (befund: { art: string }) => (VERKUERZT as string[]).includes(befund.art);
   const verstossen = new Set(
-    befunde.filter((befund) => befund.schwere === "verstoss").map((befund) => befund.ruhe.beginn),
+    befunde
+      .filter((befund) => befund.schwere === "verstoss" && !verkuerzt(befund))
+      .map((befund) => befund.ruhe.beginn),
   );
   const neu = nach.flatMap(({ tage: tageDerRuhe, ruhe }): TarifRuhezeitBefund[] => {
     const grenzen = bereitschaftGrenzenAm(tageDerRuhe[0] as Tag);
@@ -149,7 +154,7 @@ export const ruheNachTarif = (
     ];
   });
   const bleiben = befunde.filter(
-    (befund) => !(beginne.has(befund.ruhe.beginn) && (VERKUERZT as string[]).includes(befund.art)),
+    (befund) => !(beginne.has(befund.ruhe.beginn) && verkuerzt(befund)),
   );
   return [...bleiben, ...neu].sort((a, b) => a.ruhe.beginn - b.ruhe.beginn);
 };

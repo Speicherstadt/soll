@@ -487,6 +487,7 @@ Regel:
 | Tarif | 6:00 Arbeit + 6:00 Bereitschaftsdienst, Einstellung nach § 7 Abs. 1 Nr. 1 Buchst. a | Hinweis „über 10 h nur mit Tarif“ statt Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG |
 | Tarif ohne Bereitschaft | 10:01 Arbeit ohne Bereitschaftsdienst, mit derselben Einstellung | Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG („wenn in die Arbeitszeit regelmäßig und in erheblichem Umfang Arbeitsbereitschaft oder Bereitschaftsdienst fällt“) |
 | über 12 h | Gastronomie, Einstellung nach § 7, Mo 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe | Verstoß „Ruhezeit nach über 12 h“ statt Hinweis nach R-05 | § 7 Abs. 9 ArbZG |
+| über 12 h, Ausgleich verpasst | Gastronomie, Einstellung nach § 7, Ausgleich im Kalendermonat, Mo 30.11.2026 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe, kein Ausgleich bis 30.11. | Verstoß „Ruhezeit nach über 12 h“ statt Verstoß „Ausgleich fehlt“ nach R-05 | § 7 Abs. 9 ArbZG |
 | über 12 h, am selben Tag | Gastronomie, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Mo Schicht 16:30 – 22:30 und Bereitschaftsdienst 22:45 – 23:45 (13:00), Di Schicht 12:00 (12:15 Ruhe) | kein Befund zur Ruhezeit: die 10:30 zwischen den Schichten liegen vor dem Ende der Arbeit des Tages, die Verkürzung nach § 5 Abs. 2 ist ausgeglichen | § 7 Abs. 9 ArbZG („im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“) |
 
 Die Fälle erlaubt, Grenze, Verstoß und Tarif nehmen die Ruhepausen nach § 4 ArbZG als gewährt an;

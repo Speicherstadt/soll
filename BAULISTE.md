@@ -319,7 +319,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   die passende Seite (Test). Playwright in `desktop` und `phone` meldet ein Gerät mit einem Ersatz
   für den Push-Dienst des Browsers an und ab und ändert die Einstellungen; Texte in allen sechs
   Sprachen, Arabisch von rechts nach links.
-- [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
+- [x] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
   und jede Feldregel ihre Quelle im Code nennt.

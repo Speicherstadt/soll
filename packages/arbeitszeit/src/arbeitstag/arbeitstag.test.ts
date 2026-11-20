@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { arbeitstage } from "./arbeitstag.ts";
 import { arten, einTag, gehen, kommen, pause, tage, um, weiter } from "./testhilfen.ts";
 
 /*
@@ -359,6 +360,67 @@ describe("shifts and working days", () => {
     ]);
     expect(mo?.schichten[0]?.offen?.art).toBe("pause_ende");
     expect(di && arten(di)).toEqual(["kommen_fehlt", "kommen_fehlt"]);
+  });
+
+  /*
+   * Second review of PR #11: 9 h off end a shift (Grundbegriff "Schicht"), so an end stamped 9 h or
+   * more after the last one cannot be a repeat of it. Read as "doppelt", it moved the end across the
+   * rest and counted it as work.
+   */
+  it("9 h: a Gehen 9 h or more after the last Gehen does not move the end", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      gehen("2026-11-16T12:00+01:00"),
+      gehen("2026-11-17T07:30+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.ende, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      240,
+      um("2026-11-16T12:00+01:00"),
+      true,
+      [],
+    ]);
+    expect([di?.tag, di?.vollstaendig, di && arten(di)]).toEqual([
+      "2026-11-17",
+      false,
+      ["kommen_fehlt"],
+    ]);
+  });
+
+  it("9 h: a Pause 9 h or more after the break began does not move its start", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      pause("2026-11-17T07:00+01:00"),
+      gehen("2026-11-17T07:30+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      240,
+      false,
+      ["pause_ende_fehlt"],
+    ]);
+    expect(mo?.schichten[0]?.offen?.art).toBe("pause_ende");
+    expect(di && arten(di)).toEqual(["kommen_fehlt", "kommen_fehlt"]);
+  });
+
+  /*
+   * Second review of PR #11: once 24 h have passed since Kommen, no stamp can end the shift any
+   * more, so the Gehen is missing for certain. Midnight after the start day can lie later than that
+   * when the day has 25 hours (25.10.2026, the clocks go back at 3:00).
+   */
+  it("24 h: an open shift is a finding 24 h after Kommen at the latest, also on the 25-hour day", () => {
+    const kommt = kommen("2026-10-25T00:30+02:00");
+    const offen = (jetzt: string) => {
+      const ergebnis = arbeitstage([kommt], um(jetzt));
+      if (!ergebnis.ok) throw new Error(ergebnis.grund);
+      return ergebnis.wert[0];
+    };
+    expect(offen("2026-10-25T23:29+01:00")?.befunde).toEqual([]);
+    expect(offen("2026-10-25T23:30+01:00")?.befunde.map((befund) => befund.art)).toEqual([
+      "gehen_fehlt",
+    ]);
+    expect(offen("2026-10-25T23:30+01:00")?.schichten[0]?.offen?.faellig).toBe(
+      kommt.zeitpunkt + 24 * 60 * 60_000,
+    );
   });
 
   it("lists the days in order, each with its shifts", () => {

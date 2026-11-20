@@ -74,7 +74,7 @@ nach 5 Sekunden zurück. Keine Navigation, kein Zugriff auf andere Daten. Berüh
 **Einrichtung** (ohne Seitenleiste, auf `--muted`): Kopf „Soll einrichten“, die Schritte als
 nummerierte Pillen (`aria-current="step"`), der Schritt in einer Karte, daneben „Gut zu wissen“ mit
 den Hinweisen zu den Modulen, unten „Schritt n von N“, Zurück und Weiter. Bewusst anders als im
-Mockup: kein Feld „Branche“ (nichts in Soll hängt daran), der erste Standort kommt im Schritt
+Mockup: kein Feld „Branche“ (die Branche nach § 5 Abs. 2 ArbZG steht unter Einstellungen, S-502), der erste Standort kommt im Schritt
 Standorte statt im ersten Schritt (ein Freelancer hat keinen), und ohne Beschäftigte entfallen die
 drei übrigen Fragen und alle weiteren Schritte. Anmelden, Konto anlegen und Einladung annehmen
 stehen in derselben Art als eine Karte.
@@ -87,7 +87,11 @@ liegen die Vorlagen zum Ziehen; jeder Block hat einen Griff, der ihn mit der Tas
 Handy ein Tag zur Zeit: die sieben Tage als Knöpfe, darunter die Schichten des Tages als Liste.
 Bewusst anders als im Mockup: der Wochenend-Kopf und die Bezeichnung im Block stehen auf
 `--muted` beziehungsweise in `--foreground`, weil `--muted-foreground` auf `--accent` keine 4,5:1
-erreicht; „Veröffentlichen“ fehlt, bis S-503 es bringt.
+erreicht; „Veröffentlichen“ fehlt, bis S-503 es bringt. Ein Block mit Befund behält `--accent` und
+bekommt nur den Rand in `--danger` oder `--warning`; die Minijob-Grenze erscheint erst, wenn sie
+überschritten ist (R-32), nicht als Stand „551 € von 603 €“ (keine Summen je Person, BetrVG § 87);
+der Inhaber trägt im Kopf des Plans unter „Angaben zur Prüfung“ ein, was die Regeln von einer
+Person brauchen (S-502).
 
 **Monatsabschluss**: Kopf mit dem Stand (bestätigt, abgeschlossen), „Stundenzettel (PDF)“ und der
 Hauptaktion, für die Person „Monat bestätigen“, für den Inhaber „Monat abschließen“; darunter die

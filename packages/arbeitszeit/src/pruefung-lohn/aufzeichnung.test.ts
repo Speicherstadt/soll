@@ -318,3 +318,34 @@ describe("R-13: third review of PR #15", () => {
     });
   });
 });
+
+describe("R-13: fourth review of PR #15", () => {
+  it("Pause-Beginn knapp 24 Stunden nach dem Kommen: Kommen Mo 2.11. 8:00:30, Pause Di 3.11. 8:00:20, die Pause am Fr 20.11. gelöscht – 2.11. nachgetragen", () => {
+    const stempelungen = [
+      erfasst("kommen", "2026-11-02T08:00:30+01:00", "2026-11-02T08:00:30+01:00"),
+      erfasst(
+        "pause_beginn",
+        "2026-11-03T08:00:20+01:00",
+        "2026-11-03T08:00:20+01:00",
+        "2026-11-20T09:00+01:00",
+      ),
+    ];
+    expect(pruefe(stempelungen, SPAETER)).toEqual({
+      befunde: [verspaetet()],
+      nichtHinterlegt: [],
+      nachgetragen: ["2026-11-02"],
+    });
+  });
+
+  it("doppelt getippt nach der Ruhe: Kommen Mo 2.11. 20:00, Pause 22:00, Pause-Ende Di 3.11. 7:00:10 und 7:00:40, das zweite am Di 10.11. 12:00 erfasst – nicht nachgetragen", () => {
+    const stempelungen = [
+      erfasst("kommen", "2026-11-02T20:00+01:00", "2026-11-02T20:00+01:00"),
+      erfasst("pause_beginn", "2026-11-02T22:00+01:00", "2026-11-02T22:00+01:00"),
+      erfasst("pause_ende", "2026-11-03T07:00:10+01:00", "2026-11-03T07:00:10+01:00"),
+      erfasst("pause_ende", "2026-11-03T07:00:40+01:00", "2026-11-10T12:00+01:00"),
+    ];
+    const ergebnis = pruefe(stempelungen, SPAETER);
+    expect(ergebnis.befunde.map((befund) => befund.tage)).toEqual([["2026-11-02"], ["2026-11-03"]]);
+    expect(ergebnis.nachgetragen).toEqual([]);
+  });
+});

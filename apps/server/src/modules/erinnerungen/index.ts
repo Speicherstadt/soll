@@ -21,4 +21,4 @@ export {
 } from "./lauf.ts";
 export { SPRACHEN } from "./texte.ts";
 export { INSTANZ, vapidLaden } from "./vapid.ts";
-export type { VapidPaar } from "./webpush.ts";
+export { type VapidPaar, vapidKontakt } from "./webpush.ts";

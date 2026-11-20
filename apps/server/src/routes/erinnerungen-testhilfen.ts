@@ -1,5 +1,5 @@
 /** Café Elbblick with a push service and an SMTP server stood in, for the tests of S-307 */
-import { erinnerungsLauf, type LaufDeps } from "../modules/erinnerungen/index.ts";
+import { erinnerungsLauf, type LaufDeps, vapidKontakt } from "../modules/erinnerungen/index.ts";
 import { pushDienstErsatz, testAbo } from "../modules/erinnerungen/push-test.ts";
 import { smtpMailer } from "../modules/mail/index.ts";
 import { smtpTestServer } from "../modules/mail/smtp-test.ts";
@@ -42,6 +42,7 @@ export const cafe = async () => {
     geheimerSchluessel: server.geheimerSchluessel,
     vapid: server.vapid,
     url: TEST_URL,
+    kontakt: vapidKontakt(TEST_URL, "Soll <soll@elbblick.test>"),
     push: dienst.senden,
     mail: smtpMailer(smtp.url, "Soll <soll@elbblick.test>"),
   };

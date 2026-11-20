@@ -114,6 +114,20 @@ const privaterSchluessel = (paar: VapidPaar) => {
   });
 };
 
+/** For an instance on http without mail; `.invalid` is reserved and reaches nobody (RFC 2606) */
+export const KONTAKT_ERSATZ = "mailto:push@soll.invalid";
+
+/**
+ * The VAPID contact (`sub`): a mailto: or https: URI (RFC 8292, Section 2.1), as Apple's and
+ * Mozilla's push services refuse other forms. The sender of the instance's mail, else its URL if
+ * that is https, else a fixed placeholder; never an http: URI.
+ */
+export const vapidKontakt = (url: string, mailVon: string | undefined): string => {
+  const adresse = mailVon?.match(/<([^<>\s]+@[^<>\s]+)>/)?.[1] ?? mailVon?.trim();
+  if (adresse && /^[^<>\s@]+@[^<>\s@]+$/.test(adresse)) return `mailto:${adresse}`;
+  return url.startsWith("https://") ? url : KONTAKT_ERSATZ;
+};
+
 /** `Authorization: vapid t=<JWT>, k=<public key>` (RFC 8292, Sections 2 and 3) */
 export const vapidKopf = (
   endpoint: string,

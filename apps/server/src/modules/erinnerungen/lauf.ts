@@ -18,8 +18,10 @@ export type LaufDeps = {
   schreibDb: SchreibDb;
   geheimerSchluessel: Uint8Array;
   vapid: VapidPaar;
-  /** where the instance is reached: the VAPID contact and the link in a mail */
+  /** where the instance is reached, for the link in a mail */
   url: string;
+  /** the VAPID contact, from `vapidKontakt` */
+  kontakt: string;
   push: PushSenden;
   mail: Mailer | null;
 };
@@ -66,7 +68,7 @@ const perPush = async (
         tag: e.art,
       });
       const { status } = await deps.push(
-        pushAnfrage({ abo, inhalt, vapid: deps.vapid, kontakt: deps.url, jetzt }),
+        pushAnfrage({ abo, inhalt, vapid: deps.vapid, kontakt: deps.kontakt, jetzt }),
       );
       if (status === 404 || status === 410) aboVerfallen(deps.schreibDb, kontext, aboId);
       return angenommen(status);

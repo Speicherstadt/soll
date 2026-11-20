@@ -71,7 +71,11 @@ des Browsers:
   öffentliche Schlüssel geht an den Browser, der private liegt mit `SOLL_SECRET_KEY` verschlüsselt
   (AES-256-GCM) in der Tabelle `instanzschluessel`, unter der Kennung `instanz` mit einer eigenen
   Audit-Kette. Startet der Server mit einem anderen `SOLL_SECRET_KEY`, verweigert er den Start,
-  statt still ein neues Paar zu erzeugen, das alle angemeldeten Geräte abschneiden würde.
+  statt still ein neues Paar zu erzeugen, das alle angemeldeten Geräte abschneiden würde. Als
+  Kontakt (`sub`) nennt Soll dem Push-Dienst eine `mailto:`- oder `https:`-Adresse, wie RFC 8292
+  sie verlangt; Apple und Mozilla lehnen andere ab: die Adresse aus `SOLL_MAIL_VON`, sonst
+  `SOLL_URL`, wenn sie mit `https://` beginnt, sonst den Platzhalter `mailto:push@soll.invalid`.
+  Wer möchte, dass ein Push-Dienst ihn bei Problemen erreicht, richtet Mail ein.
 - **Inhalt** (RFC 8291, `aes128gcm` nach RFC 8188): Titel, Text und Ziel der Benachrichtigung sind
   für das Gerät verschlüsselt; der Push-Dienst liest sie nicht. Die Tests prüfen die Verschlüsselung
   mit den Werten aus Anhang A von RFC 8291.
@@ -81,7 +85,8 @@ des Browsers:
   Chrome und die Browser auf seiner Grundlage), Mozilla (`push.services.mozilla.com`, Firefox), Apple
   (`push.apple.com`, Safari) oder Microsoft (`notify.windows.com`, Edge). Soll schickt an den
   Endpunkt; jede andere Adresse könnte auf das eigene Netz zielen, auch über einen Namen, der dorthin
-  auflöst. Ein Browser mit einem anderen Push-Dienst bekommt die Erinnerung per Mail. Antwortet der
+  auflöst. Auch vor dem Senden prüft Soll den gespeicherten Endpunkt noch einmal. Ein Browser mit
+  einem anderen Push-Dienst bekommt die Erinnerung per Mail. Antwortet der
   Push-Dienst mit 404 oder 410, gibt es das Abo nicht mehr, und Soll entfernt es; bei anderen Fehlern
   bleibt es, und die Erinnerung geht per Mail.
 - Der **Service Worker** zeigt die Benachrichtigung und öffnet beim Tippen die passende Seite der

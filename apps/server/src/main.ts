@@ -4,7 +4,12 @@ import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { oeffneDatenbank } from "./db/oeffnen.ts";
 import { parseEnv } from "./env.ts";
-import { erinnerungsSchleife, pushPerFetch, vapidLaden } from "./modules/erinnerungen/index.ts";
+import {
+  erinnerungsSchleife,
+  pushPerFetch,
+  vapidKontakt,
+  vapidLaden,
+} from "./modules/erinnerungen/index.ts";
 import { smtpMailer } from "./modules/mail/index.ts";
 
 const lesen = () => {
@@ -59,6 +64,7 @@ erinnerungsSchleife(
     geheimerSchluessel: env.geheimerSchluessel,
     vapid,
     url: env.url,
+    kontakt: vapidKontakt(env.url, env.smtp?.von),
     push: pushPerFetch,
     mail,
   },

@@ -31,8 +31,11 @@ export const minijobGrenzeAm = wertAm(MINIJOB_GRENZE);
 export const regelversionAm = wertAm(REGELVERSIONEN);
 
 /** § 8 Abs. 1a SGB IV: minimum wage × 130 ÷ 3, rounded up to whole euros; in cents, without floats */
-export const minijobGrenzeAus = (mindestlohnCent: number): number =>
-  Math.ceil((mindestlohnCent * 130) / 300) * 100;
+export const minijobGrenzeAus = (mindestlohnCent: number): number => {
+  const zaehler = mindestlohnCent * 130;
+  const rest = zaehler % 300;
+  return ((zaehler - rest) / 300 + (rest > 0 ? 1 : 0)) * 100;
+};
 
 export const kinderkrankentage = (jahr: number): Jahreswert<Kinderkrankentage> => {
   const eintrag = KINDERKRANKENTAGE.find((kandidat) => kandidat.jahr === jahr);

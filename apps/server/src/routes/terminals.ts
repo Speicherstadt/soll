@@ -25,16 +25,6 @@ export const terminalRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number
   new Hono<Anfrage>()
     .use(recht("terminal:verwalten"))
     .get("/geraete", (c) => c.json({ terminals: terminalsVon(db, c.get("betriebId"), jetzt()) }))
-    .post("/geraete", async (c) => {
-      const eingabe = kopplungSchema.safeParse(await c.req.json().catch(() => null));
-      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
-      return c.json(kopplungAnlegen(schreibDb, kontextVon(c, jetzt), eingabe.data.name), 201);
-    })
-    .delete("/geraete/:terminalId", (c) =>
-      terminalWiderrufen(db, schreibDb, kontextVon(c, jetzt), c.req.param("terminalId"))
-        ? c.body(null, 204)
-        : c.json({ fehler: "unbekannt" }, 404),
-    )
     .get("/personen", (c) => {
       const betriebId = c.get("betriebId");
       const pins = mitPin(db, betriebId);
@@ -49,6 +39,16 @@ export const terminalRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number
         }));
       return c.json({ personen });
     })
+    .post("/geraete", async (c) => {
+      const eingabe = kopplungSchema.safeParse(await c.req.json().catch(() => null));
+      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      return c.json(kopplungAnlegen(schreibDb, kontextVon(c, jetzt), eingabe.data.name), 201);
+    })
+    .delete("/geraete/:terminalId", (c) =>
+      terminalWiderrufen(db, schreibDb, kontextVon(c, jetzt), c.req.param("terminalId"))
+        ? c.body(null, 204)
+        : c.json({ fehler: "unbekannt" }, 404),
+    )
     .post("/ausweise/:nutzerId", (c) => {
       const nutzerId = c.req.param("nutzerId");
       const mitglied = mitgliedschaftVon(db, c.get("betriebId"), nutzerId);

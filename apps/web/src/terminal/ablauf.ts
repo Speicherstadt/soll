@@ -26,9 +26,10 @@ export type Ansicht =
 /** The signals of the kiosk: its pairing, what it shows, the last message, the clock */
 const kioskZustand = () => {
   const ablage = speicher();
-  const [kopplung, setKopplung] = createSignal<Kopplung | null>(kopplungLesen(ablage));
+  const gemerkt = kopplungLesen(ablage);
+  const [kopplung, setKopplung] = createSignal<Kopplung | null>(gemerkt);
   const [ansicht, setAnsicht] = createSignal<Ansicht>(
-    kopplung() ? { art: "bereit" } : { art: "koppeln" },
+    gemerkt ? { art: "bereit" } : { art: "koppeln" },
   );
   const [stand, setStand] = createSignal<KioskStand | null>(null);
   const [meldung, setMeldung] = createSignal<Meldung | null>(null);

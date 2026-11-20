@@ -91,18 +91,18 @@ export const TerminalGeraete = () => {
         fallback={<p class="text-muted-foreground">{m.terminal_keine()}</p>}
       >
         <ul class="flex flex-col gap-2">
-          <For each={geraete()}>
+          <For each={geraete()} keyed={(geraet) => geraet.terminalId}>
             {(geraet) => (
               <li class="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
                 <span class="flex flex-col">
-                  <span class="font-medium">{geraet.name}</span>
-                  <span class="text-muted-foreground">{statusText(geraet)}</span>
+                  <span class="font-medium">{geraet().name}</span>
+                  <span class="text-muted-foreground">{statusText(geraet())}</span>
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
-                  aria-label={m.terminal_entkoppeln_name({ name: geraet.name })}
-                  onClick={() => entkoppeln(geraet)}
+                  aria-label={m.terminal_entkoppeln_name({ name: geraet().name })}
+                  onClick={() => entkoppeln(geraet())}
                 >
                   {m.terminal_entkoppeln()}
                 </Button>

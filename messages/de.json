@@ -423,7 +423,7 @@
   "kiosk_pin_stand": "{anzahl} Ziffern eingegeben",
   "kiosk_ziffer": "Ziffer {ziffer}",
   "kiosk_loeschen": "Ziffer löschen",
-  "kiosk_ok": "PIN bestätigen",
+  "kiosk_ok": "OK – PIN bestätigen",
   "kiosk_sperre_hinweis": "Nach fünf falschen Versuchen wartet das Terminal eine Weile.",
   "kiosk_unbekannt": "PIN oder QR-Code unbekannt. Versuche übrig: {rest}",
   "kiosk_gesperrt": "Zu viele falsche Versuche. Wieder möglich in {sekunden} s.",

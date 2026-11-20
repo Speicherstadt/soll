@@ -423,7 +423,7 @@
   "kiosk_pin_stand": "عدد الأرقام المدخلة: {anzahl}",
   "kiosk_ziffer": "الرقم {ziffer}",
   "kiosk_loeschen": "حذف الرقم",
-  "kiosk_ok": "تأكيد رمز PIN",
+  "kiosk_ok": "OK – تأكيد رمز PIN",
   "kiosk_sperre_hinweis": "بعد خمس محاولات خاطئة ينتظر الجهاز الطرفي بعض الوقت.",
   "kiosk_unbekannt": "رمز PIN أو رمز QR غير معروف. المحاولات المتبقية: {rest}",
   "kiosk_gesperrt": "محاولات خاطئة كثيرة. ممكن مجددًا بعد {sekunden} ث.",

@@ -106,18 +106,18 @@ export const TerminalPersonen = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <For each={personen()}>
+          <For each={personen()} keyed={(person) => person.nutzerId}>
             {(person) => (
               <Tr>
-                <Td>{person.name}</Td>
+                <Td>{person().name}</Td>
                 <Td>
                   <span class="flex items-center gap-2">
-                    {person.pin ? m.terminal_vorhanden() : m.terminal_fehlt()}
+                    {person().pin ? m.terminal_vorhanden() : m.terminal_fehlt()}
                     <Button
                       variant="outline"
                       size="sm"
-                      aria-label={m.terminal_pin_setzen_name({ name: person.name })}
-                      onClick={() => setPinFuer(person)}
+                      aria-label={m.terminal_pin_setzen_name({ name: person().name })}
+                      onClick={() => setPinFuer(person())}
                     >
                       {m.terminal_pin_setzen()}
                     </Button>
@@ -125,21 +125,21 @@ export const TerminalPersonen = () => {
                 </Td>
                 <Td>
                   <span class="flex items-center gap-2">
-                    {person.ausweis ? m.terminal_vorhanden() : m.terminal_fehlt()}
+                    {person().ausweis ? m.terminal_vorhanden() : m.terminal_fehlt()}
                     <Button
                       variant="outline"
                       size="sm"
-                      aria-label={m.terminal_qr_ausstellen_name({ name: person.name })}
-                      onClick={() => ausstellen(person)}
+                      aria-label={m.terminal_qr_ausstellen_name({ name: person().name })}
+                      onClick={() => ausstellen(person())}
                     >
-                      {person.ausweis ? m.terminal_qr_neu() : m.terminal_qr_ausstellen()}
+                      {person().ausweis ? m.terminal_qr_neu() : m.terminal_qr_ausstellen()}
                     </Button>
-                    <Show when={person.ausweis}>
+                    <Show when={person().ausweis}>
                       <Button
                         variant="ghost"
                         size="sm"
-                        aria-label={m.terminal_qr_entziehen_name({ name: person.name })}
-                        onClick={() => entziehen(person)}
+                        aria-label={m.terminal_qr_entziehen_name({ name: person().name })}
+                        onClick={() => entziehen(person())}
                       >
                         {m.terminal_qr_entziehen()}
                       </Button>

@@ -62,7 +62,8 @@ test("reloads after an error and when the network comes back @terminal", async (
     tablet.evaluate(() => {
       window.__marke = 1;
     });
-  const marke = () => tablet.evaluate(() => window.__marke ?? null);
+  // while the page reloads there is nothing to ask: that counts as not yet reloaded
+  const marke = () => tablet.evaluate(() => window.__marke ?? null).catch(() => "laedt" as const);
 
   await markieren();
   await tablet.evaluate(() => {

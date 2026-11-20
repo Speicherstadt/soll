@@ -423,7 +423,7 @@
   "kiosk_pin_stand": "Введено цифр: {anzahl}",
   "kiosk_ziffer": "Цифра {ziffer}",
   "kiosk_loeschen": "Видалити цифру",
-  "kiosk_ok": "Підтвердити PIN",
+  "kiosk_ok": "OK – підтвердити PIN",
   "kiosk_sperre_hinweis": "Після п’яти невдалих спроб термінал деякий час чекає.",
   "kiosk_unbekannt": "PIN або QR-код невідомий. Залишилось спроб: {rest}",
   "kiosk_gesperrt": "Забагато невдалих спроб. Знову можливо через {sekunden} с.",

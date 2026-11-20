@@ -423,7 +423,7 @@
   "kiosk_pin_stand": "{anzahl} rakam girildi",
   "kiosk_ziffer": "Rakam {ziffer}",
   "kiosk_loeschen": "Rakamı sil",
-  "kiosk_ok": "PIN'i onayla",
+  "kiosk_ok": "OK – PIN'i onayla",
   "kiosk_sperre_hinweis": "Beş hatalı denemeden sonra terminal bir süre bekler.",
   "kiosk_unbekannt": "PIN veya QR kodu tanınmadı. Kalan deneme: {rest}",
   "kiosk_gesperrt": "Çok fazla hatalı deneme. {sekunden} sn sonra tekrar mümkün.",

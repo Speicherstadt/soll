@@ -52,6 +52,8 @@ describe("service worker of a real build", () => {
         .filter((file) => file !== "sw.js" && file !== "index.html" && !file.endsWith(".map"));
       const precache = precacheOf(readFileSync(join(outDir, "sw.js"), "utf8"));
       expect(written).toContain("manifest.webmanifest");
+      // the pattern page of packages/ui (apps/web/muster.html) is for the tests only
+      expect(written.filter((file) => file.includes("muster"))).toEqual([]);
       expect(precache).toEqual(["/", ...written.map((file) => `/${file}`)].sort());
     } finally {
       rmSync(outDir, { recursive: true, force: true });

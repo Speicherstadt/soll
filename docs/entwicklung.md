@@ -18,7 +18,7 @@ wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE
 | `packages/arbeitszeit` | Prüfregeln, Feiertage, Soll und Ist, Konten, Zuschläge; reine Funktionen |
 | `packages/import` | Parser für die Exporte anderer Tools |
 | `packages/export` | DATEV, CSV, PDF |
-| `packages/ui` | Komponenten und Farben nach DESIGN.md, `cn()` |
+| `packages/ui` | Komponenten und Farben nach DESIGN.md, `cn()` und `variants()`; Musterseite unter `/muster.html` im Entwicklungsserver |
 | `apps/server` | Hono-Server mit `/health`; wird mit `bun build --compile` zu einer Datei |
 | `apps/web` | Solid-2-App als statische SPA/PWA mit Service Worker, Routen mit TanStack Router |
 | `e2e/` | Playwright mit den Projekten `desktop`, `phone` und `terminal` |
@@ -37,6 +37,14 @@ bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Wo
 `bun run check` muss vor jedem Push grün sein. Die gemeinsamen Checks aus `firsttris/workflows`
 (Dateigröße, Funktionslänge, Importringe, Übersetzungen, Seiten im Barrierefreiheitstest) laufen in
 der CI.
+
+## Komponenten
+
+`packages/ui` baut auf nativen Elementen: Button, Badge, Input, Dialog (`<dialog>`), Popover, Menü
+und Tooltip (Popover-API mit CSS Anchor Positioning), Combobox, Tabs, Toast, Tabelle und Icon. Jede
+Komponente nimmt ihre Texte über Props; die Tastaturbedienung folgt den ARIA Authoring Practices,
+Pfeile spiegeln sich bei Arabisch. Die Musterseite `apps/web/muster.html` zeigt alle, nur im
+Entwicklungsserver (`?theme=dark`, `?dir=rtl`); Playwright prüft dort Tastatur und axe.
 
 ## Server
 

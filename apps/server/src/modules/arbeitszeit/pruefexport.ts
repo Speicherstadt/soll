@@ -6,6 +6,8 @@ import {
   plusMonate,
   plusTage,
   type Stempelung,
+  stempelSchluessel,
+  stempeltage,
   type Tag,
   tagInBerlin,
 } from "@soll/arbeitszeit";
@@ -34,15 +36,9 @@ const monateIm = (von: Tag, bis: Tag): Monat[] => {
 const schluessel = (art: string, zeitpunkt: number) => `${art}@${zeitpunkt}`;
 const nachfolger = alias(stempelungen, "nachfolger");
 
-/** When each stamp in force was recorded by the server, by art and instant */
-const erfasstJeStempel = (
-  db: Db,
-  betriebId: string,
-  nutzerId: string,
-  von: number,
-  bis: number,
-) => {
-  const zeilen = db
+/** The stamps in force from `von` to before `bis`, with when the server recorded each */
+const stempelInKraft = (db: Db, betriebId: string, nutzerId: string, von: number, bis: number) =>
+  db
     .select({
       art: stempelungen.art,
       zeitpunkt: stempelungen.zeitpunkt,
@@ -67,6 +63,9 @@ const erfasstJeStempel = (
       ),
     )
     .all();
+
+/** When each stamp in force was recorded by the server, by art and instant */
+const erfasstJeStempel = (zeilen: readonly { art: string; zeitpunkt: number; am: number }[]) => {
   const je = new Map<string, number>();
   for (const { art, zeitpunkt, am } of zeilen) {
     const k = schluessel(art, zeitpunkt);
@@ -89,17 +88,23 @@ const arbeitstagJeStempel = (monate: readonly MonatStatus[]) =>
 
 /**
  * The day a change belongs to: the working day of the stamp it left in force, else (a removal, or
- * a stamp no longer recorded so) the Berlin day of its instant
+ * a stamp replaced later) the working day that stamp would have among the stamps in force now, as
+ * the day view files it: a night shift's Gehen after midnight removed belongs to the day the shift
+ * began (tag.ts; CLAUDE.md, "Time")
  */
-const tagDerAenderung = (aenderung: Aenderung, arbeitstagVon: ReadonlyMap<string, Tag>): Tag => {
+const tagDerAenderung = (
+  aenderung: Aenderung,
+  arbeitstagVon: ReadonlyMap<string, Tag>,
+  inKraft: readonly Stempelung[],
+): Tag => {
   const stempel = aenderung.nachher ?? aenderung.vorher;
-  const inKraft =
-    aenderung.nachher &&
-    arbeitstagVon.get(schluessel(aenderung.nachher.art, aenderung.nachher.zeitpunkt));
-  const vorher =
-    aenderung.vorher &&
-    arbeitstagVon.get(schluessel(aenderung.vorher.art, aenderung.vorher.zeitpunkt));
-  return inKraft ?? vorher ?? tagInBerlin(stempel?.zeitpunkt ?? 0);
+  if (stempel === null) return tagInBerlin(0);
+  const tag = arbeitstagVon.get(schluessel(stempel.art, stempel.zeitpunkt));
+  if (tag !== undefined) return tag;
+  const probe = { art: stempel.art, zeitpunkt: stempel.zeitpunkt };
+  return (
+    stempeltage([...inKraft, probe]).get(stempelSchluessel(probe)) ?? tagInBerlin(probe.zeitpunkt)
+  );
 };
 
 type Angaben = {
@@ -153,14 +158,15 @@ export const pruefexportPerson = (
     von: beginnInBerlin(angaben.von) - ZWEI_TAGE,
     bis: beginnInBerlin(plusTage(angaben.bis, 1)) + ZWEI_TAGE,
   };
-  const erfasst = erfasstJeStempel(db, betriebId, nutzerId, fenster.von, fenster.bis);
+  const inKraft = stempelInKraft(db, betriebId, nutzerId, fenster.von, fenster.bis);
+  const erfasst = erfasstJeStempel(inKraft);
   const monate = monateIm(angaben.von, angaben.bis).map((monat) =>
     monatStatus(db, betriebId, nutzerId, monat, angaben.jetzt),
   );
   const arbeitstagVon = arbeitstagJeStempel(monate);
   const aenderungen = aenderungenIn(db, betriebId, nutzerId, fenster.von, fenster.bis).map((a) => ({
     ...a,
-    tag: tagDerAenderung(a, arbeitstagVon),
+    tag: tagDerAenderung(a, arbeitstagVon, inKraft),
   }));
   const gegeneintraege = monate.flatMap((status) =>
     gegeneintraegeVon(db, betriebId, nutzerId, { monat: status.monat }),

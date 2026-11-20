@@ -10,7 +10,7 @@ export type Deckung = Zeitspanne & {
   standortId: string;
   rolle: string;
   anzahl: number;
-  /** the fewest people of the role planned at any moment of the need */
+  /** the fewest people of the role planned at any moment of the need, each person once */
   geplant: number;
   /** shifts of the role that nobody is planned for yet and that touch the need */
   offen: number;
@@ -32,8 +32,14 @@ const fenster = (tag: Tag, bedarf: Bedarf): Zeitspanne => ({
   ),
 });
 
-/** The fewest of the spans that cover any moment of the window */
-const wenigsteZugleich = (spannen: readonly Zeitspanne[], ziel: Zeitspanne): number => {
+/**
+ * The fewest people whose shifts cover any moment of the window: a person planned twice at the same
+ * time (a slip S-502 points out) is still one person there
+ */
+const wenigsteZugleich = (
+  spannen: readonly (Zeitspanne & { nutzerId: string })[],
+  ziel: Zeitspanne,
+): number => {
   const grenzen = [
     ...new Set([ziel.beginn, ziel.ende, ...spannen.flatMap((s) => [s.beginn, s.ende])]),
   ]
@@ -41,11 +47,13 @@ const wenigsteZugleich = (spannen: readonly Zeitspanne[], ziel: Zeitspanne): num
     .sort((a, b) => a - b);
   const stuecke = grenzen.slice(1).map((ende, index) => ({ beginn: grenzen[index] ?? 0, ende }));
   if (stuecke.length === 0) return 0;
-  return Math.min(
-    ...stuecke.map(
-      (stueck) => spannen.filter((s) => s.beginn <= stueck.beginn && s.ende >= stueck.ende).length,
-    ),
-  );
+  const personenIn = (stueck: Zeitspanne) =>
+    new Set(
+      spannen
+        .filter((s) => s.beginn <= stueck.beginn && s.ende >= stueck.ende)
+        .map((s) => s.nutzerId),
+    ).size;
+  return Math.min(...stuecke.map(personenIn));
 };
 
 const deckungAm = (tag: Tag, bedarf: Bedarf, schichten: readonly PlanSchicht[]): Deckung => {
@@ -58,7 +66,9 @@ const deckungAm = (tag: Tag, bedarf: Bedarf, schichten: readonly PlanSchicht[]):
       schicht.ende > spanne.beginn,
   );
   const geplant = wenigsteZugleich(
-    passend.filter((schicht) => schicht.nutzerId !== null),
+    passend.flatMap(({ nutzerId, beginn, ende }) =>
+      nutzerId === null ? [] : [{ nutzerId, beginn, ende }],
+    ),
     spanne,
   );
   return {

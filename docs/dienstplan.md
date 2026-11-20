@@ -72,6 +72,7 @@ Woche. Unter dem Plan steht, für jeden Tag der Woche, ob er gedeckt ist:
 - Gezählt werden die eingeplanten Schichten derselben Rolle am selben Standort. Maßgeblich ist der
   Moment mit den wenigsten Personen: Zwei Schichten nacheinander (7:00 bis 15:00 und 14:00 bis
   22:00) decken einen Bedarf von 10:00 bis 22:00 einmal; eine Lücke dazwischen lässt ihn ungedeckt.
+  Wer zur selben Zeit zweimal eingeplant ist, zählt als eine Person.
 - Eine Nachtschicht vom Vortag zählt mit, soweit sie in den Bedarf reicht.
 - Offene Schichten decken nichts, sie werden aber daneben genannt.
 - „fehlt 1“ steht als Wort neben der Farbe, nie nur als Farbe.

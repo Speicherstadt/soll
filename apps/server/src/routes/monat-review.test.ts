@@ -79,8 +79,10 @@ describe("a counter-entry", () => {
     await bestaetigen(w.sandra);
     expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
     const summen = async () =>
-      ((await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-11"))).inhalt as Json)
-        .summen as Json;
+      (
+        (await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-11")))
+          .inhalt as Json
+      ).summen as Json;
     const vorher = await summen();
     expect(
       (

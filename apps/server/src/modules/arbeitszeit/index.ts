@@ -3,6 +3,7 @@
  * (S-303, S-304, S-306)
  */
 export { monatAbgeschlossen } from "./abschluss.ts";
+export { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 export { type GegeneintragErgebnis, gegeneintragAnlegen } from "./gegeneintraege.ts";
 export {
   type AnmeldeErgebnis,
@@ -32,8 +33,6 @@ export {
 } from "./monatsabschluss.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
-  type Aenderung,
-  aenderungenIn,
   hatStempelungen,
   nachtragen,
   offlineStempeln,

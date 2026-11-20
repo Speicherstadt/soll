@@ -77,9 +77,19 @@ export const lesefenster = (monat: Monat): { von: number; bis: number } => ({
   bis: beginnInBerlin(plusTage(letzterTag(monat), 3)),
 });
 
-/** The absences of one day in the order given, without their day */
-const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabwesenheit[] =>
-  abwesenheiten.filter((a) => a.tag === tag).map(({ tag: _, ...rest }) => rest);
+/**
+ * What the content records of the absences of one day, in the order given, without their day: the
+ * certificate of a sickness only on a day with leave, the only day it changes Soll and Ist (§ 9
+ * BUrlG, R-24). Elsewhere it is no part of the working time, and marking it after the month was
+ * closed must stay possible (docs/plan.md, "Frist und Erinnerung der Bescheinigung").
+ */
+export const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabwesenheit[] => {
+  const tages = abwesenheiten.filter((a) => a.tag === tag);
+  const urlaub = tages.some((a) => a.art === "urlaub");
+  return tages.map(({ tag: _, bescheinigung, ...rest }) =>
+    urlaub && bescheinigung === true ? { ...rest, bescheinigung } : rest,
+  );
+};
 
 /**
  * The records of every day of the month: each stamp goes to the working day of its shift (a night

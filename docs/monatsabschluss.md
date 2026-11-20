@@ -55,7 +55,8 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
   ihren Beginn hinaus, gezählt ab dem Beginn der Kette),
 - eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde,
 - eine [Abwesenheit](abwesenheiten.md#abgeschlossener-monat), die einen Tag im Monat ändern würde:
-  ein Antrag, eine Freigabe, ein Storno, eine Bescheinigung oder ein neues Ende einer Krankheit.
+  ein Antrag, eine Freigabe, ein Storno, eine Bescheinigung für Krankheit im Urlaub oder ein neues
+  Ende einer Krankheit.
 
 Erlaubt bleibt jede Änderung, die an den Stempelungen des Monats je Arbeitstag nichts ändert.
 Abschluss, Prüfseite und Sperre lesen einen Monat dafür aus denselben Stempelungen: von sechs
@@ -152,7 +153,7 @@ Audit-Kette und werden nur angefügt. Den Inhalt baut `monatsinhalt.ts` als rein
 Testvektoren, das Fenster, aus dem ein Monat gelesen wird, `lesefenster()`; die Sperre prüft
 `aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen, `abwesenheitGesperrt()` vor jeder
 für Abwesenheiten. Ein Tag mit Abwesenheit trägt im Inhalt `abwesenheiten` (Art, halber Tag,
-Bescheinigung liegt vor, Kind); ein Tag ohne hat den Schlüssel nicht, so behält ein Monat ohne
+Kind, an einem Tag mit Urlaub auch „Bescheinigung liegt vor“); ein Tag ohne hat den Schlüssel nicht, so behält ein Monat ohne
 Abwesenheit den Inhalt und den Prüfwert, die er vor S-401 hatte.
 
 Mail kommt über SMTP aus `SOLL_SMTP_URL` (etwa `smtps://soll:geheim@mail.example.de:465`) mit dem

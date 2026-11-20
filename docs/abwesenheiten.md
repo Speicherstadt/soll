@@ -120,8 +120,10 @@ Dasselbe gilt im [Monatsabschluss](monatsabschluss.md): Wer „krank“ nicht se
 
 Genehmigte Abwesenheiten stehen im Inhalt des Monatsabschlusses und auf dem Stundenzettel. Eine
 Abwesenheit, die einen Tag eines abgeschlossenen Monats ändern würde (ein Antrag, eine Freigabe, ein
-Storno, eine Bescheinigung, ein neues Ende), lehnt der Server ab; korrigiert wird mit einem
-[Gegeneintrag](monatsabschluss.md#korrektur-als-gegeneintrag).
+Storno, eine Bescheinigung für Krankheit im Urlaub, ein neues Ende), lehnt der Server ab; korrigiert
+wird mit einem [Gegeneintrag](monatsabschluss.md#korrektur-als-gegeneintrag). Die Bescheinigung
+einer Krankheit außerhalb des Urlaubs lässt sich auch nach dem Abschluss markieren: Sie ändert dort
+weder Soll noch Ist und steht deshalb nicht im Inhalt.
 
 ## Für Entwickler
 

@@ -10,7 +10,7 @@ import {
   um,
   weberMitAbwesenheiten,
 } from "./abwesenheit-testhilfen.ts";
-import { abschliessen, bestaetigen } from "./monat-testhilfen.ts";
+import { abschliessen, bestaetigen, pruefen } from "./monat-testhilfen.ts";
 
 /** Findings of the independent review of S-401 */
 describe("S-401 review", () => {
@@ -39,12 +39,30 @@ describe("S-401 review", () => {
     const id = await angelegt(krank(w.sandra));
     w.server.stelleUhr(um("2026-11-03T09:00:00+01:00"));
     expect((await bestaetigen(w.sandra)).status).toBe(201);
-    expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
+    const abschluss = await abschliessen(w.jonas, w.sandra.nutzerId);
+    expect(abschluss.status).toBe(201);
+    const pruefwert = ((await json(abschluss)).abschluss as Json).pruefwert as string;
     expect((await offen(w.jonas)).erinnerungen).toHaveLength(1);
     // the eAU is fetched: the reminder must go, the closed October stays as it was
     const antwort = await schritt(w.jonas, id, "bescheinigung", { bescheinigung: "eau" });
     expect(antwort.status, JSON.stringify(await json(antwort.clone()))).toBe(200);
     expect((await offen(w.jonas)).erinnerungen).toEqual([]);
+    expect((await pruefen(w.server, w.jonas.betriebId, pruefwert)).ergebnis).toBe(
+      "uebereinstimmend",
+    );
+  });
+
+  it("still refuses the certificate of sickness in leave of a closed month (§ 9 BUrlG)", async () => {
+    const w = await weberMitAbwesenheiten();
+    await genehmigt(w, w.sandra, { von: "2026-10-26", bis: "2026-10-30" });
+    w.server.stelleUhr(um("2026-10-28T08:00:00+01:00"));
+    const id = await angelegt(krank(w.sandra, { art: "krank", bis: "2026-10-30" }));
+    w.server.stelleUhr(um("2026-11-03T09:00:00+01:00"));
+    expect((await bestaetigen(w.sandra)).status).toBe(201);
+    expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
+    // here it would turn days of leave into sickness: a counter-entry corrects it (S-306)
+    const antwort = await schritt(w.jonas, id, "bescheinigung", { bescheinigung: "eau" });
+    expect(antwort.status).toBe(409);
   });
 
   it("takes a sickness report with an open end before later approved time off", async () => {

@@ -86,13 +86,22 @@ const person = (
   return { ok: true, nutzerId: ziel };
 };
 
+/**
+ * Who stamps reads their own days; so does whoever has stamps in the business but no longer stamps
+ * (e.g. now external staff), read-only (Art. 15 DSGVO; docs/anmeldung.md, "die eigenen Daten")
+ */
+const liestEigene = (db: Db, c: Context<Anfrage>) =>
+  darf(c.get("rolle"), "stempeln") || hatStempelungen(db, c.get("betriebId"), c.get("nutzerId"));
+
 /** A day of a person with the names of who changed what */
 const tagRouten = (db: Db, jetzt: () => number) =>
-  new Hono<Anfrage>().get("/tag", recht("stempeln"), (c) => {
+  new Hono<Anfrage>().get("/tag", (c) => {
     const eingabe = tagSchema.safeParse(c.req.query());
     if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
     const wer = person(db, c, eingabe.data.nutzerId, "zeiten:alle");
     if (!wer.ok) return c.json({ fehler: wer.fehler }, wer.status);
+    if (wer.nutzerId === c.get("nutzerId") && !liestEigene(db, c))
+      return c.json({ fehler: "keine_berechtigung" }, 403);
     const ansicht = tagLesen(db, c.get("betriebId"), wer.nutzerId, eingabe.data.datum, jetzt());
     if (!ansicht) return c.json({ fehler: "ungueltig" }, 400);
     const namen = namenVon(db, [wer.nutzerId, ...ansicht.aenderungen.map((a) => a.von)]);

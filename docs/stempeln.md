@@ -92,7 +92,7 @@ aus ist:
 
 | Endpunkt | Was | Wer |
 | --- | --- | --- |
-| `GET /tag?datum=&nutzerId=` | ein Tag: Soll, Stand (`tagesstand`), Stempelungen, Änderungen; ohne Datum der laufende Tag | selbst; andere: Inhaber, Planer, Lohnbüro, auch für wen nicht mehr stempelt oder ausgeschieden ist (§ 16 Abs. 2 ArbZG) |
+| `GET /tag?datum=&nutzerId=` | ein Tag: Soll, Stand (`tagesstand`), Stempelungen, Änderungen; ohne Datum der laufende Tag | selbst, auch wer nicht mehr stempelt (etwa jetzt Extern), solange Stempelungen da sind, nur lesend (Art. 15 DSGVO); andere: Inhaber, Planer, Lohnbüro, auch für wen nicht mehr stempelt oder ausgeschieden ist (§ 16 Abs. 2 ArbZG) |
 | `POST /stempelungen` | `{ art, geraetZeitpunkt? }`, Zeitpunkt vom Server | selbst |
 | `POST /stempelungen/nachtrag` | `{ nutzerId?, art, zeitpunkt, grund }` | selbst; andere: Inhaber, Planer |
 | `PATCH /stempelungen/:id` | `{ art, zeitpunkt, grund }`, hängt eine neue Zeile an | selbst; andere: Inhaber, Planer |

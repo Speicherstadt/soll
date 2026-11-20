@@ -9,6 +9,14 @@ export * from "./feiertage/index.ts";
 export * from "./heute/index.ts";
 export * from "./jahreswerte/index.ts";
 export {
+  ersterTag,
+  istMonat,
+  letzterTag,
+  type Monat,
+  monatVon,
+  plusMonate,
+} from "./kalender/monat.ts";
+export {
   istTag,
   jahrVon,
   plusTage,
@@ -28,4 +36,5 @@ export {
   moduleAusFragen,
 } from "./module/module.ts";
 export * from "./pruefung/index.ts";
+export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";

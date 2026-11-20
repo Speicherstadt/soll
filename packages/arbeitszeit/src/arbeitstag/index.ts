@@ -4,6 +4,8 @@ export {
   arbeitstage,
   type Stempelbefund,
   type StempelbefundArt,
+  stempelSchluessel,
+  stempeltage,
 } from "./arbeitstag.ts";
 export {
   LAENGSTE_SCHICHT,

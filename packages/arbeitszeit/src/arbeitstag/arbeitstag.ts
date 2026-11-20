@@ -111,6 +111,26 @@ const tagAus = (tag: Tag, schichten: Schicht[], befunde: Stempelbefund[]): Arbei
   };
 };
 
+/** The key of a stamp in `stempeltage`: a stamp sent twice with its kind and instant is one */
+export const stempelSchluessel = ({ art, zeitpunkt }: Stempelung): string => `${art} ${zeitpunkt}`;
+
+/**
+ * The working day each stamp is filed under, by `stempelSchluessel`, from the same run as
+ * `arbeitstage`: the day of the shift whose stretch it began, ended or was reported with, else its
+ * own calendar day (a stamp without Kommen); a repeat ignored goes with the stamp it repeats
+ */
+export const stempeltage = (stempelungen: readonly Stempelung[]): Map<string, Tag> => {
+  const lauf = durchlaufe(stempelungen);
+  const { schichten, schichtVon } = schichtenAus(lauf);
+  return new Map(
+    lauf.zuordnungen.map((eintrag) => {
+      const schicht =
+        eintrag.stueck === null ? undefined : schichten[schichtVon.get(eintrag.stueck) ?? -1];
+      return [stempelSchluessel(eintrag), schicht?.tag ?? tagInBerlin(eintrag.zeitpunkt)] as const;
+    }),
+  );
+};
+
 /**
  * The working days of one person's stamps (UTC milliseconds), in calendar order. `jetzt` decides
  * whether an open shift is still running or already a finding (R-01). Pass the stamps from the day

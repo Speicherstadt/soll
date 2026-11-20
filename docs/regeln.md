@@ -899,7 +899,9 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 - **Regel**: Für jeden Monat, in dem das Arbeitszeitmodell ein Minijob ist: Arbeitsentgelt des
   Monats gegen die Grenze seines Jahres, mit ganzen Zahlen ohne Rundung
   (`lohnCent × 60 ≤ grenzeCent × 60`, beim Stundenlohn `stundenlohnCent × minuten`). Zuschläge
-  zählen mit, soweit sie nicht nach § 3b EStG steuerfrei sind (§ 1 Abs. 1 Satz 1 Nr. 1 SvEV). Das
+  zählen mit, soweit sie nicht nach § 3b EStG steuerfrei sind (§ 1 Abs. 1 Satz 1 Nr. 1 SvEV); ein
+  steuerfreier zählt doch mit, soweit der Lohn je gearbeiteter Stunde, auf dem er berechnet wird,
+  25 € übersteigt (dort zweiter Halbsatz; dieser Teil wird aufgerundet). Das
   Zeitjahr ist der Monat mit den elf Monaten davor (Geringfügigkeits-Richtlinien vom 14.12.2023: es
   endet mit dem Monat des Überschreitens). Liegt der Monat über der Grenze, ist er
   **gelegentlich**, wenn im Zeitjahr höchstens zwei Monate über der Grenze liegen, jeder um

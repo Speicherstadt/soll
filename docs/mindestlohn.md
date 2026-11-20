@@ -66,7 +66,8 @@ Beschäftigten.
 
 Für jeden Monat, in dem das Arbeitszeitmodell ein Minijob ist, vergleicht Soll das Arbeitsentgelt
 mit der Grenze des Jahres (2026: 603 €, 2027: 633 €). Zuschläge zählen mit, außer dem nach § 3b EStG
-steuerfreien Teil (§ 1 SvEV). Das Zeitjahr ist der Monat mit den elf Monaten davor.
+steuerfreien Teil (§ 1 SvEV); der zählt doch, soweit der Lohn je Stunde 25 € übersteigt. Das
+Zeitjahr ist der Monat mit den elf Monaten davor.
 
 | Lage im Monat | Befund |
 | --- | --- |

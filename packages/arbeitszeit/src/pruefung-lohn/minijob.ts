@@ -5,6 +5,7 @@ import type { Tag } from "../kalender/tag.ts";
 import type { Pruefergebnis } from "../pruefung/typen.ts";
 import { type LohnGrenzen, lohnGrenzenAm } from "./grenzen.ts";
 import {
+  arbeitsMinutenIm,
   centAbgerundet,
   centAufgerundet,
   type LohnErgebnis,
@@ -33,9 +34,37 @@ export type MinijobBefund = Befund<"gelegentlich" | "schwankend" | "grenze_ueber
 /** A mini-job month as the rule reads it: its wage and its limit, times 60 */
 type Stand = { monat: Lohnmonat; lohn: number; grenze: number };
 
-/** Whether the wage counts as Arbeitsentgelt: surcharges free of tax under § 3b EStG do not */
-const lohnFuerGrenze = (monat: Lohnmonat): number =>
-  lohnMal60(monat, (zuschlag) => zuschlag.steuerfrei !== true);
+/** § 1 Abs. 1 Satz 1 Nr. 1 SvEV: „soweit das Entgelt … mehr als 25 Euro für jede Stunde beträgt“ */
+const SVEV_STUNDENLOHN_CENT = 2500;
+
+/**
+ * The part of the month's tax-free surcharges that is Arbeitsentgelt all the same, times 60: the
+ * share of the hourly wage above 25 € (§ 1 Abs. 1 Satz 1 Nr. 1 SvEV), rounded up, never in favour of
+ * the limit. The hourly wage is the wage of the month per hour worked (`grund` ÷ minutes); a month
+ * without minutes has none, and a surcharge for work it does not record cannot be split.
+ */
+const steuerfreiAlsEntgeltMal60 = (monat: Lohnmonat, grund: number): number => {
+  const steuerfrei = (monat.zuschlaege ?? [])
+    .filter((zuschlag) => zuschlag.steuerfrei === true)
+    .reduce((summe, zuschlag) => summe + zuschlag.cent, 0);
+  const minuten = arbeitsMinutenIm(monat);
+  const darueber = BigInt(grund) - BigInt(SVEV_STUNDENLOHN_CENT * minuten);
+  if (steuerfrei === 0 || minuten === 0 || darueber <= 0n) return 0;
+  const zaehler = BigInt(steuerfrei) * 60n * darueber;
+  return Number((zaehler + BigInt(grund) - 1n) / BigInt(grund));
+};
+
+/**
+ * Whether the wage counts as Arbeitsentgelt: surcharges free of tax under § 3b EStG do not, except
+ * for the part on more than 25 € an hour
+ */
+const lohnFuerGrenze = (monat: Lohnmonat): number => {
+  const grund = lohnMal60(monat, () => false);
+  return (
+    lohnMal60(monat, (zuschlag) => zuschlag.steuerfrei !== true) +
+    steuerfreiAlsEntgeltMal60(monat, grund)
+  );
+};
 
 /**
  * A mini-job month with its limit, or null when its year has none ("nicht hinterlegt"). A month of

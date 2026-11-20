@@ -45,6 +45,9 @@ export const oeffneDatenbank = (pfad: string, jetzt: number): Datenbank => {
   migrieren(sqlite, migrationen, jetzt);
   const lesend = new Database(pfad, { readonly: true, strict: true });
   lesend.run("PRAGMA busy_timeout = 5000");
+  // A read-only connection still writes TEMP tables, and one named like a table of Soll would shadow
+  // it for every read; query_only refuses those too (sqlite.org/pragma.html#pragma_query_only)
+  lesend.run("PRAGMA query_only = ON");
   return {
     db: alsDrizzle(lesend),
     schreibDb: { verbindung: alsDrizzle(sqlite) } as SchreibDb,

@@ -17,7 +17,8 @@ const TABELLEN = Object.keys(schema).join("|");
  * The ways to write: Drizzle's insert, update and delete on a table of the schema (under any namespace
  * name), raw SQL that writes,
  * Drizzle's `sql` template and `sql.raw`, the chained tables as `kettenTabellen` exports them, and
- * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything)
+ * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything), and
+ * the writable connection oeffneDatenbank hands out as `sqlite` and `SchreibDb.verbindung`
  */
 const SCHREIBEN = [
   new RegExp(`\\.(insert|update|delete)\\s*\\(\\s*(\\w+\\.)?(${TABELLEN})\\b`),
@@ -27,6 +28,7 @@ const SCHREIBEN = [
   /\b(INSERT\s+(OR\s+\w+\s+)?INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|REPLACE\s+INTO|DROP\s+TABLE|ALTER\s+TABLE)\b/i,
   /\bsql\s*`/,
   /from\s+["']bun:sqlite["']/,
+  /(?<![\w/-])(sqlite|verbindung)(?![\w-])/,
 ];
 
 const quellen = (ordner: string): string[] =>
@@ -84,6 +86,17 @@ describe("no write past the audit chain", () => {
       "db.run(sql.raw(befehl));",
     ].flatMap((zeile) => umwegeIn("x.ts", zeile));
     expect(umwege).toHaveLength(4);
+  });
+
+  it("recognises a write through the writable connection oeffneDatenbank hands out", () => {
+    // Datenbank.sqlite is a writable bun:sqlite Database and SchreibDb.verbindung a writable Drizzle
+    // connection: whoever reaches either can run anything, past the chain and past the read-only db
+    const umwege = [
+      "offen.sqlite.run(befehl);",
+      "const { sqlite } = oeffneDatenbank(pfad, jetzt);",
+      "schreibDb.verbindung.run(anweisung);",
+    ].flatMap((zeile) => umwegeIn("x.ts", zeile));
+    expect(umwege).toHaveLength(3);
   });
 
   it("recognises a write to a table of the schema imported under another name", () => {

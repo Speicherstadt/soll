@@ -183,8 +183,13 @@ describe("splitting a shift at a change of the yearly values", () => {
     expect(teile.ok && teile.wert.reduce((summe, teil) => summe + teil.minuten, 0)).toBe(1440);
   });
 
-  it("returns an error instead of throwing for a span past the last day istTag accepts", () => {
+  it("returns an error instead of throwing for a span outside the days istTag accepts", () => {
     expect(abschnitte(0, 8_640_000_000_000_000, mindestlohnAm)).toEqual({
+      ok: false,
+      grund: "ungueltig",
+    });
+    const vorJahr0 = -8_640_000_000_000_000;
+    expect(abschnitte(vorJahr0, vorJahr0 + 2 * 86_400_000, mindestlohnAm)).toEqual({
       ok: false,
       grund: "ungueltig",
     });

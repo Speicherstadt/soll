@@ -46,6 +46,16 @@ export type Abschnitt<T> = { beginn: number; ende: number; minuten: number; wert
 
 const MINUTE = 60_000;
 
+/** The instants a Tag can name: before 0000-01-01 and past 9999-12-31 there is no day to look up */
+const ERSTER_BEGINN = beginnInBerlin("0000-01-01");
+const LETZTER_BEGINN = beginnInBerlin("9999-12-31");
+
+/**
+ * The cut at a Berlin midnight, on a whole minute: midnight fell between minutes only under local
+ * mean time (before April 1893); the minute it falls in goes to the new day, rounding no time away.
+ */
+const grenzeAm = (tag: Tag): number => Math.ceil(beginnInBerlin(tag) / MINUTE) * MINUTE;
+
 const gleich = <T>(a: Jahreswert<T>, b: Jahreswert<T>) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
@@ -58,19 +68,16 @@ export const abschnitte = <T>(
   ende: number,
   wertAmTag: (tag: Tag) => Jahreswert<T>,
 ): { ok: true; wert: Abschnitt<T>[] } | { ok: false; grund: "ungueltig" } => {
-  if (ende <= beginn || beginn % MINUTE !== 0 || ende % MINUTE !== 0)
+  const ausserhalb = beginn < ERSTER_BEGINN || ende > LETZTER_BEGINN;
+  if (ende <= beginn || beginn % MINUTE !== 0 || ende % MINUTE !== 0 || ausserhalb)
     return { ok: false, grund: "ungueltig" };
   const teile: Abschnitt<T>[] = [];
   let teilBeginn = beginn;
   let wert = wertAmTag(tagInBerlin(beginn));
-  for (
-    let tag = plusTage(tagInBerlin(beginn), 1);
-    beginnInBerlin(tag) < ende;
-    tag = plusTage(tag, 1)
-  ) {
+  for (let tag = plusTage(tagInBerlin(beginn), 1); grenzeAm(tag) < ende; tag = plusTage(tag, 1)) {
     const neu = wertAmTag(tag);
     if (gleich(neu, wert)) continue;
-    const grenze = beginnInBerlin(tag);
+    const grenze = grenzeAm(tag);
     teile.push({ beginn: teilBeginn, ende: grenze, minuten: (grenze - teilBeginn) / MINUTE, wert });
     teilBeginn = grenze;
     wert = neu;

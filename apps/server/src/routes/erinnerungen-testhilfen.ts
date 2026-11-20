@@ -26,7 +26,7 @@ export const cafe = async () => {
   type Wer = typeof tom | typeof mia;
   /** A device of the person subscribes, in the app's language there */
   const abonnieren = async (wer: Wer, name: string, sprache = "de") => {
-    const geraet = testAbo(`https://push.example.test/${name}`);
+    const geraet = testAbo(`https://fcm.googleapis.com/fcm/send/${name}`);
     geraete.set(geraet.json.endpoint, geraet);
     const antwort = await wer.anfrage(`${PFAD}/abos`, { body: { ...geraet.json, sprache } });
     return { geraet, antwort };

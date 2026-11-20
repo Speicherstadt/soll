@@ -76,7 +76,7 @@ describe("reminder settings (S-307)", () => {
     const server = testServer();
     const solo = await server.inhaberMitBetrieb("Lotsenbüro", "lotse");
     await solo.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { arbeitszeit: false } });
-    const abo = testAbo("https://push.example.test/solo").json;
+    const abo = testAbo("https://fcm.googleapis.com/fcm/send/solo").json;
     const routen: [string, string, unknown?][] = [
       ["GET", PFAD],
       ["PUT", `${PFAD}/wuensche`, { ausstempeln: true, pause: true, monat: true, mail: true }],
@@ -119,13 +119,13 @@ describe("devices for Web Push", () => {
 
   it("refuses a key off P-256, a short auth secret, plain http and the server's own network", async () => {
     const c = await cafe();
-    const gut = testAbo("https://push.example.test/tom").json;
+    const gut = testAbo("https://fcm.googleapis.com/fcm/send/tom").json;
     const kaputt = Buffer.from(gut.keys.p256dh, "base64url");
     kaputt[64] = (kaputt[64] ?? 0) ^ 1;
     const falsch = [
       { ...gut, keys: { ...gut.keys, p256dh: kaputt.toString("base64url") } },
       { ...gut, keys: { ...gut.keys, auth: "AAAA" } },
-      { ...gut, endpoint: "http://push.example.test/tom" },
+      { ...gut, endpoint: "http://fcm.googleapis.com/fcm/send/tom" },
       { ...gut, endpoint: "https://127.0.0.1/push" },
       { ...gut, endpoint: "https://localhost/push" },
       { ...gut, endpoint: "https://intern/push" },
@@ -138,6 +138,39 @@ describe("devices for Web Push", () => {
       400,
     );
     expect(c.server.sqlite.query("SELECT * FROM push_abos").all()).toEqual([]);
+  });
+
+  it("posts only to the push services of the browsers, never into the server's own network", async () => {
+    const c = await cafe();
+    const gut = testAbo("https://fcm.googleapis.com/fcm/send/tom").json;
+    // names that resolve to loopback, the cloud metadata service or the local network (SSRF)
+    for (const endpoint of [
+      "https://localhost./push",
+      "https://app.localhost/push",
+      "https://127.0.0.1.nip.io/push",
+      "https://169.254.169.254.nip.io/latest/meta-data",
+      "https://fritz.box/push",
+      "https://fcm.googleapis.com.evil.test/fcm/send/tom",
+      "https://fcm.googleapis.com./fcm/send/tom",
+    ]) {
+      const antwort = await c.tom.anfrage(`${PFAD}/abos`, {
+        body: { ...gut, endpoint, sprache: "de" },
+      });
+      expect(antwort.status, endpoint).toBe(400);
+    }
+    expect(c.server.sqlite.query("SELECT * FROM push_abos").all()).toEqual([]);
+    // Chrome (FCM), Firefox (Mozilla autopush), Safari (Apple) and Edge (WNS)
+    for (const endpoint of [
+      "https://fcm.googleapis.com/fcm/send/abc",
+      "https://updates.push.services.mozilla.com/wpush/v2/abc",
+      "https://web.push.apple.com/abc",
+      "https://wns2-par02p.notify.windows.com/w/?token=abc",
+    ]) {
+      const antwort = await c.tom.anfrage(`${PFAD}/abos`, {
+        body: { ...testAbo(endpoint).json, sprache: "de" },
+      });
+      expect(antwort.status, endpoint).toBe(201);
+    }
   });
 
   it("moves a shared device to the person who subscribed last; nobody unregisters another's", async () => {

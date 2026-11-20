@@ -17,7 +17,7 @@ const pushErsatz = async (page: Page) => {
   const ua = createECDH("prime256v1");
   ua.generateKeys();
   const abo = {
-    endpoint: `https://push.example.test/${crypto.randomUUID()}`,
+    endpoint: `https://fcm.googleapis.com/fcm/send/${crypto.randomUUID()}`,
     keys: {
       p256dh: ua.getPublicKey().toString("base64url"),
       auth: randomBytes(16).toString("base64url"),

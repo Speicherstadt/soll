@@ -19,7 +19,7 @@ describe("Ausstempeln vergessen", () => {
     expect(await c.lauf(um(TAG, "17:05"))).toEqual([]);
     expect(c.dienst.zugestellt).toEqual([
       {
-        endpoint: "https://push.example.test/tom",
+        endpoint: "https://fcm.googleapis.com/fcm/send/tom",
         ttl: 43_200,
         inhalt: {
           titel: "Ausstempeln vergessen?",
@@ -144,7 +144,7 @@ describe("delivery", () => {
   it("removes a subscription the push service no longer knows (410) and falls back to mail", async () => {
     const c = await cafe();
     await c.abonnieren(c.mia, "mia");
-    c.antworten.set("https://push.example.test/mia", 410);
+    c.antworten.set("https://fcm.googleapis.com/fcm/send/mia", 410);
     await c.stempeln(c.mia, "kommen", um(TAG, "07:00"));
     expect((await c.lauf(um(TAG, "17:00"))).map((g) => g.kanal)).toEqual(["mail"]);
     expect(c.server.sqlite.query("SELECT * FROM push_abos").all()).toEqual([]);
@@ -153,7 +153,7 @@ describe("delivery", () => {
   it("keeps a subscription after a passing error of the push service, and mails instead", async () => {
     const c = await cafe();
     await c.abonnieren(c.mia, "mia");
-    c.antworten.set("https://push.example.test/mia", 503);
+    c.antworten.set("https://fcm.googleapis.com/fcm/send/mia", 503);
     await c.stempeln(c.mia, "kommen", um(TAG, "07:00"));
     expect((await c.lauf(um(TAG, "17:00"))).map((g) => g.kanal)).toEqual(["mail"]);
     expect(c.server.sqlite.query("SELECT * FROM push_abos").all()).toHaveLength(1);

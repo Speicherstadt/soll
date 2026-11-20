@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { beginnInBerlin, tagInBerlin } from "./zeit.ts";
+import { beginnInBerlin, tagInBerlin, zeitpunktInBerlin } from "./zeit.ts";
 
 const utc = (text: string) => Date.parse(text);
 
@@ -40,5 +40,26 @@ describe("days in Europe/Berlin", () => {
     // Intl writes the year 0 as 1 BC; the day must still read 0000 (ISO 8601, proleptic Gregorian)
     expect(tagInBerlin(utc("0000-06-01T12:00:00Z"))).toBe("0000-06-01");
     expect(tagInBerlin(beginnInBerlin("0000-06-01"))).toBe("0000-06-01");
+  });
+});
+
+describe("wall-clock times in Europe/Berlin", () => {
+  it("finds a wall-clock time on an ordinary day in winter and summer", () => {
+    expect(zeitpunktInBerlin("2026-01-15", 23 * 60)).toBe(utc("2026-01-15T22:00:00Z"));
+    expect(zeitpunktInBerlin("2026-07-15", 6 * 60)).toBe(utc("2026-07-15T04:00:00Z"));
+    expect(zeitpunktInBerlin("2026-07-15", 24 * 60)).toBe(utc("2026-07-15T22:00:00Z"));
+  });
+
+  it("reads the clock after the change on the days of the DST changes", () => {
+    // SoZV: 29.03.2026 2:00 CET → 3:00 CEST; 25.10.2026 3:00 CEST → 2:00 CET
+    expect(zeitpunktInBerlin("2026-03-29", 6 * 60)).toBe(utc("2026-03-29T04:00:00Z"));
+    expect(zeitpunktInBerlin("2026-03-29", 23 * 60)).toBe(utc("2026-03-29T21:00:00Z"));
+    expect(zeitpunktInBerlin("2026-10-25", 6 * 60)).toBe(utc("2026-10-25T05:00:00Z"));
+    expect(zeitpunktInBerlin("2026-10-25", 22 * 60)).toBe(utc("2026-10-25T21:00:00Z"));
+  });
+
+  it("takes the first of the two 2:30 in October and counts the skipped 2:30 in March from midnight", () => {
+    expect(zeitpunktInBerlin("2026-10-25", 150)).toBe(utc("2026-10-25T00:30:00Z"));
+    expect(zeitpunktInBerlin("2026-03-29", 150)).toBe(utc("2026-03-29T01:30:00Z"));
   });
 });

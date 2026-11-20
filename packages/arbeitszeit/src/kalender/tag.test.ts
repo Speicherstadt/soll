@@ -32,3 +32,16 @@ describe("istTag", () => {
     expect(istTag("heute")).toBe(false);
   });
 });
+
+describe("years below 100", () => {
+  // Date.UTC maps the years 0 to 99 onto 1900 to 1999; a four-digit day must stay in its own year
+  it("keeps the year", () => {
+    expect(tagAus(99, 12, 31)).toBe("0099-12-31");
+    expect(plusTage("0100-01-01", -1)).toBe("0099-12-31");
+    expect(wochentag("0099-12-31")).toBe(4);
+  });
+
+  it("takes a real day of such a year", () => {
+    expect(istTag("0099-12-31")).toBe(true);
+  });
+});

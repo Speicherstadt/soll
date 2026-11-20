@@ -8,15 +8,19 @@ const MS_PRO_TAG = 86_400_000;
 
 const zwei = (zahl: number): string => String(zahl).padStart(2, "0");
 
+/** UTC milliseconds of a day; setUTCFullYear because Date.UTC maps the years 0 to 99 onto 1900 to 1999 */
+const msAus = (jahr: number, monat: number, tagImMonat: number): number =>
+  new Date(0).setUTCFullYear(jahr, monat - 1, tagImMonat);
+
 /** The day of a year, month (1 to 12) and day of month */
 export const tagAus = (jahr: number, monat: number, tagImMonat: number): Tag => {
-  const datum = new Date(Date.UTC(jahr, monat - 1, tagImMonat));
+  const datum = new Date(msAus(jahr, monat, tagImMonat));
   return `${String(datum.getUTCFullYear()).padStart(4, "0")}-${zwei(datum.getUTCMonth() + 1)}-${zwei(datum.getUTCDate())}`;
 };
 
 const alsMs = (tag: Tag): number => {
   const [jahr, monat, tagImMonat] = tag.split("-").map(Number);
-  return Date.UTC(jahr ?? 0, (monat ?? 1) - 1, tagImMonat ?? 1);
+  return msAus(jahr ?? 0, monat ?? 1, tagImMonat ?? 1);
 };
 
 export const plusTage = (tag: Tag, tage: number): Tag => {

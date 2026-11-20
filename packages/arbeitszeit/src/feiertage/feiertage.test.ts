@@ -108,3 +108,12 @@ describe("feiertage", () => {
     expect(feiertagAm("2026-11-20", { land: "HH" })).toBeNull();
   });
 });
+
+describe("feiertagAm before the data", () => {
+  it("says nicht hinterlegt for a real day in a year below 100, not kein_tag", () => {
+    expect(feiertagAmErgebnis("0099-12-25", { land: "HH" })).toEqual({
+      ok: false,
+      grund: "nicht_hinterlegt",
+    });
+  });
+});

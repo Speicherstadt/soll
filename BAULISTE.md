@@ -524,6 +524,30 @@ Alle Punkte: nach S-305.
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
   Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und
   `/health` antwortet; veröffentlicht wird es erst mit den Zugangsdaten (Schritte für Menschen).
+  Dazu: ein mehrstufiges `Containerfile` baut ein kleines Laufzeit-Image nur mit dem kompilierten
+  Binary und dem statischen Build der App, ohne Bun, Quellen oder `node_modules`; es läuft als
+  Benutzer ohne Root-Rechte, die Daten liegen im Volume `/data`, ein `HEALTHCHECK` fragt `/health`
+  ohne curl im Image; kein Geheimnis steckt im Image, in `compose.yaml` oder in der Quadlet-Datei
+  (`SOLL_SECRET_KEY` kommt aus einer Datei neben der Compose-Datei bzw. aus einem Podman-Secret).
+  Der Server liefert die App aus (`SOLL_WEB_DIR`): eine Datei des Builds mit ihrem Typ, jeder Pfad
+  ohne Dateiendung außerhalb von `/api` die `index.html`, `/assets/*` unveränderlich gecacht,
+  `sw.js` und `index.html` nie; ein Pfad mit `..` liefert nichts außerhalb des Verzeichnisses, ein
+  unbekannter Pfad unter `/api` nie die App (Tests). `deploy/compose.yaml` und Quadlet-Dateien unter
+  `deploy/quadlet/` (Container, Volume, Sicherung als Timer). `soll backup [ziel]` schreibt mit
+  SQLite `VACUUM INTO` eine in sich stimmige Kopie, auch während der Server im WAL-Modus schreibt,
+  prüft sie mit `PRAGMA integrity_check` und überschreibt nie eine vorhandene Datei;
+  `soll restore <quelle>` legt sie in ein leeres Datenverzeichnis, verweigert ein vorhandenes
+  `soll.db` und meldet je Betrieb das Ergebnis der Kettenprüfung (Tests: Daten schreiben → Sicherung
+  bei offenem Schreiber → neues leeres Verzeichnis → Wiederherstellung → dieselben Zeilen, dieselben
+  Prüfwerte, die Kette prüft ohne Befund; ein vorhandenes Ziel, eine fremde oder kaputte Datei werden
+  als Wert abgelehnt). Ein CI-Job baut das Image für amd64 mit `actions/docker-build` aus
+  firsttris/workflows, startet es mit leerem Volume und erzeugtem Testschlüssel, fragt `/health`,
+  prüft, dass es ohne `SOLL_SECRET_KEY` nicht startet, und macht im Container eine Sicherung; arm64
+  baut erst der Release (Entscheidung im Projektplan). `.github/workflows/release.yml` ruft
+  `docker-release.yml` aus firsttris/workflows erst nach der CI und nur, wenn das Secret
+  `DOCKER_PAT` gesetzt ist; ohne veröffentlicht er nichts und sagt das in der Zusammenfassung.
+  `docs/installation.md` (Docker Compose, Podman Quadlet, Binary, Umgebung, Sicherung und
+  Wiederherstellung, Update), README mit Abschnitt Installation.
 - [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,

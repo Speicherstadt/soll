@@ -110,7 +110,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Hinweis und die für die Beschäftigten günstigere Zeit; mehrere Schichten an einem Tag bleiben
   getrennt, eine Pause über Mitternacht bleibt in der Schicht des Starttags; eine Unterbrechung
   unter 15 min ist Arbeitszeit (R-04); jeder Fall dazu steht in `docs/regeln.md` unter R-01.
-- [ ] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
+- [x] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
   oder 24 Wochen.
   Fertig, wenn: jeder Fall von R-02 bis R-05 in `docs/regeln.md` wörtlich als Test besteht, auch über
   Mitternacht und beide Zeitumstellungen. Dazu: die Regeln nehmen Arbeitstage aus S-201 und geplante

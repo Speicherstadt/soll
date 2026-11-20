@@ -417,6 +417,24 @@ Alle Punkte: nach S-305.
 
 - [ ] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
   Wake Lock, Neuladen nach Fehler.
+  Fertig, wenn: Playwright im Projekt `terminal` (1280 × 800, `e2e/terminal/`, `@terminal`) ein
+  Tablet mit einem Code des Inhabers koppelt, eine Person per PIN und eine per QR-Code erkennt, beide
+  Kommen stempeln und die Ansicht danach von selbst zur Uhr zurückkehrt, und axe in hell und dunkel
+  nichts findet. Dazu: der Inhaber erzeugt einen Kopplungscode, der kurz gilt, einmal eingelöst wird
+  und nur als Hash gespeichert ist; das Tablet tauscht ihn gegen ein Geräte-Token, das nur als Hash
+  gespeichert, vom Inhaber widerrufbar und an seinen Betrieb gebunden ist und nichts darf außer
+  Personen per PIN oder QR-Code zu erkennen und für sie zu stempeln; eine PIN erkennt die Person
+  allein, ist im Betrieb eindeutig und nie im Klartext gespeichert, falsche Versuche sperren das
+  Gerät mit wachsender Wartezeit (Zahlen in `docs/plan.md`), jeder Versuch steht in der Audit-Kette;
+  der QR-Code je Person ist ein Zufallswert, nur als Hash gespeichert, neu ausstellbar und
+  entziehbar, druckbar aus der App; die Kamera liest ihn mit `BarcodeDetector`, kein Bild wird
+  gespeichert oder gesendet, nur der gelesene Wert (im Test ersetzt); nach dem Erkennen sieht die
+  Person ihren Stand und die passenden Knöpfe Kommen, Pause, Gehen, nach wenigen Sekunden ohne
+  Eingabe geht die Ansicht zurück; Wake Lock hält den Bildschirm an (im Test ersetzt); nach einem
+  Fehler und wenn das Netz zurückkommt, lädt die Ansicht neu; ein widerrufenes Gerät landet wieder
+  bei der Kopplung; jede Stempelung trägt die Quelle „terminal“ und das Gerät; ein abgeschaltetes
+  Modul Terminal wird abgelehnt; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen
+  sieht oder ändert; keine Fotos, Fingerabdrücke oder Standorte; Texte in allen sechs Sprachen.
 - [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
   SUN-Nachricht.
   Fertig, wenn: Playwright mit einem Ersatz für `NDEFReader` Karte mit PIN, Karte ohne PIN und eine

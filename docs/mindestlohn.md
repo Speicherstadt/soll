@@ -54,7 +54,7 @@ Bruch. Beim Stundenlohn ist der Lohn mal 60 der Stundenlohn mal die Minuten.
   Schicht meldet R-01.
 - **Ausnahmen nach § 22 MiLoG** stehen am Mitarbeiter, mit dem letzten Tag, an dem sie gelten:
   Pflichtpraktikum, Orientierungs- und Begleitpraktikum (bis zu drei Monate),
-  Einstiegsqualifizierung, Jugendliche ohne Berufsabschluss, Auszubildende, Ehrenamt,
+  Einstiegsqualifizierung, Jugendliche ohne Berufsabschluss (bis zum 18. Geburtstag), Auszubildende, Ehrenamt,
   Langzeitarbeitslose (die ersten sechs Monate). Eine befristete Ausnahme ohne Ende gilt nicht. Ein
   Monat, den eine Ausnahme nur zum Teil deckt, wird ganz geprüft.
 

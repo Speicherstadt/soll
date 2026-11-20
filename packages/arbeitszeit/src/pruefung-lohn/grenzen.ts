@@ -44,11 +44,13 @@ export type MiLoGAusnahmegrund = (typeof MILOG_AUSNAHMEN)[number];
 
 /**
  * The exceptions the law limits in time (§ 22 Abs. 1 Satz 2 Nr. 2 and 3: „bis zu drei Monaten“;
- * Abs. 4: „in den ersten sechs Monaten“): without an end they except nothing
+ * Abs. 2: persons under 18 by § 2 Abs. 1 and 2 JArbSchG; Abs. 4: „in den ersten sechs Monaten“):
+ * without an end they except nothing
  */
 export const BEFRISTETE_AUSNAHMEN: readonly MiLoGAusnahmegrund[] = [
   "orientierungspraktikum",
   "begleitpraktikum",
+  "jugendlich_ohne_abschluss",
   "langzeitarbeitslos",
 ];
 

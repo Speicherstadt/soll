@@ -60,14 +60,12 @@ export const bereitschaftBefunde = (
   const ausgleich = einsatzAusgleich(tage, branche, ueber12);
   const ruheTage = ohneEinsaetze(tage, ausgleich.frei);
   const ruhe = ruhezeit(ruheTage, optionen);
-  const ohneKuerzung =
-    ueber12.size === 0 ? [] : ruhezeit(ruheTage, { ...optionen, branche: "andere" }).befunde;
   const ergebnisse: Pruefergebnis<ArbzgBefund | BereitschaftBefund>[] = [
     { befunde: mitTarif(hoechst.befunde, tage, tarif), nichtHinterlegt: hoechst.nichtHinterlegt },
     ausgleichszeitraum(tage, optionen),
     ruhepausen(tage),
     {
-      befunde: ruheNachTarif(nachEinsatz(ruhe.befunde, ruheTage), ohneKuerzung, ueber12, tarif),
+      befunde: ruheNachTarif(nachEinsatz(ruhe.befunde, ruheTage), ruheTage, ueber12, tarif),
       nichtHinterlegt: ruhe.nichtHinterlegt,
     },
     { befunde: ausgleich.befunde, nichtHinterlegt: [] },

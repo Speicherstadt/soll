@@ -466,7 +466,8 @@ Regel:
   Bereitschaftsdienst. Über 12 h muss im unmittelbaren Anschluss an das Ende der Arbeit des Tages
   eine Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
   Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG); eine Ruhezeit zwischen zwei Schichten dieses Tages
-  liegt vor diesem Ende und bleibt bei R-05 und R-12. Ohne Einstellung gilt der Grenzwert von R-02.
+  liegt vor diesem Ende und bleibt bei R-05 und R-12. Gemessen wird bis zur nächsten Arbeit, auch bis
+  zu einem Einsatz, der eine eigene Schicht ist (R-12). Ohne Einstellung gilt der Grenzwert von R-02.
 - **Schwere**: kein eigener Befund ohne Einstellung; die Zeit geht in die anderen Regeln ein.
   Hinweis, wenn ein Bereitschaftsdienst über 10 h nur mit tariflicher Einstellung nach § 7 erlaubt
   ist; Verstoß, wenn nach mehr als 12 h keine 11 h Ruhezeit folgen.
@@ -510,7 +511,8 @@ ohne sie gilt der Fall „Pause“.
 - **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
   anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05.
   Beginnt nach einem Einsatz eine eigene Schicht am selben Kalendertag, endet die Ruhezeit mit ihr.
-  Die Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue.
+  Die Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue; nur die 11 h nach
+  einem Tag über 12 h (§ 7 Abs. 9 ArbZG, R-11) endet er.
 - **Ausnahmen**: Krankenhäuser und Pflege dürfen Kürzungen bis zur Hälfte der Ruhezeit zu anderen
   Zeiten ausgleichen (§ 5 Abs. 3 ArbZG): Dauern die Einsätze zwischen zwei Arbeitstagen zusammen
   höchstens 5:30, unterbrechen sie die Ruhezeit nicht, Soll misst sie zwischen den Schichten und
@@ -539,6 +541,7 @@ ohne sie gilt der Fall „Pause“.
 | selber Tag | Mo Schicht 5:00 – 9:00, Einsatz Mo 12:00 – 13:00, Mo Schicht 18:30 (eigene Schicht, 5:30 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo | § 5 Abs. 1 ArbZG |
 | Krankenhaus, selber Tag | Krankenhaus, dieselbe Lage | Hinweis „Einsatz ausgleichen 1:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
 | Krankenhaus, selber Tag über 12 h | Krankenhaus, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Einsatz Mo 10:00 – 11:00, Mo Schicht 17:00 – 23:00 und Bereitschaftsdienst 23:15 – 23:45, Di Schicht 12:00 | Hinweis „über 10 h nur mit Tarif“ und „Einsatz ausgleichen“, kein Verstoß: die Ruhezeit 6:00 – 17:00 liegt vor dem Ende der Arbeit des Tages | § 5 Abs. 3, § 7 Abs. 9 ArbZG |
+| Krankenhaus, Einsatz nach über 12 h | Krankenhaus, Einstellung nach § 7, Mo Schicht 7:00 – 14:00 und Bereitschaftsdienst 14:00 – 20:00 (13:00), Einsatz Di 6:00 – 7:00 (eigene Schicht), Di Schicht 17:00 | Verstoß „Ruhezeit nach über 12 h“ für die 10:00 von Mo 20:00 bis zum Einsatz; die Verkürzung nach § 5 Abs. 2 danach rettet sie nicht | § 7 Abs. 9 ArbZG („im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“) |
 | Herbst | Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 echte Zeit) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
 

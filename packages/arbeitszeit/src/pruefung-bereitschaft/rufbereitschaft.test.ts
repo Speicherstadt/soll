@@ -304,7 +304,7 @@ describe("R-12: Rufbereitschaft", () => {
     ]);
   });
 
-  it("Krankenhaus, Einsatz nach über 12 h: a call-out of its own after 10 h ends the rest § 7 Abs. 9 wants – Verstoß of R-11", () => {
+  it("Krankenhaus, Einsatz nach über 12 h: Mo 7:00 – 14:00 + Bereitschaftsdienst 14:00 – 20:00, Einsatz Di 6:00 – 7:00 (own shift), Di Schicht 17:00 – Verstoß „Ruhezeit nach über 12 h“ for the 10:00 up to the call-out", () => {
     // § 7 Abs. 9 ArbZG: 11 hours „im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“;
     // the call-out at 6:00 (a shift of its own, 10 h after 20:00) ends that rest after 10:00, so the
     // shortening of § 5 Abs. 2 for the rest after it does not save the day

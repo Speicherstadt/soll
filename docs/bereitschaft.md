@@ -45,7 +45,8 @@ danach eine Ruhezeit von mindestens 11 Stunden folgen, ohne Verkürzung nach § 
 Ausgleich von Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG), sonst ist es ein Verstoß „Ruhezeit nach
 über 12 h“. Gemeint ist die Ruhezeit nach dem Ende der Arbeit des Tages („im unmittelbaren
 Anschluss an die Beendigung der Arbeitszeit“); eine Ruhezeit zwischen zwei Schichten desselben Tages
-liegt davor und wird wie sonst geprüft.
+liegt davor und wird wie sonst geprüft. Ein Einsatz beendet diese Ruhezeit, auch wenn er eine eigene
+Schicht ist: Wer nach 13 Stunden um 20:00 geht und um 6:00 zum Einsatz kommt, hatte nur 10 Stunden.
 
 ## Rufbereitschaft (R-12)
 

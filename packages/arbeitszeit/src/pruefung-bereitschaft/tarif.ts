@@ -3,9 +3,10 @@ import type { Befund } from "../befund.ts";
 import type { Tag } from "../kalender/tag.ts";
 import type { HoechstarbeitszeitBefund } from "../pruefung/hoechstarbeitszeit.ts";
 import type { RuhezeitBefund } from "../pruefung/ruhezeit.ts";
+import { sortiert } from "../pruefung/typen.ts";
 import type { EinsatzRuhezeitBefund } from "./einsatz.ts";
 import { bereitschaftGrenzenAm } from "./grenzen.ts";
-import type { BereitschaftsTag } from "./typen.ts";
+import type { BereitschaftsSchicht, BereitschaftsTag } from "./typen.ts";
 
 /**
  * A collective agreement or works agreement under § 7 Abs. 1 Nr. 1 Buchst. a ArbZG that allows more
@@ -88,46 +89,67 @@ const VERKUERZT: readonly RuhezeitBefund["art"][] = [
   "ruhezeit_ausgleich_fehlt",
 ];
 
+const MINUTE = 60_000;
+
+/** The rest after the end of a day's work, with the day and the day of the work that ends it */
+type RuheNach = { tage: Tag[]; ruhe: Stueck };
+
+/**
+ * § 7 Abs. 9 ArbZG: the rest „im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“ of
+ * `tag`, from the end of its last shift to the start of the next work of any kind, a call-out of its
+ * own included (it ends that rest, R-12). A rest between two shifts of the day lies before that end;
+ * none while the day's last shift is open or nothing has followed it yet (as R-05).
+ */
+const ruheNach = (tag: Tag, schichten: readonly BereitschaftsSchicht[]): RuheNach | null => {
+  const ende = schichten.filter((schicht) => schicht.tag === tag).at(-1)?.ende ?? null;
+  if (ende === null) return null;
+  const naechste = schichten.find((schicht) => schicht.beginn >= ende);
+  if (naechste === undefined) return null;
+  return {
+    tage: sortiert([tag, naechste.tag]),
+    ruhe: { beginn: ende, ende: naechste.beginn, minuten: (naechste.beginn - ende) / MINUTE },
+  };
+};
+
 /**
  * § 7 Abs. 9 ArbZG: the rest after a day of more than 12 hours is at least 11 hours, without the
- * shortening of § 5 Abs. 2. `befunde` are those of R-05 (and R-12) as the business may shorten,
- * `ohneKuerzung` those of R-05 without any shortening: a rest after such a day that only the
- * shortening lets pass, balanced or not, is a Verstoß of R-11 in place of the Hinweis of R-05.
+ * shortening of § 5 Abs. 2. `befunde` are those of R-05 (and R-12) as the business may shorten; a
+ * rest after such a day under 11 hours is a Verstoß of R-11, in place of the Hinweis of R-05 on the
+ * same rest, unless R-05 or R-12 already reports a Verstoß for it.
  */
 export const ruheNachTarif = (
   befunde: readonly (RuhezeitBefund | EinsatzRuhezeitBefund)[],
-  ohneKuerzung: readonly RuhezeitBefund[],
+  tage: readonly BereitschaftsTag[],
   ueber12: ReadonlySet<Tag>,
   tarif: Tarif | undefined,
 ): (RuhezeitBefund | EinsatzRuhezeitBefund | TarifRuhezeitBefund)[] => {
   if (tarif === undefined || ueber12.size === 0) return [...befunde];
-  // only the rest that follows the end of the day's work („im unmittelbaren Anschluss an die
-  // Beendigung der Arbeitszeit“): one into another day; a rest between two shifts of the day lies
-  // before that end and keeps § 5
-  const nachTarif = (befund: { tage: Tag[] }) =>
-    befund.tage.length > 1 && ueber12.has(befund.tage[0] as Tag);
+  const schichten = tage.flatMap((tag) => tag.schichten).sort((a, b) => a.beginn - b.beginn);
+  const nach = [...ueber12].flatMap((tag) => ruheNach(tag, schichten) ?? []);
+  const beginne = new Set(nach.map(({ ruhe }) => ruhe.beginn));
   const verstossen = new Set(
     befunde.filter((befund) => befund.schwere === "verstoss").map((befund) => befund.ruhe.beginn),
   );
-  const neu = ohneKuerzung.flatMap((befund): TarifRuhezeitBefund[] => {
-    const grenzen = bereitschaftGrenzenAm(befund.tage[0] as Tag);
-    if (grenzen === null || !nachTarif(befund) || verstossen.has(befund.ruhe.beginn)) return [];
+  const neu = nach.flatMap(({ tage: tageDerRuhe, ruhe }): TarifRuhezeitBefund[] => {
+    const grenzen = bereitschaftGrenzenAm(tageDerRuhe[0] as Tag);
+    if (grenzen === null || ruhe.minuten >= grenzen.tarifRuhezeit || verstossen.has(ruhe.beginn))
+      return [];
     return [
       {
         regel: "R-11",
         norm: "§ 7 Abs. 9 ArbZG",
         schwere: "verstoss",
         art: "ruhezeit_nach_ueber_12h",
-        tage: befund.tage,
-        ruhe: befund.ruhe,
+        tage: tageDerRuhe,
+        ruhe,
         mindestens: grenzen.tarifRuhezeit,
-        fehlt: grenzen.tarifRuhezeit - befund.ruhe.minuten,
+        fehlt: grenzen.tarifRuhezeit - ruhe.minuten,
         fundstelle: tarif.fundstelle,
       },
     ];
   });
   const bleiben = befunde.filter(
-    (befund) => !(nachTarif(befund) && (VERKUERZT as string[]).includes(befund.art)),
+    (befund) => !(beginne.has(befund.ruhe.beginn) && (VERKUERZT as string[]).includes(befund.art)),
   );
   return [...bleiben, ...neu].sort((a, b) => a.ruhe.beginn - b.ruhe.beginn);
 };

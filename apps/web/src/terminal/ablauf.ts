@@ -15,6 +15,11 @@ export const ERKANNT_MS = 15_000;
 /** How long the confirmation stays (DESIGN.md, "Terminal": back after 5 seconds) */
 export const GESTEMPELT_MS = 5_000;
 const TAKT_MS = 250;
+/**
+ * How often a locked kiosk asks the server for its state: nobody can tap it, yet the owner may
+ * lift the lock or revoke the tablet (docs/plan.md, "Sperre am Terminal")
+ */
+export const GESPERRT_FRAGEN_MS = 15_000;
 
 export type Ansicht =
   | { art: "koppeln" }
@@ -94,6 +99,7 @@ const kioskAufrufe = (z: Zustand) => {
     z.setStand(antwort.daten);
     if (antwort.daten.gesperrtBis !== null)
       z.setMeldung({ art: "gesperrt", bis: antwort.daten.gesperrtBis });
+    else if (z.meldung()?.art === "gesperrt") z.setMeldung(null);
   };
   const koppeln = async (code: string): Promise<Meldung | "code_ungueltig" | null> => {
     const antwort = await api<Kopplung>("/api/v1/kiosk/koppeln", { body: { code } });
@@ -135,6 +141,7 @@ export const kioskAblauf = () => {
   const aufrufe = kioskAufrufe(z);
   onSettled(() => {
     void aufrufe.laden();
+    let gefragt = Date.now();
     const takt = setInterval(() => {
       const nun = Date.now();
       z.setJetzt(nun);
@@ -142,6 +149,10 @@ export const kioskAblauf = () => {
       if ("bis" in aktuell && aktuell.bis <= nun) z.zurueck();
       const offen = z.meldung();
       if (offen?.art === "gesperrt" && offen.bis <= nun) z.setMeldung(null);
+      else if (offen?.art === "gesperrt" && nun - gefragt >= GESPERRT_FRAGEN_MS) {
+        gefragt = nun;
+        void aufrufe.laden();
+      }
     }, TAKT_MS);
     return () => clearInterval(takt);
   });

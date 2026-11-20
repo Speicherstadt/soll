@@ -55,10 +55,12 @@ const werktag = (tag: Tag, optionen: JugendOptionen): boolean | null => {
 };
 
 /**
- * § 8 Abs. 2a JArbSchG: another Werktag of the week on which the person works less than 8 hours.
- * A day off is no shortened working time (careful reading, docs/regeln.md, R-15).
+ * § 8 Abs. 2a JArbSchG: 8:30 only on a Werktag („an den übrigen Werktagen“), when another Werktag of
+ * the week has work of less than 8 hours. A day off is no shortened working time (careful reading,
+ * docs/regeln.md, R-15).
  */
 const verkuerzt = (woche: Woche, tag: Tag, optionen: JugendOptionen, grenzen: JugendGrenzen) =>
+  werktag(tag, optionen) === true &&
   [...woche.minuten].some(
     ([anderer, minuten]) =>
       anderer !== tag && minuten < grenzen.taeglich && werktag(anderer, optionen) === true,

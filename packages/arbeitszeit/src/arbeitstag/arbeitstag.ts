@@ -62,10 +62,11 @@ const befund = (art: StempelbefundArt, tag: Tag, zeitpunkt: number): Stempelbefu
 /** The shifts of the stamps, and for each stretch the shift it fell into */
 const schichtenAus = (lauf: Lauf): { schichten: Schicht[]; schichtVon: Map<number, number> } => {
   const gruppen = schichtgruppen(lauf.stuecke);
+  const offenePausen = new Set(lauf.offenePausen);
   const schichten = gruppen.map((gruppe, index) =>
     schichtAus(
       gruppe.map((stueck) => lauf.stuecke[stueck] as Lauf["stuecke"][number]),
-      lauf.offenePausen.includes(gruppe.at(-1) as number) ||
+      offenePausen.has(gruppe.at(-1) as number) ||
         (lauf.zustand === "pause" && index === gruppen.length - 1),
       lauf.stuecke[gruppen[index + 1]?.[0] ?? -1]?.beginn ?? null,
     ),
@@ -123,15 +124,19 @@ export const arbeitstage = (
   const lauf = durchlaufe(stempelungen);
   const { schichten, schichtVon } = schichtenAus(lauf);
   const befunde = befundeAus(lauf, schichten, schichtVon, jetzt);
-  const tage = [...new Set([...schichten.map((s) => s.tag), ...befunde.flatMap((b) => b.tage)])];
+  const proTag = new Map<Tag, { schichten: Schicht[]; befunde: Stempelbefund[] }>();
+  const zumTag = (tag: Tag) => {
+    const eintrag = proTag.get(tag) ?? { schichten: [], befunde: [] };
+    proTag.set(tag, eintrag);
+    return eintrag;
+  };
+  for (const schicht of schichten) zumTag(schicht.tag).schichten.push(schicht);
+  for (const eintrag of befunde) for (const tag of eintrag.tage) zumTag(tag).befunde.push(eintrag);
   return {
     ok: true,
-    wert: tage.sort().map((tag) =>
-      tagAus(
-        tag,
-        schichten.filter((schicht) => schicht.tag === tag),
-        befunde.filter((eintrag) => eintrag.tage.includes(tag)),
-      ),
-    ),
+    wert: [...proTag.keys()].sort().map((tag) => {
+      const eintrag = zumTag(tag);
+      return tagAus(tag, eintrag.schichten, eintrag.befunde);
+    }),
   };
 };

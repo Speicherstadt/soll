@@ -68,20 +68,27 @@ const fasseZusammen = <E, T>(
   return ergebnis;
 };
 
-/** The stretches of each shift, as indexes into the stretches stamped */
-export const schichtgruppen = (stuecke: readonly Rohstueck[]): number[][] =>
-  fasseZusammen(
-    stuecke,
-    (_, index) => [index],
-    (gruppe, stueck, index) => {
-      const erstes = stuecke[gruppe[0] as number] as Rohstueck;
-      const vorher = stuecke[index - 1] as Rohstueck;
-      const neu =
-        stueck.beginn - (vorher.ende ?? vorher.beginn) >= NEUE_SCHICHT_AB ||
-        stueck.beginn - erstes.beginn >= LAENGSTE_SCHICHT;
-      return neu ? null : [...gruppe, index];
-    },
-  );
+/**
+ * Whether a stretch starting at `beginn` begins a new shift: 9 h or more after the stretch before
+ * ended, or 24 h or more after the shift began at `schichtBeginn`
+ */
+export const beginntSchicht = (schichtBeginn: number, vorher: Rohstueck, beginn: number): boolean =>
+  beginn - (vorher.ende ?? vorher.beginn) >= NEUE_SCHICHT_AB ||
+  beginn - schichtBeginn >= LAENGSTE_SCHICHT;
+
+/** The stretches of each shift, as indexes into the stretches stamped, in linear time */
+export const schichtgruppen = (stuecke: readonly Rohstueck[]): number[][] => {
+  const gruppen: number[][] = [];
+  stuecke.forEach((stueck, index) => {
+    const gruppe = gruppen.at(-1);
+    const erstes = gruppe === undefined ? undefined : stuecke[gruppe[0] as number];
+    const vorher = stuecke[index - 1];
+    if (gruppe === undefined || erstes === undefined || vorher === undefined) gruppen.push([index]);
+    else if (beginntSchicht(erstes.beginn, vorher, stueck.beginn)) gruppen.push([index]);
+    else gruppe.push(index);
+  });
+  return gruppen;
+};
 
 type Minutenstueck = { beginn: number; ende: number | null; endetMit: Rohstueck["endetMit"] };
 
@@ -148,12 +155,14 @@ const offenAus = (
   tag: Tag,
   beginn: number,
 ): Offen | null => {
-  const faellig = Math.min(
-    Math.max(beginnInBerlin(plusTage(tag, 1)), beginn + OFFEN_HOECHSTENS),
-    beginn + LAENGSTE_SCHICHT,
-  );
-  if (letztes.ende === null) return { art: "gehen", seit: letztes.beginn, faellig };
-  if (pauseLaeuft) return { art: "pause_ende", seit: letztes.ende, faellig };
+  // only an open shift needs its midnight, which takes a dozen time zone lookups
+  const faellig = () =>
+    Math.min(
+      Math.max(beginnInBerlin(plusTage(tag, 1)), beginn + OFFEN_HOECHSTENS),
+      beginn + LAENGSTE_SCHICHT,
+    );
+  if (letztes.ende === null) return { art: "gehen", seit: letztes.beginn, faellig: faellig() };
+  if (pauseLaeuft) return { art: "pause_ende", seit: letztes.ende, faellig: faellig() };
   return null;
 };
 

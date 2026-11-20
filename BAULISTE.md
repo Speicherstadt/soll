@@ -418,7 +418,7 @@ Alle Punkte: nach S-306.
   kein Betrieb die Daten eines anderen sieht oder ändert; Sätze sehen und ändern nur Inhaber und
   Planer; Playwright legt Kunde, Auftrag mit Budget, Tätigkeit und Satz an und archiviert (desktop und
   `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
-- [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
+- [x] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
   Fertig, wenn: je Person höchstens eine Stoppuhr läuft, vom Server erzwungen (auch bei zwei
   Anfragen zugleich); ein Tipp auf einen anderen Auftrag oder eine andere Tätigkeit die laufende

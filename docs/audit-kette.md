@@ -15,6 +15,14 @@ schreibt. Schlägt eine Schreiboperation fehl, etwa weil ihr Kettenglied nicht
 angehängt werden kann, bleibt von ihr nichts in der Datenbank, auch wenn der aufrufende Code den
 Fehler abfängt und weiterschreibt.
 
+## Wogegen die Kette schützt
+
+Die Trennung in eine lesende und eine schreibende Verbindung und der Test über den Quellcode schützen
+vor **Versehen im Code**: Kein Modul kann aus Versehen an der Kette vorbei schreiben. Gegen den, der
+den Server betreibt, schützen sie nicht, und das sollen sie auch nicht: Wer den Server betreibt,
+kann seine Datenbank und seinen Code ändern. Dagegen steht der **Prüfwert** in der Hand jeder Person
+(siehe unten), den der Betreiber nicht mehr ändern kann.
+
 ## Was ein Kettenglied enthält
 
 | Feld | Bedeutung |

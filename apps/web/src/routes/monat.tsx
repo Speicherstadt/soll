@@ -85,7 +85,7 @@ const MonatSeite = () => {
     >
       <Auswahl
         personen={q.personen()}
-        nutzerId={q.ansicht()?.nutzerId}
+        nutzerId={q.nutzerId() ?? q.ansicht()?.nutzerId}
         monat={q.monat()}
         onPerson={q.setNutzerId}
         onMonat={q.setMonat}

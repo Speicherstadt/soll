@@ -71,7 +71,9 @@ test("the person confirms the month, the owner closes it, the Prüfwert checks o
   await jonas.goto("/zeiten");
   await jonas.getByRole("link", { name: t("monat_titel") }).click();
   await expect(jonas).toHaveURL("/monat");
+  await expect(jonas.getByRole("heading", { level: 1 })).toContainText("Jonas Weber");
   await jonas.getByLabel(t("zeiten_person")).selectOption({ label: "Sandra Kühn" });
+  await expect(jonas.getByRole("heading", { level: 1 })).toContainText("Sandra Kühn");
   await expect(jonas.getByText(/^Sandra Kühn hat bestätigt, /)).toBeVisible();
   await jonas.getByRole("button", { name: t("monat_abschliessen") }).click();
   await expect(jonas.getByText(/^Abgeschlossen von Jonas Weber, /)).toBeVisible();
@@ -105,7 +107,9 @@ test("the owner closes without confirmation only with a reason, then the month i
 }) => {
   const { jonas } = await weberMitMonat(page, browser);
   await jonas.goto("/monat");
+  await expect(jonas.getByRole("heading", { level: 1 })).toContainText("Jonas Weber");
   await jonas.getByLabel(t("zeiten_person")).selectOption({ label: "Sandra Kühn" });
+  await expect(jonas.getByRole("heading", { level: 1 })).toContainText("Sandra Kühn");
   await jonas.getByRole("button", { name: t("monat_abschliessen") }).click();
   const dialog = jonas.getByRole("dialog", { name: t("monat_ohne_titel") });
   await dialog.getByRole("button", { name: t("monat_abschliessen") }).click();
@@ -116,6 +120,8 @@ test("the owner closes without confirmation only with a reason, then the month i
   await expect(jonas.getByText(/^Abgeschlossen von Jonas Weber, /)).toBeVisible();
 
   await page.goto("/monat");
+  // the month as closed has loaded before the check: no button to confirm any more
+  await expect(page.getByText(/^Abgeschlossen von Jonas Weber, /)).toBeVisible();
   await expect(page.getByRole("button", { name: t("monat_bestaetigen") })).toHaveCount(0);
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);

@@ -1,5 +1,6 @@
 import {
   arbeitszeitmodelle,
+  bedarfe,
   betriebe,
   einladungen,
   geraete,
@@ -8,6 +9,8 @@ import {
   modellzuordnungen,
   monatsabschluesse,
   pins,
+  schichten,
+  schichtvorlagen,
   standorte,
   stempelungen,
 } from "../../db/schema.ts";
@@ -28,6 +31,9 @@ export const kettenTabellen = {
   geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
+  schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
+  schichten: { tabelle: schichten, schluessel: ["schichtId"] },
+  bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

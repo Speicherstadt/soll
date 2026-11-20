@@ -43,6 +43,13 @@
       "when": 1795181501962,
       "tag": "0005_monatsabschluss",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1795185937485,
+      "tag": "0006_dienstplan",
+      "breakpoints": true
     }
   ]
 }

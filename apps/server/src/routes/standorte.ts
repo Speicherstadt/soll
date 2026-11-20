@@ -2,6 +2,7 @@ import { LAENDER, REGIONEN, type Region } from "@soll/arbeitszeit";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
+import { standortVerplant } from "../modules/dienstplan/index.ts";
 import { standortAnlegen, standortEntfernen, standorteLesen } from "../modules/standorte/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
@@ -34,6 +35,9 @@ export const standortRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number
     })
     .delete("/:standortId", recht("betrieb:einrichten"), (c) => {
       const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      // a site with shifts or need of the plan stays, its plan would be lost from every view (S-501)
+      if (standortVerplant(db, kontext.betriebId, c.req.param("standortId")))
+        return c.json({ fehler: "verplant" }, 409);
       if (!standortEntfernen(db, schreibDb, kontext, c.req.param("standortId")))
         return c.json({ fehler: "unbekannt" }, 404);
       return c.body(null, 204);

@@ -144,3 +144,59 @@ test("38,5 hours a week are stored as whole minutes that sum to the week", async
   expect((await gesendet).postDataJSON().sollMinuten).toEqual([462, 462, 462, 462, 462, 0, 0]);
   await expect(page.getByRole("list", { name: t("modelle_liste") })).toContainText("38:30");
 });
+
+/** Holds the requests for links until the returned function is called */
+const linksAufhalten = async (page: Page) => {
+  let freigeben = () => {};
+  const frei = new Promise<void>((resolve) => {
+    freigeben = resolve;
+  });
+  await page.route("**/api/v1/einladungen/liste", async (route) => {
+    await frei;
+    await route.continue();
+  });
+  return freigeben;
+};
+
+test("going back while the links are made loses no one added in the meantime", async ({ page }) => {
+  await bisZuDenEinladungen(page, "Name\nSandra Kühn");
+  const freigeben = await linksAufhalten(page);
+  const angefragt = page.waitForRequest((a) => a.url().endsWith("/api/v1/einladungen/liste"));
+  await page.getByRole("button", { name: t("einladungen_erstellen") }).click();
+  await angefragt;
+  const zurueck = page.getByRole("button", { name: t("einrichtung_zurueck") });
+  // either the way back waits for the links, or whoever is added there stays on the list
+  if (await zurueck.isEnabled()) {
+    await zurueck.click();
+    await page.getByLabel(t("person_name"), { exact: true }).fill("Leon Brandt");
+    await page.getByRole("button", { name: t("person_hinzufuegen") }).click();
+    freigeben();
+    await page.waitForLoadState("networkidle");
+    await expect(page.getByRole("list", { name: t("mitarbeiter_liste") })).toContainText(
+      "Leon Brandt",
+    );
+  } else {
+    freigeben();
+    await expect(
+      page.getByRole("list", { name: t("einladungen_liste") }).getByRole("textbox"),
+    ).toHaveCount(1);
+  }
+});
+
+test("finishing while the links are made does not leave before they are shown", async ({
+  page,
+}) => {
+  await bisZuDenEinladungen(page, "Name\nSandra Kühn");
+  const freigeben = await linksAufhalten(page);
+  const angefragt = page.waitForRequest((a) => a.url().endsWith("/api/v1/einladungen/liste"));
+  await page.getByRole("button", { name: t("einladungen_erstellen") }).click();
+  await angefragt;
+  const abschliessen = page.getByRole("button", { name: t("einrichtung_abschliessen") });
+  if (await abschliessen.isEnabled()) await abschliessen.click({ timeout: 2000 });
+  freigeben();
+  // the links are shown once only: the page must still be there to show them
+  await expect(
+    page.getByRole("list", { name: t("einladungen_liste") }).getByRole("textbox"),
+  ).toHaveCount(1);
+  await expect(page).toHaveURL("/einrichtung");
+});

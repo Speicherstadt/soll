@@ -139,6 +139,30 @@ describe("findings in the plan (S-502)", () => {
     expect(antwort.status).toBe(400);
   });
 
+  it("reads the end of last night's stamped shift, stamped this morning (§ 5 ArbZG)", async () => {
+    const { server, lea, tom, standortId } = await elbblick();
+    const um = (text: string) => Date.parse(`${text}+01:00`);
+    server.stelleUhr(um("2026-11-23T10:00:00"));
+    for (const [art, zeitpunkt] of [
+      ["kommen", um("2026-11-22T22:00:00")],
+      ["gehen", um("2026-11-23T06:00:00")],
+    ] as const) {
+      const antwort = await tom.anfrage("/api/v1/arbeitszeit/stempelungen/nachtrag", {
+        body: { art, zeitpunkt, grund: "vergessen" },
+      });
+      expect(antwort.status).toBe(201);
+    }
+    const spaet = await planen(lea, {
+      ...schichtVon(standortId, tom.nutzerId, "2026-11-23"),
+      beginnMinute: 15 * 60 + 30,
+      endeMinute: 21 * 60,
+      pauseMinuten: 0,
+    });
+    expect(await befundeDer(lea, standortId, "2026-11-23")).toContainEqual(
+      expect.objectContaining({ regel: "R-05", schichtIds: [spaet.schichtId] }),
+    );
+  });
+
   it("names a draft of tomorrow for a person on call (§ 12 TzBfG)", async () => {
     const { mia, lea, tom, standortId } = await elbblick();
     await mia.anfrage(`/api/v1/personen/${tom.nutzerId}/angaben`, {

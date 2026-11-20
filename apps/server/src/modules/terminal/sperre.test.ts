@@ -68,3 +68,37 @@ describe("lock of a terminal", () => {
     expect(heute).toMatchObject({ fehlversuche: 1, sperren: 0, fehlerTag: "2026-11-21" });
   });
 });
+
+describe("lock of a terminal at the changes of summer time", () => {
+  it("locks until the midnight after the night the clocks go forward", () => {
+    const abend = Date.parse("2026-03-28T22:00:00+01:00");
+    expect(fehlversuche(FEHLVERSUCHE_JE_TAG, OHNE, abend).gesperrtBis).toBe(
+      Date.parse("2026-03-29T00:00:00+01:00"),
+    );
+    const tag = Date.parse("2026-03-29T10:00:00+02:00");
+    expect(fehlversuche(FEHLVERSUCHE_JE_TAG, OHNE, tag).gesperrtBis).toBe(
+      Date.parse("2026-03-30T00:00:00+02:00"),
+    );
+  });
+
+  it("locks until the midnight after the night the clocks go back", () => {
+    const tag = Date.parse("2026-10-25T10:00:00+01:00");
+    expect(fehlversuche(FEHLVERSUCHE_JE_TAG, OHNE, tag).gesperrtBis).toBe(
+      Date.parse("2026-10-26T00:00:00+01:00"),
+    );
+  });
+
+  it("counts a try just after midnight in Berlin to the new day, though UTC is still the old one", () => {
+    const gestern = fehlversuche(
+      FEHLVERSUCHE_JE_TAG - 1,
+      OHNE,
+      Date.parse("2026-07-10T20:00:00+02:00"),
+    );
+    const kurzNach = Date.parse("2026-07-11T00:30:00+02:00");
+    expect(nachFehlversuch(gestern, kurzNach)).toMatchObject({
+      fehlversuche: 1,
+      sperren: 0,
+      fehlerTag: "2026-07-11",
+    });
+  });
+});

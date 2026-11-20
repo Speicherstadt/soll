@@ -3,8 +3,9 @@ import { kettePruefen } from "../modules/audit/index.ts";
 import { testServer } from "../test-server.ts";
 
 const abschluss = vi.hoisted(() => ({ geschlossen: false }));
-vi.mock("../modules/arbeitszeit/abschluss.ts", () => ({
-  monatAbgeschlossen: () => abschluss.geschlossen,
+vi.mock("../modules/arbeitszeit/abschluss.ts", async (original) => ({
+  ...(await original<typeof import("../modules/arbeitszeit/abschluss.ts")>()),
+  aenderungGesperrt: () => abschluss.geschlossen,
 }));
 
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;
@@ -258,7 +259,7 @@ describe("changing a stamp", () => {
     expect(server.sqlite.query("SELECT COUNT(*) AS n FROM stempelungen").get()).toEqual({ n: 3 });
   });
 
-  it("refuses every change in a closed month (S-306 decides; asked before each write)", async () => {
+  it("refuses every change in a closed month (asked before each write; S-306 tests the lock)", async () => {
     const { server, jonas, sandra, kommen } = await mitTag();
     abschluss.geschlossen = true;
     const vorher = server.sqlite.query("SELECT COUNT(*) AS n FROM stempelungen").get();

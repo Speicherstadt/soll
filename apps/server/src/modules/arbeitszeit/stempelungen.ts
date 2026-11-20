@@ -1,10 +1,10 @@
-import { type Stempelart, tagInBerlin } from "@soll/arbeitszeit";
+import type { Stempelart, Stempelung } from "@soll/arbeitszeit";
 import { and, eq, gte, isNotNull, isNull, lt, or } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { stempelungen } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
-import { monatAbgeschlossen } from "./abschluss.ts";
+import { aenderungGesperrt } from "./abschluss.ts";
 
 type Zeile = typeof stempelungen.$inferSelect;
 export type Quelle = Zeile["quelle"];
@@ -94,10 +94,37 @@ const einfuegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neu): Zeile =>
     }),
   );
 
-const gesperrt = (db: Db, betriebId: string, nutzerId: string, ...zeitpunkte: number[]) =>
-  zeitpunkte.some((zeitpunkt) =>
-    monatAbgeschlossen(db, betriebId, nutzerId, tagInBerlin(zeitpunkt)),
+const TAG_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Whether a change would touch a month closed for the person (S-306): `weg` leaves force, `neu`
+ * comes in. The stamps around are read only when a month is closed.
+ */
+const gesperrt = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  aenderung: { weg?: Zeile; neu?: Stempelung | undefined },
+): boolean => {
+  const zeitpunkte = [aenderung.weg?.zeitpunkt, aenderung.neu?.zeitpunkt].filter(
+    (zeitpunkt): zeitpunkt is number => zeitpunkt !== undefined,
   );
+  return aenderungGesperrt(db, betriebId, nutzerId, {
+    zeitpunkte,
+    vorher: () =>
+      stempelungenIn(
+        db,
+        betriebId,
+        nutzerId,
+        Math.min(...zeitpunkte) - 3 * TAG_MS,
+        Math.max(...zeitpunkte) + 3 * TAG_MS,
+      ),
+    nachher: (vorher) => [
+      ...vorher.filter((stempel) => stempel.stempelId !== aenderung.weg?.stempelId),
+      ...(aenderung.neu ? [aenderung.neu] : []),
+    ],
+  });
+};
 
 export type StempelErgebnis =
   | { ok: true; stempel: Stempel }
@@ -118,7 +145,11 @@ export const stempeln = (
   kontext: Kontext,
   angaben: { art: Stempelart; geraetZeitpunkt: number | null; quelle: Quelle },
 ): StempelErgebnis => {
-  if (gesperrt(db, kontext.betriebId, kontext.akteur, kontext.jetzt))
+  if (
+    gesperrt(db, kontext.betriebId, kontext.akteur, {
+      neu: { art: angaben.art, zeitpunkt: kontext.jetzt },
+    })
+  )
     return { ok: false, grund: "abgeschlossen" };
   const zeile = einfuegen(schreibDb, kontext, {
     nutzerId: kontext.akteur,
@@ -140,7 +171,7 @@ export const nachtragen = (
   angaben: { nutzerId: string; art: Stempelart; zeitpunkt: number; grund: string },
 ): StempelErgebnis => {
   if (angaben.zeitpunkt > kontext.jetzt) return { ok: false, grund: "zukunft" };
-  if (gesperrt(db, kontext.betriebId, angaben.nutzerId, angaben.zeitpunkt))
+  if (gesperrt(db, kontext.betriebId, angaben.nutzerId, { neu: angaben }))
     return { ok: false, grund: "abgeschlossen" };
   const zeile = einfuegen(schreibDb, kontext, {
     nutzerId: angaben.nutzerId,
@@ -181,12 +212,14 @@ const ersetzen = (
     return { ok: false, grund: "keine_berechtigung" };
   const zeitpunkt = angaben.zeitpunkt ?? alt.zeitpunkt;
   if (zeitpunkt > kontext.jetzt) return { ok: false, grund: "zukunft" };
-  if (gesperrt(db, kontext.betriebId, alt.nutzerId, alt.zeitpunkt, zeitpunkt))
+  const art = angaben.art ?? alt.art;
+  const neu = angaben.entfernt ? undefined : { art, zeitpunkt };
+  if (gesperrt(db, kontext.betriebId, alt.nutzerId, { weg: alt, neu }))
     return { ok: false, grund: "abgeschlossen" };
   try {
     const zeile = einfuegen(schreibDb, kontext, {
       nutzerId: alt.nutzerId,
-      art: angaben.art ?? alt.art,
+      art,
       zeitpunkt,
       geraetZeitpunkt: null,
       quelle: alt.quelle,

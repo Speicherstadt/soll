@@ -2,8 +2,10 @@ import {
   arbeitszeitmodelle,
   betriebe,
   einladungen,
+  korrekturen,
   mitgliedschaften,
   modellzuordnungen,
+  monatsabschluesse,
   pins,
   standorte,
   stempelungen,
@@ -22,6 +24,8 @@ export const kettenTabellen = {
   arbeitszeitmodelle: { tabelle: arbeitszeitmodelle, schluessel: ["modellId"] },
   modellzuordnungen: { tabelle: modellzuordnungen, schluessel: ["nutzerId", "gueltigAb"] },
   stempelungen: { tabelle: stempelungen, schluessel: ["stempelId"] },
+  monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
+  korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

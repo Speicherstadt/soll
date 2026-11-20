@@ -2,13 +2,16 @@ import { Hono } from "hono";
 import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
+import type { Mailer } from "./modules/mail/index.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
+import { monatRouten } from "./routes/monat.ts";
 import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
+import { pruefRouten } from "./routes/pruefen.ts";
 import { standortRouten } from "./routes/standorte.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
 
@@ -21,12 +24,14 @@ export type AppDeps = {
   db: Db;
   schreibDb: SchreibDb;
   auth: Auth;
-  /** Where the instance is reached, for links in invitations */
+  /** Where the instance is reached, for links in invitations and on time sheets */
   url: string;
+  /** Mail over SMTP from the configuration; null while none is set (S-306) */
+  mail: Mailer | null;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
-export const createApp = ({ log, now, version, db, schreibDb, auth, url }: AppDeps) => {
+export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }: AppDeps) => {
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -46,6 +51,7 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url }: AppDe
   app.get("/health", (c) => c.json({ status: "ok", version }));
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
+  app.route("/api/v1/pruefen", pruefRouten(db));
 
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db))
@@ -60,6 +66,7 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url }: AppDe
       modulRouten(db, {
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
+          "/monat": monatRouten(db, schreibDb, now, { url, mail }),
           "/": zeitRouten(db, schreibDb, now),
         },
       }),

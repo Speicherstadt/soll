@@ -118,6 +118,61 @@ export const stempelungen = sqliteTable(
 );
 
 /**
+ * The steps of closing a month of one person (S-306), only appended: the person confirms
+ * (`bestaetigt`, again after a change), then the business closes (`abgeschlossen`, once per person
+ * and month), which locks the month. `inhalt` is the month's content in canonical JSON
+ * (modules/arbeitszeit/monatsinhalt.ts) and `inhalt_hash` its SHA-256; the link of the closing row
+ * in the audit chain is the Prüfwert on the person's time sheet. `grund` says why the business
+ * closed without a valid confirmation of the person. `sperrt` names the month a closing locks (null for
+ * a confirmation), so a unique index lets a month close only once.
+ */
+export const monatsabschluesse = sqliteTable(
+  "monatsabschluesse",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    abschlussId: text("abschluss_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    monat: text("monat").notNull(),
+    schritt: text("schritt", { enum: ["bestaetigt", "abgeschlossen"] }).notNull(),
+    inhalt: text("inhalt").notNull(),
+    inhaltHash: text("inhalt_hash").notNull(),
+    grund: text("grund"),
+    sperrt: text("sperrt"),
+    erstelltVon: text("erstellt_von").notNull(),
+    erstelltAm: integer("erstellt_am").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.abschlussId] }),
+    index("monatsabschluesse_person").on(t.betriebId, t.nutzerId, t.monat),
+    uniqueIndex("monatsabschluesse_einmal").on(t.betriebId, t.nutzerId, t.sperrt),
+  ],
+);
+
+/**
+ * A counter-entry to a day of a closed month (S-306, docs/plan.md "Änderungen an Stempelungen"):
+ * whole minutes with a sign and a reason, only appended. It leaves the locked rows and the Prüfwert
+ * as they are and is counted in the month it was entered in (`gebucht_in`).
+ */
+export const korrekturen = sqliteTable(
+  "korrekturen",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    korrekturId: text("korrektur_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    tag: text("tag").notNull(),
+    minuten: integer("minuten").notNull(),
+    grund: text("grund").notNull(),
+    gebuchtIn: text("gebucht_in").notNull(),
+    erstelltVon: text("erstellt_von").notNull(),
+    erstelltAm: integer("erstellt_am").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.korrekturId] }),
+    index("korrekturen_person").on(t.betriebId, t.nutzerId, t.tag),
+  ],
+);
+
+/**
  * Who belongs to a business in which role, mirrored from Better Auth's members by its hooks, so every
  * change of membership and role stands in the audit chain (CLAUDE.md, "Project specifics")
  */

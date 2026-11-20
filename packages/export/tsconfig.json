@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "../../node_modules/.tsbuild/export" },
+  // the exports run on the server (Bun); `types` lets tests and helpers use Buffer and node:zlib
+  "compilerOptions": { "outDir": "../../node_modules/.tsbuild/export", "types": ["bun"] },
   "include": ["src"]
 }

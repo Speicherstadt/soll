@@ -28,6 +28,7 @@ export const RECHTE = [
   "zeiten:alle",
   "zeiten:korrigieren",
   "modelle:zuordnen",
+  "monat:abschliessen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -46,6 +47,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "zeiten:alle",
     "zeiten:korrigieren",
     "modelle:zuordnen",
+    // the business confirms and closes a month: the owner, who answers for the records (S-306)
+    "monat:abschliessen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)

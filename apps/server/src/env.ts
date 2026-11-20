@@ -13,18 +13,25 @@ const schluessel = z
   );
 
 /** The server's settings from the environment, checked with Zod at the boundary */
-const envSchema = z.object({
-  SOLL_PORT: z.coerce.number().int().min(1).max(65535).default(8200),
-  SOLL_HOST: z.string().min(1).default("0.0.0.0"),
-  SOLL_VERSION: z.string().min(1).default("0.0.0"),
-  SOLL_DATA_DIR: z.string().min(1).default("data"),
-  SOLL_SECRET_KEY: schluessel,
-  // without a trailing slash: links are built as `${url}/einladung/…` and the passkey origin is the URL
-  SOLL_URL: z
-    .url()
-    .default("http://localhost:8200")
-    .transform((url) => url.replace(/\/+$/, "")),
-});
+const envSchema = z
+  .object({
+    SOLL_PORT: z.coerce.number().int().min(1).max(65535).default(8200),
+    SOLL_HOST: z.string().min(1).default("0.0.0.0"),
+    SOLL_VERSION: z.string().min(1).default("0.0.0"),
+    SOLL_DATA_DIR: z.string().min(1).default("data"),
+    SOLL_SECRET_KEY: schluessel,
+    // without a trailing slash: links are built as `${url}/einladung/…` and the passkey origin is the URL
+    SOLL_URL: z
+      .url()
+      .default("http://localhost:8200")
+      .transform((url) => url.replace(/\/+$/, "")),
+    // mail over SMTP (S-306): both or neither; the password in the URL stays in the environment
+    SOLL_SMTP_URL: z.url({ protocol: /^smtps?$/ }).optional(),
+    SOLL_MAIL_VON: z.string().min(3).optional(),
+  })
+  .refine((env) => (env.SOLL_SMTP_URL === undefined) === (env.SOLL_MAIL_VON === undefined), {
+    message: "SOLL_SMTP_URL and SOLL_MAIL_VON go together: set both or neither",
+  });
 
 export type Env = {
   port: number;
@@ -35,6 +42,8 @@ export type Env = {
   geheimerSchluessel: Uint8Array;
   /** Where the instance is reached, for links in invitations and for Better Auth */
   url: string;
+  /** SMTP for mail, or null when the instance sends none */
+  smtp: { url: string; von: string } | null;
 };
 
 /** Reads the settings or throws with the reason; the server refuses to start without a valid key */
@@ -47,5 +56,9 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
     dataDir: parsed.SOLL_DATA_DIR,
     geheimerSchluessel: new Uint8Array(Buffer.from(parsed.SOLL_SECRET_KEY, "base64")),
     url: parsed.SOLL_URL,
+    smtp:
+      parsed.SOLL_SMTP_URL && parsed.SOLL_MAIL_VON
+        ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
+        : null,
   };
 };

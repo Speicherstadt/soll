@@ -1,6 +1,7 @@
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
+import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
 
@@ -8,7 +9,9 @@ export const TEST_URL = "http://localhost:28200";
  * A server on a fresh test database with Better Auth, and helpers to act as people over HTTP, as a
  * browser would (cookies between calls)
  */
-export const testServer = (optionen: { log?: (line: string) => void; uhr?: () => number } = {}) => {
+export const testServer = (
+  optionen: { log?: (line: string) => void; uhr?: () => number; mail?: Mailer | null } = {},
+) => {
   const datenbank = testDatenbank();
   let uhr = 1_790_000_000_000;
   const jetzt = optionen.uhr ?? (() => uhr);
@@ -27,6 +30,7 @@ export const testServer = (optionen: { log?: (line: string) => void; uhr?: () =>
     schreibDb: datenbank.schreibDb,
     auth,
     url: TEST_URL,
+    mail: optionen.mail ?? null,
   });
 
   /** A browser of one person: keeps its cookies */

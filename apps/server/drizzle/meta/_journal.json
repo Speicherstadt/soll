@@ -29,6 +29,13 @@
       "when": 1795167221481,
       "tag": "0003_stempeln",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1795179241624,
+      "tag": "0004_monatsabschluss",
+      "breakpoints": true
     }
   ]
 }

@@ -36,8 +36,8 @@ describe("R-15: Arbeitszeit der Jugendlichen", () => {
     expect(befund?.tage).toHaveLength(6);
   });
 
-  it("Verstoß: Mo 8:31 – „über 8:30“", () => {
-    expect(jugendArbeitszeit(woche(MONTAG, ["8:31"]), LEON).befunde).toEqual([
+  it("Verstoß: Mo 8:31, Di 6:00 – „über 8:30“ for Mo", () => {
+    expect(jugendArbeitszeit(woche(MONTAG, ["8:31", "6:00"]), LEON).befunde).toEqual([
       {
         regel: "R-15",
         norm: "§ 8 Abs. 2a JArbSchG",
@@ -47,6 +47,21 @@ describe("R-15: Arbeitszeit der Jugendlichen", () => {
         minuten: 511,
         grenze: 510,
         ueber: 1,
+      },
+    ]);
+  });
+
+  it("ohne kürzeren Tag: Mo 8:31 – „über 8 h“, 31 minutes over (§ 8 Abs. 1)", () => {
+    expect(jugendArbeitszeit(woche(MONTAG, ["8:31"]), LEON).befunde).toEqual([
+      {
+        regel: "R-15",
+        norm: "§ 8 Abs. 1 JArbSchG",
+        schwere: "verstoss",
+        art: "ueber_8h",
+        tage: [MONTAG],
+        minuten: 511,
+        grenze: 480,
+        ueber: 31,
       },
     ]);
   });
@@ -104,17 +119,17 @@ describe("R-15: Arbeitszeit der Jugendlichen", () => {
     ]);
   });
 
-  it("Geburtstag: born 16.6.2008, Mo 15.6.2026 and Di 16.6.2026 (18th birthday) 8:31 – only Mo", () => {
+  it("Geburtstag: born 16.6.2008, Mo 15.6.2026 and Di 16.6.2026 (18th birthday) 8:31 – „über 8 h“ only Mo", () => {
     const geboren = { ...LEON, geburtsdatum: "2008-06-16" };
     expect(arten(woche("2026-06-15", ["8:31", "8:31"]), geboren)).toEqual([
-      ["ueber_8_30", ["2026-06-15"]],
+      ["ueber_8h", ["2026-06-15"]],
     ]);
   });
 
   it("29. Februar: born 29.2.2008, Sa 28.2.2026 and So 1.3.2026 8:31 – only the 28.2.", () => {
     const geboren = { ...LEON, geburtsdatum: "2008-02-29" };
     const tage = woche("2026-02-23", ["", "", "", "", "", "8:31", "8:31"]);
-    expect(arten(tage, geboren)).toEqual([["ueber_8_30", ["2026-02-28"]]]);
+    expect(arten(tage, geboren)).toEqual([["ueber_8h", ["2026-02-28"]]]);
   });
 
   it("counts only the days before the 18th birthday into the week", () => {
@@ -147,8 +162,8 @@ describe("R-15: Arbeitszeit der Jugendlichen", () => {
       jugendArbeitszeit(woche("2025-12-29", ["8:31", "8:31", "8:31", "8:31", "8:31"]), LEON),
     ).toEqual({
       befunde: [
-        expect.objectContaining({ art: "ueber_8_30", tage: ["2026-01-01"] }),
-        expect.objectContaining({ art: "ueber_8_30", tage: ["2026-01-02"] }),
+        expect.objectContaining({ art: "ueber_8h", tage: ["2026-01-01"] }),
+        expect.objectContaining({ art: "ueber_8h", tage: ["2026-01-02"] }),
       ],
       nichtHinterlegt: ["2025-12-29", "2025-12-30", "2025-12-31"],
     });

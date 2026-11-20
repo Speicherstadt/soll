@@ -73,8 +73,9 @@ const tagesbefunde = (woche: Woche, optionen: JugendOptionen): JugendArbeitszeit
     optionen.geburtsdatum,
     ([tag, minuten], g): JugendArbeitszeitBefund[] => {
       if (minuten <= g.taeglich) return [];
-      const ausgleich = minuten > g.taeglichAusgleich;
-      if (!ausgleich && verkuerzt(woche, tag, optionen, g)) return [];
+      // 8:30 is the limit only where Abs. 2a allows it; otherwise the day is measured against 8 h
+      const ausgleich = verkuerzt(woche, tag, optionen, g);
+      if (ausgleich && minuten <= g.taeglichAusgleich) return [];
       const grenze = ausgleich ? g.taeglichAusgleich : g.taeglich;
       return [
         {

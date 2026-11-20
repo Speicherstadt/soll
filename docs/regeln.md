@@ -620,11 +620,12 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | erlaubt | Mo–Fr je 8:00 (40:00) | kein Befund | § 8 Abs. 1 JArbSchG |
 | Grenze | Mo–Do je 8:30, Fr 6:00 (40:00) | kein Befund | § 8 Abs. 2a JArbSchG |
 | Verstoß | Mo–Fr je 8:00, Sa 0:30 (40:30) | Verstoß „über 40 h in der Woche“ | § 8 Abs. 1 JArbSchG |
-| Verstoß | Mo 8:31 | Verstoß „über 8:30“ | § 8 Abs. 2a JArbSchG |
+| Verstoß | Mo 8:31, Di 6:00 | Verstoß „über 8:30“ für Mo | § 8 Abs. 2a JArbSchG |
+| ohne kürzeren Tag | Mo 8:31 | Verstoß „über 8 h“, 31 Minuten über | § 8 Abs. 1 JArbSchG (8:30 nur nach Abs. 2a) |
 | kein Ausgleich | Mo–Do je 8:30, Fr frei (34:00) | Verstoß „über 8 h“ für Mo bis Do | § 8 Abs. 2a JArbSchG („an einzelnen Werktagen die Arbeitszeit auf weniger als acht Stunden verkürzt“) |
 | Feiertag | Hamburg, Woche mit Pfingstmontag 25.5.2026, Di–Do je 8:30, Fr 7:00 (32:30) | Verstoß „über 40 h in der Woche“: 8:00 für den Feiertag angerechnet (40:30) | § 4 Abs. 4 Satz 2 JArbSchG |
-| Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:31 | Verstoß „über 8:30“ nur für Mo | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2 BGB |
-| 29. Februar | geboren 29.2.2008: Sa 28.2.2026 und So 1.3.2026 je 8:31 | Verstoß „über 8:30“ nur für den 28.2. (18 ab dem 1.3.) | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2, § 188 Abs. 2 und 3 BGB |
+| Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:31 | Verstoß „über 8 h“ nur für Mo | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2 BGB |
+| 29. Februar | geboren 29.2.2008: Sa 28.2.2026 und So 1.3.2026 je 8:31 | Verstoß „über 8 h“ nur für den 28.2. (18 ab dem 1.3.) | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2, § 188 Abs. 2 und 3 BGB |
 | Sonntag | Café, Mo 16.11.2026 6:00, So 22.11.2026 8:15 | Verstoß „über 8 h“ für So | § 8 Abs. 2a JArbSchG („an den übrigen Werktagen“) |
 
 ### R-16 Ruhepausen

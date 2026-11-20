@@ -18,7 +18,8 @@ const TABELLEN = Object.keys(schema).join("|");
  * name), raw SQL that writes,
  * Drizzle's `sql` template and `sql.raw`, the chained tables as `kettenTabellen` exports them, and
  * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything), and
- * the writable connection oeffneDatenbank hands out as `sqlite` and `SchreibDb.verbindung`
+ * the writable connection oeffneDatenbank hands out as `sqlite` and `SchreibDb.verbindung`, and the
+ * pragmas and DDL that lift the read-only connection or shadow a table (Drizzle's run takes a string)
  */
 const SCHREIBEN = [
   new RegExp(`\\.(insert|update|delete)\\s*\\(\\s*(\\w+\\.)?(${TABELLEN})\\b`),
@@ -29,6 +30,9 @@ const SCHREIBEN = [
   /\bsql\s*`/,
   /from\s+["']bun:sqlite["']/,
   /(?<![\w/-])(sqlite|verbindung)(?![\w-])/,
+  /\bPRAGMA\b/i,
+  /\bCREATE\s+(\w+\s+)*(TABLE|VIEW|TRIGGER|INDEX)\b/i,
+  /\bATTACH\s+(DATABASE\s+)?["'`$]/i,
 ];
 
 const quellen = (ordner: string): string[] =>
@@ -97,6 +101,19 @@ describe("no write past the audit chain", () => {
       "schreibDb.verbindung.run(anweisung);",
     ].flatMap((zeile) => umwegeIn("x.ts", zeile));
     expect(umwege).toHaveLength(3);
+  });
+
+  it("recognises a pragma or DDL that lifts the read-only connection or shadows a table", () => {
+    // Drizzle's db.run takes a plain string: PRAGMA query_only = OFF lifts what oeffnen.ts set, and a
+    // TEMP table named like a table of Soll then shadows it for every read, with rows that never
+    // passed the chain and no INSERT anywhere
+    const umwege = [
+      'db.run("PRAGMA query_only = OFF");',
+      "db.run(\"CREATE TEMP TABLE betriebe AS SELECT 'weber' AS betrieb_id\");",
+      'db.run("create temporary view betriebe as select 1");',
+      "db.run(\"ATTACH DATABASE 'x.db' AS x\");",
+    ].flatMap((zeile) => umwegeIn("x.ts", zeile));
+    expect(umwege).toHaveLength(4);
   });
 
   it("recognises a write to a table of the schema imported under another name", () => {

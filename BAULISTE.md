@@ -118,7 +118,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   der Grenze, fehlende Pause, Dauer der Ruhezeit); Branche (§ 5 Abs. 2), Ausgleichszeitraum, sein
   Beginn und der Zeitraum für den Ausgleich der Ruhezeit sind Parameter mit sicherer Vorgabe; ein
   Tag ohne Regelversion wird „nicht hinterlegt“ statt mit fremden Grenzwerten geprüft.
-- [ ] **S-203 Nacht, Sonn- und Feiertage** – §§ 2, 6, 9 bis 11 ArbZG, Ersatzruhetag.
+- [x] **S-203 Nacht, Sonn- und Feiertage** – §§ 2, 6, 9 bis 11 ArbZG, Ersatzruhetag.
   nach: S-104, S-105.
   Fertig, wenn: jeder Fall von R-06 bis R-09 in `docs/regeln.md` wörtlich als Test besteht, auch über
   Mitternacht, beide Zeitumstellungen, den 24.12. und den 31.12. Dazu: die Regeln nehmen dieselben

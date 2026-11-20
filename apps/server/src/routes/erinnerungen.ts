@@ -23,8 +23,9 @@ const base64url = z
   .max(200);
 
 /**
- * A push service's endpoint: https only, and no address of the server's own network, as the server
- * posts to it (RFC 8030, Section 8: a push service is reached over TLS)
+ * A push service's endpoint: https only, with a host name that has a dot, so no IP address,
+ * localhost or bare name of the local network, as the server posts to it (RFC 8030, Section 8: a
+ * push service is reached over TLS). A name that resolves into the local network is not caught.
  */
 const endpoint = z
   .url({ protocol: /^https$/ })

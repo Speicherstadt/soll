@@ -1,5 +1,7 @@
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, For, Show } from "solid-js";
+import { schreiben } from "../abfragen/abfrage.ts";
+import { alle, PFAD } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -94,7 +96,6 @@ const VorlageFelder = (props: { entwurf: Entwurf; setze: (teil: Partial<Entwurf>
 export const VorlagenDialog = (props: {
   vorlagen: readonly Vorlage[];
   onSchliessen: () => void;
-  onGeaendert: () => void;
 }) => {
   const [offen, setOffen] = createSignal(true);
   const [bearbeitet, setBearbeitet] = createSignal<string | null>(null);
@@ -114,9 +115,10 @@ export const VorlagenDialog = (props: {
         : LEER,
     );
   };
+  // the list comes from the plan's query, which loads again after each change
+  const aendern = schreiben(() => [alle(PFAD.vorlagen)]);
   const ergebnis = (ok: boolean, text: string) => {
     setFehler(ok ? "" : text);
-    if (ok) props.onGeaendert();
     return ok;
   };
   const speichern = async (event: SubmitEvent) => {
@@ -125,13 +127,15 @@ export const VorlagenDialog = (props: {
     if (neu.name === "") return setFehler(m.plan_fehler_name());
     const id = bearbeitet();
     const pfad = id ? `/api/v1/dienstplan/vorlagen/${id}` : "/api/v1/dienstplan/vorlagen";
-    const antwort = await api(pfad, { method: id ? "PUT" : "POST", body: neu });
+    const antwort = await aendern.mutate(() =>
+      api(pfad, { method: id ? "PUT" : "POST", body: neu }),
+    );
     if (ergebnis(antwort.ok, m.plan_fehler_eingabe())) waehlen(null);
   };
   const entfernen = async (vorlage: Vorlage) => {
-    const antwort = await api(`/api/v1/dienstplan/vorlagen/${vorlage.vorlageId}`, {
-      method: "DELETE",
-    });
+    const antwort = await aendern.mutate(() =>
+      api(`/api/v1/dienstplan/vorlagen/${vorlage.vorlageId}`, { method: "DELETE" }),
+    );
     if (ergebnis(antwort.ok, m.fehler_speichern()) && bearbeitet() === vorlage.vorlageId)
       waehlen(null);
   };

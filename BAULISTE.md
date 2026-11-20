@@ -331,7 +331,7 @@ Alle Punkte: nach S-306.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-501 Planung** – Schichtvorlagen, Wochenansicht, Ziehen und Ablegen, Bedarf je Rolle und
+- [x] **S-501 Planung** – Schichtvorlagen, Wochenansicht, Ziehen und Ablegen, Bedarf je Rolle und
   Standort.
   Fertig, wenn: ein Planer eine Woche je Standort aus Vorlagen plant, Schichten per Ziehen und
   Ablegen und ebenso mit der Tastatur verschiebt und sieht, wo der Bedarf je Rolle nicht gedeckt ist

@@ -6,6 +6,7 @@
 export * from "./arbeitstag/index.ts";
 export type { Befund, Schwere } from "./befund.ts";
 export * from "./feiertage/index.ts";
+export * from "./heute/index.ts";
 export * from "./jahreswerte/index.ts";
 export {
   istTag,
@@ -16,6 +17,7 @@ export {
   tageZwischen,
   wochentag,
 } from "./kalender/tag.ts";
+export { minuteInBerlin, zeitpunktInBerlin } from "./kalender/wanduhr.ts";
 export { beginnInBerlin, tagInBerlin } from "./kalender/zeit.ts";
 export {
   type Fragen,

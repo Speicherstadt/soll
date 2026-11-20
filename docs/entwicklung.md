@@ -77,7 +77,9 @@ Der Server liest seine Einstellungen aus der Umgebung:
 | `SOLL_VERSION` | `0.0.0` | Version, die `/health` meldet |
 | `SOLL_DATA_DIR` | `data` | Datenverzeichnis mit der Datenbank `soll.db` |
 | `SOLL_SECRET_KEY` | – (Pflicht) | 32 Bytes in Base64; ohne startet der Server nicht |
-| `SOLL_URL` | `http://localhost:8200` | Adresse der Instanz, für Einladungslinks |
+| `SOLL_URL` | `http://localhost:8200` | Adresse der Instanz, für Einladungslinks und die Prüfseite auf dem Stundenzettel |
+| `SOLL_SMTP_URL` | – | SMTP für Mail, etwa `smtps://soll:geheim@mail.example.de:465`; nur zusammen mit `SOLL_MAIL_VON` |
+| `SOLL_MAIL_VON` | – | Absender der Mails, etwa `Soll <soll@example.de>` |
 
 Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Die Query der
 Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header und Inhalte nie.

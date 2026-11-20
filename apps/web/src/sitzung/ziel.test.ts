@@ -66,4 +66,13 @@ describe("where the app leads", () => {
       zielFuer({ art: "offline", betrieb: betrieb({ module: ALLE_MODULE }) }, "/zeiten"),
     ).toBeNull();
   });
+
+  it("everyone to the check page, signed in or not (S-306)", () => {
+    expect(zielFuer({ art: "abgemeldet" }, "/pruefen")).toBeNull();
+    expect(zielFuer({ art: "ohne_betrieb" }, "/pruefen")).toBeNull();
+    expect(zielFuer({ art: "bereit", betrieb: betrieb() }, "/pruefen")).toBeNull();
+    expect(
+      zielFuer({ art: "bereit", betrieb: betrieb({ eingerichtet: false }) }, "/pruefen"),
+    ).toBeNull();
+  });
 });

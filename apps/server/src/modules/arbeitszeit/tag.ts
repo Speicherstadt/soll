@@ -9,7 +9,8 @@ import {
   tagInBerlin,
 } from "@soll/arbeitszeit";
 import type { Db } from "../../db/oeffnen.ts";
-import { type Aenderung, aenderungenIn, type Stempel, stempelungenIn } from "./stempelungen.ts";
+import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
+import { type Stempel, stempelungenIn } from "./stempelungen.ts";
 import { sollAm } from "./zuordnungen.ts";
 
 /** A working day of one person as Heute and the times of a day show it (S-304) */

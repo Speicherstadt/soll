@@ -4,6 +4,7 @@ import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { oeffneDatenbank } from "./db/oeffnen.ts";
 import { parseEnv } from "./env.ts";
+import { smtpMailer } from "./modules/mail/index.ts";
 
 const lesen = () => {
   try {
@@ -40,6 +41,7 @@ const app = createApp({
   schreibDb,
   auth,
   url: env.url,
+  mail: env.smtp ? smtpMailer(env.smtp.url, env.smtp.von) : null,
 });
 
 const server = Bun.serve({ port: env.port, hostname: env.host, fetch: app.fetch });

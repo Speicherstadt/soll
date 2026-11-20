@@ -7,6 +7,7 @@ import type { Modul, Module } from "@soll/arbeitszeit";
  */
 const MODUL_VON_PFAD: Readonly<Record<string, Modul>> = {
   "/zeiten": "arbeitszeit",
+  "/monat": "arbeitszeit",
   "/abwesenheiten": "arbeitszeit",
   "/dienstplan": "dienstplan",
   "/projekte": "projektzeit",

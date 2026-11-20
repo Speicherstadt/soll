@@ -83,8 +83,12 @@ stehen in derselben Art als eine Karte.
 Uhrzeit und Rolle; ein Befund erscheint am Block als Icon mit Text im Tooltip und in einer Liste
 unter dem Plan.
 
-**Monatsabschluss**: Tabelle der Tage mit Beginn, Ende, Pause, Dauer, Befund; Änderungen mit Grund
-und Person markiert; unten Summen und „Monat bestätigen“.
+**Monatsabschluss**: Kopf mit dem Stand (bestätigt, abgeschlossen), „Stundenzettel (PDF)“ und der
+Hauptaktion, für die Person „Monat bestätigen“, für den Inhaber „Monat abschließen“; darunter die
+Summen, die Tabelle der Tage mit Beginn, Ende, Pause, Dauer, Befund, Änderungen von Hand markiert,
+und der Prüfwert. Bewusst anders als im Mockup: die Tabelle zeigt nur Tage mit Arbeit, Befund oder
+Änderung statt einer zugeklappten Zeile, und am Handy fehlt die Spalte Pause. Die **Prüfseite**
+steht wie Anmelden als eine Karte ohne Seitenleiste.
 
 ## Komponenten
 

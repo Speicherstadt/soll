@@ -44,4 +44,24 @@ describe("parseEnv", () => {
     );
     expect(() => parseEnv({ SOLL_SECRET_KEY: "kein-schluessel!" })).toThrow(/32 bytes/);
   });
+
+  it("reads SMTP for mail only with a sender, and none without both", () => {
+    expect(parseEnv({ SOLL_SECRET_KEY: KEY }).smtp).toBeNull();
+    expect(
+      parseEnv({
+        SOLL_SECRET_KEY: KEY,
+        SOLL_SMTP_URL: "smtps://soll:geheim@mail.betrieb.test:465",
+        SOLL_MAIL_VON: "Soll <soll@betrieb.test>",
+      }).smtp,
+    ).toEqual({
+      url: "smtps://soll:geheim@mail.betrieb.test:465",
+      von: "Soll <soll@betrieb.test>",
+    });
+    expect(() =>
+      parseEnv({ SOLL_SECRET_KEY: KEY, SOLL_SMTP_URL: "smtp://mail.betrieb.test:25" }),
+    ).toThrow(/SOLL_SMTP_URL and SOLL_MAIL_VON/);
+    expect(() =>
+      parseEnv({ SOLL_SECRET_KEY: KEY, SOLL_SMTP_URL: "http://x.test", SOLL_MAIL_VON: "a@b.test" }),
+    ).toThrow();
+  });
 });

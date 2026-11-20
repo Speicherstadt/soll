@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { kettePruefen } from "../modules/audit/index.ts";
 import { testServer } from "../test-server.ts";
 import { testGeraet } from "./geraet-test-hilfen.ts";
+import { abgeschlossen, um as am, JETZT } from "./monat-testhilfen.ts";
 
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;
 // 20.11.2026, a Friday in winter time (+01:00)
@@ -312,5 +313,39 @@ describe("a correction of an offline stamp", () => {
       }),
     );
     expect(verschoben).toMatchObject({ offline: false, korrigiert: true });
+  });
+});
+
+describe("an offline stamp and a closed month (S-306)", () => {
+  const TAG = 24 * 60 * 60 * 1000;
+
+  it("is refused when its instant, corrected by the device's clock, lies in the closed month", async () => {
+    const { server, sandra } = await abgeschlossen();
+    const geraet = await testGeraet();
+    await sandra.anfrage(`/api/v1/arbeitszeit/geraete/${geraet.geraetId}`, {
+      method: "PUT",
+      body: { schluessel: geraet.schluessel },
+    });
+    const senden = async (body: unknown) =>
+      sandra.anfrage("/api/v1/arbeitszeit/stempelungen/offline", { body });
+    const vorher = server.sqlite.query("SELECT COUNT(*) AS n FROM stempelungen").get();
+    // stamped on 7 October, sent now with a clock that runs right
+    const oktober = await senden(
+      await geraet.offline(1, "kommen", am("2026-10-07T08:00:00+02:00"), JETZT),
+    );
+    expect(oktober.status).toBe(409);
+    expect(await json(oktober)).toEqual({ fehler: "abgeschlossen" });
+    // the device's clock runs three days ahead: it says 2 November, the server's clock 30 October
+    const vorgehend = await senden(
+      await geraet.offline(2, "kommen", am("2026-11-02T08:00:00+01:00"), JETZT + 3 * TAG),
+    );
+    expect(vorgehend.status).toBe(409);
+    expect(server.sqlite.query("SELECT COUNT(*) AS n FROM stempelungen").get()).toEqual(vorher);
+    // three days behind: it says 30 October, which is 2 November in the open month
+    const nachgehend = await senden(
+      await geraet.offline(3, "kommen", am("2026-10-30T08:00:00+01:00"), JETZT - 3 * TAG),
+    );
+    expect(nachgehend.status).toBe(201);
+    expect(await json(nachgehend)).toMatchObject({ zeitpunkt: am("2026-11-02T08:00:00+01:00") });
   });
 });

@@ -1,0 +1,141 @@
+import {
+  type Befund,
+  beginnInBerlin,
+  ersterTag,
+  letzterTag,
+  type Monat,
+  type Monatsstand,
+  monatVon,
+  plusMonate,
+  plusTage,
+  type Stempelart,
+  type Stempelung,
+  stempelSchluessel,
+  stempeltage,
+  type Tag,
+  tageImMonat,
+} from "@soll/arbeitszeit";
+import { kanonisch, sha256 } from "../audit/hash.ts";
+
+/*
+ * The content of a month of one person as it is closed (S-306): pure functions, no database. Its hash
+ * stands in the row of the closing and so in the audit chain; the Prüfwert the person gets is the link
+ * of that row. The check page compares the records kept here with what the database holds now.
+ */
+
+/** What a day records: its stamps in force, in time order, and the minutes of the person's model */
+export type Aufzeichnung = {
+  tag: Tag;
+  stempel: [Stempelart, number][];
+  /** the model's minutes for the weekday; null without a model ("nicht hinterlegt") */
+  modellMinuten: number | null;
+};
+
+/** A finding as the time sheet shows it: rule, norm (German in every language), severity, days */
+export type Blattbefund = Pick<Befund, "regel" | "norm" | "schwere" | "art" | "tage">;
+
+export type Summen = Pick<
+  Monatsstand,
+  "sollMinuten" | "gearbeitetMinuten" | "gutschriftMinuten" | "istMinuten" | "saldoMinuten"
+>;
+
+/** A counter-entry to a day of a closed month, counted in the month it was entered in */
+export type Gegeneintrag = { tag: Tag; minuten: number; grund: string };
+
+/** The month as it is confirmed and closed; `fassung` changes when the form ever changes */
+export type Monatsinhalt = {
+  fassung: 1;
+  monat: Monat;
+  nutzerId: string;
+  tage: Aufzeichnung[];
+  /** null: the month's Soll is "nicht hinterlegt" on the days in `nichtHinterlegt` */
+  summen: Summen | null;
+  nichtHinterlegt: Tag[];
+  befunde: Blattbefund[];
+  /** counter-entries to closed months entered in this month; Ist and balance include them */
+  gegeneintraege: Gegeneintrag[];
+};
+
+/**
+ * The stamps a month is read from (UTC milliseconds, `bis` exclusive), by closing, the check page and
+ * the lock alike: a shift ends 24 h after its start at the latest, so with shifts under 9 h apart
+ * where one ends depends on where the chain began, days back. Reading every month from the same
+ * window keeps the three in step. It begins six months back (with two days for a night shift), as a
+ * period of R-03 reaching into the month began at most that long before, and ends two days after.
+ */
+export const lesefenster = (monat: Monat): { von: number; bis: number } => ({
+  von: beginnInBerlin(plusTage(ersterTag(plusMonate(monat, -6)), -2)),
+  bis: beginnInBerlin(plusTage(letzterTag(monat), 3)),
+});
+
+/**
+ * The records of every day of the month: each stamp goes to the working day of its shift (a night
+ * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"). Pass the stamps of
+ * `lesefenster(monat)`.
+ */
+export const aufzeichnungen = (
+  monat: Monat,
+  stempelungen: readonly Stempelung[],
+  modellMinuten: (tag: Tag) => number | null,
+): Aufzeichnung[] => {
+  const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
+  const tagVon = stempeltage(sortiert);
+  const jeTag = new Map<Tag, [Stempelart, number][]>();
+  for (const stempel of sortiert) {
+    const tag = tagVon.get(stempelSchluessel(stempel));
+    if (tag === undefined || monatVon(tag) !== monat) continue;
+    jeTag.set(tag, [...(jeTag.get(tag) ?? []), [stempel.art, stempel.zeitpunkt]]);
+  }
+  return tageImMonat(monat).map((tag) => ({
+    tag,
+    stempel: jeTag.get(tag) ?? [],
+    modellMinuten: modellMinuten(tag),
+  }));
+};
+
+/** A finding reduced to what the sheet shows, so extra fields of a rule do not enter the hash */
+export const alsBlattbefund = ({ regel, norm, schwere, art, tage }: Befund): Blattbefund => ({
+  regel,
+  norm,
+  schwere,
+  art,
+  tage: [...tage],
+});
+
+export const monatsinhalt = (angaben: {
+  monat: Monat;
+  nutzerId: string;
+  tage: Aufzeichnung[];
+  summen: Summen | null;
+  nichtHinterlegt: readonly Tag[];
+  befunde: readonly Befund[];
+  gegeneintraege?: readonly Gegeneintrag[];
+}): Monatsinhalt => ({
+  fassung: 1,
+  monat: angaben.monat,
+  nutzerId: angaben.nutzerId,
+  tage: angaben.tage,
+  summen: angaben.summen,
+  nichtHinterlegt: [...angaben.nichtHinterlegt],
+  befunde: angaben.befunde.map(alsBlattbefund),
+  gegeneintraege: (angaben.gegeneintraege ?? []).map(({ tag, minuten, grund }) => ({
+    tag,
+    minuten,
+    grund,
+  })),
+});
+
+/** The hash of a month's content: SHA-256 of its canonical JSON (sorted keys, whole numbers only) */
+export const inhaltHash = (inhalt: Monatsinhalt): string => sha256(kanonisch(inhalt));
+
+/** The days whose records differ between the month as closed and as it stands now, in order */
+export const abweichendeTage = (
+  abgeschlossen: readonly Aufzeichnung[],
+  jetzt: readonly Aufzeichnung[],
+): Tag[] => {
+  const vorher = new Map(abgeschlossen.map((tag) => [tag.tag, kanonisch(tag)]));
+  const nachher = new Map(jetzt.map((tag) => [tag.tag, kanonisch(tag)]));
+  return [...new Set([...vorher.keys(), ...nachher.keys()])]
+    .filter((tag) => vorher.get(tag) !== nachher.get(tag))
+    .sort();
+};

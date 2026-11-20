@@ -3,11 +3,14 @@ import { Show } from "solid-js";
 import { Seitenleiste } from "../rahmen/seitenleiste.tsx";
 import { TabLeiste } from "../rahmen/tabLeiste.tsx";
 import { sitzungLaden } from "../sitzung/sitzung.ts";
-import { EINRICHTUNG, OFFEN, zielFuer } from "../sitzung/ziel.ts";
+import { EINRICHTUNG, OFFEN, PRUEFSEITE, zielFuer } from "../sitzung/ziel.ts";
 
-/** Pages without the app's frame: signing in, the setup and an invitation (design/mockup) */
+/** Pages without the app's frame: signing in, the setup, an invitation, the check page */
 const ohneRahmen = (pfad: string) =>
-  OFFEN.includes(pfad) || pfad === EINRICHTUNG || pfad.startsWith("/einladung/");
+  OFFEN.includes(pfad) ||
+  pfad === EINRICHTUNG ||
+  pfad === PRUEFSEITE ||
+  pfad.startsWith("/einladung/");
 
 const Rahmen = () => {
   const ort = useLocation();

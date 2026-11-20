@@ -48,7 +48,7 @@ type Person =
  * external staff and devices do not stamp here (docs/plan.md, "Wer Stempelungen ändert"). Whoever
  * may see all times also reads the past stamps of someone who left or no longer stamps.
  */
-const person = (
+export const person = (
   db: Db,
   c: Context<Anfrage>,
   nutzerId: string | undefined,
@@ -71,7 +71,7 @@ const person = (
  * Who stamps reads their own days; so does whoever has stamps in the business but no longer stamps
  * (e.g. now external staff), read-only (Art. 15 DSGVO; docs/anmeldung.md, "die eigenen Daten")
  */
-const liestEigene = (db: Db, c: Context<Anfrage>) =>
+export const liestEigene = (db: Db, c: Context<Anfrage>) =>
   darf(c.get("rolle"), "stempeln") || hatStempelungen(db, c.get("betriebId"), c.get("nutzerId"));
 
 /** A day of a person with the names of who changed what */
@@ -188,7 +188,8 @@ const personenRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
         modellId: eingabe.data.modellId,
         gueltigAb: eingabe.data.gueltigAb ?? tagInBerlin(kontext.jetzt),
       });
-      if (!ergebnis.ok) return c.json({ fehler: ergebnis.grund }, 404);
+      if (!ergebnis.ok)
+        return c.json({ fehler: ergebnis.grund }, ergebnis.grund === "abgeschlossen" ? 409 : 404);
       return c.json({ ok: true });
     });
 

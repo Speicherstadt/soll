@@ -39,6 +39,11 @@ describe("the areas of a business's modules", () => {
     expect(pfade.filter((pfad) => sichtbar(ALLE_MODULE, pfad))).toEqual(pfade);
   });
 
+  it("hides the month's closing without working time (S-306)", () => {
+    expect(sichtbar(FREELANCER, "/monat")).toBe(false);
+    expect(sichtbar(CAFE, "/monat")).toBe(true);
+  });
+
   it("fills the tab bar with Heute, two areas of the modules and Mehr", () => {
     expect(tabPfade(ALLE_MODULE)).toEqual(["/", "/dienstplan", "/abwesenheiten", "/mehr"]);
     expect(tabPfade(CAFE)).toEqual(["/", "/dienstplan", "/abwesenheiten", "/mehr"]);

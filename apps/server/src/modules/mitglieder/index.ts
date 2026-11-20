@@ -48,6 +48,10 @@ export const namenVon = (db: Db, nutzerIds: readonly string[]): Map<string, stri
           .map(({ id, name }) => [id, name]),
       );
 
+/** The e-mail address of an account, as Better Auth keeps it */
+export const adresseVon = (db: Db, nutzerId: string): string | null =>
+  db.select({ email: user.email }).from(user).where(eq(user.id, nutzerId)).get()?.email ?? null;
+
 /**
  * Mirrors a member and role of Better Auth into Soll's table, so each change stands in the audit
  * chain; called by the hooks of src/auth/auth.ts

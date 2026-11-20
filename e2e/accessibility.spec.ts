@@ -13,6 +13,7 @@ const pages = [
   "/auswertungen",
   "/einstellungen",
   "/mehr",
+  "/monat",
 ];
 
 const pruefen = async (page: Page) => {
@@ -36,8 +37,8 @@ for (const theme of ["light", "dark"] as const) {
       });
     }
 
-    // Without a session: signing in and up
-    for (const path of ["/anmelden", "/registrieren"]) {
+    // Without a session: signing in and up, and the check page of a Prüfwert
+    for (const path of ["/anmelden", "/registrieren", "/pruefen"]) {
       test(`axe finds nothing on ${path} @phone`, async ({ page }) => {
         await page.goto(path);
         await pruefen(page);

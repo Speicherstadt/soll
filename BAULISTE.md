@@ -265,12 +265,32 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Vitest, IndexedDB und WebCrypto in Unit-Tests durch einen Ersatz im Speicher; ein Test je neuem
   Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert; Playwright in `desktop` und
   `phone` mit `context.setOffline`; Texte in allen sechs Sprachen.
-- [ ] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
+- [x] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
   Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF mit dem Prüfwert der Kette, den
   jede Person per Mail und zum Herunterladen bekommt; Prüfseite, auf der eine Person ihren Prüfwert
   gegen den Stand prüft.
   Fertig, wenn: eine nachträgliche Änderung an einem abgeschlossenen Monat auf der Prüfseite als
-  Abweichung erscheint (Test).
+  Abweichung erscheint (Test). Dazu: der Inhalt eines Monats je Person (Stempelungen je Arbeitstag,
+  Soll des Modells je Tag, Summen, Befunde mit Norm) ist eine reine Funktion mit kanonischer Form und
+  Testvektoren, sein Hash steht in der Zeile des Abschlusses und damit in der Audit-Kette; der
+  Prüfwert der Person ist das Kettenglied dieser Zeile („Nr. 1234 · <SHA-256>“). Erst bestätigt die
+  Person, dann schließt der Betrieb ab (ohne Bestätigung nur mit Grund, eine Bestätigung zu einem
+  danach geänderten Stand zählt nicht; Entscheidung im Projektplan); eine offene Schicht verhindert
+  den Abschluss. Danach lehnt der Server jede Schreibfunktion ab, die den abgeschlossenen Monat der
+  Person ändern würde, mit einem Test je Weg: Stempeln, Nachtragen, Ändern, Entfernen, auch eine
+  Nachtschicht über den Monatswechsel, und eine Zuordnung des Arbeitszeitmodells, die ein Soll darin
+  ändert. Eine Korrektur danach ist nur ein Gegeneintrag mit Grund (eigene Tabelle, nur anfügen),
+  der die gesperrten Zeilen und den Prüfwert unverändert lässt und auf dem Stundenzettel und der
+  Prüfseite erscheint. Der Stundenzettel ist ein PDF mit `pdf-lib` mit Tagen, Soll und Ist, Befunden
+  mit Norm und dem Prüfwert; die Person bekommt ihn beim Abschluss per Mail (Test gegen einen
+  SMTP-Testserver) und lädt ihn jederzeit herunter. Die Prüfseite (öffentlich, Entscheidung im
+  Projektplan) nimmt den Prüfwert und sagt „übereinstimmend“ oder „Abweichung“ mit den geänderten
+  Tagen; auch eine an der Kette vorbei geänderte Stempelung, eine geänderte Zeile des Abschlusses und
+  eine neu berechnete Kette fallen dort auf (Test). Ein Test je Endpunkt, dass kein Betrieb Daten
+  eines anderen sieht oder ändert; ein Endpunkt des abgeschalteten Moduls Arbeitszeit wird
+  abgelehnt; Playwright in `desktop` und `phone` bestätigt und schließt einen Monat ab und prüft den
+  Prüfwert; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Verfahrensdokumentation zum
+  Prüfwert in `docs/`.
 - [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
   VAPID-Schlüsseln, die die Instanz beim ersten Start erzeugt, und Mail über SMTP aus der
   Konfiguration; nie automatisch ausstempeln.

@@ -54,11 +54,18 @@ test("stamps once when the button is pressed again before the day has reloaded",
   await weberMitSandra(page, browser, test.info());
   await page.goto("/");
   await expect(knopf(page, "stempeln_kommen")).toBeVisible();
-  // a slow network: the day comes back only well after the stamp was taken
-  await page.route("**/api/v1/arbeitszeit/tag?**", async (route) => {
-    await new Promise((fertig) => setTimeout(fertig, 1_500));
-    await route.continue();
-  });
+  // a slow network: the day comes back only well after the stamp was taken. Matched by its path:
+  // one's own day is asked without a query string (`/tag`, not `/tag?`), which a glob on `tag?**`
+  // never caught, so the day came back at once and the second press raced the reload
+  let verzoegert = 0;
+  await page.route(
+    (url) => url.pathname === "/api/v1/arbeitszeit/tag",
+    async (route) => {
+      verzoegert += 1;
+      await new Promise((fertig) => setTimeout(fertig, 1_500));
+      await route.continue();
+    },
+  );
   const stempel: string[] = [];
   page.on("request", (anfrage) => {
     if (anfrage.method() === "POST" && anfrage.url().endsWith("/api/v1/arbeitszeit/stempelungen"))
@@ -76,6 +83,8 @@ test("stamps once when the button is pressed again before the day has reloaded",
     .click({ timeout: 500 })
     .catch(() => undefined);
   await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
+  // the reload after the stamp really was the slow one
+  expect(verzoegert).toBeGreaterThan(0);
   expect(stempel).toHaveLength(1);
 });
 
@@ -86,7 +95,12 @@ test("shows the employee a correction by the owner: who, what, when and why @pho
   const { jonas } = await weberMitSandra(page, browser, test.info());
   await jonas.goto("/zeiten");
   await jonas.getByLabel(t("zeiten_person")).selectOption({ label: "Sandra Kühn" });
+  const tagFeld = jonas.getByLabel(t("zeiten_datum"), { exact: true });
+  const heute = await tagFeld.inputValue();
   await jonas.getByRole("button", { name: t("zeiten_vortag") }).click();
+  // the page keeps the day shown, date field included, until the day before has loaded; a
+  // correction pressed before then is for the day still shown (the next test)
+  await expect(tagFeld).not.toHaveValue(heute);
 
   const nachtragen = async (art: string, uhrzeit: string, grund: string) => {
     await jonas.getByRole("button", { name: t("nachtragen"), exact: true }).click();
@@ -123,6 +137,40 @@ test("shows the employee a correction by the owner: who, what, when and why @pho
   await expect(aenderungen).toContainText("Jonas Weber hat Gehen 14:30 auf Gehen 13:30 geändert");
   await expect(aenderungen).toContainText("Grund: Arzttermin, früher gegangen");
   await expect(aenderungen).toContainText("Jonas Weber hat Kommen 07:00 nachgetragen");
+});
+
+test("a correction names the day on screen while the next one still loads @phone", async ({
+  page,
+  browser,
+}) => {
+  const { jonas } = await weberMitSandra(page, browser, test.info());
+  await jonas.goto("/zeiten");
+  await jonas.getByLabel(t("zeiten_person")).selectOption({ label: "Sandra Kühn" });
+  const tagFeld = jonas.getByLabel(t("zeiten_datum"), { exact: true });
+  await expect(jonas.getByRole("button", { name: t("nachtragen") })).toBeVisible();
+  const heute = await tagFeld.inputValue();
+  // the day before loads slowly
+  let verzoegert = 0;
+  await jonas.route(
+    (url) =>
+      url.pathname === "/api/v1/arbeitszeit/tag" &&
+      (url.searchParams.get("datum") ?? heute) !== heute,
+    async (route) => {
+      verzoegert += 1;
+      await new Promise((fertig) => setTimeout(fertig, 1_500));
+      await route.continue();
+    },
+  );
+  await jonas.getByRole("button", { name: t("zeiten_vortag") }).click();
+  // pressed before it arrived: the dialog is for the day the page still shows, field and all
+  await jonas.getByRole("button", { name: t("nachtragen") }).click();
+  const dialog = jonas.getByRole("dialog", { name: t("korrektur_titel_nachtragen") });
+  const datumFeld = dialog.getByLabel(t("korrektur_datum"), { exact: true });
+  await expect(datumFeld).toBeVisible();
+  const [aufSeite, imDialog] = await Promise.all([tagFeld.inputValue(), datumFeld.inputValue()]);
+  expect(verzoegert).toBeGreaterThan(0);
+  expect(aufSeite).toBe(heute);
+  expect(imDialog).toBe(aufSeite);
 });
 
 test("lets a person add a forgotten stamp of their own with a reason @phone", async ({

@@ -1,5 +1,6 @@
 import {
   arbeitszeitmodelle,
+  ausweise,
   bedarfe,
   betriebe,
   einladungen,
@@ -13,6 +14,7 @@ import {
   schichtvorlagen,
   standorte,
   stempelungen,
+  terminals,
 } from "../../db/schema.ts";
 
 /**
@@ -34,6 +36,8 @@ export const kettenTabellen = {
   schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
   schichten: { tabelle: schichten, schluessel: ["schichtId"] },
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
+  terminals: { tabelle: terminals, schluessel: ["terminalId"] },
+  ausweise: { tabelle: ausweise, schluessel: ["nutzerId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

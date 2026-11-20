@@ -41,7 +41,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | Bereich | Was Soll kann |
 |---|---|
 | 🧭 Einrichtung | Assistent mit vier Fragen, der nur die Module zeigt, die dein Betrieb braucht; Standorte, Arbeitszeitmodelle aus Vorlagen, Mitarbeiter per CSV, Einladung per Link ohne E-Mail |
-| ⏱️ Stempeln | Ein Tipp für Kommen, Pause und Gehen; der laufende Tag mit Soll, Ist und dem nächsten Befund; Nachtragen und Ändern mit Grund, für die Person sichtbar; Browser, Handy (auch offline: jede Stempelung nummeriert und signiert, eine Lücke fällt auf) und Tablet-Terminal mit PIN, QR-Code oder NFC-Karte |
+| ⏱️ Stempeln | Ein Tipp für Kommen, Pause und Gehen; der laufende Tag mit Soll, Ist und dem nächsten Befund; Nachtragen und Ändern mit Grund, für die Person sichtbar; Browser, Handy (auch offline: jede Stempelung nummeriert und signiert, eine Lücke fällt auf) und Tablet-Terminal im Kiosk-Modus, gekoppelt per Code, mit PIN oder gedrucktem QR-Code (NFC-Karte folgt) |
 | ⚖️ Prüfung | Arbeitszeitgesetz, Mindestlohn, Jugendarbeitsschutz, Mutterschutz, Bereitschaft; mit Norm im Hinweis |
 | 📅 Dienstplan | Woche je Standort aus Schichtvorlagen planen, per Ziehen und Ablegen auch mit der Tastatur; Bedarf je Rolle mit dem, was fehlt; Entwurf nur für Planer, am Handy ein Tag zur Zeit; prüfen, veröffentlichen, tauschen und im eigenen Kalender sehen folgen |
 | 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |

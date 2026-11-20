@@ -13,12 +13,13 @@ export const testServer = (
   optionen: { log?: (line: string) => void; uhr?: () => number; mail?: Mailer | null } = {},
 ) => {
   const datenbank = testDatenbank();
+  const geheimerSchluessel = crypto.getRandomValues(new Uint8Array(32));
   let uhr = 1_790_000_000_000;
   const jetzt = optionen.uhr ?? (() => uhr);
   const auth = createAuth({
     db: datenbank.db,
     schreibDb: datenbank.schreibDb,
-    geheimerSchluessel: crypto.getRandomValues(new Uint8Array(32)),
+    geheimerSchluessel,
     url: TEST_URL,
     jetzt,
   });
@@ -31,6 +32,7 @@ export const testServer = (
     auth,
     url: TEST_URL,
     mail: optionen.mail ?? null,
+    geheimerSchluessel,
   });
 
   /** A browser of one person: keeps its cookies */

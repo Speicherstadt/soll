@@ -31,6 +31,7 @@ export const RECHTE = [
   "monat:abschliessen",
   "plan:lesen",
   "plan:planen",
+  "terminal:verwalten",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -53,6 +54,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "monat:abschliessen",
     "plan:lesen",
     "plan:planen",
+    // pairs and revokes terminals, issues QR codes (S-801): the owner, who also sets the PINs
+    "terminal:verwalten",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)

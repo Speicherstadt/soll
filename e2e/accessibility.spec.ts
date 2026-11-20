@@ -37,8 +37,8 @@ for (const theme of ["light", "dark"] as const) {
       });
     }
 
-    // Without a session: signing in and up, and the check page of a Prüfwert
-    for (const path of ["/anmelden", "/registrieren", "/pruefen"]) {
+    // Without a session: signing in and up, the check page of a Prüfwert, the terminal's pairing
+    for (const path of ["/anmelden", "/registrieren", "/pruefen", "/terminal"]) {
       test(`axe finds nothing on ${path} @phone`, async ({ page }) => {
         await page.goto(path);
         await pruefen(page);

@@ -18,7 +18,7 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln und QR-Codes ausstellen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
 | Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, den Dienstplan planen |
 | Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, den veröffentlichten Dienstplan sehen |
 | Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, den veröffentlichten Dienstplan sehen |
@@ -51,6 +51,11 @@ Für das Terminal setzt der Inhaber jeder Person eine PIN aus 4 bis 8 Ziffern; g
 als Hash (Argon2id). Nach **fünf falschen Versuchen in Folge** ist sie gesperrt, bis der Inhaber eine
 neue setzt; eine richtige PIN dazwischen setzt den Zähler zurück. Jeder Fehlversuch steht in der
 Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nicht mehr erkannt.
+
+Am [Terminal](terminal.md) erkennt die PIN die Person allein. Deshalb gibt es jede PIN im Betrieb
+nur einmal, und Soll speichert daneben eine Kennung (HMAC-SHA-256 mit einem Schlüssel aus
+`SOLL_SECRET_KEY`), über die es die Person findet; eine gesperrte PIN gilt dort nicht. Falsche
+Versuche am Terminal sperren das Terminal, nicht die Person.
 
 ## Module
 

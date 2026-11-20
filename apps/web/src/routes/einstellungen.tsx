@@ -1,13 +1,16 @@
 import { Button } from "@soll/ui";
 import { createFileRoute, useNavigate } from "@tanstack/solid-router";
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { api } from "../api.ts";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
+import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
+import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
 import { m } from "../paraglide/messages.js";
 import { Darstellung } from "../rahmen/darstellung.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
-import { abgemeldet, sitzungNeu } from "../sitzung/sitzung.ts";
+import { abgemeldet, aktuellerBetrieb, sitzungNeu } from "../sitzung/sitzung.ts";
+import { istInhaber } from "../sitzung/ziel.ts";
 
 const Einstellungen = () => {
   const navigate = useNavigate();
@@ -22,9 +25,19 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
+  // the terminal is the owner's: pairing tablets, PINs and QR codes (S-801)
+  const terminal = () => {
+    const betrieb = aktuellerBetrieb();
+    if (!betrieb?.module.terminal) return false;
+    return istInhaber(betrieb);
+  };
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
+      <Show when={terminal()}>
+        <TerminalGeraete />
+        <TerminalPersonen />
+      </Show>
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

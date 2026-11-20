@@ -42,6 +42,7 @@ const app = createApp({
   auth,
   url: env.url,
   mail: env.smtp ? smtpMailer(env.smtp.url, env.smtp.von) : null,
+  geheimerSchluessel: env.geheimerSchluessel,
 });
 
 const server = Bun.serve({ port: env.port, hostname: env.host, fetch: app.fetch });

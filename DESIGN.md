@@ -34,6 +34,7 @@ Kennwort.
 | `--primary` | `#18181b` | `#fafafa` | Hauptknopf |
 | `--primary-foreground` | `#fafafa` | `#18181b` | Text auf `--primary` |
 | `--success` | `#15803d` | `#4ade80` | eingestempelt, Tag ohne Befund, Monat abgeschlossen |
+| `--success-surface` | `#dcfce7` | `#052e16` | Haken „Gestempelt“ am Terminal |
 | `--warning` | `#b45309` | `#fbbf24` | Hinweis (etwa 8 h überschritten) |
 | `--warning-surface` | `#fef3c7` | `#422006` | Badge „Hinweis“ |
 | `--danger` | `#b91c1c` | `#f87171` | Verstoß, Löschen, Fehler |

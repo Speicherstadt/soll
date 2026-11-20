@@ -31,8 +31,9 @@ export type Ablage = {
   eintraege: (konto: string) => Promise<Eintrag[]>;
   eintragSetzen: (eintrag: Eintrag) => Promise<void>;
   eintragEntfernen: (eintrag: Eintrag) => Promise<void>;
-  tag: (betriebId: string) => Promise<GemerkterTag | undefined>;
-  tagSetzen: (betriebId: string, tag: GemerkterTag) => Promise<void>;
+  /** the day of one person in one business (`kontoSchluessel`), never another person's */
+  tag: (konto: string) => Promise<GemerkterTag | undefined>;
+  tagSetzen: (konto: string, tag: GemerkterTag) => Promise<void>;
 };
 
 const eintragId = (eintrag: Eintrag) => `${eintrag.geraetId}/${eintrag.nummer}`;
@@ -52,8 +53,8 @@ export const ablageImSpeicher = (): Ablage => {
     eintraege: async (konto) => [...eintraege.values()].filter((e) => e.konto === konto),
     eintragSetzen: async (eintrag) => void eintraege.set(eintragId(eintrag), eintrag),
     eintragEntfernen: async (eintrag) => void eintraege.delete(eintragId(eintrag)),
-    tag: async (betriebId) => tage.get(betriebId),
-    tagSetzen: async (betriebId, tag) => void tage.set(betriebId, tag),
+    tag: async (konto) => tage.get(konto),
+    tagSetzen: async (konto, tag) => void tage.set(konto, tag),
   };
 };
 
@@ -122,7 +123,7 @@ export const indexedDbAblage = (): Ablage => {
       tx.objectStore(EINTRAEGE).delete([eintrag.geraetId, eintrag.nummer]);
       await abgeschlossen(tx);
     },
-    tag: (betriebId) => lesen<GemerkterTag>(TAGE, betriebId),
-    tagSetzen: (betriebId, tag) => schreiben(TAGE, tag, betriebId),
+    tag: (konto) => lesen<GemerkterTag>(TAGE, konto),
+    tagSetzen: (konto, tag) => schreiben(TAGE, tag, konto),
   };
 };

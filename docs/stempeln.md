@@ -61,6 +61,9 @@ dem Gerät und geht von dort zum Server, sofort, wenn das Netz da ist, sonst sp�
 
 - Heute öffnet auch ohne Netz, mit dem Tag, wie er zuletzt geladen war; der Knopf rechnet mit den
   wartenden Stempelungen weiter („Eingestempelt seit 07:58“).
+- Tag, Warteschlange und Schlüssel gehören der Person, die angemeldet ist. Teilen sich mehrere einen
+  Browser, sieht die nächste nach dem Abmelden nichts davon, auch ohne Netz; wartende Stempelungen
+  bleiben auf dem Gerät und gehen hinaus, sobald sich ihre Person dort wieder anmeldet.
 - Eine Karte zeigt, wie viele Stempelungen **noch nicht übertragen** sind; in der Liste tragen sie
   die Marke „wartet“ und lassen sich erst ändern, wenn sie beim Server sind.
 - Sobald das Netz zurück ist, überträgt Soll sie von selbst, in der Reihenfolge, in der gestempelt

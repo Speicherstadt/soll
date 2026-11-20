@@ -11,16 +11,15 @@ import { tagQuelle } from "./quelle.ts";
  * and one function for a tap on a button. Soll never stamps by itself (CLAUDE.md).
  */
 export const heuteStempeln = () => {
-  const betriebId = () => aktuellerBetrieb()?.betriebId ?? null;
-  // the person comes with the day the server sent, or with the one kept on the device; the queue and
-  // the day refer to each other, so each reads the other only when asked
-  let quelle: ReturnType<typeof tagQuelle> | undefined;
+  // the person and business of the session, never of a day kept on the device: on a shared browser
+  // that day may be the previous person's (a business kept from before S-305 names no person)
   const konto = () => {
-    const b = betriebId();
-    const n = quelle?.nutzerId() ?? null;
-    return b && n ? { betriebId: b, nutzerId: n } : null;
+    const betrieb = aktuellerBetrieb();
+    return betrieb?.nutzerId ? { betriebId: betrieb.betriebId, nutzerId: betrieb.nutzerId } : null;
   };
-  const schlange = offlineSchlange(konto, betriebId, () => quelle?.abstand() ?? 0);
+  // the queue reads the day's distance to the server's clock only when asked
+  let quelle: ReturnType<typeof tagQuelle> | undefined;
+  const schlange = offlineSchlange(konto, () => quelle?.abstand() ?? 0);
   const tag = tagQuelle(schlange.offline);
   quelle = tag;
   const [fehler, setFehler] = createSignal("");

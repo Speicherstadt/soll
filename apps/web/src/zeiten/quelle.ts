@@ -83,7 +83,5 @@ export const tagQuelle = (offline?: Offline) => {
     const neu = tagesstand(tag.umfeld, Math.max(jetzt(), tag.jetzt, spaetester), tag.tag);
     return neu.ok ? neu.wert : tag.stand;
   });
-  /** the person of the day as loaded (without the waiting stamps, which belong to that person) */
-  const nutzerId = () => geladen()?.nutzerId ?? null;
-  return { ansicht, stand, fehler, ohneNetz, abstand, nutzerId, laden };
+  return { ansicht, stand, fehler, ohneNetz, abstand, laden };
 };

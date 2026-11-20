@@ -4,6 +4,7 @@ import { type Betrieb, zielFuer } from "./ziel.ts";
 
 const betrieb = (anders: Partial<Betrieb> = {}): Betrieb => ({
   betriebId: "b1",
+  nutzerId: "n1",
   name: "Café Elbblick",
   land: "HH",
   eingerichtet: true,

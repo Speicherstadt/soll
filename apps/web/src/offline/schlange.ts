@@ -55,13 +55,11 @@ const imBrowserGeteilt = () => {
 /**
  * The offline queue of Heute for the person signed in (S-305): what waits and what the server
  * refused, taking a stamp in and sending; it tries again when the browser goes online and every
- * 30 seconds while something waits. `konto` is null until the person and business are known.
+ * 30 seconds while something waits. `konto` is the person and business of the session, null until
+ * they are known; the queue and the day kept on the device belong to that person alone, so the next
+ * person on a shared browser never sees or sends them.
  */
-export const offlineSchlange = (
-  konto: () => Konto | null,
-  betriebId: () => string | null,
-  abstand: () => number,
-) => {
+export const offlineSchlange = (konto: () => Konto | null, abstand: () => number) => {
   const browser = imBrowserGeteilt();
   const schlange = browser?.schlange ?? null;
   const ablage = browser?.abh.ablage ?? null;
@@ -104,12 +102,14 @@ export const offlineSchlange = (
       return k ? alsStempel(eintraege(), k.nutzerId, abstand()) : [];
     },
     merken: async (tag) => {
-      const b = betriebId();
-      if (ablage && b) await ablage.tagSetzen(b, tag);
+      const k = konto();
+      // a day of someone else (the session changed while it loaded) is not kept as this person's
+      if (ablage && k && tag.ansicht.nutzerId === k.nutzerId)
+        await ablage.tagSetzen(kontoSchluessel(k), tag);
     },
     gemerkt: async () => {
-      const b = betriebId();
-      return ablage && b ? ablage.tag(b) : undefined;
+      const k = konto();
+      return ablage && k ? ablage.tag(kontoSchluessel(k)) : undefined;
     },
   };
   return {

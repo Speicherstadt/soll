@@ -54,6 +54,9 @@ describe("where the app leads", () => {
     const z = { art: "bereit", betrieb: betrieb() } as const;
     expect(zielFuer(z, "/projekte")).toBe("/");
     expect(zielFuer(z, "/zeiten")).toBeNull();
+    // the router keeps a trailing slash; a page below an area belongs to it
+    expect(zielFuer(z, "/projekte/")).toBe("/");
+    expect(zielFuer(z, "/projekte/42")).toBe("/");
   });
 
   it("nowhere while the server cannot be reached: the app opens offline", () => {

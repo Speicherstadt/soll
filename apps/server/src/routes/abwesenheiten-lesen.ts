@@ -44,6 +44,12 @@ const liste = (db: Db, c: Context<Anfrage>, nutzerId: string, imJahr: number, he
     jahr: imJahr,
     heute,
     bescheinigungAbTag: bescheinigungAbTagVon(db, betriebId),
+    // what the caller may do, so the app shows only that; the server checks it on every call
+    rechte: {
+      freigeben: darf(c.get("rolle"), "abwesenheiten:freigeben"),
+      gesundheit: darf(c.get("rolle"), "abwesenheiten:gesundheit"),
+      einstellen: darf(c.get("rolle"), "abwesenheiten:einstellen"),
+    },
     abwesenheiten: zeilen.map((zeile) => ({
       ...sicht(zeile, gesundheit),
       urlaubHalbtage: urlaubstageVon(grundlagen, zeile),

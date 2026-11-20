@@ -7,6 +7,8 @@ import {
 } from "@soll/arbeitszeit";
 import type { Aufzeichnung, Blattbefund } from "./typen.ts";
 
+export type ZeilenAbwesenheit = NonNullable<Aufzeichnung["abwesenheiten"]>[number];
+
 /** A row of the month's table: first and last stamp, break and work in whole minutes, findings */
 export type Zeile = {
   tag: string;
@@ -17,6 +19,8 @@ export type Zeile = {
   sollMinuten: number | null;
   befunde: Blattbefund[];
   geaendert: boolean;
+  /** the day's approved absences (S-401) */
+  abwesenheiten: ZeilenAbwesenheit[];
 };
 
 /**
@@ -45,6 +49,7 @@ export const zeilenDesMonats = (
       sollMinuten: aufzeichnung.modellMinuten,
       befunde: befunde.filter((befund) => befund.tage.includes(aufzeichnung.tag)),
       geaendert: geaendert.includes(aufzeichnung.tag),
+      abwesenheiten: aufzeichnung.abwesenheiten ?? [],
     };
   });
 };

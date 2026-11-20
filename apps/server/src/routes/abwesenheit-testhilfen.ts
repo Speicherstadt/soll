@@ -1,6 +1,6 @@
 /** Weber Haustechnik with absences, for the tests of S-401 */
 import { expect } from "vitest";
-import { type Json, json, type Person, type Server, weber } from "./monat-testhilfen.ts";
+import { type Json, json, type Person, weber } from "./monat-testhilfen.ts";
 
 export { type Json, json, um } from "./monat-testhilfen.ts";
 
@@ -22,10 +22,6 @@ export const angelegt = async (antwort: Promise<Response>, status = 201): Promis
   expect(a.status, JSON.stringify(daten)).toBe(status);
   return daten.abwesenheitId as string;
 };
-
-/** Gives an account an e-mail address, as if it had been invited with one (Better Auth's table) */
-export const adresse = (server: Server, wer: Person, email: string) =>
-  server.sqlite.run("UPDATE user SET email = ? WHERE id = ?", [email, wer.nutzerId]);
 
 /** Weber with absences: Sandra (fitter), Anna (planner), payroll, Jonas (owner), Max (fitter) */
 export const weberMitAbwesenheiten = async (optionen: Parameters<typeof weber>[0] = {}) => {

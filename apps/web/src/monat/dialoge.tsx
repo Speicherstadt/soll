@@ -9,7 +9,7 @@ import { Fehler } from "../rahmen/karte.tsx";
 import { FEHLER } from "./text.ts";
 
 /** A dialog with a form that asks for a reason and sends it; closes once the server took it */
-const GrundDialog = (props: {
+export const GrundDialog = (props: {
   titel: string;
   text: string;
   knopf: string;
@@ -17,6 +17,8 @@ const GrundDialog = (props: {
   senden: (daten: FormData, grund: string) => Promise<Antwort<unknown>> | null;
   onSchliessen: () => void;
   onGespeichert: (daten: unknown) => void;
+  /** the words for an error the server names; those of the month by default */
+  fehlerText?: Record<string, () => string>;
 }) => {
   const [offen, setOffen] = createSignal(true);
   const [fehler, setFehler] = createSignal("");
@@ -32,7 +34,8 @@ const GrundDialog = (props: {
     setArbeitet(true);
     const antwort = await anfrage;
     setArbeitet(false);
-    if (!antwort.ok) return setFehler((FEHLER[antwort.fehler] ?? (() => m.fehler_speichern()))());
+    const texte = props.fehlerText ?? FEHLER;
+    if (!antwort.ok) return setFehler((texte[antwort.fehler] ?? (() => m.fehler_speichern()))());
     setOffen(false);
     props.onGespeichert(antwort.daten);
   };

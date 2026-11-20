@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { smtpMailer } from "../modules/mail/index.ts";
 import { smtpTestServer } from "../modules/mail/smtp-test.ts";
 import {
-  adresse,
   angelegt,
   type Json,
   json,
@@ -13,6 +12,14 @@ import {
   um,
   weberMitAbwesenheiten,
 } from "./abwesenheit-testhilfen.ts";
+import type { Server } from "./monat-testhilfen.ts";
+
+/**
+ * Gives an account an e-mail address, as if it had been invited with one: Better Auth's own table,
+ * outside Soll's audit chain (CLAUDE.md, "Project specifics")
+ */
+const adresse = (server: Server, wer: { nutzerId: string }, email: string) =>
+  server.sqlite.run("UPDATE user SET email = ? WHERE id = ?", [email, wer.nutzerId]);
 
 // Friday 20 November 2026; the certificate of a sickness from today is due on Monday the 23rd
 const MONTAG = um("2026-11-23T09:00:00+01:00");

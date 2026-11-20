@@ -2,6 +2,7 @@ import { Button } from "@soll/ui";
 import { createFileRoute, useNavigate } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { api } from "../api.ts";
+import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { m } from "../paraglide/messages.js";
 import { Darstellung } from "../rahmen/darstellung.tsx";
@@ -25,6 +26,7 @@ const Einstellungen = () => {
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
+      <BescheinigungEinstellung />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

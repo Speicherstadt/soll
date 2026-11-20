@@ -76,37 +76,12 @@ const fehlerAntwort = (
   ergebnis: Extract<AbwesenheitErgebnis, { ok: false }>,
 ) => c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
 
-/**
- * Absences below /api/v1/arbeitszeit/abwesenheiten (S-401): a person asks for leave and reports
- * sickness for themselves; owner and planner decide on requests; whoever may see sickness marks its
- * certificate; every change goes through the audit chain, mails go out after it.
- */
-export const abwesenheitRouten = (
-  db: Db,
-  schreibDb: SchreibDb,
-  jetzt: () => number,
-  optionen: AbwesenheitOptionen,
-) => {
+type Deps = { db: Db; schreibDb: SchreibDb; jetzt: () => number; optionen: AbwesenheitOptionen };
+
+/** A request and a sickness report, each for the caller, with the mails after the write */
+const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
   const schichten = optionen.schichten ?? ohnePlan;
-
-  /** A step on an existing absence, answered with the row as the caller may see it */
-  const schritt = async <T>(
-    c: Context<Anfrage>,
-    schema: z.ZodType<T>,
-    tun: (eingabe: T, id: string, rechte: Rechte) => AbwesenheitErgebnis,
-    melden?: (zeile: Extract<AbwesenheitErgebnis, { ok: true }>["zeile"]) => Promise<void>,
-  ) => {
-    const eingabe = await koerper(c, schema);
-    if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
-    const ergebnis = tun(eingabe.data, c.req.param("id") ?? "", rechteVon(c));
-    if (!ergebnis.ok) return fehlerAntwort(c, ergebnis);
-    await melden?.(ergebnis.zeile);
-    const gesundheit = ergebnis.zeile.nutzerId === c.get("nutzerId") || rechteVon(c).gesundheit;
-    return c.json(sicht(ergebnis.zeile, gesundheit));
-  };
-
   return new Hono<Anfrage>()
-    .route("/", abwesenheitLeseRouten(db, jetzt))
     .post("/antrag", recht("stempeln"), async (c) => {
       const eingabe = await koerper(c, antragSchema);
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
@@ -165,7 +140,28 @@ export const abwesenheitRouten = (
         offeneSchichten,
       });
       return c.json({ ...sicht(zeile, true), frist, offeneSchichten }, 201);
-    })
+    });
+};
+
+/** A step on an existing absence: decisions, the certificate, the end of a sickness */
+const schrittRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
+  /** A step on an existing absence, answered with the row as the caller may see it */
+  const schritt = async <T>(
+    c: Context<Anfrage>,
+    schema: z.ZodType<T>,
+    tun: (eingabe: T, id: string, rechte: Rechte) => AbwesenheitErgebnis,
+    melden?: (zeile: Extract<AbwesenheitErgebnis, { ok: true }>["zeile"]) => Promise<void>,
+  ) => {
+    const eingabe = await koerper(c, schema);
+    if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+    const ergebnis = tun(eingabe.data, c.req.param("id") ?? "", rechteVon(c));
+    if (!ergebnis.ok) return fehlerAntwort(c, ergebnis);
+    await melden?.(ergebnis.zeile);
+    const gesundheit = ergebnis.zeile.nutzerId === c.get("nutzerId") || rechteVon(c).gesundheit;
+    return c.json(sicht(ergebnis.zeile, gesundheit));
+  };
+
+  return new Hono<Anfrage>()
     .post("/:id/freigeben", (c) =>
       schritt(
         c,
@@ -221,7 +217,25 @@ export const abwesenheitRouten = (
       schritt(c, beendenSchema, (e, id, rechte) =>
         krankheitBeenden(db, schreibDb, kontextVon(c, jetzt), id, e.bis, rechte),
       ),
-    )
+    );
+};
+
+/**
+ * Absences below /api/v1/arbeitszeit/abwesenheiten (S-401): a person asks for leave and reports
+ * sickness for themselves; owner and planner decide on requests; whoever may see sickness marks its
+ * certificate; every change goes through the audit chain, mails go out after it.
+ */
+export const abwesenheitRouten = (
+  db: Db,
+  schreibDb: SchreibDb,
+  jetzt: () => number,
+  optionen: AbwesenheitOptionen,
+) => {
+  const deps = { db, schreibDb, jetzt, optionen };
+  return new Hono<Anfrage>()
+    .route("/", abwesenheitLeseRouten(db, jetzt))
+    .route("/", meldeRouten(deps))
+    .route("/", schrittRouten(deps))
     .put("/einstellungen", recht("abwesenheiten:einstellen"), async (c) => {
       const eingabe = await koerper(c, einstellungSchema);
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);

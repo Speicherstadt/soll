@@ -1024,7 +1024,14 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   Papier im Büro), keine Diagnose und keine Datei (CLAUDE.md, Art. 9 DSGVO).
 - **Grenzwerte**: Erster Krankheitstag ist Tag 1; dauert die Krankheit über Tag 3 hinaus, ist die
   Bescheinigung am nächsten Arbeitstag nach Tag 3 fällig (bei Krankheit ab Montag also Donnerstag).
-  Der Betrieb kann „ab Tag 1“ oder „ab Tag 2“ einstellen.
+  Der Betrieb kann „ab Tag 1“, „ab Tag 2“ oder „ab Tag 3“ einstellen; dann ist die Bescheinigung am
+  ersten Arbeitstag ab diesem Tag fällig. Arbeitstag ist ein Tag mit Soll im Arbeitszeitmodell (kein
+  Feiertag am Standort, kein freier Tag), ohne Modell Montag bis Freitag. Die Erinnerung an den
+  Betrieb gilt ab dem Tag der Fälligkeit, bis „Bescheinigung liegt vor“ markiert ist; der Hinweis
+  folgt am Tag danach. Für „Kind krank“ gilt § 5 EntgFG nicht.
+- **Umsetzung** (S-401): `bescheinigungPruefen()` in `packages/arbeitszeit/src/abwesenheit/`; der
+  Hinweis steht an der Krankmeldung und in der Liste des Betriebs, nicht im Monatsabschluss: Er gilt
+  einem Dokument, nicht der Arbeitszeit, und änderte sonst die Bestätigung des Monats.
 - **Schwere**: Hinweis.
 
 | Fall | krank ab | Erwartet | Quelle |
@@ -1033,6 +1040,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Grenze | Mo – Do (4 Kalendertage) | fällig am Do, Erinnerung an die eAU | § 5 Abs. 1 Satz 2 EntgFG |
 | Wochenende | Fr – Mo (4 Kalendertage) | fällig am Mo (nächster Arbeitstag nach So) | § 5 Abs. 1 Satz 2 EntgFG |
 | Einstellung | Betrieb „ab Tag 1“, krank Mo | fällig am Mo | § 5 Abs. 1 Satz 3 EntgFG |
+| Einstellung „ab Tag 2“ | krank Mo – Di | fällig am Di; nur Mo: keine nötig | § 5 Abs. 1 Satz 3 EntgFG |
+| Feiertag | krank ab Mo 11.5.2026, Do 14.5. Christi Himmelfahrt | fällig am Fr 15.5. | § 5 Abs. 1 Satz 2 EntgFG („Arbeitstag“) |
 | Verstoß | krank Mo – Fr, am Fr noch keine Bescheinigung | Hinweis an Person und Betrieb „Bescheinigung fällig seit Do“ | § 5 Abs. 1 Satz 2 EntgFG |
 
 ### R-28 Kinderkrankentage

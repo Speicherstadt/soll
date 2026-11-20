@@ -44,7 +44,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | ⏱️ Stempeln | Ein Tipp für Kommen, Pause und Gehen; der laufende Tag mit Soll, Ist und dem nächsten Befund; Nachtragen und Ändern mit Grund, für die Person sichtbar; Browser, Handy (auch offline: jede Stempelung nummeriert und signiert, eine Lücke fällt auf) und Tablet-Terminal mit PIN, QR-Code oder NFC-Karte |
 | ⚖️ Prüfung | Arbeitszeitgesetz, Mindestlohn, Jugendarbeitsschutz, Mutterschutz, Bereitschaft; mit Norm im Hinweis |
 | 📅 Dienstplan | Schichten planen und prüfen, veröffentlichen, tauschen, im eigenen Kalender sehen |
-| 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |
+| 🌴 Abwesenheiten | Urlaub beantragen, freigeben, ablehnen und stornieren, ganze und halbe Tage, Resturlaub; Krankmeldung ohne Diagnose mit Erinnerung an die Bescheinigung und die eAU; Kinderkrankentage; im Team steht nur „abwesend“ |
 | 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung |
 | 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen, Export für Zoll und Arbeitsschutz |
 | 🛠️ Projekte | Aufträge, Stoppuhr, Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) |

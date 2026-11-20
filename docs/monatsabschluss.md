@@ -53,7 +53,9 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
 - früher im Vormonat jede Änderung, die über eine Kette von Schichten mit weniger als 9 Stunden
   Abstand die Schichten des Monats anders schnitte (eine Schicht reicht höchstens 24 Stunden über
   ihren Beginn hinaus, gezählt ab dem Beginn der Kette),
-- eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde.
+- eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde,
+- eine [Abwesenheit](abwesenheiten.md#abgeschlossener-monat), die einen Tag im Monat ändern würde:
+  ein Antrag, eine Freigabe, ein Storno, eine Bescheinigung oder ein neues Ende einer Krankheit.
 
 Erlaubt bleibt jede Änderung, die an den Stempelungen des Monats je Arbeitstag nichts ändert.
 Abschluss, Prüfseite und Sperre lesen einen Monat dafür aus denselben Stempelungen: von sechs
@@ -69,8 +71,8 @@ abgeschlossenen Monats als Korrektur, nicht als Abweichung.
 
 ## Stundenzettel
 
-Der Stundenzettel ist ein PDF (A4, Deutsch) mit den Tagen, Soll, Ist und Saldo, den Befunden mit
-Norm, den Gegeneinträgen, wer bestätigt und wer abgeschlossen hat, und dem Prüfwert. Jede Person
+Der Stundenzettel ist ein PDF (A4, Deutsch) mit den Tagen und ihren genehmigten Abwesenheiten
+(Urlaub, krank, halber Tag), Soll, Ist und Saldo, den Befunden mit Norm, den Gegeneinträgen, wer bestätigt und wer abgeschlossen hat, und dem Prüfwert. Jede Person
 lädt ihn jederzeit unter **Stundenzettel (PDF)** herunter; vor dem Abschluss ist er als Entwurf
 gekennzeichnet und trägt noch keinen Prüfwert.
 
@@ -95,7 +97,7 @@ Arbeitsschutz, prüft einen Stundenzettel. Die Antwort ist
 
 - **Übereinstimmend**: der Monat ist so, wie er abgeschlossen wurde, oder
 - **Abweichung**, mit dem Grund:
-    - die Tage, deren Stempelungen oder Soll seit dem Abschluss anders sind,
+    - die Tage, deren Stempelungen, Soll oder Abwesenheiten seit dem Abschluss anders sind,
     - die Audit-Kette bis zu diesem Prüfwert ist nicht mehr dieselbe (etwa neu berechnet),
     - der Abschluss selbst wurde geändert.
 
@@ -148,7 +150,10 @@ Inhalt als kanonischem JSON und seinem SHA-256; ein eindeutiger Index auf `sperr
 und Monat einen Abschluss zu. `korrekturen` hält die Gegeneinträge. Beide stehen in der
 Audit-Kette und werden nur angefügt. Den Inhalt baut `monatsinhalt.ts` als reine Funktion, mit
 Testvektoren, das Fenster, aus dem ein Monat gelesen wird, `lesefenster()`; die Sperre prüft
-`aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen.
+`aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen, `abwesenheitGesperrt()` vor jeder
+für Abwesenheiten. Ein Tag mit Abwesenheit trägt im Inhalt `abwesenheiten` (Art, halber Tag,
+Bescheinigung liegt vor, Kind); ein Tag ohne hat den Schlüssel nicht, so behält ein Monat ohne
+Abwesenheit den Inhalt und den Prüfwert, die er vor S-401 hatte.
 
 Mail kommt über SMTP aus `SOLL_SMTP_URL` (etwa `smtps://soll:geheim@mail.example.de:465`) mit dem
 Absender aus `SOLL_MAIL_VON`; beide zusammen oder keins. Die Tests schicken an einen SMTP-Testserver.

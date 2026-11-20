@@ -19,4 +19,15 @@ describe("days in Europe/Berlin", () => {
     expect(beginnInBerlin("2026-10-25")).toBe(utc("2026-10-24T22:00:00Z"));
     expect(beginnInBerlin("2026-10-26")).toBe(utc("2026-10-25T23:00:00Z"));
   });
+
+  it("writes a day as YYYY-MM-DD also in a year below 1000, like tag.ts does", () => {
+    expect(tagInBerlin(utc("0999-06-01T12:00:00Z"))).toBe("0999-06-01");
+  });
+
+  it("finds midnight on every day istTag accepts, also when Berlin was not one or two hours ahead", () => {
+    // 1947: Hochsommerzeit, UTC+3 from 11 May to 29 June (tz database, Europe/Berlin)
+    expect(beginnInBerlin("1947-06-01")).toBe(utc("1947-05-31T21:00:00Z"));
+    // before 1 April 1893 Berlin kept its local mean time, UTC+0:53:28
+    expect(beginnInBerlin("1892-01-01")).toBe(utc("1891-12-31T23:06:32Z"));
+  });
 });

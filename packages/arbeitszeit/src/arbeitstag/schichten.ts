@@ -87,8 +87,9 @@ type Minutenstueck = { beginn: number; ende: number | null; endetMit: Rohstueck[
 
 /**
  * Whole minutes in the employee's favour (CLAUDE.md: never round working time to their
- * disadvantage): a start is cut down, an end up. Stretches that then touch or overlap merge: an
- * interruption shorter than a minute is no break.
+ * disadvantage): a start is cut down, an end up. Closed stretches that then touch or overlap merge:
+ * an interruption shorter than a minute is no break. An open stretch never swallows the closed one
+ * before it, whose work is known; the interruption between them is no break (`pausenAus`).
  */
 const aufMinuten = (stuecke: readonly Rohstueck[]): Minutenstueck[] =>
   fasseZusammen(
@@ -99,10 +100,10 @@ const aufMinuten = (stuecke: readonly Rohstueck[]): Minutenstueck[] =>
     })),
     (stueck) => stueck,
     (vorher, stueck) =>
-      vorher.ende !== null && stueck.beginn <= vorher.ende
+      vorher.ende !== null && stueck.ende !== null && stueck.beginn <= vorher.ende
         ? {
             beginn: vorher.beginn,
-            ende: stueck.ende === null ? null : Math.max(stueck.ende, vorher.ende),
+            ende: Math.max(stueck.ende, vorher.ende),
             endetMit: stueck.endetMit,
           }
         : null,
@@ -117,13 +118,20 @@ const stueck = (beginn: number, ende: number): Stueck => ({
 const summe = (teile: readonly { minuten: number }[]): number =>
   teile.reduce((gesamt, teil) => gesamt + teil.minuten, 0);
 
-const pausenZwischen = (teile: readonly Minutenstueck[]): Pause[] =>
-  teile.slice(1).map((nach, index) => {
-    const vor = teile[index] as Minutenstueck;
-    const pause = stueck(vor.ende as number, nach.beginn);
-    const art = vor.endetMit === "pause_beginn" ? "gestempelt" : "luecke";
-    return { ...pause, art, ruhepause: pause.minuten >= KLEINSTE_RUHEPAUSE };
-  });
+/**
+ * The interruptions between the stretches. Only the one before an open stretch can be shorter than
+ * a minute (`aufMinuten`); it is no break, so it is left out, and the indexes still match `arbeit`.
+ */
+const pausenAus = (teile: readonly Minutenstueck[]): Pause[] =>
+  teile
+    .slice(1)
+    .map((nach, index): Pause => {
+      const vor = teile[index] as Minutenstueck;
+      const pause = stueck(vor.ende as number, nach.beginn);
+      const art = vor.endetMit === "pause_beginn" ? "gestempelt" : "luecke";
+      return { ...pause, art, ruhepause: pause.minuten >= KLEINSTE_RUHEPAUSE };
+    })
+    .filter((pause) => pause.minuten > 0);
 
 /** The work from one Ruhepause to the next; a short interruption stays inside the block */
 const bloeckeAus = (arbeit: readonly Stueck[], pausen: readonly Pause[]): Stueck[] =>
@@ -152,13 +160,15 @@ const offenAus = (
 /**
  * The end cut up to the minute may reach past the start of the next shift, which is cut down: only
  * when an end 24 h after Kommen meets a Kommen in the same minute. That minute stays with the next
- * shift, so two shifts never overlap and none of it is lost.
+ * shift, so two shifts never overlap and none of it is lost. The end is that of the last closed
+ * stretch, which an open one may follow within the minute.
  */
 const bisZurNaechsten = (teile: Minutenstueck[], naechste: number | null): Minutenstueck[] => {
-  const letztes = teile.at(-1) as Minutenstueck;
-  if (naechste === null || letztes.ende === null) return teile;
+  if (naechste === null) return teile;
   const grenze = Math.floor(naechste / MINUTE) * MINUTE;
-  return [...teile.slice(0, -1), { ...letztes, ende: Math.min(letztes.ende, grenze) }];
+  return teile.map((teil) =>
+    teil.ende === null ? teil : { ...teil, ende: Math.min(teil.ende, grenze) },
+  );
 };
 
 /**
@@ -177,7 +187,7 @@ export const schichtAus = (
   const geschlossen = teile.filter((teil) => teil.ende !== null);
   const arbeit = geschlossen.map((teil) => stueck(teil.beginn, teil.ende as number));
   // only the last stretch can be open; the break before it is known all the same
-  const pausen = pausenZwischen(teile);
+  const pausen = pausenAus(teile);
   const bloecke = bloeckeAus(arbeit, pausen);
   const offen = offenAus(letztes, pauseLaeuft, tag, erstes.beginn);
   return {

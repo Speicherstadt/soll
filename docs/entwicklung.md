@@ -28,7 +28,7 @@ wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE
 
 ```sh
 bun install
-bun run dev:server   # Server auf Port 18200
+SOLL_SECRET_KEY=$(openssl rand -base64 32) bun run dev:server   # Server auf Port 18200
 bun run dev:web      # App auf Port 5177
 bun run check        # Typen, Lint, Tests, Build
 bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
@@ -65,6 +65,8 @@ Der Server liest seine Einstellungen aus der Umgebung:
 | `SOLL_HOST` | `0.0.0.0` | Adresse |
 | `SOLL_VERSION` | `0.0.0` | Version, die `/health` meldet |
 | `SOLL_DATA_DIR` | `data` | Datenverzeichnis mit der Datenbank `soll.db` |
+| `SOLL_SECRET_KEY` | – (Pflicht) | 32 Bytes in Base64; ohne startet der Server nicht |
+| `SOLL_URL` | `http://localhost:8200` | Adresse der Instanz, für Einladungslinks |
 
 Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Die Query der
 Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header und Inhalte nie.

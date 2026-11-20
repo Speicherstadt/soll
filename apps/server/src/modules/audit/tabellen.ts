@@ -1,4 +1,4 @@
-import { betriebe } from "../../db/schema.ts";
+import { betriebe, einladungen, mitgliedschaften, pins } from "../../db/schema.ts";
 
 /**
  * The tables whose rows go through the audit chain, with the columns that name a row. A new table of
@@ -6,6 +6,9 @@ import { betriebe } from "../../db/schema.ts";
  */
 export const kettenTabellen = {
   betriebe: { tabelle: betriebe, schluessel: ["betriebId"] },
+  mitgliedschaften: { tabelle: mitgliedschaften, schluessel: ["nutzerId"] },
+  einladungen: { tabelle: einladungen, schluessel: ["einladungId"] },
+  pins: { tabelle: pins, schluessel: ["nutzerId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

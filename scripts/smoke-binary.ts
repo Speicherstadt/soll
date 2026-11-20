@@ -11,8 +11,29 @@ const port = 28_201;
 
 // An empty data directory: the binary must create the database from its embedded migrations
 const dataDir = mkdtempSync(join(tmpdir(), "soll-smoke-"));
+const umgebung: Record<string, string | undefined> = {
+  ...process.env,
+  SOLL_PORT: String(port),
+  SOLL_HOST: "127.0.0.1",
+  SOLL_DATA_DIR: dataDir,
+};
+delete umgebung.SOLL_SECRET_KEY;
+
+// Without SOLL_SECRET_KEY the server refuses to start (BAULISTE.md S-106)
+const ohneSchluessel = Bun.spawnSync([binary], { env: umgebung, stdout: "pipe", stderr: "pipe" });
+if (
+  ohneSchluessel.exitCode === 0 ||
+  !ohneSchluessel.stderr.toString().includes("SOLL_SECRET_KEY")
+) {
+  throw new Error(`the binary started without SOLL_SECRET_KEY (exit ${ohneSchluessel.exitCode})`);
+}
+console.log("binary refuses to start without SOLL_SECRET_KEY");
+
 const server = Bun.spawn([binary], {
-  env: { ...process.env, SOLL_PORT: String(port), SOLL_HOST: "127.0.0.1", SOLL_DATA_DIR: dataDir },
+  env: {
+    ...umgebung,
+    SOLL_SECRET_KEY: Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64"),
+  },
   stdout: "inherit",
   stderr: "inherit",
 });

@@ -1,29 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { createApp } from "./app.ts";
-
-const setup = () => {
-  const lines: string[] = [];
-  let clock = 1_000;
-  const app = createApp({
-    log: (line) => lines.push(line),
-    now: () => (clock += 5),
-    version: "1.2.3",
-  });
-  return { app, lines };
-};
+import { testServer } from "./test-server.ts";
 
 describe("GET /health", () => {
   it("answers ok with the version", async () => {
-    const { app } = setup();
+    const { app } = testServer();
     const res = await app.request("/health");
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ status: "ok", version: "1.2.3" });
+    expect(await res.json()).toEqual({ status: "ok", version: "test" });
   });
 });
 
 describe("request log", () => {
+  const mitLog = () => {
+    const lines: string[] = [];
+    let clock = 1_000;
+    const { app } = testServer({ log: (line) => lines.push(line), uhr: () => (clock += 5) });
+    return { app, lines };
+  };
+
   it("writes one line per request with method, path, status and duration", async () => {
-    const { app, lines } = setup();
+    const { app, lines } = mitLog();
     await app.request("/health");
     expect(lines).toHaveLength(1);
     expect(JSON.parse(lines[0] ?? "")).toMatchObject({
@@ -35,7 +31,7 @@ describe("request log", () => {
   });
 
   it("leaves out query values, the Authorization header and cookies", async () => {
-    const { app, lines } = setup();
+    const { app, lines } = mitLog();
     await app.request("/health?token=geheim-123&pin=4711", {
       headers: { Authorization: "Bearer sk-geheim", Cookie: "session=geheim-cookie" },
     });

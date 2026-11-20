@@ -75,8 +75,11 @@ const alsMarke = (zeitpunkt: number): Stueck => ({
   minuten: 0,
 });
 
-/** The call-outs between two working days, with the day whose rest they fall in and the one before */
-type Gruppe = { einsaetze: Stelle[]; bis: Tag; vorher: Tag | null };
+/**
+ * The call-outs between two working days, with the day whose rest they fall in and the one before;
+ * `amTag` when more work of the day before follows them (a rest between two shifts of one day)
+ */
+type Gruppe = { einsaetze: Stelle[]; bis: Tag; vorher: Tag | null; amTag: boolean };
 
 /**
  * The call-outs that fall into a rest: after the last other work and before the first work of the
@@ -96,12 +99,12 @@ const inRuhezeiten = (stellen: readonly Stelle[]): Gruppe[] => {
     const ersteDesTags = !begonnen.has(stelle.tag);
     begonnen.add(stelle.tag);
     if (offen.length > 0 && (ersteDesTags || stelle.ersteDerSchicht))
-      gruppen.push({ einsaetze: offen, bis: stelle.tag, vorher });
+      gruppen.push({ einsaetze: offen, bis: stelle.tag, vorher, amTag: stelle.tag === vorher });
     offen = [];
     vorher = stelle.tag;
   }
   const erste = offen[0];
-  if (erste !== undefined) gruppen.push({ einsaetze: offen, bis: erste.tag, vorher });
+  if (erste !== undefined) gruppen.push({ einsaetze: offen, bis: erste.tag, vorher, amTag: false });
   return gruppen;
 };
 
@@ -113,7 +116,8 @@ const minutenDer = (stellen: readonly Stelle[]): number =>
  * rest that take no more than half of it do not interrupt it; each such rest is a Hinweis with the
  * minutes to balance, and its call-outs come back in `frei` for the check of the rest to leave out.
  * A rest after a working day of more than 12 hours under § 7 Abs. 9 ArbZG (`ohneAusgleich`, the day
- * before it) must follow „im unmittelbaren Anschluss“, so its call-outs interrupt it.
+ * before it) must follow „im unmittelbaren Anschluss“ to the end of that day's work, so its call-outs
+ * interrupt it; a rest between two shifts of that day lies before the end and keeps § 5 Abs. 3.
  */
 export const einsatzAusgleich = (
   tage: readonly BereitschaftsTag[],
@@ -128,7 +132,7 @@ export const einsatzAusgleich = (
       grenzen === null ||
       !grenzen.einsatzAusgleich.includes(branche) ||
       minuten > grenzen.einsatzAusgleichHoechstens ||
-      (gruppe.vorher !== null && ohneAusgleich.has(gruppe.vorher))
+      (gruppe.vorher !== null && !gruppe.amTag && ohneAusgleich.has(gruppe.vorher))
     )
       continue;
     befunde.push({

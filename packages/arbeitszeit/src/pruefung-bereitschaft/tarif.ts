@@ -101,7 +101,11 @@ export const ruheNachTarif = (
   tarif: Tarif | undefined,
 ): (RuhezeitBefund | EinsatzRuhezeitBefund | TarifRuhezeitBefund)[] => {
   if (tarif === undefined || ueber12.size === 0) return [...befunde];
-  const nachTarif = (befund: { tage: Tag[] }) => ueber12.has(befund.tage[0] as Tag);
+  // only the rest that follows the end of the day's work („im unmittelbaren Anschluss an die
+  // Beendigung der Arbeitszeit“): one into another day; a rest between two shifts of the day lies
+  // before that end and keeps § 5
+  const nachTarif = (befund: { tage: Tag[] }) =>
+    befund.tage.length > 1 && ueber12.has(befund.tage[0] as Tag);
   const verstossen = new Set(
     befunde.filter((befund) => befund.schwere === "verstoss").map((befund) => befund.ruhe.beginn),
   );

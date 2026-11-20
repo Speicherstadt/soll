@@ -3,7 +3,12 @@ import { parseEnv } from "./env.ts";
 
 describe("parseEnv", () => {
   it("fills in the defaults", () => {
-    expect(parseEnv({})).toEqual({ port: 8200, host: "0.0.0.0", version: "0.0.0" });
+    expect(parseEnv({})).toEqual({
+      port: 8200,
+      host: "0.0.0.0",
+      version: "0.0.0",
+      dataDir: "data",
+    });
   });
 
   it("reads the port as a number", () => {

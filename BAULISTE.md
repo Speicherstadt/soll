@@ -42,7 +42,7 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   antwortet (Test), ein Log enthält weder Query-Werte noch `Authorization`- oder Cookie-Header (Test),
   das kompilierte Binary startet und beantwortet `/health` (CI), die Checks `i18n` und `pages` laufen
   in der CI, und die Playwright-Projekte `desktop`, `phone` und `terminal` laufen in der CI.
-- [ ] **S-102 Datenbank und Audit-Kette** – Drizzle mit SQLite (WAL), Migrationen eingecheckt und im
+- [x] **S-102 Datenbank und Audit-Kette** – Drizzle mit SQLite (WAL), Migrationen eingecheckt und im
   Binary eingebettet. Jede Schreiboperation hängt in derselben Transaktion ein Kettenglied an
   (Akteur, Zeitpunkt, Tabelle, Zeile, Hash des Inhalts, Hash des Vorgängers); der Inhalt liegt
   getrennt vom Kettenglied, damit er nach der Frist ausgesondert werden kann. Prüfung der Kette und
@@ -50,7 +50,11 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   Quelle im Kommentar).
   Fertig, wenn: eine geänderte Zeile und ein geändertes Kettenglied bei der Prüfung auffallen, ein
   entfernter Inhalt die Prüfung nicht bricht und ein Test über alle Schreibfunktionen zeigt, dass
-  keine an der Kette vorbei schreibt.
+  keine an der Kette vorbei schreibt. Dazu: ein entferntes oder abgeschnittenes Kettenglied und eine
+  an der Kette vorbei eingefügte oder gelöschte Zeile fallen auf, eine Zeile eines anderen Betriebs
+  lässt sich nicht schreiben, ein Fehler mitten in der Transaktion nimmt Zeile und Glied zurück, eine
+  schon angewendete, später geänderte Migration verhindert den Start, und das Binary legt in einem
+  leeren Datenverzeichnis die Datenbank an (CI).
 - [ ] **S-103 Regelwerk** – `docs/regeln.md`: jede Regel aus dem Projektplan mit Norm, Grenzwerten,
   Ausnahmen, Schwere (Hinweis oder Verstoß) und einer Tabelle von Testfällen.
   Fertig, wenn: jede Norm der Tabelle „Rechtlicher Rahmen“ im Projektplan eine Regel hat und jede

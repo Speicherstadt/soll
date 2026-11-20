@@ -64,9 +64,16 @@ Der Server liest seine Einstellungen aus der Umgebung:
 | `SOLL_PORT` | `8200` | Port |
 | `SOLL_HOST` | `0.0.0.0` | Adresse |
 | `SOLL_VERSION` | `0.0.0` | Version, die `/health` meldet |
+| `SOLL_DATA_DIR` | `data` | Datenverzeichnis mit der Datenbank `soll.db` |
 
 Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Die Query der
 Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header und Inhalte nie.
+
+## Datenbank
+
+Das Schema steht in `apps/server/src/db/schema.ts`. Nach einer Änderung erzeugt
+`bun run db:generate` die Migration und die Datei, die sie ins Programm einbettet; eine schon
+eingecheckte Migration wird nie geändert. Tests laufen gegen SQLite in einer temporären Datei.
 
 ## Sprachen
 

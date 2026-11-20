@@ -349,7 +349,8 @@ Regel:
   Pflege) oder eine Bewilligung der Aufsichtsbehörde (§ 13 ArbZG) eingetragen ist.
 - **Grenzwerte**: 0:00 bis 24:00 des Sonn- oder Feiertags; eine Schicht über Mitternacht zählt mit
   dem Teil, der in den Tag fällt. Mehrschichtbetriebe: Verschiebung um bis zu 6 h nach § 9 Abs. 2
-  (Einstellung): Beginn und Ende rücken um dieselbe Uhrzeit vor oder zurück; eine Verschiebung über
+  (Einstellung): der Beginn rückt um die eingetragene Uhrzeit vor oder zurück, die Ruhe dauert dann
+  die 24 echten Stunden ab ihrem Beginn (am 29.3.2026 also bis So 19:00); eine Verschiebung über
   6 h oder nicht in ganzen Minuten gilt nicht, dann bleibt es bei 0 bis 24 Uhr. Gemessen wird in
   echten Minuten (der 25.10.2026 hat 25 Stunden), nur an geschlossenen Schichten (R-01).
 - **Einstellungen**: eine Ausnahme nach § 10 Abs. 1 Nr. 1 bis 16 (eine andere Nummer erlaubt nichts),
@@ -370,6 +371,7 @@ Regel:
 | Silvester | SHK in Hamburg, Do 31.12.2026 20:00 – Fr 1.1.2027 2:00 | Verstoß „Feiertag“ für 2:00 am 1.1. | § 9 Abs. 1 ArbZG; § 1 FeiertagsG Hamburg |
 | Herbst | SHK ohne Ausnahme, Sa 24.10.2026 22:00 – So 6:00 | Verstoß für 7:00 am Sonntag (echte Zeit) | § 9 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Mehrschicht | Ruhe 6 h vorverlegt, Sa 14:00 – 22:00 | Verstoß für 4:00 am Sonntag; So 18:00 – 23:00 kein Befund | § 9 Abs. 2 ArbZG |
+| Mehrschicht | Ruhe 6 h vorverlegt, So 29.3.2026 18:00 – 19:00 (Sommerzeit); So 25.10.2026 17:00 – 18:00 (Winterzeit) | Verstoß für 1:00 am 29.3.; am 25.10. kein Befund | § 9 Abs. 2 ArbZG („die auf den Beginn der Ruhezeit folgenden 24 Stunden“) |
 | Mehrschicht | Verschiebung um 7 h eingetragen, Sa 14:00 – 22:00 | kein Befund (es gilt 0 bis 24 Uhr) | § 9 Abs. 2 ArbZG („um bis zu sechs Stunden“) |
 | Bäckerei | Bäckerei mit § 10 Abs. 3, So 5:00 – 8:00 (3:00) | kein Befund; mit 3:01 Verstoß „über 3 h“ | § 10 Abs. 3 ArbZG |
 | Bewilligung | Bewilligung nach § 13 für So 15.11.2026, Arbeit am 15. und am 22.11. | Verstoß nur für den 22.11. | § 13 ArbZG |

@@ -57,7 +57,7 @@ mit dem Teil ab Mitternacht.
 | Ausnahme nach § 10 Abs. 1 Nr. 1 bis 16 (etwa Nr. 4 Gaststätten) | Arbeit erlaubt; R-08 und R-09 gelten weiter |
 | § 10 Abs. 3 (Bäckereien und Konditoreien) | bis 3 Stunden je Sonn- und Feiertag, darüber Verstoß |
 | Bewilligung nach § 13 mit Fundstelle | erlaubt an den Tagen der Bewilligung |
-| Verschiebung nach § 9 Abs. 2 (Mehrschichtbetrieb) | die Ruhe beginnt und endet bis zu 6 Stunden früher oder später |
+| Verschiebung nach § 9 Abs. 2 (Mehrschichtbetrieb) | die Ruhe beginnt bis zu 6 Stunden früher oder später und dauert 24 Stunden ab ihrem Beginn |
 
 ## Freie Sonntage (R-08, § 11 Abs. 1 ArbZG)
 

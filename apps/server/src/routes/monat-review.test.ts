@@ -128,3 +128,127 @@ describe("closing with a stamp without Kommen", () => {
     expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
   });
 });
+
+/* Second round of the independent review */
+
+const korrigieren = (w: Awaited<ReturnType<typeof weber>>, stempelId: string, zeit: string) =>
+  w.jonas.anfrage(`/api/v1/arbeitszeit/stempelungen/${stempelId}`, {
+    method: "PATCH",
+    body: { art: "gehen", zeitpunkt: um(zeit), grund: "x" },
+  });
+
+describe("the lock around a closed month, second round", () => {
+  it("allows a change on the 2nd and a new shift on the 1st that do not touch the closed month", async () => {
+    const w = await weber();
+    await bestaetigen(w.sandra);
+    expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
+    for (const [art, zeit] of [
+      ["kommen", "2026-11-01T12:00:00+01:00"],
+      ["gehen", "2026-11-01T16:00:00+01:00"],
+      ["kommen", "2026-11-02T08:00:00+01:00"],
+    ] as const)
+      expect((await nachtrag(w.sandra, { art, zeitpunkt: um(zeit), grund: "x" })).status).toBe(201);
+  });
+
+  it("refuses moving the Gehen on 1 November of the night shift of the closed 31 October", async () => {
+    const w = await weber();
+    await bestaetigen(w.sandra);
+    expect((await abschliessen(w.jonas, w.sandra.nutzerId)).status).toBe(201);
+    await abgelehnt(await korrigieren(w, w.ids.nachtGehen, "2026-11-01T03:00:00+01:00"));
+  });
+
+  it("allows correcting the Gehen in the closed October of a night shift of the open 30 September", async () => {
+    const w = await weber();
+    const [, gehen] = await w.tag(w.sandra, [
+      ["kommen", "2026-09-30T22:00:00+02:00"],
+      ["gehen", "2026-10-01T05:00:00+02:00"],
+    ]);
+    await bestaetigen(w.sandra);
+    const antwort = await abschliessen(w.jonas, w.sandra.nutzerId);
+    expect(antwort.status).toBe(201);
+    const pruefwert = ((await json(antwort)).abschluss as Json).pruefwert as string;
+    // the shift and its Gehen belong to 30 September, which is open; October keeps its stamps
+    expect((await korrigieren(w, gehen ?? "", "2026-10-01T06:00:00+02:00")).status).toBe(201);
+    expect(await pruefen(w.server, w.jonas.betriebId, pruefwert)).toMatchObject({
+      ergebnis: "uebereinstimmend",
+    });
+  });
+
+  it("allows correcting the night shift of an open October whose Gehen lies in a closed November", async () => {
+    const w = await weber();
+    w.server.stelleUhr(um("2026-12-03T09:00:00+01:00"));
+    await bestaetigen(w.sandra, "2026-11");
+    const antwort = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-11", nutzerId: w.sandra.nutzerId },
+    });
+    expect(antwort.status).toBe(201);
+    const pruefwert = ((await json(antwort)).abschluss as Json).pruefwert as string;
+    // 31 October is open; a counter-entry is only for closed days, so the stamp is the way
+    expect((await korrigieren(w, w.ids.nachtGehen, "2026-11-01T03:00:00+01:00")).status).toBe(201);
+    expect(await pruefen(w.server, w.jonas.betriebId, pruefwert)).toMatchObject({
+      ergebnis: "uebereinstimmend",
+    });
+    // a shift of its own on 1 November is still refused
+    await abgelehnt(
+      await nachtrag(w.sandra, {
+        art: "kommen",
+        zeitpunkt: um("2026-11-01T14:00:00+01:00"),
+        grund: "x",
+      }),
+    );
+  });
+});
+
+describe("a day with a stamp out of order, second round", () => {
+  it("shows a Gehen without Kommen with its R-01 finding on the closed month", async () => {
+    const w = await weber();
+    await w.tag(w.sandra, [["gehen", "2026-10-14T17:00:00+02:00"]]);
+    await bestaetigen(w.sandra);
+    const inhalt = (await json(await abschliessen(w.jonas, w.sandra.nutzerId))).inhalt as Json;
+    const tage = inhalt.tage as { tag: string; stempel: unknown[] }[];
+    expect(tage.find((tag) => tag.tag === "2026-10-14")?.stempel).toHaveLength(1);
+    expect(inhalt.befunde).toContainEqual(
+      expect.objectContaining({ regel: "R-01", tage: ["2026-10-14"] }),
+    );
+  });
+
+  it("still holds up closing for a forgotten Gehen of an earlier day", async () => {
+    const w = await weber();
+    await w.tag(w.sandra, [["kommen", "2026-10-14T08:00:00+02:00"]]);
+    await bestaetigen(w.sandra);
+    const antwort = await abschliessen(w.jonas, w.sandra.nutzerId);
+    expect(antwort.status).toBe(409);
+    expect(await json(antwort)).toEqual({ fehler: "offene_schicht" });
+  });
+});
+
+describe("a counter-entry, second round", () => {
+  it("stays out of the closed month, and the month it is booked in closes with it", async () => {
+    const w = await weber();
+    await bestaetigen(w.sandra);
+    const oktober = await json(await abschliessen(w.jonas, w.sandra.nutzerId));
+    const pruefwertOktober = (oktober.abschluss as Json).pruefwert as string;
+    await w.anna.anfrage("/api/v1/arbeitszeit/monat/gegeneintrag", {
+      body: { nutzerId: w.sandra.nutzerId, tag: "2026-10-06", minuten: 30, grund: "Rüstzeit" },
+    });
+    const okt = await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-10"));
+    expect(okt.inhalt).toEqual(oktober.inhalt);
+    w.server.stelleUhr(um("2026-12-03T09:00:00+01:00"));
+    expect((await bestaetigen(w.sandra, "2026-11")).status).toBe(201);
+    const november = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-11", nutzerId: w.sandra.nutzerId },
+    });
+    expect(november.status).toBe(201);
+    const daten = await json(november);
+    const inhalt = daten.inhalt as Json;
+    expect(inhalt.gegeneintraege).toEqual([{ tag: "2026-10-06", minuten: 30, grund: "Rüstzeit" }]);
+    expect((inhalt.summen as Json).istMinuten).toBe(30);
+    const pdf = await w.sandra.anfrage("/api/v1/arbeitszeit/monat/stundenzettel?monat=2026-11");
+    const text = pdfText(new Uint8Array(await pdf.arrayBuffer()));
+    expect(text).toContain("Rüstzeit");
+    for (const pruefwert of [pruefwertOktober, (daten.abschluss as Json).pruefwert as string])
+      expect(await pruefen(w.server, w.jonas.betriebId, pruefwert)).toMatchObject({
+        ergebnis: "uebereinstimmend",
+      });
+  });
+});

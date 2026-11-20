@@ -127,8 +127,28 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-401 Abwesenheiten** – Urlaubsantrag mit Freigabe, Krankmeldung ohne Diagnose,
-  Sonderurlaub, halbe Tage, Überstundenabbau.
+- [ ] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
+  ganze und halbe Tage.
+  - **Urlaub**: Antrag mit Resturlaub und Hinweis auf eigene Schichten im Zeitraum; Freigabe oder
+    Ablehnung mit Grund durch Inhaber oder Planer, Benachrichtigung beider Seiten; Zurückziehen des
+    Antrags; Storno eines genehmigten Urlaubs nur durch den Betrieb mit Grund. Krankheitstage mit
+    Bescheinigung im Urlaub zählen nicht als Urlaub (§ 9 BUrlG).
+  - **Krankmeldung**: in der App oder am Terminal, ab heute, ohne Diagnose; Hinweis auf die
+    Bescheinigung ab dem 4. Tag oder früher, wenn der Betrieb es so einstellt (§ 5 EntgFG); Haken
+    „Bescheinigung liegt vor“ und Erinnerung an den Betrieb, die eAU über sein Lohnprogramm
+    abzurufen; Zähler der Kinderkrankentage (§ 45 SGB V); eine eingeplante Schicht wird als offen
+    gemeldet.
+  - **Attest hochladen**: für alles, was nicht als eAU kommt (privat Versicherte, Ärzte im Ausland,
+    Bescheinigungen für Arztbesuche, Sonderurlaub): Foto mit der Handykamera oder PDF; Dateityp am
+    Inhalt erkannt (PDF, JPEG, PNG, HEIC, nach `dateityp.ts` aus gobd-kern, kopiert), höchstens
+    10 MB; Hinweis, nur die Ausfertigung für den Arbeitgeber ohne Diagnose hochzuladen. Gespeichert
+    verschlüsselt unter dem SHA-256 (nach `dateispeicher.ts`, kopiert), sichtbar nur für die Person,
+    Inhaber und Lohnbüro, ausgesondert mit dem Monat (S-901); nicht am Terminal.
+  - **Datenschutz**: „krank“ ist ein Gesundheitsdatum (Art. 9 DSGVO); im Teamkalender und im
+    Dienstplan steht nur „abwesend“.
+  Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung, Krankmeldung und Hochladen eines Attests vom
+  Handy zeigt und Tests „krank im Urlaub“, die Frist am 4. Tag, die Sichtbarkeit von „krank“ und des
+  Attests je Rolle sowie die Ablehnung einer Datei mit falschem Inhalt abdecken.
 - [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
 

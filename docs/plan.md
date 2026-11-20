@@ -116,7 +116,9 @@ mit Gültigkeit; der Gesetzeswächter (S-906) meldet, wenn sich ein Gesetzestext
 | Jugendliche | §§ 8, 11 bis 14 JArbSchG |
 | Mutterschutz | §§ 4 bis 6 MuSchG |
 | Arbeit auf Abruf: Schicht 4 Tage vorher | § 12 Abs. 3 TzBfG |
-| Urlaub, Zusatzurlaub, Elternzeit | §§ 3, 5, 7 BUrlG; § 208 SGB IX; § 17 BEEG |
+| Urlaub, Zusatzurlaub, Elternzeit, Krankheit im Urlaub | §§ 3, 5, 7, 9 BUrlG; § 208 SGB IX; § 17 BEEG |
+| Krankmeldung, Bescheinigung ab dem 4. Tag, eAU | § 5 EntgFG; § 109 SGB IV |
+| Kinderkrankentage | § 45 SGB V |
 | Steuerfreie Zuschläge | § 3b EStG, R 3b LStR |
 | Mitbestimmung bei technischer Überwachung | § 87 Abs. 1 Nr. 6 BetrVG |
 | Datenschutz | Art. 5, 9, 15, 17, 88 DSGVO |

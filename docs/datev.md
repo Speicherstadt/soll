@@ -30,8 +30,9 @@ Monats gibt dieselbe Datei.
 
 Solange eine Person mit Arbeitszeitmodell den Monat nicht abgeschlossen hat, gibt es keine Datei:
 Ihre Zahlen könnten sich noch ändern, und eine Datei ohne sie wäre unvollständig. Das gilt auch für
-jemanden, der den Betrieb inzwischen verlassen, im Monat aber gestempelt hat; Inhaber schließen
-seinen Monat mit einem Grund ab.
+jemanden, der den Betrieb inzwischen verlassen, im Monat aber gestempelt hat, auch ohne
+Arbeitszeitmodell; Inhaber schließen seinen Monat mit einem Grund ab. Fehlt ihm das Modell, ist es
+danach „nicht hinterlegt“, mit den Tagen, an denen er gearbeitet hat.
 
 ## Was in der Datei steht
 

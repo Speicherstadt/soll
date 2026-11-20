@@ -75,14 +75,16 @@ const mitStempeln = (db: Db, betriebId: string, monat: Monat): Set<string> =>
   );
 
 /**
- * Persons with a model by the month's end whose month is payroll's business: the members, and
- * whoever left since but stamped in it, so a file never leaves out someone who worked (docs/plan.md,
- * "Was der DATEV-Export liest")
+ * Persons whose month is payroll's business: the members with a model by the month's end, and
+ * whoever left since but stamped in it, with a model or without, so a file never leaves out someone
+ * who worked (docs/plan.md, "Was der DATEV-Export liest"); a month without a model is then "nicht
+ * hinterlegt" once it is closed
  */
 const beschaeftigt = (db: Db, betriebId: string, monat: Monat): string[] => {
   const dabei = mitglieder(db, betriebId);
-  const gestempelt = mitStempeln(db, betriebId, monat);
-  return mitModell(db, betriebId, monat).filter((id) => dabei.has(id) || gestempelt.has(id));
+  const gegangen = [...mitStempeln(db, betriebId, monat)].filter((id) => !dabei.has(id));
+  const mitgliederMitModell = mitModell(db, betriebId, monat).filter((id) => dabei.has(id));
+  return [...mitgliederMitModell, ...gegangen];
 };
 
 /** Whether a month of the person was ever closed in the business, also after they left */

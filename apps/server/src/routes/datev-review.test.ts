@@ -107,7 +107,17 @@ describe("a person who stamped in the month without a model and left", () => {
     const antwort = await w.lohn.anfrage(exportPfad("2026-10", "lodas"));
     expect(antwort.status).toBe(409);
     expect((await json(antwort)).fehlend).toContainEqual(
-      expect.objectContaining({ nutzerId: w.anna.nutzerId }),
+      expect.objectContaining({ art: "monat_offen", nutzerId: w.anna.nutzerId }),
+    );
+    // closed without her, her month has no model to pay it by: "nicht hinterlegt", with the day
+    const geschlossen = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-10", nutzerId: w.anna.nutzerId, grund: "ausgeschieden" },
+    });
+    expect(geschlossen.status).toBe(201);
+    const danach = await w.lohn.anfrage(exportPfad("2026-10", "lodas"));
+    expect(danach.status).toBe(409);
+    expect((await json(danach)).fehlend).toContainEqual(
+      expect.objectContaining({ art: "modell", nutzerId: w.anna.nutzerId, tage: ["2026-10-07"] }),
     );
   });
 });

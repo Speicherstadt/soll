@@ -326,6 +326,7 @@
   "pruefen_text": "أدخل قيمة التحقق من كشف ساعاتك. يقارنها Soll بسجلات المنشأة.",
   "pruefen_betrieb": "المنشأة (المعرّف من كشف الساعات)",
   "pruefen_wert": "قيمة التحقق",
+  "pruefen_wert_beispiel": "Nr. 1234 · 3f98…",
   "pruefen_knopf": "تحقّق",
   "pruefen_fehler": "يُرجى إدخال المنشأة وقيمة التحقق.",
   "pruefen_ok": "مطابق",

@@ -326,6 +326,7 @@
   "pruefen_text": "Enter the check value from your time sheet. Soll compares it with the business's records.",
   "pruefen_betrieb": "Business (ID from the time sheet)",
   "pruefen_wert": "Check value",
+  "pruefen_wert_beispiel": "Nr. 1234 · 3f98…",
   "pruefen_knopf": "Check",
   "pruefen_fehler": "Please enter the business and the check value.",
   "pruefen_ok": "Matches",

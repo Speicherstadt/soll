@@ -326,6 +326,7 @@
   "pruefen_text": "Gib den Prüfwert von deinem Stundenzettel ein. Soll vergleicht ihn mit dem Stand des Betriebs.",
   "pruefen_betrieb": "Betrieb (Kennung vom Stundenzettel)",
   "pruefen_wert": "Prüfwert",
+  "pruefen_wert_beispiel": "Nr. 1234 · 3f98…",
   "pruefen_knopf": "Prüfen",
   "pruefen_fehler": "Bitte gib Betrieb und Prüfwert ein.",
   "pruefen_ok": "Übereinstimmend",

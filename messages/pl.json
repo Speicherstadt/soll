@@ -326,6 +326,7 @@
   "pruefen_text": "Wpisz wartość kontrolną z karty czasu pracy. Soll porówna ją ze stanem firmy.",
   "pruefen_betrieb": "Firma (identyfikator z karty)",
   "pruefen_wert": "Wartość kontrolna",
+  "pruefen_wert_beispiel": "Nr. 1234 · 3f98…",
   "pruefen_knopf": "Sprawdź",
   "pruefen_fehler": "Podaj firmę i wartość kontrolną.",
   "pruefen_ok": "Zgodne",

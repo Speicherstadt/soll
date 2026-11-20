@@ -132,7 +132,7 @@ const PruefSeite = () => {
             rows={3}
             required
             dir="ltr"
-            placeholder="Nr. 1234 · 3f98…"
+            placeholder={m.pruefen_wert_beispiel()}
             class={`${feld} h-auto py-1.5 font-mono text-[12px]`}
           />
         </div>

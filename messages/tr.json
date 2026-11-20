@@ -326,6 +326,7 @@
   "pruefen_text": "Zaman çizelgendeki kontrol değerini gir. Soll onu işletmenin kayıtlarıyla karşılaştırır.",
   "pruefen_betrieb": "İşletme (zaman çizelgesindeki kimlik)",
   "pruefen_wert": "Kontrol değeri",
+  "pruefen_wert_beispiel": "Nr. 1234 · 3f98…",
   "pruefen_knopf": "Doğrula",
   "pruefen_fehler": "Lütfen işletmeyi ve kontrol değerini gir.",
   "pruefen_ok": "Eşleşiyor",

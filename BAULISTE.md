@@ -164,9 +164,27 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   um 14 Uhr, Beginn um 0 Uhr (keine 40 %), die 50-€-Grenze, der Jahreswechsel und „nicht
   hinterlegt“ vor der ersten Regelversion; das Ergebnis speist `Lohnmonat.zuschlaege` von S-204 mit
   berechnetem `steuerfrei` (Test mit der Minijob-Grenze).
-- [ ] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
+- [x] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
   Abschlüssen, Urlaub anteilig, Zusatzurlaub (§ 208 SGB IX), Kürzung bei Elternzeit (§ 17 BEEG),
   Hinweis auf Verfall.
+  Fertig, wenn: jeder Fall von R-23 bis R-26, R-28 und R-33 in `docs/regeln.md` wörtlich als Test
+  besteht, auch bei Eintritt und Austritt mitten im Monat, am 1. und am letzten Tag, im Schaltjahr,
+  bei einem Modellwechsel mitten im Monat und im Jahr, an Feiertagen auf Arbeitstagen und auf freien
+  Tagen des Modells, an den Grenzen der Rundung auf halbe Tage, bei Elternzeit über den Jahreswechsel
+  und beim Verfall mit, ohne und mit verspätetem Hinweis. Dazu: reine Funktionen in
+  `packages/arbeitszeit` ohne Speicher (Projektplan, „Konten“); das Soll eines Tages kommt aus dem
+  Modell, das an ihm gilt, ein Feiertag am Standort setzt es auf 0 und nennt die ausgefallenen Minuten
+  (§ 2 Abs. 1 EntgFG), vor dem Eintritt, nach dem Austritt und während das Arbeitsverhältnis ruht ist
+  es 0; Abwesenheiten in ganzen und halben Tagen schreiben dem Ist gut, Überstundenabbau nicht, krank
+  mit Bescheinigung geht im Urlaub vor (R-24); das Überstundenkonto rechnet aus den Abschlüssen und den
+  Anpassungen von Hand (Startsaldo, Auszahlung, Korrektur); Urlaub in halben Tagen als exakter Bruch,
+  einmal gerundet (ab einem halben Tag auf den vollen, darunter auf einen halben), volle Monate nach
+  §§ 187, 188 BGB, Teilurlaub nach § 5 Abs. 1 Buchst. a bis c BUrlG, Zusatzurlaub nach § 208 SGB IX,
+  die Kürzung nach § 17 BEEG erst mit der Erklärung des Betriebs; Urlaub verfällt nach § 7 Abs. 3
+  BUrlG nur nach einem rechtzeitigen Hinweis (EuGH C-684/16), sonst ein Befund; Kinderkrankentage je
+  Kind und zusammen gegen den Jahreswert (S-104); jeder Befund nennt Regel, Norm, Schwere und Tage;
+  ein Tag ohne Modell oder Feiertage und ein Jahr ohne Jahreswert werden „nicht hinterlegt“ statt mit
+  fremden Werten gerechnet.
 
 ## Phase 3 – Arbeitszeit in der App
 

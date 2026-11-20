@@ -81,6 +81,7 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | R-30 | Auswertung je Person nur eingeschaltet | § 87 Abs. 1 Nr. 6 BetrVG | Verstoß |
 | R-31 | Gesundheitsdaten, Auskunft, Löschen | Art. 5, 9, 15, 17, 88 DSGVO | Verstoß |
 | R-32 | Minijob-Grenze, gelegentliches Überschreiten | § 8 Abs. 1, 1a, 1b SGB IV | Hinweis / Verstoß |
+| R-33 | Soll, Ist und Überstundenkonto | § 611a Abs. 1 BGB; § 2 Abs. 1 EntgFG | – (Berechnung) |
 
 Jede Norm der Tabelle „Rechtlicher Rahmen“ im [Projektplan](plan.md#rechtlicher-rahmen) hat eine
 Regel:
@@ -842,7 +843,16 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
   auf Verlangen der Person in das ganze nächste Kalenderjahr, § 7 Abs. 3 Satz 4).
 - **Regel**: Das Arbeitszeitmodell gibt den Urlaub in Arbeitstagen; Soll prüft, dass er umgerechnet
   nicht unter dem gesetzlichen Mindesturlaub liegt (24 Werktage bei 6 Tagen = 20 Arbeitstage bei 5,
-  allgemein `24 × Arbeitstage je Woche ÷ 6`). Urlaub in halben Tagen (CLAUDE.md).
+  allgemein `24 × Arbeitstage je Woche ÷ 6`), und rechnet darunter mit dem Mindesturlaub
+  (§ 13 Abs. 1 Satz 1 BUrlG). Urlaub in halben Tagen (CLAUDE.md). Volle Monate zählen vom Tag des
+  Eintritts an (§§ 187 Abs. 2, 188 Abs. 2 und 3 BGB), nicht nach Kalendermonaten; wechseln die
+  Arbeitstage je Woche im Jahr, zählt jedes Modell mit seinen Tagen im Jahr (EuGH C-415/12, Brandes).
+  Übertragener Urlaub verfällt nur, wenn der Betrieb die Person rechtzeitig auf den offenen Urlaub
+  und den Verfall hingewiesen hat (EuGH C-684/16, Max-Planck; BAG, 19.02.2019, 9 AZR 423/16): Soll
+  verlangt den Hinweis drei Monate vor dem Verfall, also bis 31. Dezember (beim übertragenen
+  Teilurlaub bis 30. September des Folgejahres); ein späterer Hinweis lässt den Urlaub erst mit dem
+  31. März nach dem Jahr des Hinweises verfallen, ohne Hinweis verfällt er nicht (BAG, 20.12.2022,
+  9 AZR 266/20). Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
 - **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
   übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
 
@@ -854,11 +864,25 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Teilurlaub | Eintritt 1.8., 20 Tage, 5 volle Monate | 5 × 20 ÷ 12 = 8,33 → 8,5 Tage (nicht abgerundet; Soll führt halbe Tage und rundet zugunsten der Person auf) | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG; BAG, 26.01.1989, 8 AZR 730/87 |
 | Rundung | Austritt 30.4. nach erfüllter Wartezeit, 20 Tage, 4 volle Monate: 6,67 | 7 Tage | § 5 Abs. 1 Buchst. c, Abs. 2 BUrlG |
 | Wartezeit | Eintritt 1.6., 20 Tage, 7 volle Monate (Wartezeit am 30.11. erfüllt) | 20 Tage, kein Teilurlaub | §§ 4, 5 Abs. 1 Buchst. a BUrlG |
+| 4-Tage-Woche | Modell Mo–Do ohne eigenen Urlaub, ganzes Jahr | 16 Tage | § 3 Abs. 1 BUrlG (24 × 4 ÷ 6) |
+| Wartezeit am 31.12. | Eintritt 1.7., 20 Tage, Wartezeit am 31.12. erfüllt | 20 Tage, kein Teilurlaub | § 4 BUrlG; §§ 187 Abs. 2, 188 Abs. 2 BGB |
+| Eintritt 2.7. | 20 Tage, 5 volle Monate (2.7. – 1.12.), Wartezeit erst am 1.1. erfüllt | 5 × 20 ÷ 12 = 8,33 → 8,5 Tage | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG |
+| Monatsmitte | Eintritt 15.8., 20 Tage, 4 volle Monate (15.8. – 14.12.) | 4 × 20 ÷ 12 = 6,67 → 7 Tage | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG; § 188 Abs. 2 BGB |
+| vor der Wartezeit | Eintritt 1.2., Austritt 30.6., 20 Tage, 5 volle Monate | 8,5 Tage | § 5 Abs. 1 Buchst. b BUrlG |
+| zweites Halbjahr | Austritt 31.7. nach erfüllter Wartezeit, 20 Tage | 20 Tage | § 5 Abs. 1 Buchst. c BUrlG („in der ersten Hälfte eines Kalenderjahrs“) |
+| halber Tag im vollen Jahr | Modell mit 25,5 Tagen, ganzes Jahr | 25,5 Tage (nichts zu runden) | § 5 Abs. 2 BUrlG gilt nur für § 5 Abs. 1; BAG, 26.01.1989, 8 AZR 730/87 |
+| Modellwechsel | bis 30.6.2026 Mo–Fr, ab 1.7.2026 Mo–Mi, ohne eigenen Urlaub | 20 × 181 ÷ 365 + 12 × 184 ÷ 365 = 15,97 → 16 Tage | EuGH C-415/12 (Brandes); § 5 Abs. 2 BUrlG |
+| Verfall mit Hinweis | Resturlaub 2026 3 Tage, Hinweis am 1.10.2026 | Hinweis „Verfall droht“ bis 31.3.2027, danach 3 Tage verfallen | § 7 Abs. 3 Satz 3 BUrlG; BAG, 19.02.2019, 9 AZR 423/16 |
+| Verfall ohne Hinweis | Resturlaub 2026 3 Tage, kein Hinweis | ab 1.1.2027 Hinweis „Hinweis auf Verfall fehlt“, die 3 Tage verfallen nicht | EuGH C-684/16 (Max-Planck); BAG, 20.12.2022, 9 AZR 266/20 |
+| Hinweis verspätet | Resturlaub 2026 3 Tage, Hinweis erst am 15.1.2027 | verfällt nicht zum 31.3.2027, sondern mit Ablauf des 31.3.2028 | BAG, 19.02.2019, 9 AZR 423/16 |
+| Hinweis fällig | Resturlaub 2026, noch kein Hinweis, Stand 20.11.2026 | Hinweis „Hinweis auf Verfall fällig bis 31.12.2026“ | docs/plan.md, „Verfall von Urlaub“ |
+| Teilurlaub übertragen | Eintritt 1.8.2026, 8,5 Tage, Übertragung verlangt, Hinweis am 1.9.2026 | verfällt mit Ablauf des 31.12.2027 | § 7 Abs. 3 Satz 4 BUrlG |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).
 Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halben Tag auf (8,33 auf
-8,5).
+8,5). § 5 Abs. 2 gilt nur für den Teilurlaub nach § 5 Abs. 1 (dieselbe Entscheidung): Ein Modell mit
+25,5 Tagen gibt im ganzen Jahr 25,5 Tage, nicht 26.
 
 ### R-24 Krank im Urlaub
 
@@ -878,6 +902,11 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 
 - **Norm**: § 208 Abs. 1 SGB IX: fünf Arbeitstage bei fünf Arbeitstagen je Woche, entsprechend mehr
   oder weniger; Abs. 2: ein Zwölftel je vollem Monat, ab einem halben Tag aufrunden.
+- **Regel**: Die Schwerbehinderung steht am Mitarbeiter nur als Zeitraum. Besteht sie während der
+  ganzen Beschäftigung im Jahr, folgt der Zusatzurlaub dem Urlaub (auch dem Teilurlaub nach § 5
+  BUrlG); sonst ein Zwölftel je vollem Monat (Zeiträume, die nahtlos aneinander anschließen oder sich überschneiden, zählen als einer), und bei einem Modellwechsel zählen nur die Arbeitstage
+  je Woche der Tage mit Schwerbehinderung (EuGH C-415/12, Brandes). Er wird für sich gerundet und dem Urlaub hinzugerechnet
+  (§ 208 Abs. 2 Satz 3 SGB IX); die Kürzung bei Elternzeit trifft ihn nicht.
 - **Schwere**: Hinweis, wenn der eingetragene Zusatzurlaub darunter liegt.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -886,13 +915,19 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Grenze | 4-Tage-Woche, ganzes Jahr | 4 Tage | § 208 Abs. 1 Satz 1 SGB IX |
 | anteilig | Schwerbehinderung ab 1.7., 5-Tage-Woche (6 volle Monate) | 2,5 → 3 Tage | § 208 Abs. 2 SGB IX |
 | Verstoß | 5-Tage-Woche, ganzes Jahr, 4 Tage eingetragen | Hinweis „Zusatzurlaub unter dem Gesetz“ | § 208 Abs. 1 Satz 1 SGB IX |
+| 6-Tage-Woche | ganzes Jahr | 6 Tage | § 208 Abs. 1 Satz 1 SGB IX („entsprechend mehr“) |
+| Bruchteil | Schwerbehinderung ab 15.7., 5-Tage-Woche (5 volle Monate) | 5 × 5 ÷ 12 = 2,08 → 2,5 Tage | § 208 Abs. 2 SGB IX; BAG, 26.01.1989, 8 AZR 730/87 |
+| Modellwechsel | bis 30.9. Mo–Di, ab 1.10. Mo–Fr, Schwerbehinderung ab 1.10. (3 volle Monate) | 5 × 3 ÷ 12 = 1,25 → 1,5 Tage (nicht über das ganze Jahr gewichtet: 0,69 → 1) | § 208 Abs. 2 SGB IX; EuGH C-415/12 (Brandes) |
+| Bescheid verlängert | Schwerbehinderung 1.2.–15.4. und nahtlos 16.4.–30.6., 5-Tage-Woche (zusammen 5 volle Monate) | 5 × 5 ÷ 12 = 2,08 → 2,5 Tage (nicht je Eintrag 2 + 2 Monate: 1,67 → 2) | § 208 Abs. 2 SGB IX; §§ 187, 188 BGB |
 
 ### R-26 Kürzung bei Elternzeit
 
 - **Norm**: § 17 Abs. 1 BEEG: ein Zwölftel je vollem Kalendermonat der Elternzeit, nicht bei
   Teilzeit beim selben Arbeitgeber.
 - **Regel**: Die Kürzung ist ein Recht des Betriebs, keine Automatik: Soll schlägt sie vor, der
-  Betrieb bestätigt sie (im Audit-Log).
+  Betrieb bestätigt sie (im Audit-Log). Gekürzt wird der Jahresurlaub um die erklärten Zwölftel,
+  höchstens eines je vollem Kalendermonat, und das Ergebnis wie in R-23 gerundet; ohne Erklärung
+  wird nichts gekürzt.
 - **Schwere**: Hinweis.
 
 | Fall | Elternzeit | Erwartet | Quelle |
@@ -901,6 +936,9 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Grenze | 2.3. – 31.3. (kein voller Kalendermonat) | keine Kürzung | § 17 Abs. 1 Satz 1 BEEG („jeden vollen Kalendermonat“) |
 | ausgenommen | 1.4. – 30.6. in Teilzeit beim Betrieb | keine Kürzung | § 17 Abs. 1 Satz 2 BEEG |
 | Verstoß | ein voller Kalendermonat, Kürzung um 2/12 eingetragen | Hinweis „Kürzung über 1/12 je vollem Monat“ | § 17 Abs. 1 Satz 1 BEEG |
+| Jahreswechsel | 15.10.2026 – 14.3.2027 | 2026: November, Dezember (2/12); 2027: Januar, Februar (2/12) | § 17 Abs. 1 Satz 1 BEEG |
+| nicht erklärt | ein voller Kalendermonat, keine Erklärung des Betriebs | keine Kürzung, Hinweis mit dem Vorschlag | § 17 Abs. 1 Satz 1 BEEG („kann … kürzen“) |
+| Schaltjahr | 1.2.2028 – 28.2.2028 | keine Kürzung (der 29.2. fehlt) | § 17 Abs. 1 Satz 1 BEEG |
 
 ## Krankheit
 
@@ -1073,6 +1111,40 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | steuerfreier Zuschlag über 25 € je Stunde | 20 h zu 30,00 € je Stunde und 120,00 € steuerfreier Sonntagszuschlag | Hinweis „gelegentlich überschritten“, 20,00 € des Zuschlags zählen | § 1 Abs. 1 Satz 1 Nr. 1 SvEV („soweit das Entgelt, auf dem sie berechnet werden, mehr als 25 Euro für jede Stunde beträgt“) |
 | Jahreswechsel | je 620,00 € im Dezember 2026 und im Januar 2027 (Grenze 633 €) | Hinweis „gelegentlich überschritten“ im Dezember, kein Befund im Januar | § 8 Abs. 1a SGB IV |
 | nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+
+## Soll, Ist und Konten
+
+### R-33 Soll, Ist und Überstundenkonto
+
+- **Norm**: § 611a Abs. 1 BGB (die vereinbarte Arbeit, hier das Arbeitszeitmodell); § 2 Abs. 1
+  EntgFG (für die Arbeitszeit, die „infolge eines gesetzlichen Feiertages ausfällt“, wird das
+  Entgelt gezahlt, sie wird nicht nachgearbeitet); §§ 3, 4 Abs. 1 EntgFG (Krankheit); §§ 1, 3 Abs. 2
+  BUrlG (Urlaub nur an Arbeitstagen, die keine Feiertage sind).
+- **Regel**: Das Soll eines Tages sind die Minuten des Arbeitszeitmodells, das an diesem Tag gilt,
+  für seinen Wochentag; ein Feiertag am Standort setzt es auf 0, vor dem Eintritt, nach dem Austritt
+  und während das Arbeitsverhältnis ruht (volle Elternzeit) ist es 0. Ist sind die gearbeiteten
+  Minuten der geschlossenen Schichten (R-01) und die Gutschrift für Abwesenheiten: Urlaub, Krankheit,
+  Kind krank und Sonderurlaub bekommen das Soll des Tages gutgeschrieben, ein halber Tag die Hälfte,
+  aufgerundet; Überstundenabbau bekommt nichts. Das Überstundenkonto ist die Summe aus Ist minus Soll
+  der abgeschlossenen Monate und den Anpassungen von Hand (Startsaldo, Auszahlung, Korrektur).
+- **Schwere**: kein Befund; eine Berechnung. Ein Tag der Beschäftigung ohne Arbeitszeitmodell oder
+  ohne Feiertage macht den Monat „nicht hinterlegt“.
+
+| Fall | Lage (Hamburg, Modell Mo–Fr 8:00) | Erwartet | Quelle |
+| --- | --- | --- | --- |
+| erlaubt | November 2026, jeden Arbeitstag 7:30 gearbeitet | Soll 168:00 (21 Arbeitstage), Ist 157:30, Saldo −10:30 | § 611a Abs. 1 BGB |
+| Grenze | November 2026, jeden Arbeitstag 8:00 | Soll 168:00, Ist 168:00, Saldo 0:00 | § 611a Abs. 1 BGB |
+| Verstoß | November 2026, jeden Arbeitstag 9:00 | Ist 189:00, 21:00 über dem Soll ins Überstundenkonto | § 611a Abs. 1 BGB |
+| Feiertag | Mai 2026 (1.5., 14.5. und 25.5. Feiertage) | Soll 144:00 (18 Arbeitstage), Ausfall 24:00 | § 2 Abs. 1 EntgFG |
+| Feiertag am freien Tag | Oktober 2026 (3.10. und 31.10. sind Samstage) | Soll 176:00 (22 Arbeitstage), keine Minderung | § 2 Abs. 1 EntgFG („infolge eines gesetzlichen Feiertages ausfällt“) |
+| Modellwechsel | ab Mo 16.11.2026 Modell Mo–Do 6:00 | Soll 134:00 (10 × 8:00 + 9 × 6:00) | docs/plan.md, „Soll eines Tages“ |
+| Eintritt | Eintritt Mi 18.11.2026 | Soll 72:00 (9 Arbeitstage ab 18.11.) | § 611a Abs. 1 BGB |
+| Urlaub | Urlaub Mo 9.11. – Fr 13.11.2026, sonst je 8:00 | 128:00 gearbeitet + 40:00 gutgeschrieben = Ist 168:00, 5 Urlaubstage | § 1 BUrlG |
+| Urlaub am Feiertag | Urlaub Mo 11.5. – Fr 15.5.2026 (Do 14.5. Christi Himmelfahrt) | 4 Urlaubstage, 32:00 gutgeschrieben | § 3 Abs. 2 BUrlG |
+| halber Tag | Modell Fr 7:15, halber Urlaubstag am Fr 27.11.2026 | 3:38 gutgeschrieben (aufgerundet), 0,5 Urlaubstage | CLAUDE.md, „Never“ (nie zulasten der Beschäftigten) |
+| krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
+| Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | docs/plan.md, „Abwesenheiten im Soll“ |
+| Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | docs/plan.md, „Konten“ |
 
 ## Was Soll nicht prüft
 

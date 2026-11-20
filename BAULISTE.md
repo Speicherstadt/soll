@@ -346,8 +346,25 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Arbeitszeit wird abgelehnt, ein Test je Endpunkt, dass kein Betrieb Einstellungen oder Exporte
   eines anderen sieht oder ändert; Playwright `desktop` stellt die Zuordnung ein und lädt die
   Datei herunter, axe grün in hell und dunkel; Texte in allen sechs Sprachen; `docs/datev.md`.
-- [ ] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
+- [x] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
   Arbeitsschutz; Auskunft nach Art. 15 DSGVO als Export.
+  Fertig, wenn: der Prüfexport je Person und Arbeitstag Datum, Beginn, Ende, Pausen und Dauer in
+  ganzen Minuten, den Zeitpunkt der Erfassung (§ 17 Abs. 1 MiLoG), die Änderungen von Hand mit Grund,
+  wer und wann, die Gegeneinträge, die Befunde mit Norm und den Prüfwert des abgeschlossenen Monats
+  zeigt; das CSV ist eine reine Funktion in `packages/export` (RFC 4180, UTF-8 mit BOM, Semikolon,
+  CRLF; eine Zelle, die mit `=`, `+`, `-`, `@`, Tab oder CR beginnt, bekommt ein Hochkomma davor,
+  Entscheidung im Projektplan), das PDF mit `pdf-lib` zeigt denselben Inhalt, beide mit
+  Golden-File-Tests; Zeitraum (höchstens zwei Jahre) und Personen wählt, wer alle Zeiten sehen darf
+  (`zeiten:alle`), jede Person exportiert ihre eigenen Tage; ein Endpunkt des abgeschalteten Moduls
+  Arbeitszeit wird abgelehnt. Die Auskunft nach Art. 15 DSGVO gibt der Person alles, was Soll im
+  Betrieb über sie speichert (Konto ohne Kennwort, Mitgliedschaft, Stempelungen mit allen Fassungen
+  und Gründen, Gegeneinträge, Abschlüsse mit Prüfwert, Modelle, Schichten, Geräte, PIN ohne Hash,
+  Einladung, Glieder der Audit-Kette), als JSON, ohne Daten anderer Personen; ein Test hält fest, dass
+  jede Tabelle in der Auskunft steht oder mit Grund ausgenommen ist; der Inhaber erteilt sie auch
+  einer Person, die den Betrieb verlassen hat. Ein Test je Endpunkt, dass kein Betrieb Daten eines
+  anderen sieht und niemand ohne Recht die einer anderen Person; Playwright in `desktop` und `phone`
+  lädt beide Exporte herunter; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/`.
 
 ## Phase 4 – Abwesenheiten
 
@@ -407,8 +424,23 @@ Alle Punkte: nach S-306.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
+- [x] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
   Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
+  Fertig, wenn: der Stundensatz eine reine Funktion in `packages/arbeitszeit` ist, deren Vorrang
+  dokumentiert und für jede Stufe getestet ist (Tätigkeit vor Auftrag vor Kunde, auf jeder Stufe die
+  Person vor allen, dann die Person allein, dann der Satz des Betriebs, wie die Punktzahl der Sätze in
+  Kimai), mit „nicht hinterlegt“ ohne passenden Satz und dem Satz, der am Tag gilt (gültig ab); ein
+  Budget in Minuten und in Cent je Auftrag als reine Funktion mit Warnung ab einer Schwelle (Vorgabe
+  80 %) und „aufgebraucht“ ab 100 %, ganze Zahlen ohne Brüche, und der Betrag aus Minuten und Satz
+  kaufmännisch auf den Cent gerundet (Test). Dazu: die vier festen internen Tätigkeiten sind in jedem
+  Betrieb da und lassen sich weder umbenennen noch archivieren oder löschen; was ein Auftrag oder ein
+  Satz noch nennt, wird archiviert statt gelöscht (409); ein Kunde, ein Auftrag und eine Tätigkeit
+  tragen optional eine Kennung in einer anderen Quelle (Haben, ein Import), eindeutig je Betrieb;
+  Anlegen, Ändern, Archivieren und Löschen gehen über die Audit-Kette und eine neue Migration; der
+  Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt, dass
+  kein Betrieb die Daten eines anderen sieht oder ändert; Sätze sehen und ändern nur Inhaber und
+  Planer; Playwright legt Kunde, Auftrag mit Budget, Tätigkeit und Satz an und archiviert (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
 - [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
 - [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne

@@ -1128,7 +1128,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   Speicherbegrenzung), Art. 15 (Auskunft), Art. 17 (Löschen), Art. 88 (Beschäftigtenkontext).
 - **Regel**: „Krank“ und „Kind krank“ sehen nur die Person, der Inhaber und das Lohnbüro; alle
   anderen sehen „abwesend“. Keine Diagnose, keine hochgeladene Bescheinigung. Die Auskunft gibt alle
-  Daten einer Person als Export. Nach Ablauf der Frist werden Inhalte entfernt (S-901).
+  Daten einer Person als Export ([Prüfexport und Auskunft](pruefexport.md)). Nach Ablauf der Frist werden Inhalte entfernt (S-901).
 - **Schwere**: Verstoß, wenn eine Ansicht oder Schnittstelle einer anderen Rolle „krank“ zeigen
   würde (der Server lehnt ab).
 

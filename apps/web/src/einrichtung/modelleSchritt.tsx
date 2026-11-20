@@ -1,12 +1,13 @@
 import { Button, Icon, Input } from "@soll/ui";
 import { Trash2 } from "lucide";
-import { createSignal, For, Show } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten, listeAendern } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
+import { type Antwort, api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Fuss, SchrittKopf } from "./geruest.tsx";
-import { ergaenzt } from "./liste.ts";
 import { VORLAGE_NAMEN } from "./namen.ts";
 import { VORLAGEN, type Vorlage } from "./vorlagen.ts";
 import { centAus, dauerText, euroText, minutenAus, verteilen } from "./werte.ts";
@@ -39,12 +40,18 @@ const lohnText = (modell: Modell) =>
         betrag: euroText(modell.lohnCent, getLocale()),
       });
 
+type Eingabe = Omit<Modell, "modellId"> & {
+  zuschlagssaetze: NonNullable<ReturnType<typeof zuschlaegeAus>>;
+};
+
+/** What a change to the models changes: the models as loaded (here and on Zeiten) */
+const MODELLE_AENDERT = [alle(PFAD.modelle)];
+
 /** A template: the owner changes only what differs (hours a week, the wage) and takes it */
 const VorlageKarte = (props: {
   vorlage: Vorlage;
-  angelegt: (modell: Modell) => void;
+  anlegen: (eingabe: Eingabe) => Promise<Antwort<Modell>>;
   arbeitet: boolean;
-  setzeArbeitet: (arbeitet: boolean) => boolean;
 }) => {
   const [fehler, setFehler] = createSignal("");
   const name = () => VORLAGE_NAMEN[props.vorlage.id]();
@@ -60,21 +67,17 @@ const VorlageKarte = (props: {
     if (lohnCent === null && lohnText !== "") return setFehler(m.fehler_betrag());
     if (zuschlagssaetze === null) return setFehler(m.fehler_prozent());
     // a second click while the first is on its way would create the model twice
-    if (!props.setzeArbeitet(true)) return;
-    const antwort = await api<Modell>("/api/v1/arbeitszeit/modelle", {
-      body: {
-        name: name(),
-        sollMinuten: verteilen(minuten, props.vorlage.tage),
-        lohnArt: props.vorlage.lohnArt,
-        lohnCent,
-        minijob: props.vorlage.minijob,
-        zuschlagssaetze,
-      },
+    if (props.arbeitet) return;
+    const antwort = await props.anlegen({
+      name: name(),
+      sollMinuten: verteilen(minuten, props.vorlage.tage),
+      lohnArt: props.vorlage.lohnArt,
+      lohnCent,
+      minijob: props.vorlage.minijob,
+      zuschlagssaetze,
     });
-    props.setzeArbeitet(false);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
-    props.angelegt(antwort.daten);
   };
   return (
     <form
@@ -120,69 +123,72 @@ export const ModelleSchritt = (props: {
   zurueck?: (() => void) | undefined;
   weiter: () => void;
 }) => {
-  const [modelle, setModelle] = createSignal<Modell[]>([]);
+  const modelleAbfrage = abfrage<{ modelle: Modell[] }>(ressourcen.modelle);
+  const modelle = () => daten(modelleAbfrage.data)?.modelle ?? [];
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
-  // set at once, not after Solid's next flush: the guard of every card reads it
-  let laeuft = false;
-  const setzeArbeitet = (neu: boolean) => {
-    if (neu && laeuft) return false;
-    laeuft = neu;
-    setArbeitet(neu);
-    return true;
-  };
-  // removed before the first load answered: that answer may still list them
-  const entfernt = new Set<string>();
-  api<{ modelle: Modell[] }>("/api/v1/arbeitszeit/modelle").then(
-    (a) =>
-      a.ok && setModelle((hier) => ergaenzt(a.daten.modelle, hier, (x) => x.modellId, entfernt)),
+  const anlegen = aenderung(
+    (eingabe: Eingabe) => api<Modell>("/api/v1/arbeitszeit/modelle", { body: eingabe }),
+    () => MODELLE_AENDERT,
+    {
+      eintragen: (client, _, neu) =>
+        listeAendern<Modell>(client, ressourcen.modelle(), "modelle", (liste) => [...liste, neu]),
+    },
   );
-  const entfernen = async (modell: Modell) => {
-    const antwort = await api(`/api/v1/arbeitszeit/modelle/${modell.modellId}`, {
-      method: "DELETE",
-    });
-    if (!antwort.ok) return;
-    entfernt.add(modell.modellId);
-    setModelle((liste) => liste.filter((x) => x.modellId !== modell.modellId));
-  };
-  const weiter = () => (modelle().length > 0 ? props.weiter() : setFehler(m.modell_fehlt()));
+  const entfernen = aenderung(
+    (modell: Modell) => api(`/api/v1/arbeitszeit/modelle/${modell.modellId}`, { method: "DELETE" }),
+    () => MODELLE_AENDERT,
+    {
+      eintragen: (client, weg) =>
+        listeAendern<Modell>(client, ressourcen.modelle(), "modelle", (liste) =>
+          liste.filter((x) => x.modellId !== weg.modellId),
+        ),
+    },
+  );
+  const arbeitet = () => anlegen.isPending;
+  // before the list has loaded, it is read as empty, as the page shows it
+  const weiter = () =>
+    !modelleAbfrage.isPending && modelle().length > 0
+      ? props.weiter()
+      : setFehler(m.modell_fehlt());
   return (
     <>
       <SchrittKopf id="schritt-titel" titel={m.modelle_titel()} text={m.modelle_text()} />
-      <Show when={modelle().length > 0}>
-        <ul
-          aria-label={m.modelle_liste()}
-          class="flex flex-col divide-y divide-border rounded-lg border border-border"
-        >
-          <For each={modelle()}>
-            {(modell) => (
-              <li class="flex items-center justify-between gap-3 px-3 py-2">
-                <span class="flex min-w-0 flex-col">
-                  <span class="font-medium">{modell.name}</span>
-                  <span class="text-muted-foreground">{`${wochenText(modell)} · ${lohnText(modell)}`}</span>
-                </span>
-                <Button
-                  variant="icon"
-                  aria-label={m.modell_entfernen({ name: modell.name })}
-                  onClick={() => entfernen(modell)}
-                >
-                  <Icon icon={Trash2} />
-                </Button>
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
+      <Loading>
+        <Show when={modelle().length > 0}>
+          <ul
+            aria-label={m.modelle_liste()}
+            class="flex flex-col divide-y divide-border rounded-lg border border-border"
+          >
+            <For each={modelle()}>
+              {(modell) => (
+                <li class="flex items-center justify-between gap-3 px-3 py-2">
+                  <span class="flex min-w-0 flex-col">
+                    <span class="font-medium">{modell.name}</span>
+                    <span class="text-muted-foreground">{`${wochenText(modell)} · ${lohnText(modell)}`}</span>
+                  </span>
+                  <Button
+                    variant="icon"
+                    aria-label={m.modell_entfernen({ name: modell.name })}
+                    onClick={() => void entfernen.mutate(modell)}
+                  >
+                    <Icon icon={Trash2} />
+                  </Button>
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
+      </Loading>
       <div class="flex flex-col gap-3">
         <For each={VORLAGEN}>
           {(vorlage) => (
             <VorlageKarte
               vorlage={vorlage}
               arbeitet={arbeitet()}
-              setzeArbeitet={setzeArbeitet}
-              angelegt={(neu) => {
-                setFehler("");
-                setModelle((liste) => [...liste, neu]);
+              anlegen={async (eingabe) => {
+                const antwort = await anlegen.mutate(eingabe);
+                if (antwort.ok) setFehler("");
+                return antwort;
               }}
             />
           )}

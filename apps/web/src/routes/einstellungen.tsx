@@ -1,8 +1,9 @@
 import { Button } from "@soll/ui";
-import { createFileRoute, useNavigate } from "@tanstack/solid-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { api } from "../api.ts";
 import { DatevZuordnung } from "../datev/zuordnung.tsx";
+import { knopfLink } from "../einrichtung/stil.ts";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
 import { m } from "../paraglide/messages.js";
@@ -35,6 +36,9 @@ const Einstellungen = () => {
       </section>
       <section class="flex max-w-sm flex-col items-start gap-3">
         <h2 class="font-semibold">{m.konto_titel()}</h2>
+        <Link to="/export" class={knopfLink}>
+          {m.auskunft_titel()}
+        </Link>
         <Button variant="outline" onClick={abmelden}>
           {m.abmelden()}
         </Button>

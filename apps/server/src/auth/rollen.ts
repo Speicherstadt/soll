@@ -29,10 +29,13 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "projekte:lesen",
+  "projekte:verwalten",
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
   "lohn:datev",
+  "auskunft:erteilen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -53,12 +56,18 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    // customers, orders, activities and hourly rates (S-601)
+    "projekte:lesen",
+    "projekte:verwalten",
     // the times of the reminders hold for the whole business (S-307)
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
     // the DATEV payroll export: mapping and file (S-308)
     "lohn:datev",
+    // the business answers an Art. 15 request, also of someone who left and has no access any more;
+    // the Auskunft holds health data, which only the owner and payroll see (R-31)
+    "auskunft:erteilen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
@@ -70,13 +79,17 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "zeiten:korrigieren",
+    // the office keeps customers, orders and rates (docs/plan.md, "Wer Stundensätze sieht")
+    "projekte:lesen",
+    "projekte:verwalten",
     // the draft of the plan is for owner and planner until it is published (S-501, S-503)
     "plan:lesen",
     "plan:planen",
   ],
   // everyone who works for the business stamps, and sees and corrects their own times (S-304);
+  // whoever books project time reads the orders and activities, without rates and money (S-601);
   // the plan they read once it is published (S-503)
-  mitarbeiter: ["betrieb:lesen", "stempeln", "plan:lesen"],
+  mitarbeiter: ["betrieb:lesen", "stempeln", "projekte:lesen", "plan:lesen"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
   lohnbuero: [
     "betrieb:lesen",
@@ -84,12 +97,13 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:lesen",
     "stempeln",
     "zeiten:alle",
+    "projekte:lesen",
     "plan:lesen",
     // the payroll office chooses the wage types with the business and takes the file (S-308)
     "lohn:datev",
   ],
-  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "plan:lesen"],
-  extern: ["betrieb:lesen"],
+  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "projekte:lesen", "plan:lesen"],
+  extern: ["betrieb:lesen", "projekte:lesen"],
   // the terminal checks PINs and nothing else (S-801)
   geraet: ["pin:pruefen"],
 };

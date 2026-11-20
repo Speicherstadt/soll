@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { abfrageCache } from "../abfragen/client.ts";
 import { api } from "../api.ts";
 import { ALLE_MODULE } from "../rahmen/module.ts";
 import type { Betrieb, Zustand } from "./ziel.ts";
@@ -38,6 +39,21 @@ const merken = (betrieb: Betrieb | null): void => {
 const [zustand, setZustand] = createSignal<Zustand>({ art: "offline", betrieb: gemerkt() });
 
 export const sitzung = zustand;
+
+/** Whose data the app shows: the person in a business, or nobody */
+const person = (z: Zustand): string =>
+  (z.art === "bereit" || z.art === "offline") && z.betrieb
+    ? `${z.betrieb.betriebId}/${z.betrieb.nutzerId}`
+    : "";
+
+/**
+ * The cached answers belong to one person in one business: another one (signed out, another
+ * account, another business) never sees them, not even for the moment a page loads again
+ */
+const setze = (neu: Zustand): void => {
+  if (person(neu) !== person(zustand())) abfrageCache.clear();
+  setZustand(neu);
+};
 
 /** The modules whose areas the navigation shows */
 export const aktuelleModule = () => {
@@ -84,7 +100,7 @@ export const sitzungLaden = (): Promise<Zustand> => {
   const diese: Promise<Zustand> = abfragen().then((neu) => {
     // an answer to a question asked again since (sitzungNeu) was read before what changed
     if (laufend !== diese) return laufend ?? neu;
-    setZustand(neu);
+    setze(neu);
     if (neu.art !== "offline") merken(neu.art === "bereit" ? neu.betrieb : null);
     return neu;
   });
@@ -105,6 +121,6 @@ export const sitzungNeu = (): Promise<Zustand> => {
 export const abgemeldet = (): void => {
   merken(null);
   const neu: Zustand = { art: "abgemeldet" };
-  setZustand(neu);
+  setze(neu);
   laufend = Promise.resolve(neu);
 };

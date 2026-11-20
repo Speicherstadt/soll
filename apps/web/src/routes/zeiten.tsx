@@ -2,8 +2,9 @@ import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
 import { Button, Icon } from "@soll/ui";
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { ChevronLeft, ChevronRight } from "lucide";
-import { createEffect, createSignal, createUniqueId, For, Show } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
+import { abfrage, daten } from "../abfragen/abfrage.ts";
+import { ressourcen } from "../abfragen/schluessel.ts";
 import { feld, knopfLink } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -25,17 +26,9 @@ const Zeiten = () => {
   const id = createUniqueId();
   const [datum, setDatum] = createSignal(tagInBerlin(Date.now()));
   const [nutzerId, setNutzerId] = createSignal<string | undefined>(undefined);
-  const [personen, setPersonen] = createSignal<Person[]>([]);
-  const quelle = tagQuelle();
-  api<{ personen: Person[] }>("/api/v1/arbeitszeit/personen").then(
-    (antwort) => antwort.ok && setPersonen(antwort.daten.personen),
-  );
-  createEffect(
-    () => ({ datum: datum(), nutzerId: nutzerId() }),
-    (anfrage) => {
-      void quelle.laden(anfrage);
-    },
-  );
+  const personenAbfrage = abfrage<{ personen: Person[] }>(ressourcen.personen);
+  const personen = () => daten(personenAbfrage.data)?.personen ?? [];
+  const quelle = tagQuelle(() => ({ datum: datum(), nutzerId: nutzerId() }));
   const eigene = () => {
     const ansicht = quelle.ansicht();
     return ansicht === null || nutzerId() === undefined || ansicht.nutzerId === nutzerId();
@@ -45,23 +38,25 @@ const Zeiten = () => {
   return (
     <Seite titel={m.nav_zeiten()}>
       <div class="flex max-w-2xl flex-wrap items-end gap-3">
-        <Show when={personen().length > 0}>
-          <div class="flex min-w-48 flex-col gap-1.5">
-            <label for={`${id}-person`} class="font-medium">
-              {m.zeiten_person()}
-            </label>
-            <select
-              id={`${id}-person`}
-              class={feld}
-              value={quelle.ansicht()?.nutzerId ?? ""}
-              onChange={(event) => setNutzerId(event.currentTarget.value)}
-            >
-              <For each={personen()}>
-                {(person) => <option value={person.nutzerId}>{person.name}</option>}
-              </For>
-            </select>
-          </div>
-        </Show>
+        <Loading>
+          <Show when={personen().length > 0}>
+            <div class="flex min-w-48 flex-col gap-1.5">
+              <label for={`${id}-person`} class="font-medium">
+                {m.zeiten_person()}
+              </label>
+              <select
+                id={`${id}-person`}
+                class={feld}
+                value={quelle.ansicht()?.nutzerId ?? ""}
+                onChange={(event) => setNutzerId(event.currentTarget.value)}
+              >
+                <For each={personen()}>
+                  {(person) => <option value={person.nutzerId}>{person.name}</option>}
+                </For>
+              </select>
+            </div>
+          </Show>
+        </Loading>
         <div class="flex flex-col gap-1.5">
           <label for={`${id}-datum`} class="font-medium">
             {m.zeiten_datum()}
@@ -93,30 +88,32 @@ const Zeiten = () => {
         <Link to="/monat" class={knopfLink}>
           {m.monat_titel()}
         </Link>
-        <Show when={hatRolle("inhaber") && quelle.ansicht()}>
-          {(ansicht) => (
-            <ModellWahl
-              nutzerId={ansicht().nutzerId}
-              modellId={personen().find((p) => p.nutzerId === ansicht().nutzerId)?.modellId ?? null}
-              onGespeichert={(modellId) => {
-                setPersonen((liste) =>
-                  liste.map((p) => (p.nutzerId === ansicht().nutzerId ? { ...p, modellId } : p)),
-                );
-                void quelle.laden();
-              }}
-            />
-          )}
-        </Show>
+        <Link to="/export" class={knopfLink}>
+          {m.pruefexport_titel()}
+        </Link>
+        <Loading>
+          <Show when={hatRolle("inhaber") && quelle.ansicht()}>
+            {(ansicht) => (
+              <ModellWahl
+                nutzerId={ansicht().nutzerId}
+                modellId={
+                  personen().find((p) => p.nutzerId === ansicht().nutzerId)?.modellId ?? null
+                }
+              />
+            )}
+          </Show>
+        </Loading>
       </div>
-      <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />
-      <Show when={quelle.ansicht() && quelle.stand()}>
-        <TagAnsicht
-          ansicht={quelle.ansicht() as NonNullable<ReturnType<typeof quelle.ansicht>>}
-          stand={quelle.stand() as NonNullable<ReturnType<typeof quelle.stand>>}
-          darfKorrigieren={darfKorrigieren()}
-          onGeaendert={() => void quelle.laden()}
-        />
-      </Show>
+      <Loading>
+        <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />
+        <Show when={quelle.ansicht() && quelle.stand()}>
+          <TagAnsicht
+            ansicht={quelle.ansicht() as NonNullable<ReturnType<typeof quelle.ansicht>>}
+            stand={quelle.stand() as NonNullable<ReturnType<typeof quelle.stand>>}
+            darfKorrigieren={darfKorrigieren()}
+          />
+        </Show>
+      </Loading>
     </Seite>
   );
 };

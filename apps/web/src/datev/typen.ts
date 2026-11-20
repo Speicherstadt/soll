@@ -1,3 +1,5 @@
+import { PFAD as PFADE } from "../abfragen/schluessel.ts";
+
 /** The DATEV payroll export as the server gives it (S-308, apps/server/src/routes/datev.ts) */
 
 export type DatevPerson = { nutzerId: string; name: string; personalnummer: string | null };
@@ -21,4 +23,4 @@ export type Fehlend = {
 
 export type Ziel = "lodas" | "lug";
 
-export const PFAD = "/api/v1/arbeitszeit/datev";
+export const PFAD = PFADE.datev;

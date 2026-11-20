@@ -8,11 +8,13 @@ import {
 } from "@soll/arbeitszeit";
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
+import { aenderung } from "../abfragen/abfrage.ts";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { minuteAus } from "./aktionen.ts";
+import { TAG_AENDERT } from "./quelle.ts";
 import { ART_NAMEN } from "./text.ts";
 import type { Stempel } from "./typen.ts";
 
@@ -42,8 +44,10 @@ const FEHLER: Record<string, () => string> = {
   veraltet: () => m.korrektur_fehler_veraltet(),
 };
 
+type Eingabe = { korrektur: Korrektur; art: Stempelart; zeitpunkt: number; grund: string };
+
 /** The call a correction makes, with the instant the form names */
-const senden = (korrektur: Korrektur, art: Stempelart, zeitpunkt: number, grund: string) => {
+const senden = ({ korrektur, art, zeitpunkt, grund }: Eingabe) => {
   if (korrektur.modus === "nachtragen")
     return api("/api/v1/arbeitszeit/stempelungen/nachtrag", {
       body: { nutzerId: korrektur.nutzerId, art, zeitpunkt, grund },
@@ -55,16 +59,13 @@ const senden = (korrektur: Korrektur, art: Stempelart, zeitpunkt: number, grund:
 
 /**
  * Adding, changing or removing a stamp, always with a reason the person sees (docs/plan.md,
- * "Änderungen an Stempelungen"). Times are typed on a Berlin clock.
+ * "Änderungen an Stempelungen"). Times are typed on a Berlin clock. Closes once the server took it
+ * and the day shows the change.
  */
-export const KorrekturDialog = (props: {
-  korrektur: Korrektur;
-  onSchliessen: () => void;
-  onGespeichert: () => void;
-}) => {
+export const KorrekturDialog = (props: { korrektur: Korrektur; onSchliessen: () => void }) => {
   const [offen, setOffen] = createSignal(true);
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
+  const speichern = aenderung(senden, () => TAG_AENDERT);
   const id = createUniqueId();
   const stempel = () => (props.korrektur.modus === "nachtragen" ? null : props.korrektur.stempel);
   const anfangTag = () => {
@@ -89,12 +90,9 @@ export const KorrekturDialog = (props: {
           : eingabeInBerlin(String(daten.get("datum") ?? ""), minute);
     if (zeitpunkt === null) return setFehler(m.korrektur_fehler_zeit());
     const art = (daten.get("art") as Stempelart | null) ?? stempel()?.art ?? "kommen";
-    setArbeitet(true);
-    const antwort = await senden(props.korrektur, art, zeitpunkt, grund);
-    setArbeitet(false);
+    const antwort = await speichern.mutate({ korrektur: props.korrektur, art, zeitpunkt, grund });
     if (!antwort.ok) return setFehler((FEHLER[antwort.fehler] ?? (() => m.fehler_speichern()))());
     setOffen(false);
-    props.onGespeichert();
   };
   return (
     <Dialog
@@ -168,7 +166,7 @@ export const KorrekturDialog = (props: {
           <Button variant="outline" onClick={() => setOffen(false)}>
             {m.abbrechen()}
           </Button>
-          <Button type="submit" disabled={arbeitet()}>
+          <Button type="submit" disabled={speichern.isPending}>
             {props.korrektur.modus === "entfernen"
               ? m.korrektur_entfernen()
               : m.korrektur_speichern()}

@@ -1,14 +1,13 @@
 import { type Monat, plusMonate, tagInBerlin } from "@soll/arbeitszeit";
 import { Button } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
-import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { Auswahl } from "../monat/auswahl.tsx";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { herunterladen } from "./herunterladen.ts";
 import { fehlendText } from "./texte.ts";
-import { type DatevAnsicht, type Fehlend, PFAD, type Ziel } from "./typen.ts";
+import type { Fehlend, Ziel } from "./typen.ts";
 
 /** What is "nicht hinterlegt", one line each, as the server listed it */
 const FehlendListe = (props: { fehlend: Fehlend[] }) => (
@@ -22,12 +21,11 @@ const FehlendListe = (props: { fehlend: Fehlend[] }) => (
 
 /**
  * The DATEV payroll export (S-308): month and payroll program, then the file; only closed months,
- * so the numbers do not change after the export. Shown to whoever may take it (owner, payroll):
- * the server answers everyone else with 403, and the section stays away.
+ * so the numbers do not change after the export. The page shows it to whoever may take it (owner,
+ * payroll): the server answers everyone else with 403.
  */
-export const DatevExport = (props: { onSichtbar?: (sichtbar: boolean) => void }) => {
+export const DatevExport = () => {
   const id = createUniqueId();
-  const [darf, setDarf] = createSignal(false);
   const [monat, setMonat] = createSignal<Monat>(
     plusMonate(tagInBerlin(Date.now()).slice(0, 7), -1),
   );
@@ -35,10 +33,6 @@ export const DatevExport = (props: { onSichtbar?: (sichtbar: boolean) => void })
   const [fehlend, setFehlend] = createSignal<Fehlend[]>([]);
   const [fehler, setFehler] = createSignal("");
   const [laeuft, setLaeuft] = createSignal(false);
-  void api<DatevAnsicht>(PFAD).then((antwort) => {
-    setDarf(antwort.ok);
-    props.onSichtbar?.(antwort.ok);
-  });
   const laden = async () => {
     setLaeuft(true);
     const ergebnis = await herunterladen(monat(), ziel());
@@ -53,43 +47,41 @@ export const DatevExport = (props: { onSichtbar?: (sichtbar: boolean) => void })
     );
   };
   return (
-    <Show when={darf()}>
-      <section aria-labelledby={`${id}-titel`} class="flex max-w-3xl flex-col gap-3">
-        <h2 id={`${id}-titel`} class="font-semibold">
-          {m.datev_titel()}
-        </h2>
-        <p class="text-muted-foreground">{m.datev_export_text()}</p>
-        <div class="flex flex-wrap items-end gap-3">
-          <Auswahl
-            personen={[]}
-            nutzerId={undefined}
-            monat={monat()}
-            onPerson={() => undefined}
-            onMonat={setMonat}
-          />
-          <div class="flex min-w-48 flex-col gap-1.5">
-            <label for={`${id}-ziel`} class="font-medium">
-              {m.datev_ziel()}
-            </label>
-            <select
-              id={`${id}-ziel`}
-              class={feld}
-              value={ziel()}
-              onChange={(event) => setZiel(event.currentTarget.value as Ziel)}
-            >
-              <option value="lodas">{m.datev_ziel_lodas()}</option>
-              <option value="lug">{m.datev_ziel_lug()}</option>
-            </select>
-          </div>
-          <Button onClick={laden} disabled={laeuft()}>
-            {m.datev_herunterladen()}
-          </Button>
+    <section aria-labelledby={`${id}-titel`} class="flex max-w-3xl flex-col gap-3">
+      <h2 id={`${id}-titel`} class="font-semibold">
+        {m.datev_titel()}
+      </h2>
+      <p class="text-muted-foreground">{m.datev_export_text()}</p>
+      <div class="flex flex-wrap items-end gap-3">
+        <Auswahl
+          personen={[]}
+          nutzerId={undefined}
+          monat={monat()}
+          onPerson={() => undefined}
+          onMonat={setMonat}
+        />
+        <div class="flex min-w-48 flex-col gap-1.5">
+          <label for={`${id}-ziel`} class="font-medium">
+            {m.datev_ziel()}
+          </label>
+          <select
+            id={`${id}-ziel`}
+            class={feld}
+            value={ziel()}
+            onChange={(event) => setZiel(event.currentTarget.value as Ziel)}
+          >
+            <option value="lodas">{m.datev_ziel_lodas()}</option>
+            <option value="lug">{m.datev_ziel_lug()}</option>
+          </select>
         </div>
-        <Show when={fehlend().length > 0}>
-          <FehlendListe fehlend={fehlend()} />
-        </Show>
-        <Fehler text={fehler()} />
-      </section>
-    </Show>
+        <Button onClick={laden} disabled={laeuft()}>
+          {m.datev_herunterladen()}
+        </Button>
+      </div>
+      <Show when={fehlend().length > 0}>
+        <FehlendListe fehlend={fehlend()} />
+      </Show>
+      <Fehler text={fehler()} />
+    </section>
   );
 };

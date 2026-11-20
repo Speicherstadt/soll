@@ -103,15 +103,17 @@ const Eintrag = (props: {
       <span class="w-full">{blockText(props.schicht, props.vorlagen)}</span>
     </>
   );
-  const klasse = cn(
-    "flex min-h-11 w-full flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 rounded-lg px-3 py-2 text-start",
-    props.schicht.nutzerId === null
-      ? "border border-muted-foreground border-dashed"
-      : "border border-border bg-accent",
-  );
+  // a function: an open shift may get a person when the week loads again
+  const klasse = () =>
+    cn(
+      "flex min-h-11 w-full flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 rounded-lg px-3 py-2 text-start",
+      props.schicht.nutzerId === null
+        ? "border border-muted-foreground border-dashed"
+        : "border border-border bg-accent",
+    );
   return (
-    <Show when={props.planer} fallback={<div class={klasse}>{inhalt()}</div>}>
-      <button type="button" class={klasse} onClick={() => props.onOeffnen()}>
+    <Show when={props.planer} fallback={<div class={klasse()}>{inhalt()}</div>}>
+      <button type="button" class={klasse()} onClick={() => props.onOeffnen()}>
         {inhalt()}
       </button>
     </Show>

@@ -47,9 +47,14 @@ const DOPPELWOCHE = 14;
 
 /**
  * § 4 Abs. 1 Satz 1 and 3: every two consecutive calendar weeks, Sundays included, so each week with
- * the one before and the one after (docs/regeln.md, R-21): no pairing of weeks hides an excess
+ * the one before and the one after (docs/regeln.md, R-21): no pairing of weeks hides an excess. The
+ * limit for women under 18 applies when she is under 18 on any day of the Doppelwoche, worked or
+ * not; as age only grows, that is its first day.
  */
-const doppelwochen = (tage: readonly Arbeitstag[]): MutterschutzArbeitszeitBefund[] => {
+const doppelwochen = (
+  tage: readonly Arbeitstag[],
+  geburtsdatum: Tag | null | undefined,
+): MutterschutzArbeitszeitBefund[] => {
   const montage = new Set(
     tage.flatMap((tag) => [wochenbeginn(tag.tag), plusTage(wochenbeginn(tag.tag), -7)]),
   );
@@ -59,7 +64,7 @@ const doppelwochen = (tage: readonly Arbeitstag[]): MutterschutzArbeitszeitBefun
     const erster = darin[0];
     if (erster === undefined) return [];
     const minuten = darin.reduce((summe, tag) => summe + tag.minuten, 0);
-    const jung = darin.some((tag) => tag.jung);
+    const jung = minderjaehrig(geburtsdatum, von, erster.grenzen);
     const grenze = jung ? erster.grenzen.doppelwocheMinderjaehrig : erster.grenzen.doppelwoche;
     if (minuten <= grenze) return [];
     return [
@@ -100,7 +105,7 @@ export const mutterschutzArbeitszeit = (
     },
   );
   return {
-    befunde: [...arbeitstage.flatMap(amTag), ...doppelwochen(arbeitstage)],
+    befunde: [...arbeitstage.flatMap(amTag), ...doppelwochen(arbeitstage, optionen.geburtsdatum)],
     nichtHinterlegt,
   };
 };

@@ -43,3 +43,4 @@ export * from "./pruefung-jugend/index.ts";
 export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-mutterschutz/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";
+export * from "./zuschlaege/index.ts";

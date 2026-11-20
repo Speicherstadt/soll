@@ -153,8 +153,17 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Regelversion, Feiertage oder vertragliche Wochenarbeitszeit wird „nicht hinterlegt“ statt geprüft.
 - [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
   Unterbrechung der Ruhezeit.
-- [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
+- [x] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
   Fertig, wenn: die Beispiele aus R 3b LStR und H 3b LStH als Tests bestehen.
+  Dazu: jeder Fall von R-29 in `docs/regeln.md` besteht wörtlich als Test, die Beispiele aus R 3b
+  und H 3b stehen dort als Fälle mit Quelle; die Sätze des Betriebs (Basispunkte) werden je Minute
+  in den steuerfreien Teil und den steuerpflichtigen Rest geteilt und je Arbeitstag (Starttag der
+  Schicht) und Art (Nacht, Sonntag, Feiertag) in ganzen Cent ausgegeben, gezahlt aufgerundet,
+  steuerfrei abgerundet, ohne Gleitkommazahlen; getestet sind die Nächte der Zeitumstellung (0 bis
+  4 Uhr fünf und drei Stunden), eine Schicht über Mitternacht in einen Feiertag, 24.12. und 31.12.
+  um 14 Uhr, Beginn um 0 Uhr (keine 40 %), die 50-€-Grenze, der Jahreswechsel und „nicht
+  hinterlegt“ vor der ersten Regelversion; das Ergebnis speist `Lohnmonat.zuschlaege` von S-204 mit
+  berechnetem `steuerfrei` (Test mit der Minijob-Grenze).
 - [ ] **S-208 Soll, Ist, Konten** – Soll aus dem Arbeitszeitmodell, Überstundenkonto aus den
   Abschlüssen, Urlaub anteilig, Zusatzurlaub (§ 208 SGB IX), Kürzung bei Elternzeit (§ 17 BEEG),
   Hinweis auf Verfall.

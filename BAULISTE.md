@@ -135,20 +135,15 @@ Alle Punkte: nach S-306.
     Bescheinigung im Urlaub zählen nicht als Urlaub (§ 9 BUrlG).
   - **Krankmeldung**: in der App oder am Terminal, ab heute, ohne Diagnose; Hinweis auf die
     Bescheinigung ab dem 4. Tag oder früher, wenn der Betrieb es so einstellt (§ 5 EntgFG); Haken
-    „Bescheinigung liegt vor“ und Erinnerung an den Betrieb, die eAU über sein Lohnprogramm
-    abzurufen; Zähler der Kinderkrankentage (§ 45 SGB V); eine eingeplante Schicht wird als offen
+    „Bescheinigung liegt vor“ mit „als eAU“ oder „auf Papier im Büro“ und Erinnerung an den
+    Betrieb, die eAU über sein Lohnprogramm abzurufen, sobald sie fällig ist; kein Hochladen von
+    Bescheinigungen (Datensparsamkeit, siehe Projektplan); Zähler der Kinderkrankentage (§ 45 SGB V); eine eingeplante Schicht wird als offen
     gemeldet.
-  - **Attest hochladen**: für alles, was nicht als eAU kommt (privat Versicherte, Ärzte im Ausland,
-    Bescheinigungen für Arztbesuche, Sonderurlaub): Foto mit der Handykamera oder PDF; Dateityp am
-    Inhalt erkannt (PDF, JPEG, PNG, HEIC, nach `dateityp.ts` aus gobd-kern, kopiert), höchstens
-    10 MB; Hinweis, nur die Ausfertigung für den Arbeitgeber ohne Diagnose hochzuladen. Gespeichert
-    verschlüsselt unter dem SHA-256 (nach `dateispeicher.ts`, kopiert), sichtbar nur für die Person,
-    Inhaber und Lohnbüro, ausgesondert mit dem Monat (S-901); nicht am Terminal.
   - **Datenschutz**: „krank“ ist ein Gesundheitsdatum (Art. 9 DSGVO); im Teamkalender und im
     Dienstplan steht nur „abwesend“.
-  Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung, Krankmeldung und Hochladen eines Attests vom
-  Handy zeigt und Tests „krank im Urlaub“, die Frist am 4. Tag, die Sichtbarkeit von „krank“ und des
-  Attests je Rolle sowie die Ablehnung einer Datei mit falschem Inhalt abdecken.
+  Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung und Krankmeldung zeigt und Tests „krank im
+  Urlaub“, die Frist am 4. Tag, die Erinnerung an die eAU und die Sichtbarkeit von „krank“ je Rolle
+  abdecken.
 - [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
 

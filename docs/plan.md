@@ -56,6 +56,7 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Konten | aus den Abschlüssen berechnet, nur Anpassungen von Hand gespeichert | keine doppelte Wahrheit |
 | Aussonderung | die Kette läuft über den Hash des Inhalts, sodass der Inhalt nach Ablauf der Frist entfernt werden kann | DSGVO verlangt Löschen, die GoBD Unveränderbarkeit |
 | Regeln | als Daten mit Gültigkeit (Regelversion je Zeitraum) | eine Reform des ArbZG wird eine neue Version, keine Codeänderung |
+| Bescheinigungen | kein Hochladen; nur „liegt vor“ (eAU oder Papier im Büro) und eine Erinnerung an den Betrieb, die eAU abzurufen | seit 2023 kommt die AU für gesetzlich Versicherte elektronisch an den Betrieb; eine hochgeladene Datei wäre ein Gesundheitsdatum (Art. 9 DSGVO) für seltene Fälle |
 | Rundung | nur der abrechenbaren Projektzeit, nie der Arbeitszeit | Abrunden der Arbeitszeit ginge zulasten der Beschäftigten |
 | Terminal | PWA im Kiosk-Modus auf einem Tablet; keine eigene Hardware | derselbe Code wie im Browser |
 | Haben | wird von hier aus nicht geändert; Prüfwert, Texte der Verfahrensdokumentation und Dateispeicher aus gobd-kern werden mit Quellenangabe kopiert | gemeinsame Pakete werden erst herausgelöst, wenn der Code in beiden Apps stabil ist |
@@ -156,8 +157,7 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
 | `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit-Kette; gesperrt beim Abschluss |
 | `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | Audit-Kette; nur anfügen |
-| `abwesenheiten` | Art, von, bis, halbe Tage, Status, Bescheinigung liegt vor | Audit-Kette; im abgeschlossenen Monat gesperrt |
-| `bescheinigungen` | Abwesenheit, SHA-256 der Datei, Dateityp, hochgeladen von und am; Datei verschlüsselt im Dateispeicher | Audit-Kette; ausgesondert mit dem Monat |
+| `abwesenheiten` | Art, von, bis, halbe Tage, Status, Bescheinigung liegt vor (eAU oder Papier im Büro) | Audit-Kette; im abgeschlossenen Monat gesperrt |
 | `schichten`, `schichttausch` | Plan, Rolle, Standort, veröffentlicht am | Audit-Kette |
 | `monatsabschluesse` | Summen, Befunde, Bestätigungen, Prüfwert, Frist | Audit-Kette; nur anfügen |
 | `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit-Kette |

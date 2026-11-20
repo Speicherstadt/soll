@@ -43,7 +43,7 @@ detail. Law over vendor documentation.
 - **GoBD**: BMF-Schreiben vom 28.11.2019 (GoBD), Rz. 107 ff. (Unveränderbarkeit) and 151 ff.
   (Verfahrensdokumentation). `packages/gobd-kern` in `firsttris/haben` is a source to copy from: the
   Prüfwert (`pruefwert.ts`), the texts of the Verfahrensdokumentation (`verfahrensdoku/`), the
-  content-addressed file store (`dateispeicher.ts`) and the file type check (`dateityp.ts`). Copied code names its source; no dependency on
+  content-addressed file store (`dateispeicher.ts`). Copied code names its source; no dependency on
   it, no shared package for now.
 - **Kennwort**: `Speicherstadt/kennwort` for the same stack in practice (Solid 2, Hono, Better Auth,
   Paraglide, the UI package, CI and docs).
@@ -61,7 +61,8 @@ detail. Law over vendor documentation.
 - Change a closed month or a link of the audit chain, write to the database past the chain, change
   an existing migration, write `drizzle/meta/` by hand.
 - Round working time to the employee's disadvantage, or stamp out automatically.
-- Track location continuously, take photos or fingerprints at clock-in (Art. 9 DSGVO).
+- Track location continuously, take photos or fingerprints at clock-in, store a diagnosis or an
+  uploaded sick note (Art. 9 DSGVO).
 - Show a per-person utilisation report unless the business switched it on (BetrVG § 87).
 - Compute with the values of another year when a yearly value (minimum wage, mini-job limit) is
   missing: say "nicht hinterlegt" instead.

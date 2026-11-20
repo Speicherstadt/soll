@@ -90,6 +90,23 @@ describe("unordered, repeated and unpaired stamps", () => {
     expect(arten(tag)).toEqual(["kommen_fehlt"]);
   });
 
+  /*
+   * Seventh review of PR #11: the second tap of a Gehen or a Pause within the minute moved the end
+   * of the work, and with it the 9 h after which a shift ends, so a double tap merged the next
+   * shift into this one (docs/arbeitstag.md: a double tap is no finding and changes nothing).
+   */
+  it("keeps the shifts as they are when an end is tapped twice in the same minute", () => {
+    const nacht = [kommen("2026-11-17T01:00:20+01:00"), gehen("2026-11-17T05:00+01:00")];
+    const mitGehen = [kommen("2026-11-16T07:00+01:00"), gehen("2026-11-16T16:00:05+01:00")];
+    const mitPause = [kommen("2026-11-16T07:00+01:00"), pause("2026-11-16T16:00:05+01:00")];
+    expect(tage([...mitGehen, gehen("2026-11-16T16:00:50+01:00"), ...nacht])).toEqual(
+      tage([...mitGehen, ...nacht]),
+    );
+    expect(tage([...mitPause, pause("2026-11-16T16:00:50+01:00"), ...nacht])).toEqual(
+      tage([...mitPause, ...nacht]),
+    );
+  });
+
   it("takes the earliest of repeated starts and the latest of repeated ends, with a Hinweis", () => {
     const tag = einTag([
       kommen("2026-11-16T08:00+01:00"),

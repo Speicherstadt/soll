@@ -171,7 +171,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   nur die Bereiche der Module, ein Bereich eines abgeschalteten Moduls führt zu Heute, und unter
   Einstellungen schaltet der Inhaber die Module um und die Navigation folgt; jeder Schritt in
   `desktop` und `phone`, axe grün in hell und dunkel.
-- [ ] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
+- [x] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
   nächsten Befund; Nachtragen und Ändern mit Grund bis zum Abschluss, jede Änderung für den
   Mitarbeiter sichtbar.
   nach: S-303, S-202. Fertig, wenn: Playwright in `desktop` und `phone` einen Tag stempelt (Kommen,

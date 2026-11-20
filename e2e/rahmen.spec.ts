@@ -72,6 +72,22 @@ test("dark stays dark after a reload", async ({ page }) => {
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
 });
 
+test("both colour pickers show the theme chosen in either", async ({ page }) => {
+  await page.goto("/einstellungen");
+  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
+  await expect(page.getByRole("navigation").getByLabel(text("theme_label"))).toHaveValue("dunkel");
+});
+
+test("a picker reached by keyboard shows its focus @phone", async ({ page }) => {
+  await page.goto("/mehr");
+  const feld = page.getByRole("main").getByLabel(text("theme_label"));
+  await feld.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(feld).toBeFocused();
+  await expect(feld).not.toHaveCSS("outline-style", "none");
+});
+
 test("the chosen language stays after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");

@@ -18,14 +18,18 @@ const themaName = (thema: Thema): string =>
 const sprachName = (locale: Locale): string =>
   new Intl.DisplayNames([locale], { type: "language" }).of(locale) ?? locale;
 
+// Tailwind 4: outline-none would also set the outline style that focus-visible:outline-2 relies on
 const feld =
-  "h-9 w-full rounded-md border border-border bg-background px-2 outline-none focus-visible:outline-2 focus-visible:outline-foreground";
+  "h-9 w-full rounded-md border border-border bg-background px-2 outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-foreground";
+
+// One theme for every picker: the sidebar and the page show the same choice. Module scope is fine
+// in this client-only SPA (CLAUDE.md: no SSR).
+const [thema, setThema] = createSignal(liesThema(ablage()));
 
 /** Colours and language, at the foot of the sidebar and under "Mehr" on phones */
 export const Darstellung = () => {
   const themaId = createUniqueId();
   const spracheId = createUniqueId();
-  const [thema, setThema] = createSignal(liesThema(ablage()));
   return (
     <div class="flex flex-col gap-3">
       <div class="flex flex-col gap-1">

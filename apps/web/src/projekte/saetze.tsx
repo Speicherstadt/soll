@@ -63,14 +63,12 @@ const wahlen = (quelle: ProjektQuelle, nurAktive: boolean) => {
 /** The new rate: what it names (empty is "alle"), euros per hour and the day it holds from */
 const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
   const [mitAuftrag, setMitAuftrag] = createSignal(false);
-  const aktionen = zeilenAktionen("saetze", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("saetze", setFehler);
   const wahl = wahlen(props.quelle, true);
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
     const cent = centAus(String(daten.get("betrag")));
     if (cent === null) return setFehler("ungueltig");
-    setArbeitet(true);
     const projektId = leerAlsNull(daten.get("projekt"));
     const ok = await aktionen.anlegen({
       // an order brings its customer: a rate names one of them
@@ -81,7 +79,6 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
       gueltigAb: String(daten.get("ab")),
       centProStunde: cent,
     });
-    setArbeitet(false);
     if (!ok) return;
     form.reset();
     setMitAuftrag(false);
@@ -91,7 +88,7 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
       label={m.satz_anlegen()}
       knopf={m.satz_anlegen()}
       fehler={fehler()}
-      arbeitet={arbeitet()}
+      arbeitet={aktionen.arbeitet()}
       onSubmit={anlegen}
     >
       <Auswahl label={m.satz_taetigkeit()} name="taetigkeit" optionen={wahl.taetigkeiten()} />
@@ -176,7 +173,7 @@ const SatzTabelle = (props: { quelle: ProjektQuelle; entfernen: (satzId: string)
 /** The hourly rates of the business with their precedence, for owner and planner (S-601) */
 export const Saetze = (props: { quelle: ProjektQuelle }) => {
   const [fehler, setFehler] = createSignal("");
-  const aktionen = zeilenAktionen("saetze", props.quelle, setFehler);
+  const aktionen = zeilenAktionen("saetze", setFehler);
   return (
     <div class="flex flex-col gap-4">
       <p class="max-w-2xl text-muted-foreground">{m.saetze_vorrang()}</p>

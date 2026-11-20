@@ -19,8 +19,6 @@ export const PlanDialoge = (props: {
   vorlagen: readonly Vorlage[];
   rollen: readonly string[];
   onSchliessen: () => void;
-  onPlanGeaendert: () => void;
-  onVorlagenGeaendert: () => void;
 }) => {
   const modus = () => (props.offen?.art === "schicht" ? props.offen.modus : null);
   return (
@@ -34,23 +32,17 @@ export const PlanDialoge = (props: {
             vorlagen={props.vorlagen}
             rollen={props.rollen}
             onSchliessen={props.onSchliessen}
-            onGespeichert={props.onPlanGeaendert}
           />
         )}
       </Match>
       <Match when={props.offen?.art === "vorlagen"}>
-        <VorlagenDialog
-          vorlagen={props.vorlagen}
-          onSchliessen={props.onSchliessen}
-          onGeaendert={props.onVorlagenGeaendert}
-        />
+        <VorlagenDialog vorlagen={props.vorlagen} onSchliessen={props.onSchliessen} />
       </Match>
       <Match when={props.offen?.art === "bedarf"}>
         <BedarfDialog
           standortId={props.standortId}
           rollen={props.rollen}
           onSchliessen={props.onSchliessen}
-          onGeaendert={props.onPlanGeaendert}
         />
       </Match>
     </Switch>

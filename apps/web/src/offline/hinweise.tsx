@@ -78,14 +78,15 @@ export const LueckenKarte = (props: { luecken: Luecke[] }) => (
       <ul class="flex flex-col">
         <For each={props.luecken}>
           {(luecke) => {
-            const werte = {
+            // read in JSX: a row from a query follows its data
+            const werte = () => ({
               geraet: geraetName(luecke.geraetId),
               von: String(luecke.von),
               bis: String(luecke.bis),
-            };
+            });
             return (
               <li class="font-mono text-[13px] tabular-nums">
-                {luecke.von === luecke.bis ? m.luecke_eine(werte) : m.luecke_mehrere(werte)}
+                {luecke.von === luecke.bis ? m.luecke_eine(werte()) : m.luecke_mehrere(werte())}
               </li>
             );
           }}

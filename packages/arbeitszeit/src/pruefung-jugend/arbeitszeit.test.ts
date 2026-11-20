@@ -93,6 +93,17 @@ describe("R-15: Arbeitszeit der Jugendlichen", () => {
     expect(arten(tage)).toEqual([]);
   });
 
+  it("allows 8:30 only on Werktage: a Sunday or holiday stays at 8 hours (§ 8 Abs. 2a)", () => {
+    // „an den übrigen Werktagen derselben Woche achteinhalb Stunden“: Mo 16.11. 6:00, So 22.11. 8:15
+    expect(arten(woche(MONTAG, ["6:00", "", "", "", "", "", "8:15"]), CAFE)).toEqual([
+      ["ueber_8h", ["2026-11-22"]],
+    ]);
+    // Hamburg, Pfingstmontag 25.5.2026 8:15 in the Café, Di 26.5. 6:00
+    expect(arten(woche("2026-05-25", ["8:15", "6:00"]), CAFE)).toEqual([
+      ["ueber_8h", ["2026-05-25"]],
+    ]);
+  });
+
   it("Geburtstag: born 16.6.2008, Mo 15.6.2026 and Di 16.6.2026 (18th birthday) 8:31 – only Mo", () => {
     const geboren = { ...LEON, geburtsdatum: "2008-06-16" };
     expect(arten(woche("2026-06-15", ["8:31", "8:31"]), geboren)).toEqual([

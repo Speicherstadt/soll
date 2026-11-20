@@ -1,4 +1,6 @@
 import type { Stueck } from "../arbeitstag/schichten.ts";
+import { plusTage, type Tag } from "../kalender/tag.ts";
+import { tagInBerlin } from "../kalender/zeit.ts";
 import { geschlossen, type PruefTag } from "../pruefung/typen.ts";
 
 /*
@@ -26,3 +28,16 @@ export const gemeinsameMinuten = (
   a: { beginn: number; ende: number },
   b: { beginn: number; ende: number },
 ): number => Math.max(0, Math.min(a.ende, b.ende) - Math.max(a.beginn, b.beginn)) / MINUTE;
+
+/**
+ * Minutes of a span of work in the nights it touches: `nachtAb(tag)` is the night that begins on the
+ * evening of `tag`, for every day from the one before the span's first day to its last. The Nachtzeit
+ * of § 2 Abs. 3 ArbZG, the Nachtruhe of § 14 JArbSchG and the night of § 5 MuSchG are all measured so.
+ */
+export const minutenInNaechten = (stueck: Stueck, nachtAb: (tag: Tag) => Stueck): number => {
+  let minuten = 0;
+  const letzter = tagInBerlin(stueck.ende);
+  for (let tag = plusTage(tagInBerlin(stueck.beginn), -1); tag <= letzter; tag = plusTage(tag, 1))
+    minuten += gemeinsameMinuten(stueck, nachtAb(tag));
+  return minuten;
+};

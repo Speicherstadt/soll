@@ -5,10 +5,11 @@ import { centAus, dauerText, euroText } from "../einrichtung/werte.ts";
 import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import { Fehler } from "../rahmen/karte.tsx";
+import { budgetMinutenAus } from "./budget.ts";
 import { type ProjektQuelle, zeilenAktionen } from "./quelle.ts";
 import { Aktionen, LeerText, NeuFormular, Stand } from "./teile.tsx";
 import type { Projekt } from "./typen.ts";
-import { budgetMinutenAus, fehlerText } from "./werte.ts";
+import { fehlerText } from "./werte.ts";
 
 /** The budget of an order in hours and (for whoever keeps the orders) euros, with its threshold */
 const budgetText = (projekt: Projekt): string => {

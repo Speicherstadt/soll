@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { budgetMinutenAus } from "./werte.ts";
+import { budgetMinutenAus } from "./budget.ts";
 
 describe("budgetMinutenAus", () => {
   it("reads whole hours and hours with minutes, beyond a week", () => {

@@ -63,7 +63,7 @@ Soll ergänzt nie eine Stempelung und stempelt nie selbst aus.
 | Pause ohne Pause-Ende | ebenso, Hinweis „Pause-Ende fehlt“; die Arbeit bis zur Pause zählt. Ein Kommen oder Pause-Ende 9 Stunden oder mehr nach Beginn der Pause beendet sie nicht, denn die Schicht ist dann vorbei: Die Stempelung zählt, als liefe keine Schicht. |
 | Gehen während der Pause | Hinweis „Pause-Ende fehlt“; gezählt wird die Arbeit bis zur Pause |
 | Gehen ohne Kommen | Hinweis „Kommen fehlt“ an dem Tag, nichts wird gezählt |
-| Pause-Ende ohne Pause | Hinweis „Pause-Beginn fehlt“, die Stempelung zählt nicht |
+| Pause-Ende ohne Pause | Hinweis „Pause-Beginn fehlt“, die Stempelung zählt nicht. Ein Pause-Ende nach dem Kommen, das die Pause beendet hat, wiederholt dieses Ende: Hinweis „doppelt“. |
 | dieselbe Art zweimal in einer Minute | ein doppelter Tipp oder eine erneut gesendete Stempelung, kein Hinweis |
 | dieselbe Art zweimal mit Abstand | Hinweis „doppelt“; es zählt der früheste Beginn und das späteste Ende. Ein Gehen oder eine Pause 9 Stunden oder mehr nach dem letzten Ende wiederholt es nicht: Die Stempelung zählt, als liefe keine Schicht. |
 

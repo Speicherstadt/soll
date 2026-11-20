@@ -16,11 +16,15 @@ export const STEMPELARTEN: readonly Stempelart[] = [
 /** A clock stamp: its kind and its instant in UTC milliseconds */
 export type Stempelung = { art: Stempelart; zeitpunkt: number };
 
-/** A stretch of work as stamped, in milliseconds; `ende` is null while it runs */
+/**
+ * A stretch of work as stamped, in milliseconds; `ende` is null while it runs, `nachPause` when it
+ * ended a break (Pause-Ende, or Kommen during the break)
+ */
 export type Rohstueck = {
   beginn: number;
   ende: number | null;
   endetMit: "gehen" | "pause_beginn" | null;
+  nachPause: boolean;
 };
 
 export type Stempelfehler = "kommen_fehlt" | "pause_beginn_fehlt" | "pause_ende_fehlt" | "doppelt";
@@ -56,7 +60,10 @@ const letzterIndex = (lauf: Lauf): number | null =>
 const beginne = (lauf: Lauf, stempel: Stempelung): Lauf => ({
   ...lauf,
   zustand: "arbeit",
-  stuecke: [...lauf.stuecke, { beginn: stempel.zeitpunkt, ende: null, endetMit: null }],
+  stuecke: [
+    ...lauf.stuecke,
+    { beginn: stempel.zeitpunkt, ende: null, endetMit: null, nachPause: lauf.zustand === "pause" },
+  ],
   letzte: stempel,
 });
 
@@ -151,7 +158,8 @@ const schritt = (vorher: Lauf, stempel: Stempelung): Lauf => {
   if (lauf.zustand === "arbeit") {
     if (art === "gehen") return beende(lauf, stempel, "aus");
     if (art === "pause_beginn") return beende(lauf, stempel, "pause");
-    const fehlt = art === "pause_ende" && lauf.letzte?.art !== "pause_ende";
+    // a Pause-Ende after the break was ended, by Pause-Ende or by Kommen, repeats that end
+    const fehlt = art === "pause_ende" && lauf.stuecke.at(-1)?.nachPause !== true;
     return melde(lauf, fehlt ? "pause_beginn_fehlt" : "doppelt", stempel);
   }
   // Kommen after a break ends it: a terminal may offer only Kommen and Gehen

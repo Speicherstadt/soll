@@ -12,6 +12,8 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/erinnerungen.ts";
+
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
   betriebId: text("betrieb_id").primaryKey(),
@@ -101,7 +103,9 @@ export const stempelungen = sqliteTable(
     betriebId: text("betrieb_id").notNull(),
     stempelId: text("stempel_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
-    art: text("art", { enum: ["kommen", "gehen", "pause_beginn", "pause_ende"] }).notNull(),
+    art: text("art", {
+      enum: ["kommen", "gehen", "pause_beginn", "pause_ende"],
+    }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
     quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
@@ -144,7 +148,9 @@ export const monatsabschluesse = sqliteTable(
     abschlussId: text("abschluss_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
     monat: text("monat").notNull(),
-    schritt: text("schritt", { enum: ["bestaetigt", "abgeschlossen"] }).notNull(),
+    schritt: text("schritt", {
+      enum: ["bestaetigt", "abgeschlossen"],
+    }).notNull(),
     inhalt: text("inhalt").notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     grund: text("grund"),
@@ -201,47 +207,6 @@ export const geraete = sqliteTable(
 );
 
 /**
- * Keys of the instance itself, not of one business (S-307): the VAPID key pair for Web Push, created
- * on the first start. They stand under the reserved `betrieb_id` "instanz" with a chain of their
- * own; the private key is encrypted with SOLL_SECRET_KEY (modules/geheim).
- */
-export const instanzschluessel = sqliteTable(
-  "instanzschluessel",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    name: text("name").notNull(),
-    oeffentlich: text("oeffentlich").notNull(),
-    // encrypted (modules/geheim, purpose "instanzschluessel:<name>")
-    privat: text("privat").notNull(),
-    angelegtAm: integer("angelegt_am").notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.betriebId, t.name] })],
-);
-
-/**
- * A device of a person that receives Web Push (S-307): the subscription (endpoint, p256dh, auth) is
- * encrypted, its endpoint's SHA-256 finds it again; `sprache` is the app's language on the device,
- * for the text of the notification
- */
-export const pushAbos = sqliteTable(
-  "push_abos",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    aboId: text("abo_id").notNull(),
-    nutzerId: text("nutzer_id").notNull(),
-    endpunktHash: text("endpunkt_hash").notNull(),
-    abo: text("abo").notNull(),
-    sprache: text("sprache").notNull(),
-    angelegtAm: integer("angelegt_am").notNull(),
-  },
-  (t) => [
-    primaryKey({ columns: [t.betriebId, t.aboId] }),
-    uniqueIndex("push_abos_endpunkt").on(t.betriebId, t.endpunktHash),
-    index("push_abos_person").on(t.betriebId, t.nutzerId),
-  ],
-);
-
-/**
  * A shift template of the plan (S-501): times on the Berlin clock as minutes after midnight, an end
  * at or before the beginning on the next day, the break and the role in whole minutes and plain
  * text; for every site of the business, or for one (`standort_id`)
@@ -291,52 +256,6 @@ export const schichten = sqliteTable(
     index("schichten_person").on(t.betriebId, t.nutzerId, t.tag),
   ],
 );
-
-/**
- * A reminder that went out (S-307), written before it is sent: the unique index lets each one go
- * out at most once. `bezug` names what it is about: the Kommen of the shift, the break owed in it,
- * or the month.
- */
-export const erinnerungen = sqliteTable(
-  "erinnerungen",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    erinnerungId: text("erinnerung_id").notNull(),
-    nutzerId: text("nutzer_id").notNull(),
-    art: text("art", { enum: ["ausstempeln", "pause", "monat"] }).notNull(),
-    bezug: text("bezug").notNull(),
-    erstelltAm: integer("erstellt_am").notNull(),
-  },
-  (t) => [
-    primaryKey({ columns: [t.betriebId, t.erinnerungId] }),
-    uniqueIndex("erinnerungen_einmal").on(t.betriebId, t.nutzerId, t.art, t.bezug),
-  ],
-);
-
-/** Which reminders a person wants (S-307); without a row all of them, with mail as a fallback */
-export const erinnerungseinstellungen = sqliteTable(
-  "erinnerungseinstellungen",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    nutzerId: text("nutzer_id").notNull(),
-    ausstempeln: integer("ausstempeln", { mode: "boolean" }).notNull(),
-    pause: integer("pause", { mode: "boolean" }).notNull(),
-    monat: integer("monat", { mode: "boolean" }).notNull(),
-    mail: integer("mail", { mode: "boolean" }).notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
-);
-
-/**
- * The times of the business for reminders (S-307), set by the owner; without a row the defaults of
- * modules/erinnerungen (10 hours open, 15 minutes before a break, the 1st of the following month)
- */
-export const erinnerungsregeln = sqliteTable("erinnerungsregeln", {
-  betriebId: text("betrieb_id").primaryKey(),
-  gehenMinuten: integer("gehen_minuten").notNull(),
-  pauseVorlauf: integer("pause_vorlauf").notNull(),
-  monatTag: integer("monat_tag").notNull(),
-});
 
 /**
  * The need of a site (S-501): `anzahl` people of a role on a weekday (1 Monday to 7 Sunday) from
@@ -418,7 +337,9 @@ export const auditGlieder = sqliteTable(
     akteur: text("akteur").notNull(),
     tabelle: text("tabelle").notNull(),
     zeile: text("zeile").notNull(),
-    aktion: text("aktion", { enum: ["einfuegen", "aendern", "loeschen"] }).notNull(),
+    aktion: text("aktion", {
+      enum: ["einfuegen", "aendern", "loeschen"],
+    }).notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     vorgaengerHash: text("vorgaenger_hash").notNull(),
     hash: text("hash").notNull(),

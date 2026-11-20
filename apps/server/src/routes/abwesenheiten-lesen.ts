@@ -70,6 +70,57 @@ const liste = (db: Db, c: Context<Anfrage>, nutzerId: string, imJahr: number, he
 };
 
 /**
+ * The approved absences of everyone from `von` to `bis` as the team calendar and the plan show them:
+ * every one only as „abwesend“, to everyone; were leave named, „abwesend“ would mean sickness
+ * (Art. 9 DSGVO, S-401)
+ */
+const teamkalender = (
+  db: Db,
+  c: Context<Anfrage>,
+  { von, bis }: { von: Tag; bis: Tag },
+  heute: Tag,
+) => {
+  const freigeben = darf(c.get("rolle"), "abwesenheiten:freigeben");
+  const siehtKrank = darf(c.get("rolle"), "abwesenheiten:gesundheit");
+  const ich = c.get("nutzerId");
+  const betriebId = c.get("betriebId");
+  const mitglieder = new Map(mitgliederMitNamen(db, betriebId).map((m) => [m.nutzerId, m]));
+  // an open end reaches no further than today, in every window: shown to the end of a window from
+  // today but gone from one from tomorrow, it would tell itself apart from long leave, and only a
+  // sickness has one (review S-401)
+  const ende = (zeile: { bis: Tag | null }): Tag => {
+    // days as text compare by their order, so no Math.min
+    const bekannt = zeile.bis ?? heute;
+    if (bekannt > bis) return bis;
+    return bekannt;
+  };
+  return {
+    von,
+    bis,
+    abwesenheiten: abwesenheitenIn(db, betriebId, { von, bis, status: ["genehmigt"] })
+      .filter((zeile) => mitglieder.has(zeile.nutzerId) && ende(zeile) >= von)
+      .map((zeile) => ({
+        abwesenheitId: zeile.abwesenheitId,
+        nutzerId: zeile.nutzerId,
+        name: mitglieder.get(zeile.nutzerId)?.name ?? "",
+        art: "abwesend" as const,
+        von: zeile.von,
+        bis: ende(zeile),
+        ersterHalb: zeile.ersterHalb,
+        letzterHalb: zeile.letzterHalb && zeile.bis !== null && zeile.bis <= bis,
+        // whoever sees every kind cancels leave here; a planner only the leave they approved and so
+        // knew (docs/plan.md, "Wer krank sieht")
+        ...(freigeben
+          ? {
+              stornierbar:
+                !GESUNDHEIT.has(zeile.art) && (siehtKrank || zeile.entschiedenVon === ich),
+            }
+          : {}),
+      })),
+  };
+};
+
+/**
  * Reading absences below /api/v1/arbeitszeit/abwesenheiten: one's own, a person's for whoever sees
  * all times, what waits for a decision or a certificate, and the team calendar with „abwesend“
  */
@@ -120,45 +171,5 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
         return c.json({ fehler: "ungueltig" }, 400);
       if (!darf(c.get("rolle"), "stempeln") && !darf(c.get("rolle"), "zeiten:alle"))
         return c.json({ fehler: "keine_berechtigung" }, 403);
-      const betriebId = c.get("betriebId");
-      const freigeben = darf(c.get("rolle"), "abwesenheiten:freigeben");
-      const siehtKrank = darf(c.get("rolle"), "abwesenheiten:gesundheit");
-      const ich = c.get("nutzerId");
-      const mitglieder = new Map(mitgliederMitNamen(db, betriebId).map((m) => [m.nutzerId, m]));
-      // an open end reaches no further than today, in every window: shown to the end of a window
-      // from today but gone from one from tomorrow, it would tell itself apart from long leave, and
-      // only a sickness has one (review S-401)
-      const heute = tagInBerlin(jetzt());
-      const ende = (zeile: { bis: Tag | null }): Tag => {
-        // days as text compare by their order, so no Math.min
-        const bekannt = zeile.bis ?? heute;
-        if (bekannt > bis) return bis;
-        return bekannt;
-      };
-      return c.json({
-        von,
-        bis,
-        // the team calendar and the plan show every absence only as „abwesend“, to everyone: were
-        // leave named, „abwesend“ would mean sickness (Art. 9 DSGVO, S-401)
-        abwesenheiten: abwesenheitenIn(db, betriebId, { von, bis, status: ["genehmigt"] })
-          .filter((zeile) => mitglieder.has(zeile.nutzerId) && ende(zeile) >= von)
-          .map((zeile) => ({
-            abwesenheitId: zeile.abwesenheitId,
-            nutzerId: zeile.nutzerId,
-            name: mitglieder.get(zeile.nutzerId)?.name ?? "",
-            art: "abwesend" as const,
-            von: zeile.von,
-            bis: ende(zeile),
-            ersterHalb: zeile.ersterHalb,
-            letzterHalb: zeile.letzterHalb && zeile.bis !== null && zeile.bis <= bis,
-            // whoever sees every kind cancels leave here; a planner only the leave they approved
-            // and so knew (docs/plan.md, "Wer krank sieht")
-            ...(freigeben
-              ? {
-                  stornierbar:
-                    !GESUNDHEIT.has(zeile.art) && (siehtKrank || zeile.entschiedenVon === ich),
-                }
-              : {}),
-          })),
-      });
+      return c.json(teamkalender(db, c, { von, bis }, tagInBerlin(jetzt())));
     });

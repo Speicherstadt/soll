@@ -191,6 +191,40 @@ describe("R-12: Rufbereitschaft", () => {
     expect(kurz(ergebnis)).toEqual([["R-12", "einsatz_ausgleich", ["2026-11-16"]]]);
   });
 
+  it("selber Tag: Mo 5:00 – 9:00, Einsatz Mo 12:00 – 13:00, Mo Schicht 18:30 (5:30 Ruhe) – Verstoß", () => {
+    // the shift at 18:30 begins 9:30 after other work, so it is a shift of its own on the same
+    // calendar day; the rest after the call-out before it is measured all the same
+    const stempel = [
+      ...schicht(uhr(MO, "5:00"), uhr(MO, "9:00")),
+      ...schicht(uhr(MO, "18:30"), uhr(MO, "22:00")),
+    ];
+    const ergebnis = pruefe(stempel, einsatz(uhr(MO, "12:00"), uhr(MO, "13:00")));
+    expect(ergebnis.befunde.filter((befund) => befund.regel === "R-12")).toEqual([
+      {
+        regel: "R-12",
+        norm: "§ 5 Abs. 1 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_durch_einsatz_unterbrochen",
+        tage: ["2026-11-16"],
+        ruhe: { beginn: um(uhr(MO, "13:00")), ende: um(uhr(MO, "18:30")), minuten: 330 },
+        mindestens: 660,
+        fehlt: 330,
+        einsatz: { beginn: um(uhr(MO, "12:00")), ende: um(uhr(MO, "13:00")), minuten: 60 },
+      },
+    ]);
+  });
+
+  it("Krankenhaus, selber Tag: the same call-out is to be balanced – Hinweis „Einsatz ausgleichen 1:00“", () => {
+    const stempel = [
+      ...schicht(uhr(MO, "5:00"), uhr(MO, "9:00")),
+      ...schicht(uhr(MO, "18:30"), uhr(MO, "22:00")),
+    ];
+    const ergebnis = pruefe(stempel, einsatz(uhr(MO, "12:00"), uhr(MO, "13:00")), KRANKENHAUS);
+    expect(ergebnis.befunde.filter((befund) => befund.regel === "R-12")).toMatchObject([
+      { art: "einsatz_ausgleich", tage: ["2026-11-16"], minuten: 60 },
+    ]);
+  });
+
   it("Herbst: Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 real time) – no finding", () => {
     const eingabe = einsatz("2026-10-24T23:00+02:00", "2026-10-25T00:30+02:00");
     const stempel = schicht("2026-10-25T10:30+01:00", "2026-10-25T14:30+01:00");

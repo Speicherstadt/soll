@@ -198,4 +198,23 @@ describe("R-11: Bereitschaftsdienst", () => {
       ["R-02", "ueber_10h", ["2026-11-16"]],
     ]);
   });
+
+  it("über 12 h: a day no rule version covers is no day past 12 hours – the Hinweis of R-05 stays", () => {
+    // 31.12.2025 lies before the first rule version: § 7 Abs. 9 is „nicht hinterlegt“ for it and
+    // must not take the shortened rest of R-05 (rule version 2026-1, the day it ends on) away
+    const stempel = [
+      ...schicht("2025-12-31T16:00+01:00", "2025-12-31T20:00+01:00"),
+      ...schicht("2026-01-01T06:30+01:00", "2026-01-01T10:00+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2025-12-31T18:00+01:00", "2025-12-31T20:00+01:00")],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      jetzt: um("2026-01-01T12:00+01:00"),
+    } as const;
+    const ohneTarif = kurz(pruefe(stempel, eingabe, optionen));
+    expect(ohneTarif).toEqual([["R-05", "ruhezeit_verkuerzt", ["2025-12-31", "2026-01-01"]]]);
+    expect(kurz(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual(ohneTarif);
+  });
 });

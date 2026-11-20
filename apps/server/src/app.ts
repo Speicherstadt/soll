@@ -11,6 +11,7 @@ import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
+import { personenRouten } from "./routes/personen.ts";
 import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
 import { standortRouten } from "./routes/standorte.ts";
@@ -61,6 +62,7 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }:
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
     .route("/pins", pinRouten(db, schreibDb, now))
+    .route("/personen", personenRouten(db, schreibDb, now))
     .route("/terminal/pins", pinPruefRouten(db, schreibDb, now))
     .route(
       "/",

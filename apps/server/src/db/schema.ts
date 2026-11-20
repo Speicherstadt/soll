@@ -26,7 +26,34 @@ export const betriebe = sqliteTable("betriebe", {
   land: text("land"),
   // When the owner finished the setup; until then the app leads the owner there (S-303)
   eingerichtetAm: integer("eingerichtet_am"),
+  // The settings the rules read (S-502); null keeps the default, never less strict than the law:
+  // the industry of § 5 Abs. 2 ArbZG (BRANCHEN), the number of § 10 Abs. 1 ArbZG that allows work
+  // on Sundays and holidays, and the Ausgleichszeitraum of § 3 Satz 2 ArbZG with its first day
+  branche: text("branche"),
+  sonntagsausnahme: integer("sonntagsausnahme"),
+  ausgleichszeitraum: text("ausgleichszeitraum", { enum: ["sechs_monate", "24_wochen"] }),
+  ausgleichBeginn: text("ausgleich_beginn"),
 });
+
+/**
+ * What the rules need of a person and nothing more (S-502, docs/plan.md "Daten zur Person"): the
+ * birth date (JArbSchG), Wechselschicht (§ 2 Abs. 5 Nr. 1 ArbZG), Arbeit auf Abruf (§ 12 TzBfG) and
+ * the spans of the Mutterschutz as a JSON array of `{ von, bis }` (bis null while it lasts), which
+ * say neither pregnant nor breastfeeding (Art. 9 DSGVO). Only the owner reads and writes them.
+ */
+export const personenangaben = sqliteTable(
+  "personenangaben",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    geburtsdatum: text("geburtsdatum"),
+    wechselschicht: integer("wechselschicht", { mode: "boolean" }).notNull().default(false),
+    abruf: integer("abruf", { mode: "boolean" }).notNull().default(false),
+    mutterschutz: text("mutterschutz").notNull().default("[]"),
+    geaendertAm: integer("geaendert_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
+);
 
 /**
  * Where people work: the Land and the regional holidays of the municipality decide the holidays of

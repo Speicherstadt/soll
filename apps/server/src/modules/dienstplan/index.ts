@@ -1,5 +1,6 @@
 /** The module Dienstplan: templates, shifts and the need per role and site (S-501) */
 export { type BedarfAngaben, bedarfAnlegen, bedarfEntfernen, bedarfeLesen } from "./bedarf.ts";
+export type { WochenBefund } from "./pruefung.ts";
 export {
   type Schicht,
   type SchichtAngaben,

@@ -8,6 +8,7 @@ import {
   mitgliedschaften,
   modellzuordnungen,
   monatsabschluesse,
+  personenangaben,
   pins,
   schichten,
   schichtvorlagen,
@@ -34,6 +35,7 @@ export const kettenTabellen = {
   schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
   schichten: { tabelle: schichten, schluessel: ["schichtId"] },
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
+  personenangaben: { tabelle: personenangaben, schluessel: ["nutzerId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

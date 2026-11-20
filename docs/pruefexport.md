@@ -45,7 +45,7 @@ einem Befund:
 | Beginn, Ende | Uhrzeit in Berlin; ein Ende an einem späteren Tag mit Datum; „offen“, solange eine Schicht kein Ende hat (Soll ergänzt nichts) |
 | Pausen (Minuten), Dauer (Minuten) | ganze Minuten, wie auf dem Stundenzettel |
 | Erfasst am | wann Soll die letzte Stempelung des Tages, so wie er jetzt steht, gespeichert hat: daran prüft die Behörde die sieben Tage des § 17 Abs. 1 MiLoG |
-| Änderungen | jede Änderung von Hand: nachgetragen, geändert oder entfernt, von wem, wann, vorher und nachher, mit Grund |
+| Änderungen | jede Änderung von Hand: nachgetragen, geändert oder entfernt, von wem, wann, vorher und nachher, mit Grund; liegt eine Stempelung an einem anderen Tag als dem Arbeitstag der Zeile (das Gehen einer Nachtschicht, eine Stempelung, die auf einen anderen Tag oder in einen anderen Monat verschoben wurde), steht ihr Datum vor der Uhrzeit |
 | Gegeneinträge | Korrekturen nach dem Abschluss mit Minuten, Grund, wer und wann |
 | Befunde | mit Norm, z. B. „Verstoß: Ruhepause · § 4 ArbZG“ |
 | Monat abgeschlossen, Prüfwert | für einen abgeschlossenen Monat Zeitpunkt und Prüfwert, sonst leer |

@@ -106,7 +106,7 @@ const person = (s: Schreiber, daten: Pruefexport, wer: PruefPerson) => {
     s,
     "Änderungen von Hand",
     wer.tage.flatMap((tag) =>
-      tag.aenderungen.map((a) => `${datumText(tag.tag)}: ${aenderungText(a)}`),
+      tag.aenderungen.map((a) => `${datumText(tag.tag)}: ${aenderungText(a, tag.tag)}`),
     ),
   );
   abschnitt(

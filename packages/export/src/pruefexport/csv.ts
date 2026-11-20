@@ -39,7 +39,7 @@ const zeile = (person: PruefPerson, tag: PruefTag): CsvWert[] => {
     tag.pauseMinuten,
     tag.arbeitsMinuten,
     erfasstText(tag),
-    liste(tag.aenderungen.map(aenderungText)),
+    liste(tag.aenderungen.map((a) => aenderungText(a, tag.tag))),
     liste(tag.gegeneintraege.map(gegeneintragText)),
     liste(tag.befunde.map(befundText)),
     monat?.abgeschlossenAm == null ? "" : zeitpunktText(monat.abgeschlossenAm),

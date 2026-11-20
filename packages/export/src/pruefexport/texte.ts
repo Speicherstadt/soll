@@ -27,17 +27,25 @@ const tagInBerlin = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
-const stempelText = (stempel: { art: Stempelart; zeitpunkt: number }) =>
-  `${ARTEN[stempel.art]} ${uhrzeitText(stempel.zeitpunkt)}`;
+/** A stamp of a change: its time, with the date when it lies on another day than the row's */
+const stempelText = (stempel: { art: Stempelart; zeitpunkt: number }, tag: string) => {
+  const amTag = tagInBerlin.format(stempel.zeitpunkt);
+  const datum = amTag === tag ? "" : `${datumText(amTag)} `;
+  return `${ARTEN[stempel.art]} ${datum}${uhrzeitText(stempel.zeitpunkt)}`;
+};
 
-/** "geändert am 07.10.2026 09:12 von Mia: vorher Gehen 17:00, jetzt Gehen 18:15, Grund: …" */
-export const aenderungText = (aenderung: PruefAenderung): string => {
+/**
+ * "geändert am 07.10.2026 09:12 von Mia: vorher Gehen 17:00, jetzt Gehen 18:15, Grund: …" for the
+ * working day `tag`; a stamp on another day (a night shift's Gehen, a stamp moved to another day or
+ * month) carries its date, else "vorher Kommen 08:00, jetzt Kommen 08:00" hides a move by a day
+ */
+export const aenderungText = (aenderung: PruefAenderung, tag: string): string => {
   const einzeln = aenderung.nachher ?? aenderung.vorher;
   const was =
     aenderung.vorher && aenderung.nachher
-      ? `vorher ${stempelText(aenderung.vorher)}, jetzt ${stempelText(aenderung.nachher)}`
+      ? `vorher ${stempelText(aenderung.vorher, tag)}, jetzt ${stempelText(aenderung.nachher, tag)}`
       : einzeln
-        ? stempelText(einzeln)
+        ? stempelText(einzeln, tag)
         : "";
   return `${AKTIONEN[aenderung.aktion]} am ${zeitpunktText(aenderung.am)} von ${aenderung.von}: ${was}, Grund: ${aenderung.grund}`;
 };

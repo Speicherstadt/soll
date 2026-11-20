@@ -14,12 +14,13 @@ const ERLAUBT = new Set(["modules/audit/schreiben.ts", "db/migrieren.ts", "db/oe
 const TABELLEN = Object.keys(schema).join("|");
 
 /**
- * The ways to write: Drizzle's insert, update and delete on a table of the schema, raw SQL that writes,
+ * The ways to write: Drizzle's insert, update and delete on a table of the schema (under any namespace
+ * name), raw SQL that writes,
  * Drizzle's `sql` template and `sql.raw`, the chained tables as `kettenTabellen` exports them, and
  * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything)
  */
 const SCHREIBEN = [
-  new RegExp(`\\.(insert|update|delete)\\s*\\(\\s*(schema\\.)?(${TABELLEN})\\b`),
+  new RegExp(`\\.(insert|update|delete)\\s*\\(\\s*(\\w+\\.)?(${TABELLEN})\\b`),
   /\.(insert|update|delete)\s*\(\s*kettenTabellen\b/,
   /\$client\b/,
   /\bsql\.raw\s*\(/,
@@ -66,6 +67,14 @@ describe("no write past the audit chain", () => {
       "db.run(sql.raw(befehl));",
     ].flatMap((zeile) => umwegeIn("x.ts", zeile));
     expect(umwege).toHaveLength(4);
+  });
+
+  it("recognises a write to a table of the schema imported under another name", () => {
+    // `import * as tabellen from "../db/schema.ts"` is as common as `import * as schema`
+    const umwege = ["db.insert(tabellen.betriebe).values(werte).run();"].flatMap((zeile) =>
+      umwegeIn("x.ts", zeile),
+    );
+    expect(umwege).toHaveLength(1);
   });
 
   it("every table of Soll with betrieb_id goes through the chain", () => {

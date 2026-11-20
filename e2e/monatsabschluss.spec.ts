@@ -89,6 +89,8 @@ test("the person confirms the month, the owner closes it, the Prüfwert checks o
   expect((await download).suggestedFilename()).toBe(`stundenzettel-${vormonat()}.pdf`);
   await page.getByRole("link", { name: t("monat_zur_pruefseite") }).click();
   await expect(page).toHaveURL(`/pruefen?betrieb=${betriebId}`);
+  // the URL changes before the router shows the page; the month (cached) stays on screen till then
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(t("pruefen_titel"));
   await page.getByLabel(t("pruefen_wert")).fill(pruefwert);
   await page.getByRole("button", { name: t("pruefen_knopf") }).click();
   await expect(page.getByRole("status")).toContainText(t("pruefen_ok"));

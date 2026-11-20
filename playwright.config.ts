@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 // e2e ports stay clear of the dev ports and of what the user runs (CLAUDE.md, "Working rules")
 const WEB_PORT = 5178;
+// The production build with its service worker, for what only a build does (e2e/offline.spec.ts)
+const PREVIEW_PORT = 5179;
 // A preinstalled Chromium of another Playwright version (cloud sandboxes); CI installs its own
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_PATH;
 const launchOptions = executablePath ? { executablePath } : {};
@@ -40,9 +42,16 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: `bun run --cwd apps/web dev --port ${WEB_PORT}`,
-    url: `http://localhost:${WEB_PORT}`,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: `bun run --cwd apps/web dev --port ${WEB_PORT}`,
+      url: `http://localhost:${WEB_PORT}`,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `bun run --cwd apps/web build && bun run --cwd apps/web preview --port ${PREVIEW_PORT}`,
+      url: `http://localhost:${PREVIEW_PORT}`,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
 });

@@ -40,7 +40,11 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(fetch(event.request).catch(() => caches.match("/")));
     return;
   }
-  event.respondWith(caches.match(event.request).then((hit) => hit ?? fetch(event.request)));
+  // ignoreVary: a module script asks with an Origin header that the precache request lacked, so a
+  // server that answers with "Vary: Origin" (vite preview, CORS middleware) would never hit the cache
+  event.respondWith(
+    caches.match(event.request, { ignoreVary: true }).then((hit) => hit ?? fetch(event.request)),
+  );
 });
 `;
 };

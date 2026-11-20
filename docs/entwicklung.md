@@ -31,7 +31,7 @@ bun install
 bun run dev:server   # Server auf Port 18200
 bun run dev:web      # App auf Port 5177
 bun run check        # Typen, Lint, Tests, Build
-bun run e2e          # Playwright (App auf Port 5178)
+bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
 ```
 
 `bun run check` muss vor jedem Push grün sein. Die gemeinsamen Checks aus `firsttris/workflows`

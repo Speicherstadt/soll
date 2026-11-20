@@ -477,6 +477,24 @@ Alle Punkte: nach S-306.
   Wechsel.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
+  Fertig, wenn: reine Funktionen in `packages/arbeitszeit` die Auslastung eines Monats in ganzen
+  Minuten rechnen (anwesend als gestempelte Arbeitszeit nach § 2 Abs. 1 ArbZG wie `tagesstand()`
+  sie zählt, gebucht nach abrechenbar und intern, anwesend ohne Buchung, Anteil abrechenbar in
+  ganzen Prozent ohne Brüche), mit Vitest auch für eine Nachtschicht über Mitternacht, die zum Tag
+  ihres Beginns gehört, und die Nächte der Zeitumstellung; was „Team“ heißt und die Mindestgröße
+  einer Gruppe im Projektplan entschieden sind (mit Grund, § 87 Abs. 1 Nr. 6 BetrVG und Art. 5
+  Abs. 1 lit. c DSGVO) und der Server eine kleinere Gruppe ohne Zahlen beantwortet (Test); Inhaber
+  und Planer die Auslastung je Team sehen, andere Rollen nicht (403); die Auswertung je Person aus
+  ist, bis der Inhaber sie einschaltet, die Einstellung über die Audit-Kette mit Akteur und
+  Zeitpunkt geschrieben wird (Test) und eine neue Migration sie am Betrieb speichert; der Server
+  Zahlen je Person ablehnt, solange sie aus ist (`403 auswertung_aus`, Test), auch die eigenen;
+  ist sie an, sehen Inhaber und Planer die Zahlen je Person und jede Person ihre eigenen, und alle
+  Beschäftigten sehen in der App „Auswertung je Person ist eingeschaltet seit …“ mit der Norm;
+  der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt,
+  dass kein Betrieb die Auslastung eines anderen sieht oder dessen Einstellung ändert; Playwright
+  zeigt die Auslastung je Team, das Einschalten und den Hinweis bei einer Mitarbeiterin (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/projektzeit.md`.
 - [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
 - [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
   `externalId` (wiederholbar), Stundennachweis als Anlage.

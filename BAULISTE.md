@@ -139,7 +139,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   nach § 2a SchwarzArbG, Privathaushalt und Ausnahmen nach § 22 MiLoG sind Parameter, deren Vorgabe
   nie weniger streng ist als das Gesetz; ein Jahr ohne Mindestlohn oder Grenze und ein Tag ohne
   Regelversion werden „nicht hinterlegt“ statt mit fremden Werten geprüft.
-- [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
+- [x] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
   Fertig, wenn: jeder Fall von R-15 bis R-21 in `docs/regeln.md` wörtlich als Test besteht, auch
   am Tag vor und am Tag des 18. Geburtstags, bei einem Geburtstag am 29. Februar, über beide
   Zeitumstellungen und an den Grenzen von Woche, Doppelwoche und Monat. Dazu: die Regeln nehmen

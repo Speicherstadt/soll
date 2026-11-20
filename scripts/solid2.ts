@@ -23,7 +23,8 @@ export const REGELN: readonly Regel[] = [
   },
   { name: "ErrorBoundary", muster: /\bErrorBoundary\b/, statt: "Errored" },
   { name: "onMount", muster: /\bonMount\b/, statt: "onSettled" },
-  { name: "on helper", muster: /\bon\(\s*[\w[]/, statt: "createEffect(source, fn)" },
+  // not a method of the same name (an emitter's `socket.on(…)`)
+  { name: "on helper", muster: /(?<![.\w$])on\(\s*[\w[]/, statt: "createEffect(source, fn)" },
   {
     name: "createComputed",
     muster: /\bcreateComputed\b/,
@@ -56,8 +57,19 @@ export const REGELN: readonly Regel[] = [
   {
     name: "1.x error and selector APIs",
     muster:
-      /\b(catchError|onError|createSelector|createDynamic|resetErrorBoundaries|equalFn|getListener)\b/,
+      /\b(catchError|createSelector|createDynamic|resetErrorBoundaries|equalFn|getListener)\b/,
     statt: "Errored / effect error option / createProjection / dynamic()",
+  },
+  {
+    // the imperative call or its import, not the JSX event (`<img onError={…}>`) or an option key
+    name: "onError",
+    muster: /(?<![.\w$])onError\s*(\(|[,}])/,
+    statt: "Errored / effect error option",
+  },
+  {
+    name: "Dynamic",
+    muster: /<\/?Dynamic\b|\bDynamic\s*[,}]/,
+    statt: "dynamic(source) factory",
   },
   {
     name: "1.x imports",

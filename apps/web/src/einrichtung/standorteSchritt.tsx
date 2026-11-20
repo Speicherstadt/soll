@@ -1,12 +1,13 @@
 import { LAENDER, type Land, REGIONEN, type Region } from "@soll/arbeitszeit";
 import { Button, Icon, Input } from "@soll/ui";
 import { Trash2 } from "lucide";
-import { createSignal, createUniqueId, For, Show } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten, listeAendern } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
+import { type Antwort, api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Fuss, SchrittKopf } from "./geruest.tsx";
-import { ergaenzt } from "./liste.ts";
 import { LAND_NAMEN, REGION_NAMEN } from "./namen.ts";
 import { feld } from "./stil.ts";
 
@@ -21,42 +22,39 @@ type Standort = {
 const regionenVon = (land: string) =>
   (Object.keys(REGIONEN) as Region[]).filter((region) => REGIONEN[region] === land);
 
+type Eingabe = Omit<Standort, "standortId">;
+
+/** What a change to the sites changes: the sites as loaded (here and in the plan) */
+const STANDORTE_AENDERT = [alle(PFAD.standorte)];
+
 /** A new site: name, address, Land (the business's by default) and the regions of that Land */
 const NeuerStandort = (props: {
   land: string;
-  angelegt: (standort: Standort) => void;
+  anlegen: (eingabe: Eingabe) => Promise<Antwort<Standort>>;
   arbeitet: boolean;
-  setzeArbeitet: (arbeitet: boolean) => void;
 }) => {
   const landId = createUniqueId();
-  const [land, setLand] = createSignal(props.land);
+  // the business's Land until the person chooses another
+  const [land, setLand] = createSignal(() => props.land);
   const [fehler, setFehler] = createSignal("");
   let landFeld: HTMLSelectElement | undefined;
-  // a second click while the first is on its way would add the site twice
-  let laeuft = false;
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
-    if (laeuft) return;
-    laeuft = true;
-    props.setzeArbeitet(true);
+    // a second click while the first is on its way would add the site twice
+    if (props.arbeitet) return;
     const form = event.currentTarget as HTMLFormElement;
-    const daten = new FormData(form);
-    const antwort = await api<Standort>("/api/v1/standorte", {
-      body: {
-        name: String(daten.get("name")).trim(),
-        adresse: String(daten.get("adresse")).trim(),
-        land: land(),
-        regionen: daten.getAll("regionen").map(String),
-      },
+    const eingabe = new FormData(form);
+    const antwort = await props.anlegen({
+      name: String(eingabe.get("name")).trim(),
+      adresse: String(eingabe.get("adresse")).trim(),
+      land: land() as Land,
+      regionen: eingabe.getAll("regionen").map(String) as Region[],
     });
-    laeuft = false;
-    props.setzeArbeitet(false);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
     form.reset();
     // reset() puts the select on its first option; the next site gets the Land it shows
     if (landFeld) landFeld.value = land();
-    props.angelegt(antwort.daten);
   };
   return (
     <form class="flex flex-col gap-3 rounded-lg border border-border p-3" onSubmit={absenden}>
@@ -118,59 +116,74 @@ export const StandorteSchritt = (props: {
   zurueck?: (() => void) | undefined;
   weiter: () => void;
 }) => {
-  const [standorte, setStandorte] = createSignal<Standort[]>([]);
+  const standorteAbfrage = abfrage<{ standorte: Standort[] }>(ressourcen.standorte);
+  const standorte = () => daten(standorteAbfrage.data)?.standorte ?? [];
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
-  // removed before the first load answered: that answer may still list them
-  const entfernt = new Set<string>();
-  api<{ standorte: Standort[] }>("/api/v1/standorte").then(
-    (a) =>
-      a.ok &&
-      setStandorte((hier) => ergaenzt(a.daten.standorte, hier, (s) => s.standortId, entfernt)),
+  const anlegen = aenderung(
+    (eingabe: Eingabe) => api<Standort>("/api/v1/standorte", { body: eingabe }),
+    () => STANDORTE_AENDERT,
+    {
+      eintragen: (client, _, neu) =>
+        listeAendern<Standort>(client, ressourcen.standorte(), "standorte", (liste) => [
+          ...liste,
+          neu,
+        ]),
+    },
   );
-  const entfernen = async (standort: Standort) => {
-    const antwort = await api(`/api/v1/standorte/${standort.standortId}`, { method: "DELETE" });
-    if (!antwort.ok) return;
-    entfernt.add(standort.standortId);
-    setStandorte((liste) => liste.filter((s) => s.standortId !== standort.standortId));
-  };
-  const weiter = () => (standorte().length > 0 ? props.weiter() : setFehler(m.standort_fehlt()));
+  const entfernen = aenderung(
+    (standort: Standort) => api(`/api/v1/standorte/${standort.standortId}`, { method: "DELETE" }),
+    () => STANDORTE_AENDERT,
+    {
+      eintragen: (client, weg) =>
+        listeAendern<Standort>(client, ressourcen.standorte(), "standorte", (liste) =>
+          liste.filter((x) => x.standortId !== weg.standortId),
+        ),
+    },
+  );
+  const arbeitet = () => anlegen.isPending;
+  // before the list has loaded, it is read as empty, as the page shows it
+  const weiter = () =>
+    !standorteAbfrage.isPending && standorte().length > 0
+      ? props.weiter()
+      : setFehler(m.standort_fehlt());
   return (
     <>
       <SchrittKopf id="schritt-titel" titel={m.standorte_titel()} text={m.standorte_text()} />
-      <Show when={standorte().length > 0}>
-        <ul
-          aria-label={m.standorte_liste()}
-          class="flex flex-col divide-y divide-border rounded-lg border border-border"
-        >
-          <For each={standorte()}>
-            {(standort) => (
-              <li class="flex items-center justify-between gap-3 px-3 py-2">
-                <span class="flex min-w-0 flex-col">
-                  <span class="font-medium">{standort.name}</span>
-                  <span class="truncate text-muted-foreground">
-                    {[standort.adresse, LAND_NAMEN[standort.land]()].filter(Boolean).join(" · ")}
+      <Loading>
+        <Show when={standorte().length > 0}>
+          <ul
+            aria-label={m.standorte_liste()}
+            class="flex flex-col divide-y divide-border rounded-lg border border-border"
+          >
+            <For each={standorte()}>
+              {(standort) => (
+                <li class="flex items-center justify-between gap-3 px-3 py-2">
+                  <span class="flex min-w-0 flex-col">
+                    <span class="font-medium">{standort.name}</span>
+                    <span class="truncate text-muted-foreground">
+                      {[standort.adresse, LAND_NAMEN[standort.land]()].filter(Boolean).join(" · ")}
+                    </span>
                   </span>
-                </span>
-                <Button
-                  variant="icon"
-                  aria-label={m.standort_entfernen({ name: standort.name })}
-                  onClick={() => entfernen(standort)}
-                >
-                  <Icon icon={Trash2} />
-                </Button>
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
+                  <Button
+                    variant="icon"
+                    aria-label={m.standort_entfernen({ name: standort.name })}
+                    onClick={() => void entfernen.mutate(standort)}
+                  >
+                    <Icon icon={Trash2} />
+                  </Button>
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
+      </Loading>
       <NeuerStandort
         land={props.land}
         arbeitet={arbeitet()}
-        setzeArbeitet={setArbeitet}
-        angelegt={(neu) => {
-          setFehler("");
-          setStandorte((liste) => [...liste, neu]);
+        anlegen={async (eingabe) => {
+          const antwort = await anlegen.mutate(eingabe);
+          if (antwort.ok) setFehler("");
+          return antwort;
         }}
       />
       <Fehler text={fehler()} />

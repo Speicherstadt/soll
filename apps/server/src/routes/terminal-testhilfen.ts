@@ -40,7 +40,7 @@ export const gekoppelt = async (server: Server, inhaber: Person, name = "Eingang
 };
 
 export const pinSetzen = (inhaber: Person, nutzerId: string, pin: string) =>
-  inhaber.anfrage(`/api/v1/pins/${nutzerId}`, { method: "PUT", body: { pin } });
+  inhaber.anfrage(`/api/v1/terminal/pins/${nutzerId}`, { method: "PUT", body: { pin } });
 
 /** A business with the module Terminal on and an employee with PIN 471100 */
 export const betriebMitTerminal = async (

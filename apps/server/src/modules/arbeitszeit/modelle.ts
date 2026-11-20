@@ -1,12 +1,16 @@
-import { tagInBerlin } from "@soll/arbeitszeit";
+import { tagInBerlin, type Zuschlagssaetze } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { arbeitszeitmodelle, modellzuordnungen } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 
-/** A working-time model as the API shows it: the target minutes per weekday as a list */
-export type Modell = Omit<typeof arbeitszeitmodelle.$inferSelect, "sollMinuten"> & {
+/** A working-time model as the API shows it: the target minutes and the surcharges as values */
+export type Modell = Omit<
+  typeof arbeitszeitmodelle.$inferSelect,
+  "sollMinuten" | "zuschlagssaetze"
+> & {
   sollMinuten: number[];
+  zuschlagssaetze: Zuschlagssaetze;
 };
 
 export type NeuesModell = {
@@ -17,6 +21,8 @@ export type NeuesModell = {
   /** Cents per month or per hour; null while not yet known ("nicht hinterlegt") */
   lohnCent: number | null;
   minijob: boolean;
+  /** The surcharges it pays in basis points (S-207); a rate not set is not paid */
+  zuschlagssaetze?: Zuschlagssaetze | undefined;
   /** The first day it holds; today in Europe/Berlin if not given */
   gueltigAb?: string | undefined;
 };
@@ -24,6 +30,7 @@ export type NeuesModell = {
 const alsModell = (zeile: typeof arbeitszeitmodelle.$inferSelect): Modell => ({
   ...zeile,
   sollMinuten: JSON.parse(zeile.sollMinuten) as number[],
+  zuschlagssaetze: JSON.parse(zeile.zuschlagssaetze) as Zuschlagssaetze,
 });
 
 export const modelleLesen = (db: Db, betriebId: string): Modell[] =>
@@ -57,6 +64,7 @@ export const modellAnlegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neues
         lohnArt: neu.lohnArt,
         lohnCent: neu.lohnCent,
         minijob: neu.minijob,
+        zuschlagssaetze: JSON.stringify(neu.zuschlagssaetze ?? {}),
         gueltigAb: neu.gueltigAb ?? tagInBerlin(kontext.jetzt),
         angelegtAm: kontext.jetzt,
       }),

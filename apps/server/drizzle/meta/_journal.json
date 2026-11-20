@@ -61,8 +61,36 @@
     {
       "idx": 8,
       "version": "6",
-      "when": 1795195635430,
-      "tag": "0008_terminal",
+      "when": 1795197783321,
+      "tag": "0008_projektzeit",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1795207135326,
+      "tag": "0009_datev",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1795209359099,
+      "tag": "0010_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1795211176044,
+      "tag": "0011_stoppuhr",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1795213510135,
+      "tag": "0012_terminal",
       "breakpoints": true
     }
   ]

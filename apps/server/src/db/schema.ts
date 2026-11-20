@@ -12,7 +12,9 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
+export * from "./schema/projektzeit.ts";
 export * from "./schema/terminal.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
@@ -29,6 +31,9 @@ export const betriebe = sqliteTable("betriebe", {
   land: text("land"),
   // When the owner finished the setup; until then the app leads the owner there (S-303)
   eingerichtetAm: integer("eingerichtet_am"),
+  // When Soll switched working time on because the first employed person joined; the owner sees the
+  // reason until confirming it, then it is empty again (S-603)
+  pflichtHinweisAm: integer("pflicht_hinweis_am"),
 });
 
 /**
@@ -66,6 +71,8 @@ export const arbeitszeitmodelle = sqliteTable(
     lohnArt: text("lohn_art", { enum: ["monat", "stunde"] }).notNull(),
     lohnCent: integer("lohn_cent"),
     minijob: integer("minijob", { mode: "boolean" }).notNull().default(false),
+    // JSON object of the surcharges the model pays, in basis points (`Zuschlagssaetze`, S-207/S-308)
+    zuschlagssaetze: text("zuschlagssaetze").notNull().default("{}"),
     gueltigAb: text("gueltig_ab").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
   },

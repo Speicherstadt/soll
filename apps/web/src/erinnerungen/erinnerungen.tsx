@@ -1,4 +1,7 @@
-import { createSignal, For, Show } from "solid-js";
+import { useQueryClient } from "@tanstack/solid-query";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
+import { alle, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -16,69 +19,76 @@ const ARTEN: { art: keyof Wuensche; name: () => string; text: () => string }[] =
   { art: "mail", name: m.erinnerungen_mail, text: m.erinnerungen_mail_text },
 ];
 
+/** What a change to the reminders changes: the reminders as loaded */
+const ERINNERUNGEN_AENDERT = [alle(PFAD)];
+
 /**
  * Reminders in the settings (S-307): this device on or off, which reminders the person wants, and
  * for the owner the times of the business. Only for who stamps in a business with working time:
  * the server answers everyone else with 403, and the section stays away.
  */
 export const Erinnerungen = () => {
-  const [ansicht, setAnsicht] = createSignal<ErinnerungAnsicht | null>(null);
+  const client = useQueryClient();
+  const abfrageErinnerungen = abfrage<ErinnerungAnsicht>(ressourcen.erinnerungen);
+  const ansicht = () => daten(abfrageErinnerungen.data);
   const [fehler, setFehler] = createSignal("");
-  const laden = () =>
-    api<ErinnerungAnsicht>(PFAD).then((antwort) => antwort.ok && setAnsicht(antwort.daten));
-  void laden();
+  const speichern = aenderung(
+    (wuensche: Wuensche) => api(`${PFAD}/wuensche`, { method: "PUT", body: wuensche }),
+    () => ERINNERUNGEN_AENDERT,
+  );
   const setzen = async (art: keyof Wuensche, an: boolean, feld: HTMLInputElement) => {
     const vorher = ansicht();
     if (!vorher) return;
-    const wuensche = { ...vorher.wuensche, [art]: an };
-    const antwort = await api(`${PFAD}/wuensche`, { method: "PUT", body: wuensche });
+    const antwort = await speichern.mutate({ ...vorher.wuensche, [art]: an });
     if (!antwort.ok) {
       feld.checked = !an;
       return setFehler(m.fehler_speichern());
     }
     setFehler("");
-    setAnsicht({ ...vorher, wuensche });
   };
+  const neuLaden = () => void client.invalidateQueries({ queryKey: alle(PFAD) });
   const inhaber = () => {
     const betrieb = aktuellerBetrieb();
     return betrieb !== null && istInhaber(betrieb);
   };
   return (
-    <Show when={ansicht()}>
-      {(a) => (
-        <section class="flex max-w-lg flex-col gap-3">
-          <h2 class="font-semibold">{m.erinnerungen_titel()}</h2>
-          <p class="text-muted-foreground">{m.erinnerungen_text()}</p>
-          <GeraetSchalter vapidSchluessel={a().vapidSchluessel} onGeaendert={laden} />
-          <For each={ARTEN}>
-            {(eintrag) => (
-              <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  class="mt-1"
-                  checked={a().wuensche[eintrag.art]}
-                  disabled={eintrag.art === "mail" && !a().mail}
-                  onChange={(event) =>
-                    setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
-                  }
-                />
-                <span class="flex flex-col">
-                  <span class="font-medium">{eintrag.name()}</span>
-                  <span class="text-muted-foreground">
-                    {eintrag.art === "mail" && !a().mail
-                      ? m.erinnerungen_mail_keine()
-                      : eintrag.text()}
+    <Loading>
+      <Show when={ansicht()}>
+        {(a) => (
+          <section class="flex max-w-lg flex-col gap-3">
+            <h2 class="font-semibold">{m.erinnerungen_titel()}</h2>
+            <p class="text-muted-foreground">{m.erinnerungen_text()}</p>
+            <GeraetSchalter vapidSchluessel={a().vapidSchluessel} onGeaendert={neuLaden} />
+            <For each={ARTEN}>
+              {(eintrag) => (
+                <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    class="mt-1"
+                    checked={a().wuensche[eintrag.art]}
+                    disabled={eintrag.art === "mail" && !a().mail}
+                    onChange={(event) =>
+                      setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
+                    }
+                  />
+                  <span class="flex flex-col">
+                    <span class="font-medium">{eintrag.name()}</span>
+                    <span class="text-muted-foreground">
+                      {eintrag.art === "mail" && !a().mail
+                        ? m.erinnerungen_mail_keine()
+                        : eintrag.text()}
+                    </span>
                   </span>
-                </span>
-              </label>
-            )}
-          </For>
-          <Fehler text={fehler()} />
-          <Show when={inhaber()}>
-            <RegelnFormular regeln={a().regeln} />
-          </Show>
-        </section>
-      )}
-    </Show>
+                </label>
+              )}
+            </For>
+            <Fehler text={fehler()} />
+            <Show when={inhaber()}>
+              <RegelnFormular regeln={a().regeln} />
+            </Show>
+          </section>
+        )}
+      </Show>
+    </Loading>
   );
 };

@@ -1,11 +1,16 @@
 import { Button, Dialog, Input, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { AusweisDialog } from "./ausweis.tsx";
 
 type Person = { nutzerId: string; name: string; pin: boolean; ausweis: boolean };
+
+/** What a PIN or a QR code changes: the list of who stamps how */
+const AENDERT = () => [alle(PFAD.terminalPersonen)];
 
 const PIN_FEHLER: Record<string, () => string> = {
   pin_vergeben: () => m.terminal_pin_vergeben(),
@@ -19,14 +24,16 @@ const PinDialog = (props: {
   onGesetzt: () => void;
 }) => {
   const [fehler, setFehler] = createSignal("");
+  const setzen = aenderung(
+    (wahl: { nutzerId: string; pin: string }) =>
+      api(`/api/v1/terminal/pins/${wahl.nutzerId}`, { method: "PUT", body: { pin: wahl.pin } }),
+    AENDERT,
+  );
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
     const pin = String(new FormData(form).get("pin") ?? "");
-    const antwort = await api(`/api/v1/pins/${props.person?.nutzerId}`, {
-      method: "PUT",
-      body: { pin },
-    });
+    const antwort = await setzen.mutate({ nutzerId: props.person?.nutzerId ?? "", pin });
     if (!antwort.ok) return setFehler((PIN_FEHLER[antwort.fehler] ?? m.fehler_speichern)());
     setFehler("");
     form.reset();
@@ -56,7 +63,9 @@ const PinDialog = (props: {
           <Button variant="outline" onClick={props.onSchliessen}>
             {m.abbrechen()}
           </Button>
-          <Button type="submit">{m.terminal_speichern()}</Button>
+          <Button type="submit" disabled={setzen.isPending}>
+            {m.terminal_speichern()}
+          </Button>
         </div>
       </form>
     </Dialog>
@@ -68,30 +77,29 @@ const PinDialog = (props: {
  * in the business, and the QR code, issued for printing, issued anew or revoked
  */
 export const TerminalPersonen = () => {
-  const [personen, setPersonen] = createSignal<Person[]>([]);
+  const abgefragt = abfrage<{ personen: Person[] }>(ressourcen.terminalPersonen);
+  const personen = () => daten(abgefragt.data)?.personen ?? [];
   const [pinFuer, setPinFuer] = createSignal<Person | null>(null);
   const [ausweis, setAusweis] = createSignal<{ name: string; wert: string } | null>(null);
   const [fehler, setFehler] = createSignal("");
-  const laden = async () => {
-    const antwort = await api<{ personen: Person[] }>("/api/v1/terminal/personen");
-    if (antwort.ok) setPersonen(antwort.daten.personen);
-  };
-  void laden();
+  const ausweisPfad = (person: Person) => `/api/v1/terminal/ausweise/${person.nutzerId}`;
+  const ausstellung = aenderung(
+    (person: Person) => api<{ wert: string }>(ausweisPfad(person), { body: {} }),
+    AENDERT,
+  );
+  const entzug = aenderung(
+    (person: Person) => api(ausweisPfad(person), { method: "DELETE" }),
+    AENDERT,
+  );
   const ausstellen = async (person: Person) => {
-    const antwort = await api<{ wert: string }>(`/api/v1/terminal/ausweise/${person.nutzerId}`, {
-      body: {},
-    });
+    const antwort = await ausstellung.mutate(person);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
     setAusweis({ name: person.name, wert: antwort.daten.wert });
-    await laden();
   };
   const entziehen = async (person: Person) => {
-    const antwort = await api(`/api/v1/terminal/ausweise/${person.nutzerId}`, {
-      method: "DELETE",
-    });
-    if (!antwort.ok) return setFehler(m.fehler_speichern());
-    await laden();
+    const antwort = await entzug.mutate(person);
+    setFehler(antwort.ok ? "" : m.fehler_speichern());
   };
   return (
     <section class="flex max-w-2xl flex-col gap-3">
@@ -106,59 +114,58 @@ export const TerminalPersonen = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <For each={personen()} keyed={(person) => person.nutzerId}>
-            {(person) => (
-              <Tr>
-                <Td>{person().name}</Td>
-                <Td>
-                  <span class="flex items-center gap-2">
-                    {person().pin ? m.terminal_vorhanden() : m.terminal_fehlt()}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label={m.terminal_pin_setzen_name({ name: person().name })}
-                      onClick={() => setPinFuer(person())}
-                    >
-                      {m.terminal_pin_setzen()}
-                    </Button>
-                  </span>
-                </Td>
-                <Td>
-                  <span class="flex items-center gap-2">
-                    {person().ausweis ? m.terminal_vorhanden() : m.terminal_fehlt()}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label={m.terminal_qr_ausstellen_name({ name: person().name })}
-                      onClick={() => ausstellen(person())}
-                    >
-                      {person().ausweis ? m.terminal_qr_neu() : m.terminal_qr_ausstellen()}
-                    </Button>
-                    <Show when={person().ausweis}>
+          <Loading>
+            <For each={personen()} keyed={(person) => person.nutzerId}>
+              {(person) => (
+                <Tr>
+                  <Td>{person().name}</Td>
+                  <Td>
+                    <span class="flex items-center gap-2">
+                      {person().pin ? m.terminal_vorhanden() : m.terminal_fehlt()}
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        aria-label={m.terminal_qr_entziehen_name({ name: person().name })}
-                        onClick={() => entziehen(person())}
+                        aria-label={m.terminal_pin_setzen_name({ name: person().name })}
+                        onClick={() => setPinFuer(person())}
                       >
-                        {m.terminal_qr_entziehen()}
+                        {m.terminal_pin_setzen()}
                       </Button>
-                    </Show>
-                  </span>
-                </Td>
-              </Tr>
-            )}
-          </For>
+                    </span>
+                  </Td>
+                  <Td>
+                    <span class="flex items-center gap-2">
+                      {person().ausweis ? m.terminal_vorhanden() : m.terminal_fehlt()}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        aria-label={m.terminal_qr_ausstellen_name({ name: person().name })}
+                        onClick={() => ausstellen(person())}
+                      >
+                        {person().ausweis ? m.terminal_qr_neu() : m.terminal_qr_ausstellen()}
+                      </Button>
+                      <Show when={person().ausweis}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={m.terminal_qr_entziehen_name({ name: person().name })}
+                          onClick={() => entziehen(person())}
+                        >
+                          {m.terminal_qr_entziehen()}
+                        </Button>
+                      </Show>
+                    </span>
+                  </Td>
+                </Tr>
+              )}
+            </For>
+          </Loading>
         </Tbody>
       </Table>
       <Fehler text={fehler()} />
       <PinDialog
         person={pinFuer()}
         onSchliessen={() => setPinFuer(null)}
-        onGesetzt={() => {
-          setPinFuer(null);
-          void laden();
-        }}
+        onGesetzt={() => setPinFuer(null)}
       />
       <AusweisDialog ausweis={ausweis()} onSchliessen={() => setAusweis(null)} />
     </section>

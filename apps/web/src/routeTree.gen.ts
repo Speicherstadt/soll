@@ -16,6 +16,7 @@ import { Route as AuswertungenRouteImport } from './routes/auswertungen'
 import { Route as DienstplanRouteImport } from './routes/dienstplan'
 import { Route as EinrichtungRouteImport } from './routes/einrichtung'
 import { Route as EinstellungenRouteImport } from './routes/einstellungen'
+import { Route as ExportRouteImport } from './routes/export'
 import { Route as MehrRouteImport } from './routes/mehr'
 import { Route as MonatRouteImport } from './routes/monat'
 import { Route as ProjekteRouteImport } from './routes/projekte'
@@ -58,6 +59,11 @@ const EinrichtungRoute = EinrichtungRouteImport.update({
 const EinstellungenRoute = EinstellungenRouteImport.update({
   id: '/einstellungen',
   path: '/einstellungen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExportRoute = ExportRouteImport.update({
+  id: '/export',
+  path: '/export',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MehrRoute = MehrRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   DienstplanRoute: typeof DienstplanRoute
   EinrichtungRoute: typeof EinrichtungRoute
   EinstellungenRoute: typeof EinstellungenRoute
+  ExportRoute: typeof ExportRoute
   MehrRoute: typeof MehrRoute
   MonatRoute: typeof MonatRoute
   ProjekteRoute: typeof ProjekteRoute
@@ -274,6 +287,13 @@ declare module '@tanstack/solid-router' {
       path: '/einstellungen'
       fullPath: '/einstellungen'
       preLoaderRoute: typeof EinstellungenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/export': {
+      id: '/export'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof ExportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mehr': {
@@ -343,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   DienstplanRoute: DienstplanRoute,
   EinrichtungRoute: EinrichtungRoute,
   EinstellungenRoute: EinstellungenRoute,
+  ExportRoute: ExportRoute,
   MehrRoute: MehrRoute,
   MonatRoute: MonatRoute,
   ProjekteRoute: ProjekteRoute,

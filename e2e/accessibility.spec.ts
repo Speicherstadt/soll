@@ -14,6 +14,7 @@ const pages = [
   "/einstellungen",
   "/mehr",
   "/monat",
+  "/export",
 ];
 
 const pruefen = async (page: Page) => {

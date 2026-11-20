@@ -1,7 +1,7 @@
 import { type Tag, uhrzeitenVon } from "@soll/arbeitszeit";
-import { createSignal } from "solid-js";
+import { alle, PFAD } from "../abfragen/schluessel.ts";
 import { type Antwort, api } from "../api.ts";
-import type { Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
+import type { Schicht, Vorlage, Ziel } from "./typen.ts";
 
 /** What a shift is planned with: a day and times on the Berlin clock (POST /schichten) */
 export type SchichtEingabe = {
@@ -15,26 +15,8 @@ export type SchichtEingabe = {
   vorlageId?: string | null;
 };
 
-/** The week of a site from the server, loaded again after every change */
-export const wochenQuelle = () => {
-  const [woche, setWoche] = createSignal<Woche | null>(null);
-  const [fehler, setFehler] = createSignal("");
-  let zaehler = 0;
-  let zuletzt: { standortId: string; tag: Tag } | null = null;
-  const laden = async (anfrage = zuletzt) => {
-    if (!anfrage) return;
-    zuletzt = anfrage;
-    const diese = ++zaehler;
-    const parameter = new URLSearchParams(anfrage);
-    const antwort = await api<Woche>(`/api/v1/dienstplan/woche?${parameter}`);
-    // a later week or site was asked for meanwhile: its answer counts
-    if (diese !== zaehler) return;
-    if (!antwort.ok) return setFehler(antwort.fehler);
-    setFehler("");
-    setWoche(antwort.daten);
-  };
-  return { woche, fehler, laden };
-};
+/** What a change to shifts or the need changes: the weeks of the plan */
+export const PLAN_AENDERT = [alle(PFAD.woche)];
 
 export const schichtAnlegen = (eingabe: SchichtEingabe) =>
   api<Schicht>("/api/v1/dienstplan/schichten", { body: eingabe });
@@ -45,11 +27,13 @@ export const schichtAendern = (schichtId: string, aenderung: Partial<SchichtEing
 export const schichtEntfernen = (schichtId: string) =>
   api(`/api/v1/dienstplan/schichten/${schichtId}`, { method: "DELETE" });
 
+/** Whether a shift dropped on a cell stays where it is (same day and person) */
+export const bleibt = (schicht: Schicht, ziel: Ziel): boolean =>
+  schicht.tag === ziel.tag && schicht.nutzerId === ziel.nutzerId;
+
 /** Dropping a shift on a cell: another day or person, its times on the clock stay (server) */
-export const verschieben = (schicht: Schicht, ziel: Ziel): Promise<Antwort<Schicht>> | null =>
-  schicht.tag === ziel.tag && schicht.nutzerId === ziel.nutzerId
-    ? null
-    : schichtAendern(schicht.schichtId, ziel);
+export const verschieben = (schicht: Schicht, ziel: Ziel): Promise<Antwort<Schicht>> =>
+  schichtAendern(schicht.schichtId, ziel);
 
 /** Dropping a template on a cell plans a shift from it */
 export const ausVorlage = (vorlage: Vorlage, standortId: string, ziel: Ziel) =>

@@ -82,7 +82,7 @@ Stempeln ohne Netz am Terminal kommt mit S-803, NFC-Karten mit S-802.
 | `POST /api/v1/terminal/geraete/:id/entsperren` | Inhaber | Sperre aufheben; die Zählung des Tages bleibt |
 | `GET /api/v1/terminal/personen` | Inhaber | wer stempelt, mit PIN und QR-Code ja oder nein |
 | `POST`, `DELETE /api/v1/terminal/ausweise/:nutzerId` | Inhaber | QR-Code ausstellen oder entziehen |
-| `PUT /api/v1/pins/:nutzerId` | Inhaber | PIN setzen (409 `pin_vergeben`) |
+| `PUT /api/v1/terminal/pins/:nutzerId` | Inhaber | PIN setzen (409 `pin_vergeben`) |
 | `POST /api/v1/kiosk/koppeln` | Tablet | Code gegen Geräte-Token (`{ code }`) |
 | `GET /api/v1/kiosk` | Tablet mit Token | Name, Betrieb, Sperre |
 | `POST /api/v1/kiosk/erkennen` | Tablet mit Token | `{ pin }` oder `{ qr }`: Person und Tag; 401 mit den übrigen Versuchen, 423 mit dem Ende der Sperre |

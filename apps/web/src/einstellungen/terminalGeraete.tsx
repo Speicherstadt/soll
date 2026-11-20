@@ -1,5 +1,7 @@
 import { Button, Input } from "@soll/ui";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten, schreiben } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -28,42 +30,35 @@ const statusText = (geraet: Geraet): string => {
  * to be unlocked
  */
 export const TerminalGeraete = () => {
-  const [geraete, setGeraete] = createSignal<Geraet[]>([]);
+  const abgefragt = abfrage<{ terminals: Geraet[] }>(ressourcen.terminalGeraete);
+  const geraete = () => daten(abgefragt.data)?.terminals ?? [];
   const [code, setCode] = createSignal<{ code: string; gueltigBis: number } | null>(null);
   const [fehler, setFehler] = createSignal("");
-  const laden = async () => {
-    const antwort = await api<{ terminals: Geraet[] }>("/api/v1/terminal/geraete");
-    if (antwort.ok) setGeraete(antwort.daten.terminals);
-  };
-  void laden();
+  const AENDERT = () => [alle(PFAD.terminalGeraete)];
+  const anlegen = aenderung(
+    (name: string) =>
+      api<{ code: string; gueltigBis: number }>(PFAD.terminalGeraete, { body: { name } }),
+    AENDERT,
+  );
+  const aendern = schreiben(AENDERT);
   const koppeln = async (event: SubmitEvent) => {
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
-    const name = String(new FormData(form).get("name") ?? "").trim();
-    const antwort = await api<{ code: string; gueltigBis: number }>("/api/v1/terminal/geraete", {
-      body: { name },
-    });
+    const antwort = await anlegen.mutate(String(new FormData(form).get("name") ?? "").trim());
     if (!antwort.ok)
       return setFehler(antwort.status === 0 ? m.fehler_netz() : m.fehler_speichern());
     setFehler("");
     setCode(antwort.daten);
     form.reset();
-    await laden();
   };
-  const entkoppeln = async (geraet: Geraet) => {
-    const antwort = await api(`/api/v1/terminal/geraete/${geraet.terminalId}`, {
-      method: "DELETE",
-    });
-    if (!antwort.ok) return setFehler(m.fehler_speichern());
-    await laden();
+  const geraetPfad = (geraet: Geraet) => `${PFAD.terminalGeraete}/${geraet.terminalId}`;
+  const nach = async (auftrag: () => ReturnType<typeof api>) => {
+    const antwort = await aendern.mutate(auftrag);
+    setFehler(antwort.ok ? "" : m.fehler_speichern());
   };
-  const entsperren = async (geraet: Geraet) => {
-    const antwort = await api(`/api/v1/terminal/geraete/${geraet.terminalId}/entsperren`, {
-      body: {},
-    });
-    if (!antwort.ok) return setFehler(m.fehler_speichern());
-    await laden();
-  };
+  const entkoppeln = (geraet: Geraet) => nach(() => api(geraetPfad(geraet), { method: "DELETE" }));
+  const entsperren = (geraet: Geraet) =>
+    nach(() => api(`${geraetPfad(geraet)}/entsperren`, { body: {} }));
   return (
     <section class="flex max-w-lg flex-col gap-3">
       <h2 class="font-semibold">{m.terminal_titel()}</h2>
@@ -76,7 +71,9 @@ export const TerminalGeraete = () => {
           required
           maxlength={80}
         />
-        <Button type="submit">{m.terminal_koppeln()}</Button>
+        <Button type="submit" disabled={anlegen.isPending}>
+          {m.terminal_koppeln()}
+        </Button>
       </form>
       <Show when={code()}>
         {(neu) => (
@@ -94,43 +91,45 @@ export const TerminalGeraete = () => {
           </div>
         )}
       </Show>
-      <Show
-        when={geraete().length > 0}
-        fallback={<p class="text-muted-foreground">{m.terminal_keine()}</p>}
-      >
-        <ul class="flex flex-col gap-2">
-          <For each={geraete()} keyed={(geraet) => geraet.terminalId}>
-            {(geraet) => (
-              <li class="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
-                <span class="flex flex-col">
-                  <span class="font-medium">{geraet().name}</span>
-                  <span class="text-muted-foreground">{statusText(geraet())}</span>
-                </span>
-                <span class="flex gap-2">
-                  <Show when={geraet().gesperrtBis !== null}>
+      <Loading>
+        <Show
+          when={geraete().length > 0}
+          fallback={<p class="text-muted-foreground">{m.terminal_keine()}</p>}
+        >
+          <ul class="flex flex-col gap-2">
+            <For each={geraete()} keyed={(geraet) => geraet.terminalId}>
+              {(geraet) => (
+                <li class="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2">
+                  <span class="flex flex-col">
+                    <span class="font-medium">{geraet().name}</span>
+                    <span class="text-muted-foreground">{statusText(geraet())}</span>
+                  </span>
+                  <span class="flex gap-2">
+                    <Show when={geraet().gesperrtBis !== null}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        aria-label={m.terminal_entsperren_name({ name: geraet().name })}
+                        onClick={() => entsperren(geraet())}
+                      >
+                        {m.terminal_entsperren()}
+                      </Button>
+                    </Show>
                     <Button
                       variant="outline"
                       size="sm"
-                      aria-label={m.terminal_entsperren_name({ name: geraet().name })}
-                      onClick={() => entsperren(geraet())}
+                      aria-label={m.terminal_entkoppeln_name({ name: geraet().name })}
+                      onClick={() => entkoppeln(geraet())}
                     >
-                      {m.terminal_entsperren()}
+                      {m.terminal_entkoppeln()}
                     </Button>
-                  </Show>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    aria-label={m.terminal_entkoppeln_name({ name: geraet().name })}
-                    onClick={() => entkoppeln(geraet())}
-                  >
-                    {m.terminal_entkoppeln()}
-                  </Button>
-                </span>
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
+                  </span>
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
+      </Loading>
       <Fehler text={fehler()} />
     </section>
   );

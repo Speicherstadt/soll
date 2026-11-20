@@ -4,19 +4,28 @@ import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { pinSchluesselAus } from "./modules/terminal/index.ts";
+import { auskunftRouten } from "./routes/auskunft.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
+import { buchungRouten } from "./routes/buchungen.ts";
+import { datevRouten } from "./routes/datev.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
+import { kundenRouten } from "./routes/kunden.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
-import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
+import { pinRouten } from "./routes/pins.ts";
+import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
+import { pruefexportRouten } from "./routes/pruefexport.ts";
+import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
+import { stoppuhrRouten } from "./routes/stoppuhr.ts";
+import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { terminalRouten } from "./routes/terminals.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
 
@@ -81,17 +90,18 @@ export const createApp = ({
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db))
     .route("/betrieb", betriebRouten(db, schreibDb, now))
+    .route("/auskunft", auskunftRouten(db, now))
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
-    .route("/pins", pinRouten(db, schreibDb, now, pinSchluessel))
-    .route("/terminal/pins", pinPruefRouten(db, schreibDb, now))
     .route(
       "/",
       modulRouten(db, {
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
+          "/datev": datevRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,
             vapidOeffentlich,
@@ -99,8 +109,19 @@ export const createApp = ({
           }),
           "/": zeitRouten(db, schreibDb, now),
         },
+        projektzeit: {
+          "/kunden": kundenRouten(db, schreibDb, now),
+          "/projekte": projektRouten(db, schreibDb, now),
+          "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
+          "/saetze": satzRouten(db, schreibDb, now),
+          "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
+          "/buchungen": buchungRouten(db, schreibDb, now),
+        },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
-        terminal: { "/": terminalRouten(db, schreibDb, now) },
+        terminal: {
+          "/pins": pinRouten(db, schreibDb, now, pinSchluessel),
+          "/": terminalRouten(db, schreibDb, now),
+        },
       }),
     );
   app.route("/api/v1", v1);

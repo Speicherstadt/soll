@@ -1,7 +1,7 @@
 import type { Stempelart } from "@soll/arbeitszeit";
 import { createSignal, onSettled } from "solid-js";
 import { api } from "../api.ts";
-import type { Offline } from "../zeiten/quelle.ts";
+import type { Offline } from "../zeiten/holen.ts";
 import type { Stempel } from "../zeiten/typen.ts";
 import { indexedDbAblage } from "./ablage.ts";
 import { type Abhaengigkeiten, type Versand, warteschlange } from "./dienst.ts";

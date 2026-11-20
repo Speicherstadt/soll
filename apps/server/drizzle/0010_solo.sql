@@ -1,0 +1,1 @@
+ALTER TABLE `betriebe` ADD `pflicht_hinweis_am` integer;

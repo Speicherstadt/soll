@@ -40,15 +40,15 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 
 | Bereich | Was Soll kann |
 |---|---|
-| 🧭 Einrichtung | Assistent mit vier Fragen, der nur die Module zeigt, die dein Betrieb braucht; Standorte, Arbeitszeitmodelle aus Vorlagen, Mitarbeiter per CSV, Einladung per Link ohne E-Mail |
+| 🧭 Einrichtung | Assistent mit vier Fragen, der nur die Module zeigt, die dein Betrieb braucht (allein nur Projektzeit; mit der ersten beschäftigten Person schaltet Soll die Arbeitszeit ein und sagt warum); Standorte, Arbeitszeitmodelle aus Vorlagen, Mitarbeiter per CSV, Einladung per Link ohne E-Mail |
 | ⏱️ Stempeln | Ein Tipp für Kommen, Pause und Gehen; der laufende Tag mit Soll, Ist und dem nächsten Befund; Nachtragen und Ändern mit Grund, für die Person sichtbar; Browser, Handy (auch offline: jede Stempelung nummeriert und signiert, eine Lücke fällt auf) und Tablet-Terminal im Kiosk-Modus, gekoppelt per Code, mit PIN oder gedrucktem QR-Code (NFC-Karte folgt) |
 | ⚖️ Prüfung | Arbeitszeitgesetz, Mindestlohn, Jugendarbeitsschutz, Mutterschutz, Bereitschaft; mit Norm im Hinweis |
 | 📅 Dienstplan | Woche je Standort aus Schichtvorlagen planen, per Ziehen und Ablegen auch mit der Tastatur; Bedarf je Rolle mit dem, was fehlt; Entwurf nur für Planer, am Handy ein Tag zur Zeit; prüfen, veröffentlichen, tauschen und im eigenen Kalender sehen folgen |
 | 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |
 | 🔔 Erinnerungen | Ausstempeln vergessen, Pause fällig, Monat bestätigen; per Web Push aufs Handy oder per Mail, je Art abschaltbar; Soll stempelt nie selbst aus |
 | 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung |
-| 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen, Export für Zoll und Arbeitsschutz |
-| 🛠️ Projekte | Aufträge, Stoppuhr, Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) |
+| 🧾 Lohn und Prüfung | [DATEV-Lohnexport](https://soll.work/datev.html) für LODAS und Lohn und Gehalt aus abgeschlossenen Monaten: Stunden, Feiertagsstunden und Zuschläge nach § 3b EStG getrennt nach steuerfrei und steuerpflichtig, mit den Lohnarten des Betriebs; Prüfexport für Zoll und Arbeitsschutz als CSV und PDF mit Erfassungszeit, Änderungen mit Grund, Befunden und Prüfwert je Monat; Auskunft nach Art. 15 DSGVO als Datei für jede Person |
+| 🛠️ Projekte | Kunden und Aufträge mit Budget in Stunden und Euro und Warnung, feste interne Tätigkeiten (Fahrt, Werkstatt, Lager, Schulung), Stundensätze nach Kunde, Auftrag, Tätigkeit und Person; Stoppuhr unter Heute mit Wechsel per Tipp, Verweis auf die Stempelung und Hinweis bei mehr Projektzeit als Arbeitszeit, änderbar bis „abgerechnet“; Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) folgen |
 | 🔁 Umzug | Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister, Toggl, Clockify und Excel |
 | 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |
 

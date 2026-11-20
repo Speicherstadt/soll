@@ -62,6 +62,11 @@ Minijob-Grenze und den steuerfreien Teil der Zuschläge. Die Minijob-Grenze selb
 und kommt mit den Jahreswerten; der Assistent nennt keinen Betrag. Mindestens ein Modell ist
 nötig. Die Löhne der Modelle sehen nur der Inhaber und das Lohnbüro.
 
+Unter **Zuschläge (§ 3b EStG)** trägt eine Vorlage die Sätze für Nacht (20 bis 6 Uhr), Sonntag und
+Feiertag in Prozent des Stundenlohns ein (`25`, `12,5`); leer heißt kein Zuschlag. 0 bis 4 Uhr gilt
+wie Nacht, der 25. und 26.12. und der 1.5. wie Feiertag. Soll rechnet damit die
+[Zuschläge](zuschlaege.md) und gibt sie an den [DATEV-Lohnexport](datev.md).
+
 ## 4. Mitarbeiter
 
 Eine Liste aus deiner Tabelle, als CSV-Datei oder eingefügt, oder Leute einzeln mit Name und Rolle.
@@ -115,3 +120,21 @@ Server lehnt die Aufrufe dieses Moduls ohnehin ab.
 Unter **Einstellungen → Module** schaltet der Inhaber die Module später um; die Navigation folgt
 sofort. Ein abgeschaltetes Modul behält seine Daten. Arbeitszeit lässt sich nicht abschalten,
 solange der Betrieb Beschäftigte hat.
+
+## Betrieb ohne Beschäftigte
+
+Wer die erste Frage mit Nein beantwortet, arbeitet allein: Soll hat dann nur das Modul Projektzeit.
+Es gibt kein Stempeln, keine Prüfung nach dem Arbeitszeitgesetz, keine Abwesenheiten, keinen
+Dienstplan und keine Erinnerungen; als Inhaber bist du kein Arbeitnehmer, für dich gilt das
+Arbeitszeitgesetz nicht (§ 2 Abs. 2 ArbZG). Heute sagt das und schickt dich zu Projekte, wo du deine
+Stunden buchst. Die Adressen der anderen Bereiche führen zu Heute, der Server lehnt ihre Aufrufe ab.
+
+Lädst du später die erste beschäftigte Person ein (Mitarbeiter, Planer, Lohnbüro oder
+Betriebsrat), schaltet Soll die Arbeitszeit ein, sobald sie die Einladung annimmt; ebenso, wenn eine
+externe Person eine dieser Rollen bekommt. Die Einladung allein ändert nichts, denn die Pflicht
+beginnt mit der Beschäftigung. Ab dann siehst du als Inhaber auf jeder Seite einen Hinweis mit dem
+Grund: Die Arbeitszeit von Beschäftigten muss erfasst werden (BAG, 13.09.2022, 1 ABR 22/21; § 3
+Abs. 2 Nr. 1 ArbSchG). Er bleibt, bis du ihn mit „Verstanden“ bestätigst; die Bestätigung steht in
+der Audit-Kette. Arbeitszeit lässt sich danach nicht mehr abschalten, solange Beschäftigte im
+Betrieb sind. Projektzeit bleibt, wie sie war. Eine externe Person, etwa die Steuerberaterin, zählt
+nicht als beschäftigt.

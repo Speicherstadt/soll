@@ -30,7 +30,8 @@ wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE
 bun install
 SOLL_SECRET_KEY=$(openssl rand -base64 32) bun run dev:server   # Server auf Port 18200
 bun run dev:web      # App auf Port 5177, leitet /api an den Server auf 18200 weiter
-bun run check        # Typen, Lint, Tests, Build
+bun run check        # Typen, Lint, Solid-2-Prüfung, Tests, Build
+bun run solid2       # nur die Prüfung auf Formen aus Solid 1.x
 bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
 ```
 
@@ -65,6 +66,35 @@ Module des Betriebs. Unter „Mehr“ und in den Einstellungen stehen Farben (he
 Gerät) und Sprache; beides merkt sich der Browser. Die Routen liegen in `apps/web/src/routes/`, der
 Routenbaum `routeTree.gen.ts` entsteht beim Build oder im Entwicklungsserver neu und ist
 eingecheckt, damit der Typcheck ihn kennt. Jede Seite steht in `e2e/accessibility.spec.ts`.
+
+Der Client ist Solid 2.0, dessen API sich stark von 1.x unterscheidet; die Referenz liegt in
+`docs/solid-2.0/` (vor allem `MIGRATION.md` und `CHEATSHEET.md`). `bun run solid2`
+(`scripts/solid2.ts`, Teil von `bun run check` und der CI) schlägt bei Formen aus 1.x fehl, etwa
+`createResource`, `Suspense`, `onMount`, `createEffect` mit einer Funktion oder `classList`.
+
+### Daten laden
+
+Daten vom Server lädt die App mit `@tanstack/solid-query` (v6, für Solid 2), nicht mit eigenen
+Ladern aus Effekt und Signal:
+
+- Jede Ressource steht mit Schlüssel und Pfad in `apps/web/src/abfragen/schluessel.ts`. Der
+  Schlüssel beginnt mit dem API-Pfad, die Parameter folgen als Objekt
+  (`["/api/v1/arbeitszeit/monat", { monat, nutzerId }]`), so trifft `alle(PFAD.monat)` jeden Monat.
+- `abfrage()` (`abfragen/abfrage.ts`) liest eine Ressource. Ihre Daten sind die Antwort von `api()`
+  als Wert (`ok`, `daten` oder `fehler`): Eine Ablehnung oder fehlendes Netz zeigt dieselben Texte wie
+  zuvor und erreicht nie eine Fehlergrenze. Gelesen wird unter `<Loading>`; das erste Laden zeigt den
+  Platzhalter der Grenze, ein späteres Neuladen behält den alten Stand, bis der neue da ist.
+  Schlägt ein späteres Neuladen fehl, bleibt der zuletzt geladene Stand zu sehen (`daten()` liest
+  ihn als `letzte`), und die Seite nennt den Fehler daneben.
+- `aenderung()` und `schreiben()` schreiben über eine Mutation und machen danach die Schlüssel
+  ungültig, die sich ändern. Das Neuladen läuft in der Aktion der Mutation, das Ende des Schreibens
+  und die neuen Daten erscheinen zusammen; `isPending` der Mutation sperrt den Knopf solange.
+- Ein Client für die ganze App (`abfragen/client.ts`, in `main.tsx` bereitgestellt): kein
+  Wiederholen, Abfragen auch offline (sie kommen als „kein Netz“ zurück), kein Neuladen bei Fokus
+  oder Netzwechsel, weil ein Terminal den Fokus ständig wechselt. Der Cache gehört einer Person in
+  einem Betrieb; beim Abmelden oder Wechsel leert ihn `sitzung.ts`.
+- Die Offline-Warteschlange von Heute (S-305, `apps/web/src/offline/`) bleibt eigen; nach dem
+  Senden macht sie den Tag ungültig.
 
 ## Server
 

@@ -17,6 +17,9 @@ copyright: >-
   <a href="https://teufel-it.de/de/impressum/">Impressum</a> ·
   <a href="https://speicherstadt.app/datenschutz/">Datenschutz</a>
 use_directory_urls: false
+# the copied Solid 2.0 reference (docs/solid-2.0/README.md) is for developers, not part of the site
+exclude_docs: |
+  solid-2.0/
 validation:
   anchors: warn
 theme:
@@ -62,7 +65,10 @@ nav:
   - Stempeln: stempeln.md
   - Terminal: terminal.md
   - Monatsabschluss und Prüfwert: monatsabschluss.md
+  - Prüfexport und Auskunft: pruefexport.md
+  - Projektzeit: projektzeit.md
   - Erinnerungen: erinnerungen.md
+  - DATEV-Lohnexport: datev.md
   - Dienstplan: dienstplan.md
   - Regelwerk: regeln.md
   - Arbeitstag aus Stempelungen: arbeitstag.md

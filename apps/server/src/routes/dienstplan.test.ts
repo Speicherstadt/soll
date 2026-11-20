@@ -212,6 +212,41 @@ describe("/api/v1/dienstplan/bedarf", () => {
     ).toBe(204);
   });
 
+  it("covers Sunday's need over midnight with a shift of the next Monday", async () => {
+    const { lea, tom, standortId } = await elbblick();
+    await lea.anfrage("/api/v1/dienstplan/bedarf", {
+      body: {
+        standortId,
+        rolle: "Service",
+        wochentag: 7,
+        beginnMinute: 22 * 60,
+        endeMinute: 2 * 60,
+        anzahl: 1,
+      },
+    });
+    const nacht = { pauseMinuten: 0, nutzerId: tom.nutzerId };
+    for (const schicht of [
+      {
+        ...schichtVon(standortId, null, "2026-11-29"),
+        ...nacht,
+        beginnMinute: 1320,
+        endeMinute: 0,
+      },
+      { ...schichtVon(standortId, null, "2026-11-30"), ...nacht, beginnMinute: 0, endeMinute: 120 },
+    ])
+      expect((await lea.anfrage("/api/v1/dienstplan/schichten", { body: schicht })).status).toBe(
+        201,
+      );
+    const woche = await json(
+      await lea.anfrage(`/api/v1/dienstplan/woche?standortId=${standortId}&tag=2026-11-23`),
+    );
+    expect(woche.deckung).toEqual([
+      expect.objectContaining({ tag: "2026-11-29", geplant: 1, fehlt: 0 }),
+    ]);
+    // the Monday of the next week is read for the coverage, not shown
+    expect((woche.schichten as { tag: string }[]).map((s) => s.tag)).toEqual(["2026-11-29"]);
+  });
+
   it("refuses a need without a role, with nobody or on an eighth weekday", async () => {
     const { lea, standortId } = await elbblick();
     const gut = {

@@ -6,12 +6,16 @@ describe("redactUrl", () => {
     expect(redactUrl("http://x.test/api/v1/stempelungen")).toBe("/api/v1/stempelungen");
   });
 
-  it("replaces every query value and keeps each key once", () => {
-    expect(redactUrl("http://x.test/ics?token=abc&token=def&x=1")).toBe("/ics?token=…&x=…");
+  it("marks a query without logging any part of it", () => {
+    expect(redactUrl("http://x.test/ics?token=abc&token=def&x=1")).toBe("/ics?…");
+  });
+
+  it("leaves an empty query out", () => {
+    expect(redactUrl("/health?")).toBe("/health");
   });
 
   it("takes a path without host", () => {
-    expect(redactUrl("/feed.ics?token=abc")).toBe("/feed.ics?token=…");
+    expect(redactUrl("/feed.ics?token=abc")).toBe("/feed.ics?…");
   });
 
   it("leaves out a query without key and value pair, such as a bare token", () => {
@@ -19,7 +23,7 @@ describe("redactUrl", () => {
   });
 
   it("leaves out a key that only shows a value once decoded", () => {
-    expect(redactUrl("/feed.ics?token%3Dgeheim=1&x=2")).toBe("/feed.ics?…&x=…");
+    expect(redactUrl("/feed.ics?token%3Dgeheim=1&x=2")).toBe("/feed.ics?…");
   });
 });
 

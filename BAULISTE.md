@@ -31,7 +31,7 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 
 ## Phase 1 – Fundament
 
-- [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`,
+- [x] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`,
   `packages/export`, `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
   `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri;
   Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright mit Projekten `desktop`, `phone` und

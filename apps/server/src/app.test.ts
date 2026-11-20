@@ -42,6 +42,6 @@ describe("request log", () => {
     const line = lines.join("\n");
     expect(line).not.toContain("geheim");
     expect(line).not.toContain("4711");
-    expect(JSON.parse(lines[0] ?? "").path).toBe("/health?token=…&pin=…");
+    expect(JSON.parse(lines[0] ?? "").path).toBe("/health?…");
   });
 });

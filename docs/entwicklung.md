@@ -48,8 +48,8 @@ Der Server liest seine Einstellungen aus der Umgebung:
 | `SOLL_HOST` | `0.0.0.0` | Adresse |
 | `SOLL_VERSION` | `0.0.0` | Version, die `/health` meldet |
 
-Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Werte aus der
-Adresse (etwa der Token eines Kalender-Feeds), Header und Inhalte stehen nie darin.
+Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Die Query der
+Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header und Inhalte nie.
 
 ## Sprachen
 

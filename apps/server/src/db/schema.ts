@@ -15,6 +15,7 @@ import {
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";
+export * from "./schema/stundennachweise.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {

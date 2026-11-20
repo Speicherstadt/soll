@@ -27,6 +27,8 @@ export const PFAD = {
   saetze: `${PZ}/saetze`,
   satzPersonen: `${PZ}/saetze/personen`,
   stoppuhr: `${PZ}/stoppuhr`,
+  nachweise: `${PZ}/stundennachweise`,
+  nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -64,6 +66,13 @@ export const ressourcen = {
   saetze: () => einfach(PFAD.saetze),
   satzPersonen: () => einfach(PFAD.satzPersonen),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
+  nachweise: () => einfach(PFAD.nachweise),
+  nachweisVorschau: (parameter: {
+    projektId: string;
+    von: string;
+    bis: string;
+    nutzerId?: string | undefined;
+  }) => mitParametern(PFAD.nachweisVorschau, parameter),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

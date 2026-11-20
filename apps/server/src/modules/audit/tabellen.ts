@@ -23,6 +23,8 @@ import {
   schichtvorlagen,
   standorte,
   stempelungen,
+  stundennachweisBuchungen,
+  stundennachweise,
   stundensaetze,
   taetigkeiten,
 } from "../../db/schema.ts";
@@ -48,6 +50,8 @@ export const kettenTabellen = {
   taetigkeiten: { tabelle: taetigkeiten, schluessel: ["taetigkeitId"] },
   stundensaetze: { tabelle: stundensaetze, schluessel: ["satzId"] },
   projektzeiten: { tabelle: projektzeiten, schluessel: ["buchungId"] },
+  stundennachweise: { tabelle: stundennachweise, schluessel: ["nachweisId"] },
+  stundennachweisBuchungen: { tabelle: stundennachweisBuchungen, schluessel: ["buchungId"] },
   instanzschluessel: { tabelle: instanzschluessel, schluessel: ["name"] },
   pushAbos: { tabelle: pushAbos, schluessel: ["aboId"] },
   erinnerungen: { tabelle: erinnerungen, schluessel: ["erinnerungId"] },

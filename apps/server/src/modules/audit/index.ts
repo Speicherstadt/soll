@@ -1,3 +1,4 @@
+export { kanonisch, sha256 } from "./hash.ts";
 export type { Befund, PruefwertErgebnis } from "./pruefen.ts";
 export { aktuellerPruefwert, kettePruefen, pruefwertPruefen } from "./pruefen.ts";
 export { formatPruefwert, parsePruefwert } from "./pruefwert.ts";

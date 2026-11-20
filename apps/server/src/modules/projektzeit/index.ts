@@ -15,6 +15,16 @@ export {
   kundeEntfernen,
   kundenLesen,
 } from "./kunden.ts";
+export {
+  type Nachweis,
+  type NachweisKopf,
+  nachweiseLesen,
+  nachweisLesen,
+  nachweisPdf,
+  nachweisUnterschreiben,
+  type Unterschrift,
+} from "./nachweis.ts";
+export { type Auswahl, nachweisVorschau, type Vorschau } from "./nachweis-auswahl.ts";
 export { bucht } from "./personen.ts";
 export {
   type Projekt,

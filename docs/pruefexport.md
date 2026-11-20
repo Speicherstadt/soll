@@ -97,6 +97,8 @@ lit. b und c DSGVO).
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und
 der Einladung (sie schützen das Konto) und Daten anderer Personen: Von den Gliedern, die die Person
 für andere geschrieben hat, nennt die Auskunft weder Zeile noch Inhalt (Art. 15 Abs. 4 DSGVO).
+Stundennachweise (S-605) stehen nicht darin: Die Buchungen der Person darin stehen unter
+`projektzeiten`, Name und Unterschrift des Kunden sind Daten eines Dritten.
 Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307); Abwesenheiten kommen dazu, sobald es sie gibt (S-401). Ein Test hält
 fest, dass jede Tabelle der Datenbank in der eigenen Auskunft steht oder mit Grund ausgenommen ist,
 und für die Auskunft durch den Inhaber freigegeben oder mit Grund ausgelassen ist.

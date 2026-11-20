@@ -14,7 +14,11 @@ export type Grund =
   | "laeuft_nicht"
   | "ueberschneidung"
   | "abgerechnet"
-  | "spanne";
+  | "spanne"
+  // S-605: the Stundennachweis
+  | "unterschrieben"
+  | "abweichung"
+  | "leer";
 
 export type Ergebnis<T> = { ok: true; wert: T } | { ok: false; grund: Grund };
 

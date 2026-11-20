@@ -144,9 +144,52 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
   },
 });
 
+const istVersprechen = (wert: unknown): wert is PromiseLike<unknown> =>
+  typeof (wert as { then?: unknown } | null)?.then === "function";
+
+/** A writer that refuses every call once its transaction has ended */
+const nurWaehrend = (schreiber: Schreiber, offen: () => boolean): Schreiber => {
+  const pruefen = () => {
+    if (!offen()) throw new Error("schreiben: the transaction has ended");
+  };
+  return {
+    einfuegen: (name, werte) => {
+      pruefen();
+      return schreiber.einfuegen(name, werte);
+    },
+    aendern: (name, schluessel, werte) => {
+      pruefen();
+      return schreiber.aendern(name, schluessel, werte);
+    },
+    loeschen: (name, schluessel) => {
+      pruefen();
+      return schreiber.loeschen(name, schluessel);
+    },
+  };
+};
+
 /**
  * Runs `arbeit` in one transaction (BEGIN IMMEDIATE, so two writers never take the same number) and
- * hands it the writer; whatever throws rolls back the rows and their links together.
+ * hands it the writer; whatever throws rolls back the rows and their links together. `arbeit` must be
+ * synchronous: bun:sqlite commits when it returns, so writes after an `await` would land outside the
+ * transaction and an error there would no longer roll them back. Asynchronous work is rolled back,
+ * and the writer refuses every call after the transaction.
  */
-export const schreiben = <T>(db: Db, kontext: Kontext, arbeit: (schreiber: Schreiber) => T): T =>
-  db.transaction((tx) => arbeit(schreiberFuer(tx, kontext)), { behavior: "immediate" });
+export const schreiben = <T>(db: Db, kontext: Kontext, arbeit: (schreiber: Schreiber) => T): T => {
+  let offen = true;
+  try {
+    return db.transaction(
+      (tx) => {
+        const ergebnis = arbeit(nurWaehrend(schreiberFuer(tx, kontext), () => offen));
+        if (istVersprechen(ergebnis)) {
+          ergebnis.then(undefined, () => undefined);
+          throw new Error("schreiben: arbeit must be synchronous");
+        }
+        return ergebnis;
+      },
+      { behavior: "immediate" },
+    );
+  } finally {
+    offen = false;
+  }
+};

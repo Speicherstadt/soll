@@ -53,6 +53,22 @@ describe("schreiben", () => {
     expect(sqlite.query("SELECT count(*) AS n FROM audit_glieder").get()).toEqual({ n: 0 });
   });
 
+  it("refuses asynchronous work, whose writes after an await would escape the transaction", async () => {
+    const { db, sqlite } = testDatenbank();
+    let ergebnis: Promise<unknown> | undefined;
+    expect(() => {
+      ergebnis = schreiben(db, weber, async (s) => {
+        await Promise.resolve();
+        s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 });
+        throw new Error("abgebrochen");
+      });
+    }).toThrow(/synchronous/);
+    await ergebnis?.catch(() => undefined);
+    await new Promise((fertig) => setTimeout(fertig, 0));
+    expect(sqlite.query("SELECT count(*) AS n FROM betriebe").get()).toEqual({ n: 0 });
+    expect(sqlite.query("SELECT count(*) AS n FROM audit_glieder").get()).toEqual({ n: 0 });
+  });
+
   it("refuses rows of another business", () => {
     const { db } = mitDreiGliedern();
     expect(() =>

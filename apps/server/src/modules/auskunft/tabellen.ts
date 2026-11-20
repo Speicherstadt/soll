@@ -31,6 +31,7 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   projekte: "ausgenommen: Aufträge des Betriebs, keine Daten der Person",
   taetigkeiten: "ausgenommen: Tätigkeiten des Betriebs, keine Daten der Person",
   stundensaetze: "stundensaetze (nur die Sätze mit der Person, nicht die für alle)",
+  projektzeiten: "projektzeiten",
   datev_einstellungen:
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
@@ -91,6 +92,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   projekte: aus("keine Daten der Person (Aufträge des Betriebs)"),
   taetigkeiten: aus("keine Daten der Person (Tätigkeiten des Betriebs)"),
   stundensaetze: frei("Sätze der Person, die der Inhaber unter Projekte festlegt und sieht"),
+  projektzeiten: frei("Buchungen der Person, die Inhaber und Planer sehen, ändern und abrechnen"),
   datev_einstellungen: aus("keine Daten der Person (Einstellungen des Betriebs für DATEV)"),
   datev_personalnummern: frei(
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",

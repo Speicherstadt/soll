@@ -60,6 +60,7 @@ const zeilenVon = (
     pins: [{ nutzerId }],
     einladungen: einladungen.map(({ einladungId }) => ({ einladungId })),
     stundensaetze: projekt.stundensaetze.map(({ satzId }) => ({ satzId })),
+    projektzeiten: projekt.projektzeiten.map(({ buchungId }) => ({ buchungId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
   }) satisfies EigeneZeilen;
 

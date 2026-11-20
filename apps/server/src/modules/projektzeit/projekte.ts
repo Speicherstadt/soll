@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
-import { projekte, stundensaetze } from "../../db/schema.ts";
+import { projekte, projektzeiten, stundensaetze } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import {
   archivWert,
@@ -99,7 +99,15 @@ export const projektAendern = (
   );
 };
 
-/** Removes an order no rate names (from S-602 also: no booking); otherwise it is archived */
+/** Whether a booking names the order (S-602): then it is archived, not removed */
+const gebucht = (db: Db, betriebId: string, projektId: string): boolean =>
+  db
+    .select({ id: projektzeiten.buchungId })
+    .from(projektzeiten)
+    .where(and(eq(projektzeiten.betriebId, betriebId), eq(projektzeiten.projektId, projektId)))
+    .get() !== undefined;
+
+/** Removes an order no rate and no booking names; otherwise it is archived */
 export const projektEntfernen = (
   db: Db,
   schreibDb: SchreibDb,
@@ -114,7 +122,7 @@ export const projektEntfernen = (
       and(eq(stundensaetze.betriebId, kontext.betriebId), eq(stundensaetze.projektId, projektId)),
     )
     .get();
-  if (satz) return nein("verwendet");
+  if (satz || gebucht(db, kontext.betriebId, projektId)) return nein("verwendet");
   schreiben(schreibDb, kontext, (s) => s.loeschen("projekte", { projektId }));
   return ok(null);
 };

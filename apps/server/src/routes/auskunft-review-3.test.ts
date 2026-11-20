@@ -25,6 +25,7 @@ const FREIGEGEBEN = [
   "arbeitszeitmodelle",
   "schichten",
   "stundensaetze",
+  "projektzeiten",
   "personalnummer",
   "auditKette",
 ];

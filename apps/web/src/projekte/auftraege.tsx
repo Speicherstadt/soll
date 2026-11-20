@@ -6,6 +6,7 @@ import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { budgetMinutenAus } from "./budget.ts";
+import { BudgetVerbrauch } from "./budgetStand.tsx";
 import { type ProjektQuelle, zeilenAktionen } from "./quelle.ts";
 import { Aktionen, LeerText, NeuFormular, Stand } from "./teile.tsx";
 import type { Projekt } from "./typen.ts";
@@ -143,6 +144,7 @@ export const Auftraege = (props: { quelle: ProjektQuelle }) => {
                       {m.budget_warnung_ab({ prozent: String(projekt.warnungProzent) })}
                     </span>
                   </Show>
+                  <BudgetVerbrauch zeilen={projekt.budget ?? []} />
                 </Td>
                 <Show when={props.quelle.verwalten}>
                   <Td>

@@ -15,10 +15,14 @@ const TABELLEN = Object.keys(schema).join("|");
 
 /**
  * The ways to write: Drizzle's insert, update and delete on a table of the schema, raw SQL that writes,
- * Drizzle's `sql` template, and bun:sqlite itself (whoever holds a Database can run anything)
+ * Drizzle's `sql` template and `sql.raw`, the chained tables as `kettenTabellen` exports them, and
+ * bun:sqlite itself, also as Drizzle's `$client` (whoever holds a Database can run anything)
  */
 const SCHREIBEN = [
   new RegExp(`\\.(insert|update|delete)\\s*\\(\\s*(schema\\.)?(${TABELLEN})\\b`),
+  /\.(insert|update|delete)\s*\(\s*kettenTabellen\b/,
+  /\$client\b/,
+  /\bsql\.raw\s*\(/,
   /\b(INSERT\s+(OR\s+\w+\s+)?INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM|REPLACE\s+INTO|DROP\s+TABLE|ALTER\s+TABLE)\b/i,
   /\bsql\s*`/,
   /from\s+["']bun:sqlite["']/,
@@ -35,21 +39,33 @@ const quellen = (ordner: string): string[] =>
       : [];
   });
 
+/** The lines of one file that write */
+const umwegeIn = (datei: string, text: string): string[] =>
+  text
+    .split("\n")
+    .flatMap((zeile, index) =>
+      SCHREIBEN.some((muster) => muster.test(zeile))
+        ? [`${datei}:${index + 1}: ${zeile.trim()}`]
+        : [],
+    );
+
 describe("no write past the audit chain", () => {
   it("only the chain's own files call a write function", () => {
     const umwege = quellen(SRC)
       .map((pfad) => relative(SRC, pfad))
       .filter((datei) => !ERLAUBT.has(datei))
-      .flatMap((datei) =>
-        readFileSync(join(SRC, datei), "utf8")
-          .split("\n")
-          .flatMap((zeile, index) =>
-            SCHREIBEN.some((muster) => muster.test(zeile))
-              ? [`${datei}:${index + 1}: ${zeile.trim()}`]
-              : [],
-          ),
-      );
+      .flatMap((datei) => umwegeIn(datei, readFileSync(join(SRC, datei), "utf8")));
     expect(umwege).toEqual([]);
+  });
+
+  it("recognises a write through the chained tables the audit module exports, or the raw client", () => {
+    const umwege = [
+      "db.insert(kettenTabellen.betriebe.tabelle).values(werte).run();",
+      "tx.update(kettenTabellen[name].tabelle).set(neu).run();",
+      "db.$client.run(befehl);",
+      "db.run(sql.raw(befehl));",
+    ].flatMap((zeile) => umwegeIn("x.ts", zeile));
+    expect(umwege).toHaveLength(4);
   });
 
   it("every table of Soll with betrieb_id goes through the chain", () => {

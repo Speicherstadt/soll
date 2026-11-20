@@ -89,7 +89,7 @@ Yusuf Yılmaz;
 ## 5. Einladungen
 
 Für jede Person der Liste erstellt Soll einen [Einladungslink](anmeldung.md#einladung-ohne-e-mail),
-alle auf einmal. Den Link gibst du weiter, etwa im Chat; eine E-Mail-Adresse braucht es nicht. Wer
+alle mit einem Klick (eine längere Liste als 200 Personen geht in Teilen an den Server; was schon geklappt hat, bleibt). Den Link gibst du weiter, etwa im Chat; eine E-Mail-Adresse braucht es nicht. Wer
 ihn öffnet, wählt Benutzernamen und Passwort und ist danach im Betrieb. Die Links siehst du nur in
 diesem Moment, denn Soll speichert nur ihren Hash; jeder gilt sieben Tage und einmal. Kommt die
 erste beschäftigte Person dazu, bleibt Arbeitszeit an.

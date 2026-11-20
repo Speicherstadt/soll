@@ -40,7 +40,7 @@ die App ihn bei der Anmeldung; ohne Betrieb führt sie in die Einrichtung.
 ## Einladung ohne E-Mail
 
 Der Inhaber (oder für Mitarbeiter und Externe ein Planer) legt eine Einladung mit Name und Rolle an,
-in der Einrichtung auch für eine ganze Liste auf einmal, und bekommt einen Link, den er weitergibt oder als QR-Code zeigt. Wer ihn öffnet, wählt einen
+in der Einrichtung auch für eine ganze Liste auf einmal, und bekommt einen Link, den er weitergibt. Wer ihn öffnet, wählt einen
 Benutzernamen und ein Passwort (mindestens 10 Zeichen) und meldet sich danach damit an; eine
 E-Mail-Adresse braucht es nicht. Ein Link gilt sieben Tage und nur einmal. Gespeichert wird nur der
 Hash des Links, nicht der Link selbst. Passkeys lassen sich danach zum Konto hinzufügen.

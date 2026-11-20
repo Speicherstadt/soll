@@ -35,16 +35,20 @@ export const Stempeln = () => {
     void quelle.laden();
   });
   const aktionen = () => aktionenFuer(quelle.stand()?.zustand ?? "aus");
+  // the buttons stay disabled until the new state is loaded: the old one would offer the same step
   const stempeln = async (art: Stempelart) => {
     if (arbeitet()) return;
     setArbeitet(true);
-    const antwort = await api("/api/v1/arbeitszeit/stempelungen", {
-      body: { art, geraetZeitpunkt: Date.now() },
-    });
-    setArbeitet(false);
-    if (!antwort.ok) return setFehler(m.stempeln_fehler());
-    setFehler("");
-    await quelle.laden();
+    try {
+      const antwort = await api("/api/v1/arbeitszeit/stempelungen", {
+        body: { art, geraetZeitpunkt: Date.now() },
+      });
+      if (!antwort.ok) return setFehler(m.stempeln_fehler());
+      setFehler("");
+      await quelle.laden();
+    } finally {
+      setArbeitet(false);
+    }
   };
   return (
     <Show

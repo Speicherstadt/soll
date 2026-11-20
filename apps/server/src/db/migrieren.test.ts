@@ -46,6 +46,15 @@ describe("migrieren", () => {
     ).toThrow(/0000_a was changed/);
   });
 
+  it("refuses to start when an applied migration is missing from the binary", () => {
+    // A removed migration, or an older binary on a newer database: the schema is not the one the
+    // code was built for, and writing on would go wrong silently
+    const sqlite = new Database(":memory:");
+    const a = { tag: "0000_a", sql: "CREATE TABLE a (x INTEGER)" };
+    migrieren(sqlite, [a, { tag: "0001_b", sql: "CREATE TABLE b (x INTEGER)" }], 0);
+    expect(() => migrieren(sqlite, [a], 0)).toThrow(/0001_b/);
+  });
+
   it("rolls a failing migration back as a whole", () => {
     const sqlite = new Database(":memory:");
     const kaputt = {

@@ -51,4 +51,5 @@ nicht mehr in sich stimmig, zeigt die Prüfung eine Abweichung.
 
 Soll speichert in SQLite im WAL-Modus, die Datei `soll.db` liegt im Datenverzeichnis
 (`SOLL_DATA_DIR`, Standard `data`). Die Migrationen sind im Programm enthalten und laufen beim Start;
-eine schon angewendete Migration, die sich geändert hat, verhindert den Start.
+eine schon angewendete Migration, die sich geändert hat oder im Programm fehlt (etwa eine ältere
+Version auf einer neueren Datenbank), verhindert den Start.

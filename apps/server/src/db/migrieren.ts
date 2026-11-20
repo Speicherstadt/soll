@@ -8,8 +8,8 @@ const GRENZE = "--> statement-breakpoint";
 
 /**
  * Applies the embedded migrations that are not yet in the database, each in its own transaction.
- * A migration that was applied with other content stops the start: migrations never change
- * (CLAUDE.md). The bookkeeping table is the server's own and outside the audit chain.
+ * A migration that was applied with other content, or that the binary no longer holds (removed, or an
+ * older binary on a newer database), stops the start: migrations never change (CLAUDE.md). The bookkeeping table is the server's own and outside the audit chain.
  */
 export const migrieren = (
   sqlite: Database,
@@ -25,6 +25,13 @@ export const migrieren = (
       .all()
       .map((zeile) => [zeile.tag, zeile.hash]),
   );
+  const bekannt = new Set(migrationen.map((migration) => migration.tag));
+  const unbekannt = [...angewendet.keys()].filter((tag) => !bekannt.has(tag));
+  if (unbekannt.length > 0) {
+    throw new Error(
+      `migration ${unbekannt.join(", ")} was applied but is missing from this binary`,
+    );
+  }
   const neu = migrationen.filter((migration) => {
     const hash = angewendet.get(migration.tag);
     if (hash !== undefined && hash !== sha256(migration.sql)) {

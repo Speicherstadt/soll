@@ -72,6 +72,25 @@ describe("employees from a CSV file", () => {
     });
   });
 
+  it("names the line of a quote that is never closed instead of merging the rest into one name", () => {
+    const ergebnis = mitarbeiterAusCsv(
+      'Name;Rolle\nAnna Schulz;Planerin\n"Sandra Kühn;Mitarbeiterin\nMax Brandt;Mitarbeiter',
+    );
+    expect(ergebnis.personen).toEqual([{ zeile: 2, name: "Anna Schulz", rolle: "planer" }]);
+    expect(ergebnis.fehler).toEqual([{ zeile: 3, grund: "unlesbar" }]);
+    expect(mitarbeiterAusCsv('Name;"Rolle\nAnna;Planer')).toEqual({
+      personen: [],
+      fehler: [{ zeile: 1, grund: "unlesbar" }],
+    });
+  });
+
+  it("keeps a comma in the name of a file with one column (German Excel writes it unquoted)", () => {
+    expect(mitarbeiterAusCsv("Name\r\nWeber, Jonas\r\nKühn, Sandra\r\n").personen).toEqual([
+      { zeile: 2, name: "Weber, Jonas", rolle: "mitarbeiter" },
+      { zeile: 3, name: "Kühn, Sandra", rolle: "mitarbeiter" },
+    ]);
+  });
+
   it(`takes at most ${MAX_PERSONEN} people at once`, () => {
     const zeilen = Array.from({ length: MAX_PERSONEN + 1 }, (_, i) => `Person ${i}`);
     expect(mitarbeiterAusCsv(["Name", ...zeilen].join("\n"))).toEqual({

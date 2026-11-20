@@ -31,6 +31,7 @@ export {
   monatStatus,
   type SchrittErgebnis,
 } from "./monatsabschluss.ts";
+export { pruefexportPerson } from "./pruefexport.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
   hatStempelungen,

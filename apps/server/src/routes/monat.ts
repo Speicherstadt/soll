@@ -105,7 +105,7 @@ const ansicht = (db: Db, c: Context<Anfrage>, nutzerId: string, status: MonatSta
 };
 
 /** Where a person checks their Prüfwert: the check page of the app, for this business */
-const pruefseiteVon = (url: string, betriebId: string) =>
+export const pruefseiteVon = (url: string, betriebId: string) =>
   `${url}/pruefen?betrieb=${encodeURIComponent(betriebId)}`;
 
 const zettelVon = (

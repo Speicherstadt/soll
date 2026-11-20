@@ -1,0 +1,62 @@
+Prüfexport 01.10.2026 bis 30.11.2026
+Lea Schröder · Café Elbblick
+Erstellt am 02.12.2026 10:00 · Zeiten in Europe/Berlin, Dauern in Stunden:Minuten
+Datum
+Beginn
+Ende
+Pausen
+Dauer
+Erfasst am
+Befunde
+Di 06.10.2026
+08:00
+18:15
+0:30
+9:45
+07.10.2026 09:12
+Verstoß: Ruhepause · § 4 ArbZG
+Sa 31.10.2026
+20:00
+02:00 (01.11.)
+0:00
+6:00
+01.11.2026 02:00
+Di 03.11.2026
+09:00
+offen
+0:00
+0:00
+03.11.2026 09:00
+Hinweis: Stempelung unvollständig · BAG 1 ABR 22/21
+Summe 15:45 an 3 Tagen
+Änderungen von Hand
+06.10.2026: geändert am 07.10.2026 09:12 von Mia Hansen: vorher Gehen 17:00, jetzt Gehen 18:15, Grund: Inventur, Gehen vergessen
+Gegeneinträge zu abgeschlossenen Monaten
+06.10.2026: Gegeneintrag -0:15 am 04.11.2026 11:00 von Mia Hansen, Grund: Pause nicht gestempelt
+Monate und Prüfwerte
+Oktober 2026: abgeschlossen am 03.11.2026 10:00, Prüfwert Nr. 42 · abababababababababababababababababababababababababababababababab
+November 2026: nicht abgeschlossen
+Einen Prüfwert prüft die Prüfseite: https://soll.test/pruefen?betrieb=b1
+Prüfexport 01.10.2026 bis 30.11.2026
+????? ?????? · Café Elbblick
+Erstellt am 02.12.2026 10:00 · Zeiten in Europe/Berlin, Dauern in Stunden:Minuten
+Datum
+Beginn
+Ende
+Pausen
+Dauer
+Erfasst am
+Befunde
+Di 10.11.2026
+10:00
+14:00
+0:00
+4:00
+18.11.2026 08:00
+Summe 4:00 an 1 Tag
+Änderungen von Hand
+10.11.2026: nachgetragen am 18.11.2026 08:00 von ????? ??????: Kommen 10:00, Grund: =Zettel; Mia
+Monate und Prüfwerte
+Oktober 2026: nicht abgeschlossen
+November 2026: nicht abgeschlossen
+Einen Prüfwert prüft die Prüfseite: https://soll.test/pruefen?betrieb=b1

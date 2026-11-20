@@ -31,6 +31,7 @@ export const RECHTE = [
   "monat:abschliessen",
   "plan:lesen",
   "plan:planen",
+  "auskunft:erteilen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -53,6 +54,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "monat:abschliessen",
     "plan:lesen",
     "plan:planen",
+    // the business answers an Art. 15 request, also of someone who left and has no access any more;
+    // the Auskunft holds health data, which only the owner and payroll see (R-31)
+    "auskunft:erteilen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)

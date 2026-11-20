@@ -19,7 +19,11 @@ const envSchema = z.object({
   SOLL_VERSION: z.string().min(1).default("0.0.0"),
   SOLL_DATA_DIR: z.string().min(1).default("data"),
   SOLL_SECRET_KEY: schluessel,
-  SOLL_URL: z.url().default("http://localhost:8200"),
+  // without a trailing slash: links are built as `${url}/einladung/…` and the passkey origin is the URL
+  SOLL_URL: z
+    .url()
+    .default("http://localhost:8200")
+    .transform((url) => url.replace(/\/+$/, "")),
 });
 
 export type Env = {

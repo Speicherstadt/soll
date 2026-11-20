@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -43,8 +44,14 @@ const RECHTE_IN_BETTER_AUTH: Partial<
   },
 };
 
-/** Changes of membership and role reach the audit chain under this actor, with the user in the row */
+/** The actor of a change through Better Auth when no signed-in person made it */
 const AKTEUR = "anmeldung";
+
+/**
+ * The person on whose request Better Auth runs its hooks: the hooks get no session, but the audit
+ * chain names who changed a membership or role (CLAUDE.md, actor of each link)
+ */
+const akteure = new AsyncLocalStorage<string>();
 
 /**
  * Better Auth with one organization per business, passkeys and usernames for people without e-mail
@@ -52,7 +59,11 @@ const AKTEUR = "anmeldung";
  * membership and role into Soll's tables, so these changes stand in the chain (CLAUDE.md).
  */
 const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthDeps) => {
-  const kontext = (betriebId: string) => ({ betriebId, akteur: AKTEUR, jetzt: jetzt() });
+  const kontext = (betriebId: string) => ({
+    betriebId,
+    akteur: akteure.getStore() ?? AKTEUR,
+    jetzt: jetzt(),
+  });
   const spiegeln = (member: { organizationId: string; userId: string; role: string }) => {
     mitgliedschaftSpiegeln(
       db,
@@ -145,7 +156,16 @@ export type Auth = {
 export const createAuth = (deps: AuthDeps): Auth => {
   const auth = betterAuthFuer(deps);
   return {
-    handler: (request) => auth.handler(request),
+    handler: async (request) => {
+      // without refreshing, so the session cookie is renewed only by the request itself
+      const angemeldet = await auth.api.getSession({
+        headers: request.headers,
+        query: { disableRefresh: true },
+      });
+      return angemeldet
+        ? akteure.run(angemeldet.user.id, () => auth.handler(request))
+        : auth.handler(request);
+    },
     sitzung: async (headers) => {
       const ergebnis = await auth.api.getSession({ headers });
       if (!ergebnis) return null;
@@ -175,9 +195,12 @@ export const createAuth = (deps: AuthDeps): Auth => {
       }
     },
     mitgliedHinzufuegen: async ({ nutzerId, betriebId, rolle }) => {
-      await auth.api.addMember({
-        body: { userId: nutzerId, organizationId: betriebId, role: rolle as never },
-      });
+      // the invited person accepts, so she is the actor of her membership
+      await akteure.run(nutzerId, () =>
+        auth.api.addMember({
+          body: { userId: nutzerId, organizationId: betriebId, role: rolle as never },
+        }),
+      );
     },
   };
 };

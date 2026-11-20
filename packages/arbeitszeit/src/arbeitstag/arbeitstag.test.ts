@@ -295,6 +295,72 @@ describe("shifts and working days", () => {
     ]);
   });
 
+  /*
+   * Review of PR #11: the cap held only between stamped pairs. A stamp 24 h or more after the start
+   * of a shift ended it all the same, so a forgotten Gehen became 32 h of work on a complete day.
+   * Such a stamp cannot belong to the shift (Grundbegriff "Schicht"): the shift stays open and the
+   * stamp is read as if no shift were running, nothing is guessed.
+   */
+  it("24 h: Kommen Mo 8:00, Kommen Di 8:00, Gehen Di 16:00 – Mo „Gehen fehlt“, Di 8:00", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      kommen("2026-11-17T08:00+01:00"),
+      gehen("2026-11-17T16:00+01:00"),
+    ]);
+    expect([mo?.tag, mo?.arbeitsMinuten, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      "2026-11-16",
+      0,
+      false,
+      ["gehen_fehlt"],
+    ]);
+    expect([di?.tag, di?.arbeitsMinuten, di?.vollstaendig, di && arten(di)]).toEqual([
+      "2026-11-17",
+      480,
+      true,
+      [],
+    ]);
+  });
+
+  it("24 h: a Gehen 24 h or more after Kommen does not end the shift", () => {
+    const [mo, mi] = tage([kommen("2026-11-16T08:00+01:00"), gehen("2026-11-18T08:00+01:00")]);
+    expect([mo?.tag, mo?.arbeitsMinuten, mo && arten(mo)]).toEqual([
+      "2026-11-16",
+      0,
+      ["gehen_fehlt"],
+    ]);
+    expect([mi?.tag, mi && arten(mi)]).toEqual(["2026-11-18", ["kommen_fehlt"]]);
+  });
+
+  it("24 h: a repeated Gehen 24 h or more after Kommen does not move the end", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+      gehen("2026-11-17T10:00+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.ende, mo && arten(mo)]).toEqual([
+      480,
+      um("2026-11-16T16:00+01:00"),
+      [],
+    ]);
+    expect([di?.tag, di && arten(di)]).toEqual(["2026-11-17", ["kommen_fehlt"]]);
+  });
+
+  it("24 h: a break still running 24 h after Kommen stays open, „Pause-Ende fehlt“", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      pause("2026-11-17T09:00+01:00"),
+      weiter("2026-11-17T09:30+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo?.vollstaendig, mo && arten(mo)]).toEqual([
+      240,
+      false,
+      ["pause_ende_fehlt"],
+    ]);
+    expect(mo?.schichten[0]?.offen?.art).toBe("pause_ende");
+    expect(di && arten(di)).toEqual(["kommen_fehlt", "kommen_fehlt"]);
+  });
+
   it("lists the days in order, each with its shifts", () => {
     const alle = tage([
       kommen("2026-11-17T08:00+01:00"),

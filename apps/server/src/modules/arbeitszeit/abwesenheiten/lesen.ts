@@ -78,7 +78,9 @@ export const zaehlt = (zeile: Pick<AbwesenheitZeile, "status">): boolean =>
  * sickness counts up to `offenBis` (today, or the last day of a month that is over). A sickness
  * gives way on a day another approved absence holds that it may not share (a day off approved
  * before it), with its end open or known: so the day is counted once, ending a sickness changes no
- * day it gave way to, and a closed month keeps its content (docs/plan.md, "Überschneidungen")
+ * day it gave way to, and a closed month keeps its content (docs/plan.md, "Überschneidungen"). Of
+ * a half day off it keeps the other half: the person is sick then, never half a day short (§ 3
+ * EntgFG, review S-401)
  */
 export const tageDerAbwesenheiten = (
   zeilen: readonly AbwesenheitZeile[],
@@ -87,10 +89,16 @@ export const tageDerAbwesenheiten = (
   const zaehlend = zeilen.filter(zaehlt);
   const tageVon = (z: AbwesenheitZeile) => tageDesZeitraums(alsZeitraum(z), offenBis);
   const andere = zaehlend.filter((z) => !GESUNDHEIT.has(z.art)).flatMap(tageVon);
-  const weicht = (tag: Abwesenheit) =>
-    andere.some((a) => a.tag === tag.tag && !ueberschneidungErlaubt(a.art, tag.art));
+  /** The day of a sickness as it counts beside the others: whole, half or not at all */
+  const weichen = (tag: Abwesenheit): Abwesenheit[] => {
+    const belegt = andere
+      .filter((a) => a.tag === tag.tag && !ueberschneidungErlaubt(a.art, tag.art))
+      .reduce((halbe, a) => halbe + (a.halb === true ? 1 : 2), 0);
+    if (belegt === 0) return [tag];
+    return belegt === 1 ? [{ ...tag, halb: true }] : [];
+  };
   return zaehlend.flatMap((z) =>
-    GESUNDHEIT.has(z.art) ? tageVon(z).filter((tag) => !weicht(tag)) : tageVon(z),
+    GESUNDHEIT.has(z.art) ? tageVon(z).flatMap(weichen) : tageVon(z),
   );
 };
 

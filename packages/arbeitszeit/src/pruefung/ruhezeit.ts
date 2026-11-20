@@ -42,8 +42,17 @@ const MINUTE = 60_000;
 /** A rest from the end of a working day to the next; `bis` null for the rest still running at `jetzt` */
 type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
 
-/** A piece of work a rest can follow or end: a whole shift, or a block of a shift with call-outs */
-type Stelle = { tag: Tag; beginn: number; ende: number | null; einsatz: boolean };
+/**
+ * A piece of work a rest can follow or end: a whole shift, or a block of a shift with call-outs;
+ * `ersteDerSchicht` for the first piece of its shift that is not a call-out
+ */
+type Stelle = {
+  tag: Tag;
+  beginn: number;
+  ende: number | null;
+  einsatz: boolean;
+  ersteDerSchicht: boolean;
+};
 
 const imEinsatz = (schicht: PruefSchicht, block: Stueck): boolean =>
   (schicht.einsaetze ?? []).some(
@@ -54,25 +63,38 @@ const imEinsatz = (schicht: PruefSchicht, block: Stueck): boolean =>
  * The pieces of a shift: the whole shift (no end while it is open), or, when it holds call-outs in
  * Rufbereitschaft (R-12), each block, so that a call-out's end begins a rest of its own
  */
-const stellen = (schicht: PruefSchicht): Stelle[] =>
-  schicht.ende === null || (schicht.einsaetze ?? []).length === 0
-    ? [{ tag: schicht.tag, beginn: schicht.beginn, ende: schicht.ende, einsatz: false }]
-    : schicht.bloecke.map((block) => ({
-        tag: schicht.tag,
-        beginn: block.beginn,
-        ende: block.ende,
-        einsatz: imEinsatz(schicht, block),
-      }));
+const stellen = (schicht: PruefSchicht): Stelle[] => {
+  const { tag } = schicht;
+  if (schicht.ende === null || (schicht.einsaetze ?? []).length === 0)
+    return [
+      { tag, beginn: schicht.beginn, ende: schicht.ende, einsatz: false, ersteDerSchicht: true },
+    ];
+  const bloecke = schicht.bloecke.map((block) => ({ block, einsatz: imEinsatz(schicht, block) }));
+  const erste = bloecke.find((teil) => !teil.einsatz);
+  return bloecke.map((teil) => ({
+    tag,
+    beginn: teil.block.beginn,
+    ende: teil.block.ende,
+    einsatz: teil.einsatz,
+    ersteDerSchicht: teil === erste,
+  }));
+};
 
-/** The first piece of each working day that is not a call-out: its start ends the rest before it */
+/**
+ * The pieces whose start ends the rest before them: the first piece of each working day that is not
+ * a call-out, and a shift of its own that follows a call-out on the same day (R-12: after the
+ * call-out a new rest begins, whichever day the next shift is on)
+ */
 const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> => {
   const tage = new Set<Tag>();
   const erste = new Set<Stelle>();
-  for (const stelle of stellen) {
-    if (stelle.einsatz || tage.has(stelle.tag)) continue;
+  stellen.forEach((stelle, index) => {
+    if (stelle.einsatz) return;
+    const nachEinsatz = stelle.ersteDerSchicht && stellen[index - 1]?.einsatz === true;
+    if (tage.has(stelle.tag) && !nachEinsatz) return;
     tage.add(stelle.tag);
     erste.add(stelle);
-  }
+  });
   return erste;
 };
 
@@ -80,7 +102,7 @@ const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> => {
  * The rests before each working day, from the last end of work before it to its first Kommen
  * (docs/regeln.md, R-05), and the rest since the last end of work while nothing has followed yet.
  * A call-out in Rufbereitschaft ends no rest but begins a new one (R-12): the rest that counts is the
- * one after it. Without call-outs this is the last Gehen of one working day to the first Kommen of
+ * one after it, up to the next working day or a shift of its own on the same day. Without call-outs this is the last Gehen of one working day to the first Kommen of
  * the next.
  */
 const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {

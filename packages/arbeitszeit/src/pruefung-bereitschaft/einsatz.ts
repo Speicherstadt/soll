@@ -5,7 +5,7 @@ import type { Branche } from "../pruefung/grenzen.ts";
 import type { RuhezeitBefund } from "../pruefung/ruhezeit.ts";
 import { sortiert } from "../pruefung/typen.ts";
 import { bereitschaftGrenzenAm } from "./grenzen.ts";
-import type { BereitschaftsTag } from "./typen.ts";
+import type { BereitschaftsSchicht, BereitschaftsTag } from "./typen.ts";
 
 /**
  * R-12: after a call-out in Rufbereitschaft the rest before the next shift is shorter than allowed.
@@ -28,23 +28,43 @@ export type EinsatzAusgleichBefund = Befund<"einsatz_ausgleich"> & {
   minuten: number;
 };
 
-/** A block of work in time order: a call-out, or other work (an open shift from its start) */
-type Stelle = { tag: Tag; block: Stueck; einsatz: boolean };
+/**
+ * A block of work in time order: a call-out, or other work (an open shift from its start);
+ * `ersteDerSchicht` for the first block of its shift that is not a call-out
+ */
+type Stelle = { tag: Tag; block: Stueck; einsatz: boolean; ersteDerSchicht: boolean };
 
 const istEinsatz = (einsaetze: readonly Stueck[], block: Stueck): boolean =>
   einsaetze.some((einsatz) => einsatz.beginn === block.beginn && einsatz.ende === block.ende);
+
+const bloeckeDer = (schicht: BereitschaftsSchicht): Stelle[] => {
+  const bloecke = schicht.bloecke.map((block) => ({
+    block,
+    einsatz: istEinsatz(schicht.einsaetze, block),
+  }));
+  const erste = bloecke.find((teil) => !teil.einsatz);
+  return bloecke.map((teil) => ({
+    tag: schicht.tag,
+    block: teil.block,
+    einsatz: teil.einsatz,
+    ersteDerSchicht: teil === erste,
+  }));
+};
 
 const stellenAus = (tage: readonly BereitschaftsTag[]): Stelle[] =>
   tage
     .flatMap((tag) =>
       tag.schichten.flatMap((schicht): Stelle[] =>
         schicht.ende === null
-          ? [{ tag: schicht.tag, block: alsMarke(schicht.beginn), einsatz: false }]
-          : schicht.bloecke.map((block) => ({
-              tag: schicht.tag,
-              block,
-              einsatz: istEinsatz(schicht.einsaetze, block),
-            })),
+          ? [
+              {
+                tag: schicht.tag,
+                block: alsMarke(schicht.beginn),
+                einsatz: false,
+                ersteDerSchicht: true,
+              },
+            ]
+          : bloeckeDer(schicht),
       ),
     )
     .sort((a, b) => a.block.beginn - b.block.beginn);
@@ -60,8 +80,8 @@ type Gruppe = { einsaetze: Stelle[]; bis: Tag; vorher: Tag | null };
 
 /**
  * The call-outs that fall into a rest: after the last other work and before the first work of the
- * next working day, or after the last work of all (the rest still running). Call-outs between two
- * pieces of the same working day lie in no rest.
+ * next working day or of a shift of its own on the same day, or after the last work of all (the rest
+ * still running). Call-outs between two pieces of the same shift lie in no rest.
  */
 const inRuhezeiten = (stellen: readonly Stelle[]): Gruppe[] => {
   const gruppen: Gruppe[] = [];
@@ -75,7 +95,7 @@ const inRuhezeiten = (stellen: readonly Stelle[]): Gruppe[] => {
     }
     const ersteDesTags = !begonnen.has(stelle.tag);
     begonnen.add(stelle.tag);
-    if (offen.length > 0 && ersteDesTags)
+    if (offen.length > 0 && (ersteDesTags || stelle.ersteDerSchicht))
       gruppen.push({ einsaetze: offen, bis: stelle.tag, vorher });
     offen = [];
     vorher = stelle.tag;

@@ -501,8 +501,9 @@ ohne sie gilt der Fall „Pause“.
   Liegen weniger als 15 min zwischen einem Einsatz und anderer Arbeit, ist er ein Stück dieser Arbeit
   (§ 4 Satz 2 ArbZG); zwei Einsätze mit weniger als 15 min Abstand sind einer.
 - **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
-  anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05. Die
-  Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue.
+  anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05.
+  Beginnt nach einem Einsatz eine eigene Schicht am selben Kalendertag, endet die Ruhezeit mit ihr.
+  Die Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue.
 - **Ausnahmen**: Krankenhäuser und Pflege dürfen Kürzungen bis zur Hälfte der Ruhezeit zu anderen
   Zeiten ausgleichen (§ 5 Abs. 3 ArbZG): Dauern die Einsätze zwischen zwei Arbeitstagen zusammen
   höchstens 5:30, unterbrechen sie die Ruhezeit nicht, Soll misst sie zwischen den Schichten und
@@ -526,6 +527,8 @@ ohne sie gilt der Fall „Pause“.
 | Krankenhaus | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 (12:00 zwischen den Schichten) | Hinweis „Einsatz ausgleichen 2:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
 | Krankenhaus, Grenze | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:30 (5:30), Di Schicht 8:00 | Hinweis „Einsatz ausgleichen 5:30“, kein Verstoß | § 5 Abs. 3 ArbZG („nicht mehr als die Hälfte der Ruhezeit“) |
 | Krankenhaus, über die Hälfte | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:31 (5:31), Di Schicht 8:00 (4:29 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 3 ArbZG |
+| selber Tag | Mo Schicht 5:00 – 9:00, Einsatz Mo 12:00 – 13:00, Mo Schicht 18:30 (eigene Schicht, 5:30 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo | § 5 Abs. 1 ArbZG |
+| Krankenhaus, selber Tag | Krankenhaus, dieselbe Lage | Hinweis „Einsatz ausgleichen 1:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
 | Herbst | Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 echte Zeit) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
 

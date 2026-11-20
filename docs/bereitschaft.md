@@ -56,7 +56,8 @@ Ende der Arbeit samt Weg, und er unterbricht die Ruhezeit: Nach ihm beginnt eine
   weniger als 15 Minuten Abstand sind einer.
 - **Ruhezeit**: Soll misst vom Ende der letzten Arbeit, auch eines Einsatzes, bis zum Beginn der
   ersten anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme der
-  [Ruhezeit](pruefung.md#ruhezeit-r-05-5-arbzg). Ist sie zu kurz und beginnt sie mit dem Ende eines
+  [Ruhezeit](pruefung.md#ruhezeit-r-05-5-arbzg); beginnt nach einem Einsatz eine eigene Schicht am
+  selben Kalendertag, endet die Ruhezeit mit ihr. Ist sie zu kurz und beginnt sie mit dem Ende eines
   Einsatzes, heißt der Befund „Ruhezeit durch Einsatz unterbrochen“ (R-12) und nennt den Einsatz.
   Die Ruhezeit vor dem Einsatz zählt nicht. Mehrere Einsätze in einer Nacht: Es zählt die Ruhezeit
   nach dem letzten.

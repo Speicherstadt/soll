@@ -69,7 +69,11 @@ export const ueberZwoelf = (
   if (tarif === undefined) return new Set();
   return new Set(
     [...mitBereitschaft(tage).values()]
-      .filter((tag) => tag.arbeitsMinuten > (bereitschaftGrenzenAm(tag.tag)?.tarifUeber ?? 0))
+      .filter((tag) => {
+        // a day no rule version covers is „nicht hinterlegt“, never a day past 12 hours
+        const grenzen = bereitschaftGrenzenAm(tag.tag);
+        return grenzen !== null && tag.arbeitsMinuten > grenzen.tarifUeber;
+      })
       .map((tag) => tag.tag),
   );
 };

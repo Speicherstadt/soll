@@ -189,6 +189,10 @@ const nurWaehrend = (schreiber: Schreiber, offen: () => boolean): Schreiber => {
  * and the writer refuses every call after the transaction.
  */
 export const schreiben = <T>(db: Db, kontext: Kontext, arbeit: (schreiber: Schreiber) => T): T => {
+  // SQLite stores UTF-8: a lone surrogate would come back as U+FFFD and the link fail its own check
+  if (!kontext.betriebId.isWellFormed() || !kontext.akteur.isWellFormed()) {
+    throw new Error("schreiben: betriebId and akteur must be well-formed text");
+  }
   let offen = true;
   try {
     return db.transaction(

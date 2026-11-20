@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { istTag, plusTage, tagAus, tageZwischen, wochentag } from "./tag.ts";
+import { tagInBerlin } from "./zeit.ts";
 
 describe("Tag", () => {
   it("writes a day with leading zeros", () => {
@@ -50,5 +51,24 @@ describe("years below 100", () => {
 
   it("takes a real day of such a year", () => {
     expect(istTag("0099-12-31")).toBe(true);
+  });
+});
+
+describe("tagInBerlin", () => {
+  it("is the calendar day in Europe/Berlin, not in UTC", () => {
+    // 23:30 UTC on 30 June is 01:30 CEST on 1 July
+    expect(tagInBerlin(Date.UTC(2026, 5, 30, 23, 30))).toBe("2026-07-01");
+    // 23:30 UTC on 30 January is 00:30 CET on 31 January
+    expect(tagInBerlin(Date.UTC(2026, 0, 30, 23, 30))).toBe("2026-01-31");
+    expect(tagInBerlin(Date.UTC(2026, 0, 30, 22, 59))).toBe("2026-01-30");
+  });
+
+  it("follows the change of time: 22:30 UTC is the next day in summer, the same day in winter", () => {
+    // 28 March 2027 is the last Sunday of March: from 01:00 UTC Berlin is UTC+2
+    expect(tagInBerlin(Date.UTC(2027, 2, 27, 22, 30))).toBe("2027-03-27");
+    expect(tagInBerlin(Date.UTC(2027, 2, 28, 22, 30))).toBe("2027-03-29");
+    // 25 October 2026: from 01:00 UTC Berlin is UTC+1 again
+    expect(tagInBerlin(Date.UTC(2026, 9, 24, 22, 30))).toBe("2026-10-25");
+    expect(tagInBerlin(Date.UTC(2026, 9, 25, 22, 30))).toBe("2026-10-25");
   });
 });

@@ -17,4 +17,12 @@ export {
   wochentag,
 } from "./kalender/tag.ts";
 export { beginnInBerlin, tagInBerlin } from "./kalender/zeit.ts";
+export {
+  type Fragen,
+  fragenAusModulen,
+  MODULE,
+  type Modul,
+  type Module,
+  moduleAusFragen,
+} from "./module/module.ts";
 export * from "./pruefung/index.ts";

@@ -144,7 +144,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   `pages`-Check jede Route kennt. Dazu: die Seitenleiste (Desktop) und die Tab-Leiste (Handy) führen
   zu jeder Seite und markieren die aktuelle mit `aria-current`, hell und dunkel und die Sprache
   bleiben nach dem Neuladen erhalten, Arabisch spiegelt das Layout, und axe ist in beiden Themen grün.
-- [ ] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
+- [x] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
   Vorlagen (Vollzeit, Teilzeit, Minijob), Mitarbeiter per CSV, Einladungen. Er beginnt mit vier
   Fragen, die die Module schalten: Beschäftigte ja oder nein (nein: nur Projektzeit; ja: Arbeitszeit
   mit Abwesenheiten, fest), Schichten oder Plan (Dienstplan), Stunden mit Kunden abrechnen
@@ -153,6 +153,16 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   nach: S-106, S-302. Fertig, wenn: Playwright die Einrichtung für einen Freelancer (nur
   Projektzeit), ein Café (Arbeitszeit, Dienstplan), einen SHK-Betrieb (Arbeitszeit, Projektzeit,
   Terminal) und einen Betrieb mit allen Modulen zeigt, jeweils mit der passenden Navigation.
+  Dazu: Konto anlegen und Anmelden in der App, der Betrieb als Organisation mit dem Inhaber; die vier
+  Fragen schalten die Module nach einer reinen Funktion mit Test, ohne Beschäftigte endet der
+  Assistent nach dem ersten Schritt; Standorte mit Bundesland und Regionen, Arbeitszeitmodelle in
+  ganzen Minuten und Cent (Brüche lehnt der Server ab), jede neue Tabelle mit `betrieb_id` in der
+  Audit-Kette und ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht; der
+  CSV-Parser als reine Funktion mit Fuzzing, der eine unlesbare Zeile mit ihrer Nummer nennt; ein
+  Link aus der Einrichtung führt zum Konto im Betrieb; Seitenleiste, Tab-Leiste und „Mehr“ zeigen
+  nur die Bereiche der Module, ein Bereich eines abgeschalteten Moduls führt zu Heute, und unter
+  Einstellungen schaltet der Inhaber die Module um und die Navigation folgt; jeder Schritt in
+  `desktop` und `phone`, axe grün in hell und dunkel.
 - [ ] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
   nächsten Befund; Nachtragen und Ändern mit Grund bis zum Abschluss, jede Änderung für den
   Mitarbeiter sichtbar.

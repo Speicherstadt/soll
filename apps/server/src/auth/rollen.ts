@@ -17,6 +17,8 @@ export type Rolle = (typeof ROLLEN)[number];
 export const RECHTE = [
   "betrieb:lesen",
   "betrieb:module",
+  "betrieb:einrichten",
+  "modelle:lesen",
   "mitglieder:lesen",
   "mitglieder:einladen",
   "mitglieder:rolle",
@@ -30,6 +32,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
   inhaber: [
     "betrieb:lesen",
     "betrieb:module",
+    "betrieb:einrichten",
+    "modelle:lesen",
     "mitglieder:lesen",
     "mitglieder:einladen",
     "mitglieder:rolle",
@@ -39,7 +43,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
   planer: ["betrieb:lesen", "mitglieder:lesen", "mitglieder:einladen"],
   mitarbeiter: ["betrieb:lesen"],
-  lohnbuero: ["betrieb:lesen", "mitglieder:lesen"],
+  // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
+  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen"],
   betriebsrat: ["betrieb:lesen", "mitglieder:lesen"],
   extern: ["betrieb:lesen"],
   // the terminal checks PINs and nothing else (S-801)

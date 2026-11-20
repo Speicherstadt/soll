@@ -11,12 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AbwesenheitenRouteImport } from './routes/abwesenheiten'
+import { Route as AnmeldenRouteImport } from './routes/anmelden'
 import { Route as AuswertungenRouteImport } from './routes/auswertungen'
 import { Route as DienstplanRouteImport } from './routes/dienstplan'
+import { Route as EinrichtungRouteImport } from './routes/einrichtung'
 import { Route as EinstellungenRouteImport } from './routes/einstellungen'
 import { Route as MehrRouteImport } from './routes/mehr'
 import { Route as ProjekteRouteImport } from './routes/projekte'
+import { Route as RegistrierenRouteImport } from './routes/registrieren'
 import { Route as ZeitenRouteImport } from './routes/zeiten'
+import { Route as EinladungTokenRouteImport } from './routes/einladung.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,6 +32,11 @@ const AbwesenheitenRoute = AbwesenheitenRouteImport.update({
   path: '/abwesenheiten',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnmeldenRoute = AnmeldenRouteImport.update({
+  id: '/anmelden',
+  path: '/anmelden',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuswertungenRoute = AuswertungenRouteImport.update({
   id: '/auswertungen',
   path: '/auswertungen',
@@ -36,6 +45,11 @@ const AuswertungenRoute = AuswertungenRouteImport.update({
 const DienstplanRoute = DienstplanRouteImport.update({
   id: '/dienstplan',
   path: '/dienstplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EinrichtungRoute = EinrichtungRouteImport.update({
+  id: '/einrichtung',
+  path: '/einrichtung',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EinstellungenRoute = EinstellungenRouteImport.update({
@@ -53,85 +67,123 @@ const ProjekteRoute = ProjekteRouteImport.update({
   path: '/projekte',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegistrierenRoute = RegistrierenRouteImport.update({
+  id: '/registrieren',
+  path: '/registrieren',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ZeitenRoute = ZeitenRouteImport.update({
   id: '/zeiten',
   path: '/zeiten',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EinladungTokenRoute = EinladungTokenRouteImport.update({
+  id: '/einladung/$token',
+  path: '/einladung/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/abwesenheiten': typeof AbwesenheitenRoute
+  '/anmelden': typeof AnmeldenRoute
   '/auswertungen': typeof AuswertungenRoute
   '/dienstplan': typeof DienstplanRoute
+  '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
   '/projekte': typeof ProjekteRoute
+  '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
+  '/einladung/$token': typeof EinladungTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/abwesenheiten': typeof AbwesenheitenRoute
+  '/anmelden': typeof AnmeldenRoute
   '/auswertungen': typeof AuswertungenRoute
   '/dienstplan': typeof DienstplanRoute
+  '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
   '/projekte': typeof ProjekteRoute
+  '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
+  '/einladung/$token': typeof EinladungTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/abwesenheiten': typeof AbwesenheitenRoute
+  '/anmelden': typeof AnmeldenRoute
   '/auswertungen': typeof AuswertungenRoute
   '/dienstplan': typeof DienstplanRoute
+  '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
   '/projekte': typeof ProjekteRoute
+  '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
+  '/einladung/$token': typeof EinladungTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/abwesenheiten'
+    | '/anmelden'
     | '/auswertungen'
     | '/dienstplan'
+    | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
     | '/projekte'
+    | '/registrieren'
     | '/zeiten'
+    | '/einladung/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/abwesenheiten'
+    | '/anmelden'
     | '/auswertungen'
     | '/dienstplan'
+    | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
     | '/projekte'
+    | '/registrieren'
     | '/zeiten'
+    | '/einladung/$token'
   id:
     | '__root__'
     | '/'
     | '/abwesenheiten'
+    | '/anmelden'
     | '/auswertungen'
     | '/dienstplan'
+    | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
     | '/projekte'
+    | '/registrieren'
     | '/zeiten'
+    | '/einladung/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AbwesenheitenRoute: typeof AbwesenheitenRoute
+  AnmeldenRoute: typeof AnmeldenRoute
   AuswertungenRoute: typeof AuswertungenRoute
   DienstplanRoute: typeof DienstplanRoute
+  EinrichtungRoute: typeof EinrichtungRoute
   EinstellungenRoute: typeof EinstellungenRoute
   MehrRoute: typeof MehrRoute
   ProjekteRoute: typeof ProjekteRoute
+  RegistrierenRoute: typeof RegistrierenRoute
   ZeitenRoute: typeof ZeitenRoute
+  EinladungTokenRoute: typeof EinladungTokenRoute
 }
 
 declare module '@tanstack/solid-router' {
@@ -150,6 +202,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof AbwesenheitenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/anmelden': {
+      id: '/anmelden'
+      path: '/anmelden'
+      fullPath: '/anmelden'
+      preLoaderRoute: typeof AnmeldenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auswertungen': {
       id: '/auswertungen'
       path: '/auswertungen'
@@ -162,6 +221,13 @@ declare module '@tanstack/solid-router' {
       path: '/dienstplan'
       fullPath: '/dienstplan'
       preLoaderRoute: typeof DienstplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/einrichtung': {
+      id: '/einrichtung'
+      path: '/einrichtung'
+      fullPath: '/einrichtung'
+      preLoaderRoute: typeof EinrichtungRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/einstellungen': {
@@ -185,11 +251,25 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof ProjekteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/registrieren': {
+      id: '/registrieren'
+      path: '/registrieren'
+      fullPath: '/registrieren'
+      preLoaderRoute: typeof RegistrierenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/zeiten': {
       id: '/zeiten'
       path: '/zeiten'
       fullPath: '/zeiten'
       preLoaderRoute: typeof ZeitenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/einladung/$token': {
+      id: '/einladung/$token'
+      path: '/einladung/$token'
+      fullPath: '/einladung/$token'
+      preLoaderRoute: typeof EinladungTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -198,12 +278,16 @@ declare module '@tanstack/solid-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AbwesenheitenRoute: AbwesenheitenRoute,
+  AnmeldenRoute: AnmeldenRoute,
   AuswertungenRoute: AuswertungenRoute,
   DienstplanRoute: DienstplanRoute,
+  EinrichtungRoute: EinrichtungRoute,
   EinstellungenRoute: EinstellungenRoute,
   MehrRoute: MehrRoute,
   ProjekteRoute: ProjekteRoute,
+  RegistrierenRoute: RegistrierenRoute,
   ZeitenRoute: ZeitenRoute,
+  EinladungTokenRoute: EinladungTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

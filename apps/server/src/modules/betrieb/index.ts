@@ -1,11 +1,11 @@
+import { type Fragen, type Land, MODULE, type Modul, moduleAusFragen } from "@soll/arbeitszeit";
 import { eq } from "drizzle-orm";
 import { istBeschaeftigt } from "../../auth/rollen.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { betriebe, mitgliedschaften } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 
-export const MODULE = ["arbeitszeit", "dienstplan", "projektzeit", "terminal"] as const;
-export type Modul = (typeof MODULE)[number];
+export { MODULE, type Modul };
 
 const SPALTE = {
   arbeitszeit: "modulArbeitszeit",
@@ -89,4 +89,48 @@ export const moduleSetzen = (
     s.aendern("betriebe", { betriebId: kontext.betriebId }, werte),
   );
   return { ok: true, module: moduleVon(neu) };
+};
+
+export type EinrichtenErgebnis =
+  | { ok: true; betrieb: Betrieb }
+  | { ok: false; grund: "arbeitszeit_pflicht" | "kein_betrieb" };
+
+/**
+ * The first step of the setup: name, Land and the modules the four questions switch (S-303), in one
+ * write. "No employees" cannot switch working time off while the business has employees.
+ */
+export const betriebEinrichten = (
+  db: Db,
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  angaben: { name: string; land: Land; fragen: Fragen },
+): EinrichtenErgebnis => {
+  if (!betriebLesen(db, kontext.betriebId)) return { ok: false, grund: "kein_betrieb" };
+  const module = moduleAusFragen(angaben.fragen);
+  if (!module.arbeitszeit && beschaeftigte(db, kontext.betriebId) > 0)
+    return { ok: false, grund: "arbeitszeit_pflicht" };
+  const spalten = Object.fromEntries(MODULE.map((modul) => [SPALTE[modul], module[modul]]));
+  const betrieb = schreiben(schreibDb, kontext, (s) =>
+    s.aendern(
+      "betriebe",
+      { betriebId: kontext.betriebId },
+      { name: angaben.name, land: angaben.land, ...spalten },
+    ),
+  );
+  return { ok: true, betrieb };
+};
+
+/** Marks the setup as done, once: the first time stays */
+export const einrichtungAbschliessen = (
+  db: Db,
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+): boolean => {
+  const betrieb = betriebLesen(db, kontext.betriebId);
+  if (!betrieb) return false;
+  if (betrieb.eingerichtetAm !== null) return true;
+  schreiben(schreibDb, kontext, (s) =>
+    s.aendern("betriebe", { betriebId: kontext.betriebId }, { eingerichtetAm: kontext.jetzt }),
+  );
+  return true;
 };

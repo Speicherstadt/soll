@@ -18,22 +18,29 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: Module schalten, einladen, Rollen ändern, PINs setzen |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen |
 | Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen |
 | Mitarbeiter | die eigenen Daten |
-| Lohnbüro | lesen, die Mitgliederliste (Lohndaten folgen mit dem DATEV-Export) |
+| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen |
 | Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG) |
 | Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung |
 | Gerät | nur PINs am Terminal prüfen |
 
-Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen nur Inhaber, Planer, Lohnbüro und Betriebsrat; Mitarbeiter, Externe und Geräte sehen ihre eigene Rolle, aber keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
+Die Löhne in den Arbeitszeitmodellen sehen nur Inhaber und Lohnbüro. Die Rechte prüft der Server bei jedem Aufruf, auch bei den Routen von Better Auth: Die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen nur Inhaber, Planer, Lohnbüro und Betriebsrat; Mitarbeiter, Externe und Geräte sehen ihre eigene Rolle, aber keine anderen Mitglieder. Hat eine Person mehrere Rollen, darf sie, was jede
 davon darf; andere als diese sieben Rollen nimmt der Server nicht an. Jede Änderung einer Mitgliedschaft oder Rolle steht in
 der [Audit-Kette](audit-kette.md).
 
+## Konto und Anmeldung
+
+Wer einen Betrieb einrichtet, legt ein Konto mit E-Mail-Adresse und einem Passwort von mindestens
+10 Zeichen an und wird Inhaber des Betriebs, den er in der [Einrichtung](einrichtung.md) anlegt.
+Angemeldet wird mit E-Mail-Adresse oder Benutzernamen. Gehört ein Konto zu einem Betrieb, wählt
+die App ihn bei der Anmeldung; ohne Betrieb führt sie in die Einrichtung.
+
 ## Einladung ohne E-Mail
 
-Der Inhaber (oder für Mitarbeiter und Externe ein Planer) legt eine Einladung mit Name und Rolle an
-und bekommt einen Link, den er weitergibt oder als QR-Code zeigt. Wer ihn öffnet, wählt einen
+Der Inhaber (oder für Mitarbeiter und Externe ein Planer) legt eine Einladung mit Name und Rolle an,
+in der Einrichtung auch für eine ganze Liste auf einmal, und bekommt einen Link, den er weitergibt. Wer ihn öffnet, wählt einen
 Benutzernamen und ein Passwort (mindestens 10 Zeichen) und meldet sich danach damit an; eine
 E-Mail-Adresse braucht es nicht. Ein Link gilt sieben Tage und nur einmal. Gespeichert wird nur der
 Hash des Links, nicht der Link selbst. Passkeys lassen sich danach zum Konto hinzufügen.
@@ -54,7 +61,8 @@ Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nich
 | Projektzeit | Kunden, Aufträge, Stoppuhr | aus |
 | Terminal | Tablet am Eingang | aus |
 
-Der Inhaber schaltet die Module. Ein ausgeschaltetes Modul lehnt der Server ab, nicht nur die
+Der Inhaber schaltet die Module, zuerst über die vier Fragen der [Einrichtung](einrichtung.md),
+später unter Einstellungen. Die Navigation zeigt nur die Bereiche der eingeschalteten Module. Ein ausgeschaltetes Modul lehnt der Server ab, nicht nur die
 Oberfläche; seine Daten bleiben erhalten und sind beim Einschalten wieder da. Arbeitszeit lässt sich
 nicht abschalten, solange der Betrieb Beschäftigte hat, denn dann gilt die Pflicht zur Erfassung
 (BAG, 13.09.2022, 1 ABR 22/21). Kommt eine beschäftigte Person hinzu, durch Einladung oder

@@ -77,12 +77,12 @@ describe("R-02: the working day, midnight and DST", () => {
     ]);
   });
 
-  it("counts a Sunday like any other day (§ 11 Abs. 2 ArbZG)", () => {
+  it("Sonntag: So 8:00 – 18:01 is a Verstoß like any other day (§ 11 Abs. 2 ArbZG)", () => {
     const { befunde } = hoechstarbeitszeit(tage(arbeit("2026-11-22T08:00+01:00", 601)));
     expect(befunde).toEqual([expect.objectContaining({ art: "ueber_10h", tage: ["2026-11-22"] })]);
   });
 
-  it("22:00 to 7:00 over 25.10.2026 is 10:00 of real time: a Hinweis, not a Verstoß", () => {
+  it("Herbst: 22:00 to 7:00 over 25.10.2026 is 10:00 of real time – Hinweis", () => {
     const { befunde } = hoechstarbeitszeit(
       tage(schicht("2026-10-24T22:00+02:00", "2026-10-25T07:00+01:00")),
     );
@@ -91,7 +91,7 @@ describe("R-02: the working day, midnight and DST", () => {
     ]);
   });
 
-  it("22:00 to 7:00 over 28.03.2027 is 8:00 of real time: no finding", () => {
+  it("Frühjahr: 22:00 to 7:00 over 28.03.2027 is 8:00 of real time – no finding", () => {
     const { befunde } = hoechstarbeitszeit(
       tage(schicht("2027-03-27T22:00+01:00", "2027-03-28T07:00+02:00")),
     );

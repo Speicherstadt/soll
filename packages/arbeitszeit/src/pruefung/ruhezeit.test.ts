@@ -143,7 +143,7 @@ describe("R-05: Ruhezeit", () => {
 });
 
 describe("R-05: § 5 Abs. 2 ArbZG in detail", () => {
-  it("Gastronomie, unter 10:00: Mo 23:00 – Di 8:59 is a Verstoß against the shortened limit", () => {
+  it("unter 10 h: Gastronomie, Mo 23:00 – Di 8:59 – Verstoß „Ruhezeit 9:59“", () => {
     const { befunde } = pruefe(
       moDi(tag("2026-11-16", "23:00"), tag("2026-11-17", "08:59")),
       GASTRO,
@@ -159,7 +159,7 @@ describe("R-05: § 5 Abs. 2 ArbZG in detail", () => {
     ]);
   });
 
-  it("ohne Branche: 10:00 is a Verstoß, the default industry may not shorten", () => {
+  it("ohne Branche: Mo 23:00 – Di 9:00 – Verstoß „Ruhezeit 10:00“", () => {
     const { befunde } = pruefe(moDi(tag("2026-11-16", "23:00"), tag("2026-11-17", "09:00")));
     expect(befunde).toEqual([
       expect.objectContaining({ art: "ruhezeit_zu_kurz", mindestens: 660, fehlt: 60 }),
@@ -201,7 +201,7 @@ describe("R-05: § 5 Abs. 2 ArbZG in detail", () => {
     expect(befunde).toEqual([]);
   });
 
-  it("balances each shortening with its own rest of 12 hours", () => {
+  it("je Verkürzung: two shortenings, then one rest of 16:00 – Hinweis for the second", () => {
     const stempel = [
       ...schicht(tag("2026-11-16", "15:00"), tag("2026-11-16", "23:00")),
       ...schicht(tag("2026-11-17", "09:00"), tag("2026-11-17", "23:00")),
@@ -218,7 +218,7 @@ describe("R-05: § 5 Abs. 2 ArbZG in detail", () => {
 });
 
 describe("R-05: midnight, DST and open shifts", () => {
-  it("measures from the end of a shift past midnight, which belongs to its start day", () => {
+  it("über Mitternacht: Mo 16:00 – Di 0:30, Di 11:00 Kommen – Verstoß „Ruhezeit 10:30“", () => {
     const stempel = [
       ...schicht(tag("2026-11-16", "16:00"), tag("2026-11-17", "00:30")),
       ...schicht(tag("2026-11-17", "11:00"), tag("2026-11-17", "18:00")),
@@ -228,7 +228,7 @@ describe("R-05: midnight, DST and open shifts", () => {
     ]);
   });
 
-  it("measures real time over 25.10.2026: 22:00 to 8:00 is 11:00 of rest", () => {
+  it("Herbst: 22:00 to 8:00 over 25.10.2026 is 11:00 of rest – no finding", () => {
     const stempel = [
       ...schicht("2026-10-24T14:00+02:00", "2026-10-24T22:00+02:00"),
       ...schicht("2026-10-25T08:00+01:00", "2026-10-25T16:00+01:00"),
@@ -236,7 +236,7 @@ describe("R-05: midnight, DST and open shifts", () => {
     expect(pruefe(stempel).befunde).toEqual([]);
   });
 
-  it("measures real time over 28.03.2027: 22:00 to 9:00 is 10:00 of rest", () => {
+  it("Frühjahr: 22:00 to 9:00 over 28.03.2027 is 10:00 of rest – Verstoß", () => {
     const stempel = [
       ...schicht("2027-03-27T14:00+01:00", "2027-03-27T22:00+01:00"),
       ...schicht("2027-03-28T09:00+02:00", "2027-03-28T16:00+02:00"),

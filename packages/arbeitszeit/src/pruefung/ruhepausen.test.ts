@@ -126,7 +126,7 @@ describe("R-04: Ruhepausen", () => {
 });
 
 describe("R-04: midnight, DST and shifts", () => {
-  it("counts a break over midnight in the shift of its start day", () => {
+  it("über Mitternacht: Mo 20:00 – Di 4:30, break 23:45 – 0:15 – no finding", () => {
     const stempel = [
       kommen(am("20:00")),
       pause(am("23:45")),
@@ -136,7 +136,7 @@ describe("R-04: midnight, DST and shifts", () => {
     expect(befundeVon(stempel)).toEqual([]);
   });
 
-  it("measures real time over the DST change: 22:00 to 5:00 on 25.10.2026 is 8 h without a break", () => {
+  it("Herbst: 22:00 to 5:00 over 25.10.2026 is 8 h of real time without a break", () => {
     const stempel = schicht("2026-10-24T22:00+02:00", "2026-10-25T05:00+01:00");
     expect(befundeVon(stempel)).toEqual([
       expect.objectContaining({ art: "pause_fehlt", tage: ["2026-10-24"], fehlt: 30 }),
@@ -144,7 +144,7 @@ describe("R-04: midnight, DST and shifts", () => {
     ]);
   });
 
-  it("judges two shifts of one day apart: 5:00 to 8:00 and 17:00 to 21:00 owe no break", () => {
+  it("zwei Schichten: 5:00 – 8:00 and 17:00 – 21:00 are judged apart – no finding", () => {
     const stempel = [...schicht(am("05:00"), am("08:00")), ...schicht(am("17:00"), am("21:00"))];
     expect(befundeVon(stempel)).toEqual([]);
   });

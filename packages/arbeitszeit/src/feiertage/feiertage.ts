@@ -51,9 +51,9 @@ export const feiertage = (jahr: number, standort: Standort): FeiertageErgebnis =
 
 export type FeiertagErgebnis =
   | { ok: true; feiertag: Feiertag | null }
-  | { ok: false; grund: "nicht_hinterlegt" };
+  | { ok: false; grund: "nicht_hinterlegt" | "kein_tag" };
 
-/** The holiday on a day at a place, null on a working day, or "nicht hinterlegt" before the data */
+/** The holiday on a day at a place, null on a working day; "nicht hinterlegt" before the data, "kein_tag" for no real day */
 export const feiertagAm = (tag: Tag, standort: Standort): FeiertagErgebnis => {
   if (!istTag(tag)) return { ok: false, grund: "kein_tag" };
   const ergebnis = feiertage(Number(tag.slice(0, 4)), standort);

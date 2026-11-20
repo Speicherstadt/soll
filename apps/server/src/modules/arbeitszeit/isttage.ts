@@ -4,7 +4,8 @@ import { stempelungenIn } from "./stempelungen.ts";
 
 /**
  * A person's working days from the stamps in force from `von` up to `bis` (instants): what the plan
- * check reads as worked before today (S-502). Stamps the rules refuse as invalid give no days.
+ * check reads as worked before today (S-502); `bis` is now, so that a shift of yesterday ends with
+ * the stamp of this morning. Stamps the rules refuse as invalid give no days.
  */
 export const istTage = (
   db: Db,

@@ -56,8 +56,9 @@ const ausModell = (db: Db, betriebId: string, nutzerId: string) => ({
 });
 
 /**
- * The input of the check for one person: the stamps from 1 January of last year up to today (R-06
- * and R-08 count over the calendar year), the planned shifts from today on, the settings of the
+ * The input of the check for one person: the stamps from 1 January of last year up to now (R-06
+ * and R-08 count over the calendar year; a shift of yesterday ends with this morning's stamp, § 5
+ * ArbZG measures the rest from it), the planned shifts from today on, the settings of the
  * business, the person's data and model. Mitteilung of a shift is the day it was published (S-503);
  * a draft is told today at the earliest (docs/plan.md, "Mitteilung bei Arbeit auf Abruf").
  */
@@ -66,8 +67,9 @@ const pruefungFuer = (
   betriebId: string,
   nutzerId: string,
   standort: Standort,
-  heute: Tag,
+  jetzt: number,
 ): PlanPruefung | null => {
+  const heute = tagInBerlin(jetzt);
   const betrieb = betriebLesen(db, betriebId);
   if (!betrieb) return null;
   const geplant = schichtenAb(db, betriebId, nutzerId, heute);
@@ -75,7 +77,7 @@ const pruefungFuer = (
   const von = beginnInBerlin(tagAus(jahrVon(heute) - 1, 1, 1));
   return {
     schichten: geplant,
-    ist: istTage(db, betriebId, nutzerId, von, beginnInBerlin(heute)),
+    ist: istTage(db, betriebId, nutzerId, von, jetzt),
     heute,
     standort,
     betrieb: planBetriebAus(pruefeinstellungenVon(betrieb)),
@@ -110,7 +112,7 @@ export const wochenBefunde = (
     gezeigt.flatMap((s) => (s.nutzerId && ids.has(s.schichtId) ? [s.nutzerId] : [])),
   );
   return [...personen].flatMap((nutzerId) => {
-    const pruefung = pruefungFuer(db, betriebId, nutzerId, standort, heute);
+    const pruefung = pruefungFuer(db, betriebId, nutzerId, standort, jetzt);
     if (!pruefung) return [];
     return planBefunde(pruefung)
       .befunde.map((befund) => ({

@@ -238,3 +238,36 @@ describe("docs/regeln.md against the law", () => {
     expect(faelle(regel("R-23")).some((z) => /Wartezeit/.test(z.join(" ")))).toBe(true);
   });
 });
+
+describe("docs/regeln.md: the overview against the rules", () => {
+  /** The severity column of the overview table, by rule */
+  const uebersicht = new Map(
+    (regeln.split("## Übersicht")[1] ?? "")
+      .split("\n")
+      .filter((zeile) => /^\| R-\d{2} \|/.test(zeile))
+      .map((zeile) => {
+        const zellen = zeile
+          .slice(1, -1)
+          .split("|")
+          .map((zelle) => zelle.trim());
+        return [zellen[0] ?? "", zellen.at(-1) ?? ""] as const;
+      }),
+  );
+
+  /** The text of a rule's "Schwere" bullet, up to the next bullet or blank line */
+  const schwere = (text: string): string =>
+    /\*\*Schwere\*\*:([\s\S]*?)(?=\n- \*\*|\n\n)/.exec(text)?.[1] ?? "";
+
+  it("names in the overview every severity a rule can report", () => {
+    // Each rule's "Schwere" is the source; the overview only sums it up. R-03 warns before the
+    // period ends (Hinweis) and R-05 warns while a shortened rest in § 5 Abs. 2 ArbZG awaits its
+    // compensation (Hinweis), so "Verstoß" alone in the overview is wrong for both.
+    for (const regel of abschnitte()) {
+      const zeile = uebersicht.get(regel.kennung) ?? "";
+      const eigen = schwere(regel.text);
+      for (const stufe of ["Hinweis", "Verstoß"])
+        if (eigen.includes(stufe))
+          expect(zeile, `${regel.kennung}: ${eigen.trim()}`).toContain(stufe);
+    }
+  });
+});

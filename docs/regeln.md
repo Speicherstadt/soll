@@ -119,7 +119,7 @@ Regel:
   zählen ab der angefangenen Minute, Enden bis zur nächsten vollen (nie zulasten der
   Beschäftigten); eine Unterbrechung unter 15 min ist Arbeitszeit (R-04). Eine wiederholte Stempelung
   derselben Art zählt so, dass mehr Arbeitszeit entsteht (frühester Beginn, spätestes Ende), mit
-  Hinweis; dieselbe Art zweimal in derselben Minute ist ein doppelter Tipp und kein Befund. „Kommen“
+  Hinweis; dieselbe Art zweimal in derselben Minute ist ein doppelter Tipp und kein Befund; es zählt der erste Tipp. „Kommen“
   während einer Pause beendet die Pause. Was fehlt, ergänzt Soll nie: Ein „Gehen“ ohne „Kommen“,
   ein „Pause-Ende“ ohne „Pause-Beginn“ und ein „Gehen“ während der Pause sind Hinweise, und die
   Zeit, deren Ende nicht feststeht, zählt nicht.
@@ -156,6 +156,7 @@ Regel:
 | 24 h, Sekunden | Mo 8:00:30 Kommen, Di 8:00:30 Gehen und Kommen, 12:00 Gehen | Mo 24:00, Di 4:00 Arbeitszeit: die Minute ab 8:00 zählt einmal, bei Di | Grundbegriff „Schicht“; CLAUDE.md (nie zulasten der Beschäftigten) |
 | ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
 | doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
+| doppelter Tipp, 9 h | Mo 7:00 Kommen, 16:00:05 und 16:00:50 Gehen, Di 1:00:20 Kommen, 5:00 Gehen | zwei Schichten wie ohne den zweiten Tipp: Mo 9:01, Di 4:00 Arbeitszeit | Grundbegriff „Schicht“; Regel dieser Seite |
 | doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |
 | Kommen fehlt | Mo 16:00 Gehen, sonst nichts | Hinweis „Kommen fehlt“ für Mo, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |
 | Pause-Ende fehlt | Mo 22:00 Kommen, 23:30 Pause, Di 6:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo, 1:30 Arbeitszeit, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |

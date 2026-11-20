@@ -156,8 +156,11 @@ const lasseOffen = (lauf: Lauf, stempel: Stempelung): Lauf => {
 /**
  * One stamp. A repeated stamp counts in the way that gives more working time, as the cut to whole
  * minutes does: the earliest start (Kommen, Pause-Ende) and the latest end (Gehen, Pause-Beginn).
+ * A double tap within the minute changes nothing, so the first tap counts: a later one would move
+ * the end, and with it the 9 h after which the shift ends.
  */
 const lies = (vorher: Lauf, stempel: Stempelung): Lauf => {
+  if (wiederholt(vorher, stempel)) return vorher;
   const lauf = lasseOffen(vorher, stempel);
   const { art } = stempel;
   if (lauf.zustand === "aus") {

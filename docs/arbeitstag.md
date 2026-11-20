@@ -64,7 +64,7 @@ Soll ergänzt nie eine Stempelung und stempelt nie selbst aus.
 | Gehen während der Pause | Hinweis „Pause-Ende fehlt“; gezählt wird die Arbeit bis zur Pause |
 | Gehen ohne Kommen | Hinweis „Kommen fehlt“ an dem Tag, nichts wird gezählt |
 | Pause-Ende ohne Pause | Hinweis „Pause-Beginn fehlt“, die Stempelung zählt nicht. Ein Pause-Ende nach dem Kommen, das die Pause beendet hat, wiederholt dieses Ende: Hinweis „doppelt“. |
-| dieselbe Art zweimal in einer Minute | ein doppelter Tipp oder eine erneut gesendete Stempelung, kein Hinweis |
+| dieselbe Art zweimal in einer Minute | ein doppelter Tipp oder eine erneut gesendete Stempelung, kein Hinweis; es zählt der erste Tipp, der zweite ändert nichts |
 | dieselbe Art zweimal mit Abstand | Hinweis „doppelt“; es zählt der früheste Beginn und das späteste Ende. Ein Gehen oder eine Pause 9 Stunden oder mehr nach dem letzten Ende wiederholt es nicht: Die Stempelung zählt, als liefe keine Schicht. |
 
 Jeder dieser Hinweise nennt § 3 Abs. 2 Nr. 1 ArbSchG (Pflicht zur Erfassung, BAG 1 ABR 22/21). Bis

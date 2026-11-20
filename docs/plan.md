@@ -57,6 +57,7 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Konten | aus den Abschlüssen berechnet, nur Anpassungen von Hand gespeichert | keine doppelte Wahrheit |
 | Aussonderung | die Kette läuft über den Hash des Inhalts, sodass der Inhalt nach Ablauf der Frist entfernt werden kann | DSGVO verlangt Löschen, die GoBD Unveränderbarkeit |
 | Regeln | als Daten mit Gültigkeit (Regelversion je Zeitraum) | eine Reform des ArbZG wird eine neue Version, keine Codeänderung |
+| Jahreswerte | als Daten mit Gültigkeit und Quelle in `packages/arbeitszeit`, nicht in der Datenbank; jeder Betrag endet mit seinem Jahr | die reinen Funktionen brauchen sie ohne Datenbank; ein neuer Wert kommt mit einer Version von Soll, geprüft durch Tests, und kein Betrieb kann ihn verändern |
 | Bescheinigungen | kein Hochladen; nur „liegt vor“ (eAU oder Papier im Büro) und eine Erinnerung an den Betrieb, die eAU abzurufen | seit 2023 kommt die AU für gesetzlich Versicherte elektronisch an den Betrieb; eine hochgeladene Datei wäre ein Gesundheitsdatum (Art. 9 DSGVO) für seltene Fälle |
 | Rundung | nur der abrechenbaren Projektzeit, nie der Arbeitszeit | Abrunden der Arbeitszeit ginge zulasten der Beschäftigten |
 | Terminal | PWA im Kiosk-Modus auf einem Tablet; keine eigene Hardware | derselbe Code wie im Browser |
@@ -171,7 +172,7 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | `konto_anpassungen` | Startsaldo, Auszahlung, Resturlaub | Audit-Kette |
 | `kunden`, `projekte`, `taetigkeiten`, `projektzeiten` | Sätze, Budgets, Zeiten, abgerechnet am | Audit-Kette; gesperrt ab „abgerechnet“ |
 | `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | Audit-Kette; nur anfügen |
-| `jahreswerte` | Mindestlohn, Minijob-Grenze, Regelversion | per Migration |
+| `jahreswerte` | Mindestlohn, Minijob-Grenze, Kinderkrankentage, Regelversion | keine Tabelle: Daten mit Gültigkeit in `packages/arbeitszeit` (siehe „Entscheidungen“) |
 
 Dauern in ganzen Minuten, Geld in Cent, Urlaub in halben Tagen, Zeitpunkte als UTC-Millisekunden
 (Integer), Kalendertage als Text `JJJJ-MM-TT` in `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem

@@ -38,3 +38,4 @@ export {
 export * from "./pruefung/index.ts";
 export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";
+export * from "./zuschlaege/index.ts";

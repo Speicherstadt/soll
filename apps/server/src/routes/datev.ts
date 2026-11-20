@@ -2,7 +2,7 @@ import { istMonat } from "@soll/arbeitszeit";
 import { DATEV_FORMAT, type Fehlend, POSTENARTEN } from "@soll/export";
 import { type Context, Hono } from "hono";
 import { z } from "zod";
-import { BESCHAEFTIGT, rollenVon } from "../auth/rollen.ts";
+import { istBeschaeftigt, rollenVon } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { datevDatei, einstellungenLesen, einstellungenSetzen } from "../modules/datev/index.ts";
 import { mitgliederMitNamen, namenVon } from "../modules/mitglieder/index.ts";
@@ -36,16 +36,14 @@ const exportSchema = z
   .object({ monat: z.string().refine(istMonat), ziel: z.enum(["lodas", "lug"]) })
   .strict();
 
-/** Members who may be on the payroll: everyone but devices and external staff */
+/** Who may be on the payroll: the owner and who works for the business, no device or external */
 const personenVon = (
   db: Db,
   betriebId: string,
   personalnummern: Readonly<Record<string, string>>,
 ) =>
   mitgliederMitNamen(db, betriebId)
-    .filter((m) =>
-      rollenVon(m.rolle).some((r) => r === "inhaber" || BESCHAEFTIGT.includes(r as never)),
-    )
+    .filter((m) => istBeschaeftigt(m.rolle) || rollenVon(m.rolle).includes("inhaber"))
     .map((m) => ({
       nutzerId: m.nutzerId,
       name: m.name,

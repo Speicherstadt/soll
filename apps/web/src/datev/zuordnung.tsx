@@ -29,8 +29,8 @@ export const DatevZuordnung = () => {
     const antwort = await api<DatevAnsicht>(PFAD, { method: "PUT", body });
     setGespeichert(antwort.ok);
     if (!antwort.ok) return setFehler((FEHLER[antwort.fehler] ?? m.fehler_speichern)());
+    // the form already shows what was saved; new objects would rebuild every field of the lists
     setFehler("");
-    setAnsicht(antwort.daten);
   };
   return (
     <Show when={ansicht()}>

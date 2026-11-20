@@ -28,7 +28,7 @@ Besonders wichtig sind:
 - Lücken in Anmeldung, Einladungen, PIN-Sperre und Tokens;
 - Exporte und Importe, die fremde Daten preisgeben oder einschleusen.
 
-Probleme in Bun, PostgreSQL oder anderen eingebundenen Programmen gehören zu diesen Projekten; macht
+Probleme in Bun, SQLite oder anderen eingebundenen Programmen gehören zu diesen Projekten; macht
 erst die Art, wie Soll sie einsetzt, sie ausnutzbar, bitte hier melden.
 
 ## Abhängigkeiten aktuell halten

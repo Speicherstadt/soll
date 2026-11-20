@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Terminal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:.8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); font-family: Geist, system-ui, sans-serif; background: {{t.bg}}; color: {{t.fg}}">
+<section aria-label="Uhr" style="display: flex; flex-direction: column; justify-content: space-between; padding: 56px 64px; background: {{t.muted}}; border-right: 1px solid {{t.border}}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 20px; font-weight: 600">Café Elbblick</span>
+<span style="font-size: 17px; color: {{t.mfg}}">Terminal Eingang</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 120px; font-weight: 600; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums">07:58</span>
+<span style="font-size: 24px; color: {{t.mfg}}">Freitag, 20. November 2026</span>
+</div>
+<div style="display: flex; align-items: center; gap: 16px; font-size: 22px">
+<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"></path><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"></path><path d="M12.91 4.1a15.91 15.91 0 0 1 .01 15.8"></path><path d="M16.37 2a20.16 20.16 0 0 1 0 20"></path></svg>
+<span>Karte auflegen oder PIN eingeben</span>
+</div>
+</section>
+<sc-if value="{{showPin}}" hint-placeholder-val="{{ true }}">
+<section aria-label="PIN eingeben" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; padding: 48px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 16px">
+<span style="font-size: 22px; color: {{t.mfg}}">PIN</span>
+<div aria-label="2 von 4 Ziffern eingegeben" role="img" style="display: flex; gap: 20px">
+<span style="width: 22px; height: 22px; border-radius: 999px; background: {{t.fg}}"></span>
+<span style="width: 22px; height: 22px; border-radius: 999px; background: {{t.fg}}"></span>
+<span style="width: 22px; height: 22px; border-radius: 999px; border: 2px solid {{t.border}}; box-sizing: border-box"></span>
+<span style="width: 22px; height: 22px; border-radius: 999px; border: 2px solid {{t.border}}; box-sizing: border-box"></span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 432px">
+<sc-for list="{{keys}}" as="key" hint-placeholder-count="12">
+<button type="button" aria-label="{{key.aria}}" style="height: 96px; border: 1px solid {{t.border}}; border-radius: 16px; background: {{key.bg}}; color: {{key.fg}}; font-family: 'Geist Mono', monospace; font-size: 34px; font-weight: 500; cursor: pointer">{{key.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 15px; color: {{t.mfg}}">Nach fünf falschen PINs wird der Zugang gesperrt.</span>
+</section>
+</sc-if>
+<sc-if value="{{showDone}}" hint-placeholder-val="{{ false }}">
+<section aria-label="Gestempelt" role="status" style="display: flex; flex-direction: column; justify-content: center; gap: 28px; padding: 64px">
+<div style="width: 88px; height: 88px; border-radius: 999px; background: {{t.successSurface}}; display: flex; align-items: center; justify-content: center">
+<svg aria-hidden="true" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="{{t.success}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 44px; font-weight: 700; letter-spacing: -0.02em">Guten Morgen, Lea</span>
+<span style="font-size: 26px">Gekommen um <span style="font-family: 'Geist Mono', monospace">07:58</span></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 18px 20px; border-radius: 14px; background: {{t.muted}}"><span style="font-size: 15px; color: {{t.mfg}}">Heute geplant</span><span style="font-family: 'Geist Mono', monospace; font-size: 24px">08:00–16:30</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 18px 20px; border-radius: 14px; background: {{t.muted}}"><span style="font-size: 15px; color: {{t.mfg}}">Saldo diese Woche</span><span style="font-family: 'Geist Mono', monospace; font-size: 24px">+1:20</span></div>
+</div>
+<div style="display: flex; gap: 12px; align-items: flex-start; padding: 16px 20px; border-radius: 14px; background: {{t.warnSurface}}">
+<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="{{t.warning}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+<span style="font-size: 18px">Pause spätestens ab 13:58 · § 4 ArbZG</span>
+</div>
+<span style="font-size: 15px; color: {{t.mfg}}">Zurück in 5 Sekunden</span>
+</section>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"zustand":{"editor":"enum","options":["PIN","Gestempelt"],"default":"PIN"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var light = { bg: '#ffffff', muted: '#fafafa', accent: '#f4f4f5', border: '#e4e4e7', fg: '#09090b', mfg: '#71717a', primary: '#18181b', pfg: '#fafafa', success: '#15803d', successSurface: '#dcfce7', warning: '#b45309', warnSurface: '#fef3c7' };
+    var dark = { bg: '#09090b', muted: '#18181b', accent: '#27272a', border: '#27272a', fg: '#fafafa', mfg: '#a1a1aa', primary: '#fafafa', pfg: '#18181b', success: '#4ade80', successSurface: '#052e16', warning: '#fbbf24', warnSurface: '#422006' };
+    var t = this.props.dark ? dark : light;
+    var labels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', 'OK'];
+    var keys = labels.map(function (l) {
+      var ok = l === 'OK';
+      return {
+        label: l,
+        aria: l === '⌫' ? 'Ziffer löschen' : (ok ? 'PIN bestätigen' : 'Ziffer ' + l),
+        bg: ok ? t.primary : t.bg,
+        fg: ok ? t.pfg : t.fg
+      };
+    });
+    var done = this.props.zustand === 'Gestempelt';
+    return { t: t, keys: keys, showPin: !done, showDone: done };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Monatsabschluss</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:.8}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1040px; box-sizing: border-box; display: flex; flex-wrap: wrap; font-family: Geist, system-ui, sans-serif; font-size: 13px; background: {{t.bg}}; color: {{t.fg}}">
+<nav aria-label="Bereiche" style="flex: 1 1 232px; max-width: 232px; min-width: 200px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: {{t.muted}}; border-right: 1px solid {{t.border}}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px">
+<span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 7px; background: {{t.primary}}; color: {{t.pfg}}; display: flex; align-items: center; justify-content: center; font-weight: 700">S</span>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 600">Café Elbblick</span><span style="font-size: 12px; color: {{t.mfg}}">Mia · Inhaberin</span></div>
+</div>
+<sc-for list="{{nav}}" as="item" hint-placeholder-count="7">
+<a href="#" aria-current="{{item.current}}" style="display: flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: 6px; text-decoration: none; background: {{item.bg}}; font-weight: {{item.weight}}">{{item.label}}</a>
+</sc-for>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 24px 32px; box-sizing: border-box">
+<header style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em">Monatsabschluss Oktober 2026 · Lea</h1>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: {{t.successSurface}}; color: {{t.success}}; font-weight: 500"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Lea hat bestätigt, 2.11.</span>
+<span style="display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; border: 1px solid {{t.border}}; color: {{t.mfg}}">Betrieb: offen</span>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid {{t.border}}; border-radius: 6px; background: transparent; color: {{t.fg}}; font-family: inherit; font-size: 13px; cursor: pointer">Stundenzettel (PDF)</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 6px; background: {{t.primary}}; color: {{t.pfg}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Monat abschließen</button>
+</div>
+</header>
+<section aria-label="Summen" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+<sc-for list="{{sums}}" as="s" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: {{t.muted}}"><span style="font-size: 12px; color: {{t.mfg}}">{{s.label}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 18px; font-weight: 600">{{s.value}}</span></div>
+</sc-for>
+</section>
+<div style="overflow-x: auto; border: 1px solid {{t.border}}; border-radius: 12px">
+<table style="width: 100%; min-width: 860px; border-collapse: collapse">
+<thead>
+<tr>
+<th scope="col" style="text-align: left; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Tag</th>
+<th scope="col" style="text-align: right; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Beginn</th>
+<th scope="col" style="text-align: right; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Ende</th>
+<th scope="col" style="text-align: right; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Pause</th>
+<th scope="col" style="text-align: right; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Dauer</th>
+<th scope="col" style="text-align: left; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Hinweis</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{days}}" as="d" hint-placeholder-count="12">
+<tr style="background: {{d.bg}}">
+<th scope="row" style="text-align: left; padding: 9px 12px; font-weight: 500; border-bottom: 1px solid {{t.border}}; white-space: nowrap">{{d.day}}</th>
+<td style="text-align: right; padding: 9px 12px; font-family: 'Geist Mono', monospace; border-bottom: 1px solid {{t.border}}">{{d.from}}</td>
+<td style="text-align: right; padding: 9px 12px; font-family: 'Geist Mono', monospace; border-bottom: 1px solid {{t.border}}"><span style="text-decoration: {{d.toDeco}}">{{d.to}}</span></td>
+<td style="text-align: right; padding: 9px 12px; font-family: 'Geist Mono', monospace; border-bottom: 1px solid {{t.border}}">{{d.pause}}</td>
+<td style="text-align: right; padding: 9px 12px; font-family: 'Geist Mono', monospace; border-bottom: 1px solid {{t.border}}">{{d.dur}}</td>
+<td style="padding: 9px 12px; border-bottom: 1px solid {{t.border}}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline">
+<sc-if value="{{d.hasTag}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; border: 1px solid {{d.tagColor}}; color: {{d.tagColor}}">{{d.tag}}</span></sc-if>
+<span style="color: {{d.noteColor}}">{{d.note}}</span>
+</div>
+</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<section aria-labelledby="pruefwert-titel" style="display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid {{t.border}}; border-radius: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px; flex: 1 1 420px">
+<h2 id="pruefwert-titel" style="margin: 0; font-size: 15px; font-weight: 600">Prüfwert</h2>
+<span style="color: {{t.mfg}}">Entsteht beim Abschließen und steht auf Leas Stundenzettel. Ändert sich danach etwas an diesem Monat, zeigt die Prüfseite die Abweichung.</span>
+</div>
+<span style="font-family: 'Geist Mono', monospace; padding: 8px 12px; border-radius: 8px; background: {{t.muted}}; color: {{t.mfg}}">Nr. — · noch nicht erzeugt</span>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var light = { bg: '#ffffff', muted: '#fafafa', accent: '#f4f4f5', border: '#e4e4e7', fg: '#09090b', mfg: '#71717a', primary: '#18181b', pfg: '#fafafa', success: '#15803d', successSurface: '#dcfce7', warning: '#b45309', danger: '#b91c1c', info: '#1d4ed8' };
+    var dark = { bg: '#09090b', muted: '#18181b', accent: '#27272a', border: '#27272a', fg: '#fafafa', mfg: '#a1a1aa', primary: '#fafafa', pfg: '#18181b', success: '#4ade80', successSurface: '#052e16', warning: '#fbbf24', danger: '#f87171', info: '#93c5fd' };
+    var t = this.props.dark ? dark : light;
+    function row(day, from, to, pause, dur, tag, note, kind, changed) {
+      var color = kind === 'Verstoß' ? t.danger : (kind === 'Hinweis' ? t.warning : (kind === 'Geändert' ? t.info : t.mfg));
+      return {
+        day: day, from: from || '', to: to || '', pause: pause || '', dur: dur || '',
+        hasTag: !!tag, tag: tag || '', tagColor: color,
+        note: note || '', noteColor: kind ? t.fg : t.mfg,
+        toDeco: 'none',
+        bg: kind === 'frei' ? t.muted : 'transparent'
+      };
+    }
+    var days = [
+      row('Do 1.10.', '08:00', '16:30', '0:30', '8:00'),
+      row('Fr 2.10.', '07:55', '16:40', '0:30', '8:15'),
+      row('Sa 3.10.', '', '', '', '', '', 'Tag der Deutschen Einheit', 'frei'),
+      row('So 4.10.', '10:00', '18:00', '0:30', '7:30', 'Hinweis', 'Sonntagsarbeit · Ersatzruhetag am Mi 7.10. · § 11 ArbZG', 'Hinweis'),
+      row('Mo 5.10.', '08:00', '16:30', '0:30', '8:00'),
+      row('Di 6.10.', '08:00', '18:15', '0:30', '9:45', 'Verstoß', 'Pause 30 min, nach 9 Stunden nötig 45 min · § 4 ArbZG', 'Verstoß'),
+      row('Mi 7.10.', '', '', '', '', '', 'Ersatzruhetag', 'frei'),
+      row('Do 8.10.', '08:00', '16:30', '0:30', '8:00', 'Geändert', 'Gehen nachgetragen von Mia am 9.10. · Grund: Ausstempeln vergessen', 'Geändert'),
+      row('Fr 9.10.', '', '', '', '', '', 'Urlaub', 'frei'),
+      row('Mo 12.10.', '08:02', '16:30', '0:30', '7:58'),
+      row('Di 13.10.', '08:00', '16:35', '0:30', '8:05'),
+      row('14.–31.10.', '', '', '', '', '', '13 Arbeitstage ohne Hinweis · aufklappen')
+    ];
+    var sums = [
+      { label: 'Soll', value: '168:00' },
+      { label: 'Ist', value: '171:28' },
+      { label: 'Überstunden', value: '+3:28' },
+      { label: 'Urlaub', value: '1 Tag' },
+      { label: 'Sonntagsarbeit', value: '7:30' }
+    ];
+    var nav = ['Heute', 'Zeiten', 'Abwesenheiten', 'Dienstplan', 'Projekte', 'Auswertungen', 'Einstellungen'].map(function (l) {
+      var cur = l === 'Zeiten';
+      return { label: l, current: cur ? 'page' : 'false', bg: cur ? t.accent : 'transparent', weight: cur ? '600' : '400' };
+    });
+    return { t: t, days: days, sums: sums, nav: nav };
+  }
+}
+</script>
+</body>
+</html>

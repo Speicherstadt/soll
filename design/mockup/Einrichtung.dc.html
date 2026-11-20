@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Einrichtung</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:.8}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1040px; box-sizing: border-box; display: flex; justify-content: center; padding: 48px 24px; font-family: Geist, system-ui, sans-serif; font-size: 13px; background: {{t.muted}}; color: {{t.fg}}">
+<div style="width: 100%; max-width: 880px; display: flex; flex-direction: column; gap: 24px">
+<header style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 8px; background: {{t.primary}}; color: {{t.pfg}}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px">S</span>
+<span style="font-size: 17px; font-weight: 600">Soll einrichten</span>
+</header>
+<ol aria-label="Schritte" style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="5">
+<li aria-current="{{s.current}}" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; border: 1px solid {{s.border}}; background: {{s.bg}}; font-weight: {{s.weight}}">
+<span aria-hidden="true" style="width: 22px; height: 22px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 12px; background: {{s.numBg}}; color: {{s.numFg}}">{{s.n}}</span>{{s.label}}</li>
+</sc-for>
+</ol>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<section aria-labelledby="betrieb-titel" style="flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 16px; padding: 24px; border: 1px solid {{t.border}}; border-radius: 12px; background: {{t.bg}}">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 id="betrieb-titel" style="margin: 0; font-size: 20px; font-weight: 600">Dein Betrieb</h1>
+<p style="margin: 0; color: {{t.mfg}}">Das Bundesland bestimmt die Feiertage. Weitere Standorte legst du im nächsten Schritt an.</p>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 500">Name des Betriebs
+<input type="text" value="Weber Haustechnik" style="height: 38px; box-sizing: border-box; padding: 0 12px; border: 1px solid {{t.border}}; border-radius: 8px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px">
+</label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 500">Bundesland
+<select style="height: 38px; box-sizing: border-box; padding: 0 10px; border: 1px solid {{t.border}}; border-radius: 8px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px"><option>Hamburg</option></select>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 500">Branche
+<select style="height: 38px; box-sizing: border-box; padding: 0 10px; border: 1px solid {{t.border}}; border-radius: 8px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px"><option>Handwerk (SHK)</option></select>
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 500">Erster Standort
+<input type="text" value="Werkstatt, Hafenstraße 12, 20459 Hamburg" style="height: 38px; box-sizing: border-box; padding: 0 12px; border: 1px solid {{t.border}}; border-radius: 8px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 14px">
+</label>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-weight: 500">Vier Fragen, damit du nur siehst, was du brauchst</span>
+<sc-for list="{{questions}}" as="q" hint-placeholder-count="4">
+<fieldset style="margin: 0; padding: 10px 12px; border: 1px solid {{t.border}}; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between">
+<legend style="float: left; padding: 0; font-weight: 400">{{q.text}}</legend>
+<div style="display: flex; gap: 12px">
+<label style="display: flex; align-items: center; gap: 6px; min-height: 28px"><input type="radio" name="{{q.id}}" checked="{{q.yes}}" style="margin: 0">Ja</label>
+<label style="display: flex; align-items: center; gap: 6px; min-height: 28px"><input type="radio" name="{{q.id}}" checked="{{q.no}}" style="margin: 0">Nein</label>
+</div>
+</fieldset>
+</sc-for>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center">
+<span style="color: {{t.mfg}}">Module:</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{t.accent}}">Arbeitszeit · Pflicht bei Beschäftigten</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{t.accent}}">Aufträge</span>
+<span style="padding: 2px 8px; border-radius: 999px; background: {{t.accent}}">Terminal</span>
+<span style="color: {{t.mfg}}">· später unter Einstellungen änderbar</span>
+</div>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px">
+<span style="color: {{t.mfg}}">Schritt 1 von 5</span>
+<button type="button" style="height: 38px; padding: 0 18px; border: 0; border-radius: 8px; background: {{t.primary}}; color: {{t.pfg}}; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Weiter</button>
+</div>
+</section>
+<aside aria-labelledby="vorlagen-titel" style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 12px; padding: 20px; border: 1px solid {{t.border}}; border-radius: 12px; background: {{t.bg}}">
+<h2 id="vorlagen-titel" style="margin: 0; font-size: 15px; font-weight: 600">Danach: Vorlagen für Arbeitszeit</h2>
+<p style="margin: 0; color: {{t.mfg}}">Im dritten Schritt wählst du aus, was passt, und änderst nur, was abweicht.</p>
+<sc-for list="{{templates}}" as="m" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; background: {{t.muted}}">
+<span style="font-weight: 600">{{m.name}}</span>
+<span style="color: {{t.mfg}}">{{m.detail}}</span>
+</div>
+</sc-for>
+<p style="margin: 0; font-size: 12px; color: {{t.mfg}}">Mitarbeiter kommen danach per CSV oder einzeln, die Einladung per Link oder QR-Code, auch ohne E-Mail-Adresse.</p>
+</aside>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":1040}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var light = { bg: '#ffffff', muted: '#fafafa', accent: '#f4f4f5', border: '#e4e4e7', fg: '#09090b', mfg: '#71717a', primary: '#18181b', pfg: '#fafafa' };
+    var dark = { bg: '#09090b', muted: '#18181b', accent: '#27272a', border: '#27272a', fg: '#fafafa', mfg: '#a1a1aa', primary: '#fafafa', pfg: '#18181b' };
+    var t = this.props.dark ? dark : light;
+    var steps = ['Betrieb', 'Standorte', 'Arbeitszeit', 'Mitarbeiter', 'Einladungen'].map(function (l, i) {
+      var cur = i === 0;
+      return {
+        n: String(i + 1), label: l, current: cur ? 'step' : 'false',
+        border: cur ? t.fg : t.border, bg: t.bg, weight: cur ? '600' : '400',
+        numBg: cur ? t.primary : t.accent, numFg: cur ? t.pfg : t.mfg
+      };
+    });
+    var templates = [
+      { name: 'Vollzeit', detail: '40 Stunden · Mo–Fr je 8:00 · Gehalt' },
+      { name: 'Teilzeit', detail: '20 Stunden · Tage frei wählbar · Stundenlohn' },
+      { name: 'Minijob', detail: 'bis 603 € im Monat · Erfassung binnen 7 Tagen' }
+    ];
+    var questions = [
+      { id: 'q1', text: 'Hast du Beschäftigte?', yes: true, no: false },
+      { id: 'q2', text: 'Arbeitet ihr in Schichten oder nach Plan?', yes: false, no: true },
+      { id: 'q3', text: 'Rechnet ihr Stunden mit Kunden ab?', yes: true, no: false },
+      { id: 'q4', text: 'Stempelt ihr an einem festen Ort, etwa am Eingang?', yes: true, no: false }
+    ];
+    return { t: t, steps: steps, templates: templates, questions: questions };
+  }
+}
+</script>
+</body>
+</html>

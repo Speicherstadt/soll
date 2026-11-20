@@ -1,0 +1,47 @@
+name: CI
+
+# Text only (Markdown, docs/, the license) changes no code: on main no run, docs.yml checks docs/.
+# A pull request always runs, so a required check never stays "Pending".
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**", "LICENSE"]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_call: # a later release.yml runs the same checks before publishing
+  workflow_dispatch:
+
+# A new push to a pull request cancels its outdated run; runs on main finish
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The whole history: `checks pr` compares the branch with its base
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun run lint
+      # The shared rule checks of firsttris/workflows (checks.json: files past 400 lines, functions past 80,
+      # rings of imports between packages; i18n and pages once Paraglide and the routes are in). Installed without
+      # saving, as some environments cannot fetch GitHub tarballs; S-101 moves it into package.json where it can.
+      - run: bun add --dev --no-save "github:firsttris/workflows#v1"
+      - run: bunx checks
+      - if: github.event_name == 'pull_request'
+        run: bunx checks pr
+      - run: bun run test
+      - run: bun run build
+      # Known vulnerabilities in the dependencies fail the run
+      - run: bun audit

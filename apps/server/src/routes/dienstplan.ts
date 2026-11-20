@@ -35,6 +35,19 @@ const rolle = z.string().trim().max(60);
 const spanne = ({ beginnMinute, endeMinute }: { beginnMinute?: number; endeMinute?: number }) =>
   beginnMinute === undefined || beginnMinute !== endeMinute;
 
+/**
+ * A template's break must be shorter than its shift on the clock, an end at or before the beginning
+ * on the next day, as for a shift (`pause_zu_lang`): else no shift could be planned from it
+ */
+const pauseKuerzer = (vorlage: {
+  beginnMinute: number;
+  endeMinute: number;
+  pauseMinuten: number;
+}) => {
+  const laenge = (vorlage.endeMinute - vorlage.beginnMinute + 24 * 60) % (24 * 60);
+  return vorlage.pauseMinuten < laenge;
+};
+
 const vorlageSchema = z
   .object({
     name: z.string().trim().min(1).max(60),
@@ -45,7 +58,8 @@ const vorlageSchema = z
     standortId: id.nullable().default(null),
   })
   .strict()
-  .refine(spanne);
+  .refine(spanne)
+  .refine(pauseKuerzer);
 
 const bedarfSchema = z
   .object({

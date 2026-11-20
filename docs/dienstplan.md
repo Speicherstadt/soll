@@ -91,7 +91,8 @@ geschrieben sein; die App schlägt die Rollen der Vorlagen vor.
   Oktober 9 Stunden.
 - Eine Uhrzeit, die es wegen der Zeitumstellung nicht gibt (2:30 am letzten Sonntag im März), lehnt
   der Server ab. Von der doppelten Stunde im Oktober gilt die erste, in Sommerzeit.
-- Eine Pause, die so lang ist wie die Schicht, lehnt der Server ab; Minuten nur ganz.
+- Eine Pause, die so lang ist wie die Schicht, lehnt der Server ab, auch in einer Vorlage; Minuten
+  nur ganz.
 
 Die Prüfung der geplanten Schichten nach dem Arbeitszeitgesetz und § 12 TzBfG folgt mit S-502, mit
 denselben Regeln wie für gestempelte Zeiten.

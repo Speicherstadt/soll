@@ -266,7 +266,7 @@ Alle Punkte: nach S-305.
 
 ## Phase 9 – Härtung und Betrieb
 
-- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 10 Jahre bei Lohnbezug),
+- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
   Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.

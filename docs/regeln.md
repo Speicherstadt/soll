@@ -293,7 +293,7 @@ Regel:
 - **Norm**: § 16 Abs. 2 ArbZG: die über 8 h werktäglich hinausgehende Arbeitszeit aufzeichnen,
   „Die Nachweise sind mindestens zwei Jahre aufzubewahren.“
 - **Regel**: Soll zeichnet jede Arbeitszeit auf (R-01) und bewahrt jeden abgeschlossenen Monat mindestens
-  zwei Jahre ab Ablauf seines Kalenderjahres auf, mit Lohnbezug 6 Jahre, als Buchungsbeleg 10 Jahre
+  zwei Jahre ab Ablauf seines Kalenderjahres auf, mit Lohnbezug 6 Jahre, als Buchungsbeleg 8 Jahre
   (Projektplan, „Fristen je Monatsabschluss“); die Aussonderung (S-901) entfernt nichts vor Ablauf der längsten Frist.
 - **Schwere**: Verstoß, wenn eine Aussonderung eine Aufzeichnung vor Ablauf entfernen würde (die
   Aussonderung bricht dann ab).

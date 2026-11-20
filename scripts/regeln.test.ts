@@ -158,9 +158,18 @@ describe("docs/regeln.md against the law", () => {
 
   it("R-10: a month is removed after two years only when it carries no payroll", () => {
     // docs/plan.md, "Fristen je Monatsabschluss": 2 years without payroll (§ 16 Abs. 2 ArbZG),
-    // 6 years as a payroll record, 10 years as an accounting voucher (§ 147 Abs. 3 AO).
+    // 6 years as a payroll record, 8 years as an accounting voucher (§ 147 Abs. 3 Satz 1 AO).
     const erlaubt = zeile("R-10", "erlaubt").join(" ");
     expect(erlaubt).toMatch(/ohne Lohnbezug/);
+  });
+
+  it("R-10: an accounting voucher is kept eight years, not ten, since 2025", () => {
+    // § 147 Abs. 3 Satz 1 AO as amended by the Viertes Bürokratieentlastungsgesetz (in force since
+    // 01.01.2025): "die in Absatz 1 Nummer 4 aufgeführten Unterlagen sind acht Jahre" – Nummer 4 are
+    // the Buchungsbelege; ten years remain for books and records (Nummer 1 and 4a).
+    expect(regel("R-10")).not.toMatch(/Buchungsbeleg 10 Jahre/);
+    expect(regel("R-10")).toMatch(/Buchungsbeleg 8 Jahre/);
+    expect(plan).not.toMatch(/10 Jahre als Buchungsbeleg/);
   });
 
   it("R-21: work after the birth is allowed after two weeks when the child has died", () => {

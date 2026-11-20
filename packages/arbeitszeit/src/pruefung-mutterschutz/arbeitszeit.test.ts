@@ -109,6 +109,26 @@ describe("R-21: Arbeitszeit in der Schwangerschaft und Stillzeit", () => {
     ]);
   });
 
+  it("18th birthday within a Doppelwoche: 80 hours when she is under 18 on any day of it", () => {
+    // docs/regeln.md, R-21: „unter 18 Jahren, wenn sie es an einem Tag der Doppelwoche ist, 80:00“;
+    // born 4.11.2008, 18 on Wed 4.11.2026: Mo 2.11. and Di 3.11. of the Doppelwoche she is 17
+    const ab18 = [
+      ...woche("2026-11-04", ["7:00", "7:00", "7:00", "7:00", "7:00"]),
+      ...woche("2026-11-09", ["7:00", "7:00", "7:00", "7:00", "7:00", "7:00", "7:00"]),
+    ];
+    expect(
+      mutterschutzArbeitszeit(ab18, { ...LEA, geburtsdatum: "2008-11-04" }).befunde,
+    ).toEqual([
+      expect.objectContaining({
+        art: "doppelwoche",
+        norm: "§ 4 Abs. 1 Satz 2 und 3 MuSchG",
+        von: "2026-11-02",
+        minuten: 84 * 60,
+        grenze: 80 * 60,
+      }),
+    ]);
+  });
+
   it("counts Sundays into the Doppelwoche (§ 4 Abs. 1 Satz 3)", () => {
     const mitSonntag = [...zweiWochen("5:00"), ...woche("2026-11-29", ["0:01"])];
     expect(arten(mitSonntag).map(([art]) => art)).toEqual(["doppelwoche"]);

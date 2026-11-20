@@ -6,6 +6,7 @@ import type { Mailer } from "./modules/mail/index.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
+import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
@@ -28,10 +29,24 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
+  /** The key of the encrypted columns (SOLL_SECRET_KEY) and the public VAPID key (S-307) */
+  geheimerSchluessel: Uint8Array;
+  vapidOeffentlich: string;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
-export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }: AppDeps) => {
+export const createApp = ({
+  log,
+  now,
+  version,
+  db,
+  schreibDb,
+  auth,
+  url,
+  mail,
+  geheimerSchluessel,
+  vapidOeffentlich,
+}: AppDeps) => {
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -67,6 +82,11 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }:
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
+            geheimerSchluessel,
+            vapidOeffentlich,
+            mailKonfiguriert: mail !== null,
+          }),
           "/": zeitRouten(db, schreibDb, now),
         },
       }),

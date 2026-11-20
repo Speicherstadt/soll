@@ -2,12 +2,17 @@ import {
   arbeitszeitmodelle,
   betriebe,
   einladungen,
+  erinnerungen,
+  erinnerungseinstellungen,
+  erinnerungsregeln,
   geraete,
+  instanzschluessel,
   korrekturen,
   mitgliedschaften,
   modellzuordnungen,
   monatsabschluesse,
   pins,
+  pushAbos,
   standorte,
   stempelungen,
 } from "../../db/schema.ts";
@@ -28,6 +33,11 @@ export const kettenTabellen = {
   geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
+  instanzschluessel: { tabelle: instanzschluessel, schluessel: ["name"] },
+  pushAbos: { tabelle: pushAbos, schluessel: ["aboId"] },
+  erinnerungen: { tabelle: erinnerungen, schluessel: ["erinnerungId"] },
+  erinnerungseinstellungen: { tabelle: erinnerungseinstellungen, schluessel: ["nutzerId"] },
+  erinnerungsregeln: { tabelle: erinnerungsregeln, schluessel: ["betriebId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

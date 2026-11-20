@@ -14,7 +14,7 @@ import { liestEigene, person } from "./zeiten.ts";
 const LAENGSTENS_TAGE = 731;
 
 const tag = z.string().refine(istTag);
-const abfrageSchema = z
+export const abfrageSchema = z
   .object({
     von: tag,
     bis: tag,

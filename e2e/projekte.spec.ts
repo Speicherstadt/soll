@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen, einladungAnnehmen, senden, zweiterBrowser } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { thema, uebergaengeFertig } from "./thema.ts";
 
 test.use({ locale: "de" });
 const de = messagesOf("de");
@@ -72,7 +73,7 @@ test("the owner keeps customers, orders with a budget, activities and rates @pho
   await expect(page.getByRole("row", { name: /Montage/ })).not.toContainText(t("archiviert"));
 
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
+    await thema(page, theme);
     for (const key of [
       "projekte_tab_auftraege",
       "projekte_tab_kunden",
@@ -80,6 +81,7 @@ test("the owner keeps customers, orders with a budget, activities and rates @pho
       "projekte_tab_saetze",
     ]) {
       await tab(page, key);
+      await uebergaengeFertig(page);
       expect((await new AxeBuilder({ page }).analyze()).violations, `${theme} ${key}`).toEqual([]);
     }
   }

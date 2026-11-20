@@ -5,7 +5,7 @@ import { pruefwertEinesMonats } from "../modules/arbeitszeit/index.ts";
 import { betriebLesen } from "../modules/betrieb/index.ts";
 import { namenVon } from "../modules/mitglieder/index.ts";
 
-const pruefSchema = z
+export const pruefSchema = z
   .object({ betriebId: z.string().min(1).max(100), pruefwert: z.string().min(1).max(500) })
   .strict();
 

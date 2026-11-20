@@ -6,7 +6,7 @@ import type { Db } from "../db/oeffnen.ts";
 import { auskunftVon, warMitglied } from "../modules/auskunft/index.ts";
 import type { Anfrage } from "./kontext.ts";
 
-const abfrageSchema = z.object({ nutzerId: z.string().min(1).max(100).optional() }).strict();
+export const abfrageSchema = z.object({ nutzerId: z.string().min(1).max(100).optional() }).strict();
 
 /**
  * The Auskunft under Art. 15 DSGVO below /api/v1/auskunft (S-309): every signed-in member gets their

@@ -11,12 +11,12 @@ import {
 } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const einladenSchema = z
+export const einladenSchema = z
   .object({ rolle: z.enum(ROLLEN), name: z.string().trim().min(1).max(100) })
   .strict();
 
 /** The people of the setup's list (S-303); as many as the CSV import reads at once */
-const listeSchema = z.object({ personen: z.array(einladenSchema).min(1).max(200) }).strict();
+export const listeSchema = z.object({ personen: z.array(einladenSchema).min(1).max(200) }).strict();
 
 /** Roles a planner may invite; owners, payroll and devices are invited by the owner (S-106) */
 const PLANER_DARF: readonly string[] = ["mitarbeiter", "extern"];
@@ -67,7 +67,7 @@ export const einladungRouten = (schreibDb: SchreibDb, url: string, jetzt: () => 
     });
 };
 
-const annehmenSchema = z
+export const annehmenSchema = z
   .object({
     benutzername: z
       .string()

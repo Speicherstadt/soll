@@ -14,6 +14,7 @@ import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { abgemeldet, aktuellerBetrieb, sitzungNeu } from "../sitzung/sitzung.ts";
 import { istInhaber } from "../sitzung/ziel.ts";
+import { Zugaenge } from "../zugaenge/zugaenge.tsx";
 
 const Einstellungen = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const Einstellungen = () => {
         <TerminalPersonen />
       </Show>
       <DatevZuordnung />
+      <Zugaenge />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

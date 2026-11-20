@@ -37,6 +37,7 @@ export const RECHTE = [
   "terminal:verwalten",
   "lohn:datev",
   "auskunft:erteilen",
+  "api:zugang",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -68,6 +69,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "terminal:verwalten",
     // the DATEV payroll export: mapping and file (S-308)
     "lohn:datev",
+    // personal access tokens for the REST API and MCP, with the rights of one's role (S-607)
+    "api:zugang",
     // the business answers an Art. 15 request, also of someone who left and has no access any more;
     // the Auskunft holds health data, which only the owner and payroll see (R-31)
     "auskunft:erteilen",
@@ -88,11 +91,12 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     // the draft of the plan is for owner and planner until it is published (S-501, S-503)
     "plan:lesen",
     "plan:planen",
+    "api:zugang",
   ],
   // everyone who works for the business stamps, and sees and corrects their own times (S-304);
   // whoever books project time reads the orders and activities, without rates and money (S-601);
   // the plan they read once it is published (S-503)
-  mitarbeiter: ["betrieb:lesen", "stempeln", "projekte:lesen", "plan:lesen"],
+  mitarbeiter: ["betrieb:lesen", "stempeln", "projekte:lesen", "plan:lesen", "api:zugang"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
   lohnbuero: [
     "betrieb:lesen",
@@ -104,10 +108,18 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "plan:lesen",
     // the payroll office chooses the wage types with the business and takes the file (S-308)
     "lohn:datev",
+    "api:zugang",
   ],
-  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "projekte:lesen", "plan:lesen"],
-  extern: ["betrieb:lesen", "projekte:lesen"],
-  // the terminal checks PINs and nothing else (S-801)
+  betriebsrat: [
+    "betrieb:lesen",
+    "mitglieder:lesen",
+    "stempeln",
+    "projekte:lesen",
+    "plan:lesen",
+    "api:zugang",
+  ],
+  extern: ["betrieb:lesen", "projekte:lesen", "api:zugang"],
+  // the terminal checks PINs and nothing else (S-801); a device has no tokens (S-607)
   geraet: ["pin:pruefen"],
 };
 

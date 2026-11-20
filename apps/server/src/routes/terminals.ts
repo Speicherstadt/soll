@@ -16,7 +16,7 @@ import {
 import { type Anfrage, recht } from "./kontext.ts";
 import { kontextVon } from "./stempel-antwort.ts";
 
-const kopplungSchema = z.object({ name: z.string().trim().min(1).max(80) }).strict();
+export const kopplungSchema = z.object({ name: z.string().trim().min(1).max(80) }).strict();
 
 /**
  * The owner's side of the terminal (S-801), below /api/v1/terminal behind the module's switch:

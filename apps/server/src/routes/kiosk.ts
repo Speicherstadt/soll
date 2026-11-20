@@ -18,12 +18,12 @@ import { art, zeitpunkt } from "./stempel-antwort.ts";
 /** A call of a paired terminal: its row, found by its device token */
 export type KioskAnfrage = { Variables: { terminal: Terminal } };
 
-const kopplungSchema = z.object({ code: z.string().min(1).max(40) }).strict();
-const ausweisSchema = z.union([
+export const kopplungSchema = z.object({ code: z.string().min(1).max(40) }).strict();
+export const ausweisSchema = z.union([
   z.object({ pin: z.string().refine(istPin) }).strict(),
   z.object({ qr: z.string().min(1).max(200) }).strict(),
 ]);
-const stempelSchema = z
+export const stempelSchema = z
   .object({ ausweis: ausweisSchema, art, geraetZeitpunkt: zeitpunkt.optional() })
   .strict();
 

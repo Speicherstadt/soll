@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { account, passkey, session, user } from "../../db/auth-schema.ts";
 import type { Db } from "../../db/oeffnen.ts";
-import { einladungen, mitgliedschaften, pins } from "../../db/schema.ts";
+import { apiZugaenge, einladungen, mitgliedschaften, pins } from "../../db/schema.ts";
 import { iso } from "./zeit.ts";
 
 /*
@@ -92,6 +92,21 @@ const einladungenVon = (db: Db, betriebId: string, nutzerId: string) =>
       gueltigBis: iso(zeile.gueltigBis),
     }));
 
+/** The person's tokens for the API (S-607): name and dates, never the hash or the start of a token */
+const zugaengeVon = (db: Db, betriebId: string, nutzerId: string) =>
+  db
+    .select()
+    .from(apiZugaenge)
+    .where(and(eq(apiZugaenge.betriebId, betriebId), eq(apiZugaenge.nutzerId, nutzerId)))
+    .all()
+    .map((zeile) => ({
+      zugangId: zeile.zugangId,
+      name: zeile.name,
+      angelegtAm: iso(zeile.angelegtAm),
+      gueltigBis: zeile.gueltigBis === null ? null : iso(zeile.gueltigBis),
+      zuletztGenutzt: zeile.zuletztGenutzt,
+    }));
+
 /** The account in the person's own copy; the owner's copy picks from it (inhaber.ts) */
 export const kontoteil = (db: Db, betriebId: string, nutzerId: string) => ({
   konto: kontoVon(db, nutzerId),
@@ -100,4 +115,5 @@ export const kontoteil = (db: Db, betriebId: string, nutzerId: string) => ({
   mitgliedschaft: mitgliedschaftVon(db, betriebId, nutzerId),
   pin: pinVon(db, betriebId, nutzerId),
   einladungen: einladungenVon(db, betriebId, nutzerId),
+  zugaenge: zugaengeVon(db, betriebId, nutzerId),
 });

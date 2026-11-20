@@ -6,8 +6,8 @@ import { istNeuePin, istPin, pinPruefen, pinSetzen } from "../modules/pin/index.
 import { pinKennung } from "../modules/terminal/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const pinSchema = z.object({ pin: z.string().refine(istPin) }).strict();
-const neuePinSchema = z.object({ pin: z.string().refine(istNeuePin) }).strict();
+export const pinSchema = z.object({ pin: z.string().refine(istPin) }).strict();
+export const neuePinSchema = z.object({ pin: z.string().refine(istNeuePin) }).strict();
 
 const kontextVon = (
   c: { get: (key: "betriebId" | "nutzerId") => string },

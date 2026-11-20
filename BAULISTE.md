@@ -166,7 +166,20 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 - [ ] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
   nächsten Befund; Nachtragen und Ändern mit Grund bis zum Abschluss, jede Änderung für den
   Mitarbeiter sichtbar.
-  nach: S-303, S-202.
+  nach: S-303, S-202. Fertig, wenn: Playwright in `desktop` und `phone` einen Tag stempelt (Kommen,
+  Pause, Pause beenden, Gehen), Heute dabei den Zustand, Soll und Ist in Minuten und den nächsten
+  Befund mit Norm zeigt, und eine Korrektur mit Grund durch den Inhaber, die die Person danach mit
+  wer, wann, was und warum sieht. Dazu: eine neue Tabelle `stempelungen` mit `betrieb_id` in der
+  Audit-Kette über eine neue Migration; eine Änderung oder ein Nachtrag hängt eine neue Zeile an und
+  überschreibt nie die alte, ohne Grund lehnt der Server ab; bei einer Live-Stempelung zählt die Zeit
+  des Servers, eine Zeit des Geräts wird nur daneben gespeichert; eine Mitarbeiterin stempelt und
+  liest nur für sich, Inhaber und Planer korrigieren mit Grund für andere; ein Endpunkt des
+  abgeschalteten Moduls Arbeitszeit wird abgelehnt; ein Test je Endpunkt, dass kein Betrieb Daten
+  eines anderen sieht oder ändert; eine Prüfung „Monat abgeschlossen“ vor jeder Änderung, die bis
+  S-306 „offen“ sagt; Soll und nächster Befund als reine Funktion in `packages/arbeitszeit` mit Tests
+  (Pause nach § 4, 8 und 10 Stunden nach § 3, Ruhezeit nach § 5, nicht hinterlegt vor der ersten
+  Regelversion); Soll stempelt nie selbst aus und rundet nie zulasten der Person; Texte in allen
+  sechs Sprachen, Arabisch von rechts nach links; axe grün in hell und dunkel.
 - [ ] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
   einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
   Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der

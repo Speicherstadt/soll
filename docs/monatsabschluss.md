@@ -36,6 +36,10 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
 - am Ersten des Folgemonats jede Änderung, die eine Nachtschicht des letzten Tags ändern würde: Eine
   Schicht gehört zu dem Tag, an dem sie beginnt. Ein Kommen am Ersten, das mehr als 9 Stunden nach
   dem Gehen eine neue Schicht beginnt, bleibt erlaubt,
+- am letzten Tag des Vormonats, auch wenn er noch offen ist, jede Änderung, die eine Stempelung des
+  abgeschlossenen Monats in eine Schicht dieses Tags zöge oder aus ihr löste: etwa eine Schicht am
+  Abend, der sich die erste Schicht des Monats weniger als 9 Stunden später anschlösse, oder das
+  Entfernen des Kommens einer Nachtschicht, deren Gehen im Monat liegt,
 - eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde.
 
 ### Korrektur als Gegeneintrag

@@ -42,8 +42,10 @@ const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) =>
 
 /**
  * Whether a change of a person's stamps touches a closed month: an instant in a closed month, or a
- * change on the first day of a month that alters the closed month before it, as a night shift's
- * Gehen after midnight belongs to the day the shift began (CLAUDE.md, "Time"). `vorher` loads the
+ * change on a day next to a closed month that alters its stamps, as a night shift's Gehen after
+ * midnight belongs to the day the shift began (CLAUDE.md, "Time"): on the first of a month for the
+ * month before, on the last day of a month for the month after (a shift there that the first shift
+ * of the closed month would join, or the Kommen of a night shift into it). `vorher` loads the
  * stamps in force around the instants (only when a month is closed), `nachher` gives them as the
  * change would leave them.
  */
@@ -61,13 +63,13 @@ export const aenderungGesperrt = <S extends Stempelung>(
   if (geschlossen.size === 0) return false;
   const tage = aenderung.zeitpunkte.map(tagInBerlin);
   if (tage.some((tag) => geschlossen.has(monatVon(tag)))) return true;
-  const davor = [...new Set(tage.map((tag) => monatVon(plusTage(tag, -1))))].filter((monat) =>
-    geschlossen.has(monat),
-  );
-  if (davor.length === 0) return false;
+  const nachbarn = [
+    ...new Set(tage.flatMap((tag) => [plusTage(tag, -1), plusTage(tag, 1)].map(monatVon))),
+  ].filter((monat) => geschlossen.has(monat));
+  if (nachbarn.length === 0) return false;
   const vorher = aenderung.vorher();
   const nachher = aenderung.nachher(vorher);
-  return davor.some(
+  return nachbarn.some(
     (monat) => stempelDesMonats(monat, vorher) !== stempelDesMonats(monat, nachher),
   );
 };

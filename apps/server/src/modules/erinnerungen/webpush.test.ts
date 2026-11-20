@@ -1,7 +1,7 @@
 import { createECDH } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { pushEntschluesseln, vapidPruefen } from "./push-test.ts";
-import { pushAnfrage, schluesselPaar, verschluesseln } from "./webpush.ts";
+import { pushAnfrage, schluesselPaar, vapidKontakt, verschluesseln } from "./webpush.ts";
 
 const b64 = (text: string) => new Uint8Array(Buffer.from(text.replace(/\s+/g, ""), "base64url"));
 
@@ -106,5 +106,26 @@ describe("VAPID (RFC 8292)", () => {
     expect(Buffer.from(anfrage.body).toString("utf8")).not.toContain("monat");
     const gelesen = pushEntschluesseln(anfrage.body, new Uint8Array(ua.getPrivateKey()), RFC.auth);
     expect(Buffer.from(gelesen).toString("utf8")).toBe('{"art":"monat"}');
+  });
+});
+
+describe("VAPID contact (RFC 8292, Section 2.1: mailto: or https:)", () => {
+  it("is the sender's address when the instance sends mail", () => {
+    expect(vapidKontakt("http://soll.lan", "Soll <soll@weber-haustechnik.test>")).toBe(
+      "mailto:soll@weber-haustechnik.test",
+    );
+    expect(vapidKontakt("https://soll.weber.test", "zeit@weber-haustechnik.test")).toBe(
+      "mailto:zeit@weber-haustechnik.test",
+    );
+  });
+
+  it("is the instance's URL only when it is https", () => {
+    expect(vapidKontakt("https://soll.weber.test", undefined)).toBe("https://soll.weber.test");
+  });
+
+  it("is a fixed mailto: for an http instance without mail, never an http: URI", () => {
+    for (const url of ["http://soll.lan", "http://localhost:8200"]) {
+      expect(vapidKontakt(url, undefined)).toBe("mailto:push@soll.invalid");
+    }
   });
 });

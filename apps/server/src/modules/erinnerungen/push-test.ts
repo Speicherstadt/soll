@@ -105,8 +105,9 @@ export const pushDienstErsatz = (
 ) => {
   const zugestellt: Zugestellt[] = [];
   const senden = async (anfrage: PushAnfrage): Promise<{ status: number }> => {
-    if (!vapidPruefen(anfrage.headers.authorization ?? "", oeffentlich()).ok)
-      return { status: 403 };
+    const pruefung = vapidPruefen(anfrage.headers.authorization ?? "", oeffentlich());
+    // RFC 8292, Section 2.1: the contact is a mailto: or https: URI; Apple and Mozilla refuse others
+    if (!pruefung.ok || !/^(mailto:|https:)/.test(pruefung.claims.sub)) return { status: 403 };
     const status = antworten.get(anfrage.url) ?? 201;
     const geraet = geraete.get(anfrage.url);
     if (status !== 201 || !geraet) return { status: geraet ? status : 404 };

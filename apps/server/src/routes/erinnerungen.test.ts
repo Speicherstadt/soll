@@ -152,6 +152,15 @@ describe("devices for Web Push", () => {
       "https://fritz.box/push",
       "https://fcm.googleapis.com.evil.test/fcm/send/tom",
       "https://fcm.googleapis.com./fcm/send/tom",
+      // tricks of URL parsing: user info, fragment, no dot boundary, port, look-alike letters
+      "https://fcm.googleapis.com@evil.test/fcm/send/tom",
+      "https://evil.test#@fcm.googleapis.com",
+      "https://evil.test\\.fcm.googleapis.com/",
+      "https://evilfcm.googleapis.com/fcm/send/tom",
+      "https://fcm.googleapis.com:8443/fcm/send/tom",
+      "https://fcm.googleаpis.com/fcm/send/tom",
+      "https://fcm.googleapis.com%2eevil.test/",
+      "http://fcm.googleapis.com/fcm/send/tom",
     ]) {
       const antwort = await c.tom.anfrage(`${PFAD}/abos`, {
         body: { ...gut, endpoint, sprache: "de" },

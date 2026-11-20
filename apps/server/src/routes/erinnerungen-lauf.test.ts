@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { erinnerungsSchleife } from "../modules/erinnerungen/index.ts";
+import {
+  aboSpeichern,
+  erinnerungsLauf,
+  erinnerungsSchleife,
+  type PushSenden,
+} from "../modules/erinnerungen/index.ts";
+import { testAbo } from "../modules/erinnerungen/push-test.ts";
 import { TEST_URL } from "../test-server.ts";
 import { cafe, PFAD, TAG, um } from "./erinnerungen-testhilfen.ts";
 
@@ -181,6 +187,33 @@ describe("delivery", () => {
     for (const wer of [c.tom, c.mia]) await c.stempeln(wer, "kommen", um(TAG, "07:00"));
     expect(await c.lauf(um(TAG, "17:00"))).toEqual([]);
     expect(c.smtp.empfangen).toEqual([]);
+  });
+
+  it("never posts to a stored endpoint outside the browsers' push services", async () => {
+    const c = await cafe();
+    // a row as one stored before the check of the route (or written past it) would be
+    aboSpeichern(
+      c.server.db,
+      c.server.schreibDb,
+      c.server.geheimerSchluessel,
+      { betriebId: c.mia.betriebId, akteur: c.tom.nutzerId, jetzt: um(TAG, "06:00") },
+      {
+        abo: {
+          ...testAbo("https://127.0.0.1.nip.io/push").json.keys,
+          endpoint: "https://127.0.0.1.nip.io/push",
+        },
+        sprache: "de",
+      },
+    );
+    const gesendetAn: string[] = [];
+    const push: PushSenden = (anfrage) => {
+      gesendetAn.push(anfrage.url);
+      return c.dienst.senden(anfrage);
+    };
+    await c.stempeln(c.tom, "kommen", um(TAG, "07:00"));
+    c.server.stelleUhr(um(TAG, "17:00"));
+    expect(await erinnerungsLauf({ ...c.deps, push }, um(TAG, "17:00"))).toEqual([]);
+    expect(gesendetAn).toEqual([]);
   });
 
   it("sends nothing for a business that switched working time off", async () => {

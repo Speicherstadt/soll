@@ -36,5 +36,6 @@ export {
   moduleAusFragen,
 } from "./module/module.ts";
 export * from "./pruefung/index.ts";
+export * from "./pruefung-bereitschaft/index.ts";
 export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";

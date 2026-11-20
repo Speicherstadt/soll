@@ -1,0 +1,212 @@
+import { describe, expect, it } from "vitest";
+import { DI, kurz, MO, mitBereitschaft, pruefe, schicht, spanne, uhr, um } from "./testhilfen.ts";
+
+/*
+ * docs/regeln.md, R-12 (cases taken literally): Rufbereitschaft is no working time, a call-out is,
+ * and it begins a new rest of 11 hours (§§ 2, 5 ArbZG); with a reaction time under 30 minutes the
+ * whole duty counts (EuGH C-518/15, Matzak). The cases without a reaction time have one of 30
+ * minutes or more. Mo is 16.11.2026.
+ */
+const einsatz = (beginn: string, ende: string) => ({ einsaetze: [spanne(beginn, ende)] });
+const diSchicht = (beginn = "8:00", ende = "14:00") => schicht(uhr(DI, beginn), uhr(DI, ende));
+const KRANKENHAUS = { branche: "krankenhaus_pflege" } as const;
+
+describe("R-12: Rufbereitschaft", () => {
+  it("erlaubt: Rufbereitschaft Mo 18:00 – Di 6:00 without a call-out, Di Schicht 8:00 – no finding, 0:00", () => {
+    const eingabe = {
+      rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 60 }],
+    };
+    expect(mitBereitschaft(diSchicht(), eingabe).map((tag) => tag.tag)).toEqual(["2026-11-17"]);
+    expect(pruefe(diSchicht(), eingabe)).toEqual({ befunde: [], nichtHinterlegt: [] });
+  });
+
+  it("Grenze: Einsatz Mo 20:00 – 21:00, Di Schicht 8:00 (11:00 Ruhe) – 1:00 Arbeitszeit, no finding", () => {
+    const eingabe = einsatz(uhr(MO, "20:00"), uhr(MO, "21:00"));
+    const [mo] = mitBereitschaft(diSchicht(), eingabe);
+    expect(mo).toMatchObject({ tag: "2026-11-16", arbeitsMinuten: 60, einsatzMinuten: 60 });
+    expect(pruefe(diSchicht(), eingabe).befunde).toEqual([]);
+  });
+
+  it("Verstoß: Einsatz Mo 23:00 – Di 0:30, Di Schicht 8:00 (7:30 Ruhe) – „Ruhezeit durch Einsatz unterbrochen“", () => {
+    const eingabe = einsatz(uhr(MO, "23:00"), uhr(DI, "0:30"));
+    expect(pruefe(diSchicht(), eingabe).befunde).toEqual([
+      {
+        regel: "R-12",
+        norm: "§ 5 Abs. 1 ArbZG",
+        schwere: "verstoss",
+        art: "ruhezeit_durch_einsatz_unterbrochen",
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { beginn: um(uhr(DI, "0:30")), ende: um(uhr(DI, "8:00")), minuten: 450 },
+        mindestens: 660,
+        fehlt: 210,
+        einsatz: { beginn: um(uhr(MO, "23:00")), ende: um(uhr(DI, "0:30")), minuten: 90 },
+      },
+    ]);
+  });
+
+  it("Matzak: reaction time 8 min, 18:00 – 6:00 – 12:00 Arbeitszeit, R-02 reports a Verstoß", () => {
+    const eingabe = {
+      rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 8 }],
+    };
+    const [mo] = mitBereitschaft([], eingabe);
+    expect(mo).toMatchObject({ arbeitsMinuten: 720, bereitschaftsMinuten: 720 });
+    expect(pruefe([], eingabe).befunde).toContainEqual(
+      expect.objectContaining({ regel: "R-02", art: "ueber_10h", minuten: 720, ueber: 120 }),
+    );
+  });
+
+  it("Matzak, Grenze: reaction time 30 min, 18:00 – 6:00 without a call-out – 0:00, no finding", () => {
+    const eingabe = {
+      rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 30 }],
+    };
+    expect(mitBereitschaft([], eingabe)).toEqual([]);
+    expect(pruefe([], eingabe)).toEqual({ befunde: [], nichtHinterlegt: [] });
+  });
+
+  it("ohne Reaktionszeit: Rufbereitschaft 18:00 – 6:00 without a reaction time – 12:00 as with Matzak", () => {
+    const eingabe = { rufdienste: [spanne(uhr(MO, "18:00"), uhr(DI, "6:00"))] };
+    expect(mitBereitschaft([], eingabe)[0]).toMatchObject({ arbeitsMinuten: 720 });
+  });
+
+  it("Matzak: a call-out within a duty that counts fully is no call-out of its own", () => {
+    const eingabe = {
+      rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 8 }],
+      ...einsatz(uhr(MO, "23:00"), uhr(DI, "0:30")),
+    };
+    expect(mitBereitschaft([], eingabe)[0]).toMatchObject({
+      arbeitsMinuten: 720,
+      einsatzMinuten: 0,
+    });
+  });
+
+  it("Einsatz in der Nacht: Mo 12:00 – 18:00, Einsatz Di 3:00 – 4:00, Di Schicht 8:00 – Verstoß for Di only", () => {
+    const stempel = [...schicht(uhr(MO, "12:00"), uhr(MO, "18:00")), ...diSchicht()];
+    const eingabe = einsatz(uhr(DI, "3:00"), uhr(DI, "4:00"));
+    const tage = mitBereitschaft(stempel, eingabe);
+    expect(tage.map(({ tag, arbeitsMinuten }) => [tag, arbeitsMinuten])).toEqual([
+      ["2026-11-16", 360],
+      ["2026-11-17", 420],
+    ]);
+    const ergebnis = pruefe(stempel, eingabe);
+    expect(kurz(ergebnis)).toEqual([
+      ["R-12", "ruhezeit_durch_einsatz_unterbrochen", ["2026-11-17"]],
+    ]);
+    expect(ergebnis.befunde[0]).toMatchObject({ ruhe: { minuten: 240 }, fehlt: 420 });
+  });
+
+  it("zwei Einsätze: Mo 22:00 – 23:00 and Di 2:00 – 3:00, Di Schicht 14:00 (11:00) – 2:00 on Mo, no finding", () => {
+    const eingabe = {
+      einsaetze: [
+        spanne(uhr(MO, "22:00"), uhr(MO, "23:00")),
+        spanne(uhr(DI, "2:00"), uhr(DI, "3:00")),
+      ],
+    };
+    const stempel = diSchicht("14:00", "18:00");
+    expect(mitBereitschaft(stempel, eingabe)[0]).toMatchObject({
+      tag: "2026-11-16",
+      arbeitsMinuten: 120,
+      einsatzMinuten: 120,
+    });
+    expect(pruefe(stempel, eingabe).befunde).toEqual([]);
+  });
+
+  it("zwei Einsätze, Verstoß: Mo 22:00 – 23:00 and Di 3:00 – 4:00, Di Schicht 14:00 (10:00) – Verstoß", () => {
+    const eingabe = {
+      einsaetze: [
+        spanne(uhr(MO, "22:00"), uhr(MO, "23:00")),
+        spanne(uhr(DI, "3:00"), uhr(DI, "4:00")),
+      ],
+    };
+    const ergebnis = pruefe(diSchicht("14:00", "18:00"), eingabe);
+    expect(ergebnis.befunde).toMatchObject([
+      {
+        regel: "R-12",
+        art: "ruhezeit_durch_einsatz_unterbrochen",
+        tage: ["2026-11-16", "2026-11-17"],
+        ruhe: { minuten: 600 },
+        einsatz: { beginn: um(uhr(DI, "3:00")), minuten: 60 },
+      },
+    ]);
+  });
+
+  it("Gastronomie: Einsatz Mo 23:00 – Di 0:30, Di Schicht 10:30 (10:00) – Hinweis of R-05", () => {
+    const eingabe = einsatz(uhr(MO, "23:00"), uhr(DI, "0:30"));
+    const ergebnis = pruefe(diSchicht("10:30", "16:30"), eingabe, {
+      branche: "gastronomie_beherbergung",
+      jetzt: um(uhr(DI, "20:00")),
+    });
+    expect(ergebnis.befunde).toMatchObject([
+      { regel: "R-05", art: "ruhezeit_verkuerzt", schwere: "hinweis", ausgleichBis: "2026-12-14" },
+    ]);
+  });
+
+  it("Krankenhaus: Mo bis 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 – Hinweis „Einsatz ausgleichen 2:00“", () => {
+    const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
+    const eingabe = einsatz(uhr(MO, "23:00"), uhr(DI, "1:00"));
+    expect(pruefe(stempel, eingabe, KRANKENHAUS).befunde).toEqual([
+      {
+        regel: "R-12",
+        norm: "§ 5 Abs. 3 ArbZG",
+        schwere: "hinweis",
+        art: "einsatz_ausgleich",
+        tage: ["2026-11-16"],
+        einsaetze: [{ beginn: um(uhr(MO, "23:00")), ende: um(uhr(DI, "1:00")), minuten: 120 }],
+        minuten: 120,
+      },
+    ]);
+    // anywhere else the call-out interrupts the rest
+    expect(kurz(pruefe(stempel, eingabe))).toEqual([
+      ["R-12", "ruhezeit_durch_einsatz_unterbrochen", ["2026-11-16", "2026-11-17"]],
+    ]);
+  });
+
+  it("Krankenhaus, Grenze: Einsatz Mo 22:00 – Di 3:30 (5:30) – Hinweis „Einsatz ausgleichen 5:30“", () => {
+    const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
+    const ergebnis = pruefe(stempel, einsatz(uhr(MO, "22:00"), uhr(DI, "3:30")), KRANKENHAUS);
+    expect(kurz(ergebnis)).toEqual([["R-12", "einsatz_ausgleich", ["2026-11-16"]]]);
+    expect(ergebnis.befunde[0]).toMatchObject({ minuten: 330 });
+  });
+
+  it("Krankenhaus, über die Hälfte: Einsatz Mo 22:00 – Di 3:31 (5:31) – Verstoß (4:29 Ruhe)", () => {
+    const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
+    const ergebnis = pruefe(stempel, einsatz(uhr(MO, "22:00"), uhr(DI, "3:31")), KRANKENHAUS);
+    expect(ergebnis.befunde).toMatchObject([
+      {
+        regel: "R-12",
+        norm: "§ 5 Abs. 2 ArbZG",
+        art: "ruhezeit_durch_einsatz_unterbrochen",
+        ruhe: { minuten: 269 },
+        mindestens: 600,
+        fehlt: 331,
+      },
+    ]);
+  });
+
+  it("Krankenhaus: the call-outs of the rest still running are to be balanced as well", () => {
+    const stempel = schicht(uhr(MO, "18:00"), uhr(MO, "20:00"));
+    const ergebnis = pruefe(stempel, einsatz(uhr(MO, "23:00"), uhr(DI, "1:00")), {
+      ...KRANKENHAUS,
+      jetzt: um(uhr(DI, "6:00")),
+    });
+    expect(kurz(ergebnis)).toEqual([["R-12", "einsatz_ausgleich", ["2026-11-16"]]]);
+  });
+
+  it("Herbst: Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 real time) – no finding", () => {
+    const eingabe = einsatz("2026-10-24T23:00+02:00", "2026-10-25T00:30+02:00");
+    const stempel = schicht("2026-10-25T10:30+01:00", "2026-10-25T14:30+01:00");
+    expect(pruefe(stempel, eingabe).befunde).toEqual([]);
+  });
+
+  it("Frühjahr: Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 real time) – Verstoß", () => {
+    const eingabe = einsatz("2027-03-27T23:00+01:00", "2027-03-28T00:30+01:00");
+    const stempel = schicht("2027-03-28T11:00+02:00", "2027-03-28T15:00+02:00");
+    expect(pruefe(stempel, eingabe).befunde).toMatchObject([
+      {
+        regel: "R-12",
+        art: "ruhezeit_durch_einsatz_unterbrochen",
+        tage: ["2027-03-27", "2027-03-28"],
+        ruhe: { minuten: 570 },
+      },
+    ]);
+  });
+});

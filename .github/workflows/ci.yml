@@ -69,3 +69,22 @@ jobs:
           name: playwright-report
           path: test-results/
           retention-days: 7
+
+  # The container image (Containerfile, BAULISTE.md S-905): built for amd64 with the same build
+  # cache as the release, then started on an empty volume with a key made for this run, asked for
+  # /health, and backed up and restored inside (scripts/image-test.sh). arm64 builds only in the
+  # release, on GitHub's ARM runner (docs/plan.md, "Entscheidungen").
+  image:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # keeps the build cache in ghcr.io; a fork without it only builds slower
+    steps:
+      - uses: actions/checkout@v7
+      - uses: firsttris/workflows/actions/docker-build@v1
+        with:
+          dockerfile: Containerfile
+          tags: soll:ci
+          build-args: SOLL_VERSION=ci
+      - run: bash scripts/image-test.sh soll:ci

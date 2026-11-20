@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEnv } from "./env.ts";
+import { parseBetriebsEnv, parseEnv } from "./env.ts";
 
 const KEY = Buffer.alloc(32, 7).toString("base64");
 
@@ -63,5 +63,22 @@ describe("parseEnv", () => {
     expect(() =>
       parseEnv({ SOLL_SECRET_KEY: KEY, SOLL_SMTP_URL: "http://x.test", SOLL_MAIL_VON: "a@b.test" }),
     ).toThrow();
+  });
+});
+
+describe("SOLL_WEB_DIR", () => {
+  it("is null unless set, then the directory of the web build", () => {
+    expect(parseEnv({ SOLL_SECRET_KEY: KEY }).webDir).toBeNull();
+    expect(parseEnv({ SOLL_SECRET_KEY: KEY, SOLL_WEB_DIR: "/app/web" }).webDir).toBe("/app/web");
+  });
+});
+
+describe("parseBetriebsEnv", () => {
+  it("reads port and data directory without SOLL_SECRET_KEY", () => {
+    expect(parseBetriebsEnv({})).toEqual({ port: 8200, dataDir: "data" });
+    expect(parseBetriebsEnv({ SOLL_PORT: "8300", SOLL_DATA_DIR: "/data" })).toEqual({
+      port: 8300,
+      dataDir: "/data",
+    });
   });
 });

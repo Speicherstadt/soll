@@ -6,6 +6,7 @@ dist/
 *.log
 .env
 .env.*
+soll.env
 !.env.example
 data/
 coverage/

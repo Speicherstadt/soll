@@ -13,4 +13,12 @@ describe("redactUrl", () => {
   it("takes a path without host", () => {
     expect(redactUrl("/feed.ics?token=abc")).toBe("/feed.ics?token=…");
   });
+
+  it("leaves out a query without key and value pair, such as a bare token", () => {
+    expect(redactUrl("/feed.ics?sk-geheim-123")).toBe("/feed.ics?…");
+  });
+
+  it("leaves out a key that only shows a value once decoded", () => {
+    expect(redactUrl("/feed.ics?token%3Dgeheim=1&x=2")).toBe("/feed.ics?…&x=…");
+  });
 });

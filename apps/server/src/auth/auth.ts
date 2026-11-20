@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { organization, username } from "better-auth/plugins";
+import { defaultAc } from "better-auth/plugins/organization/access";
 import * as authSchema from "../db/auth-schema.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { arbeitszeitPflichtWahren, betriebAnlegen } from "../modules/betrieb/index.ts";
@@ -16,6 +17,30 @@ export type AuthDeps = {
   geheimerSchluessel: Uint8Array;
   url: string;
   jetzt: () => number;
+};
+
+/**
+ * What a role may do through Better Auth's own routes: the owner changes and removes members, nobody
+ * renames or deletes the business there or sends Better Auth's e-mail invitations (Soll invites by
+ * link, and the business row follows the organization only through Soll's routes)
+ */
+const KEINE_RECHTE = {
+  organization: [],
+  member: [],
+  invitation: [],
+  team: [],
+  ac: ["read"],
+} as const;
+const RECHTE_IN_BETTER_AUTH: Partial<
+  Record<string, typeof KEINE_RECHTE | { [key: string]: readonly string[] }>
+> = {
+  inhaber: {
+    organization: [],
+    member: ["update", "delete"],
+    invitation: [],
+    team: [],
+    ac: ["read"],
+  },
 };
 
 /** Changes of membership and role reach the audit chain under this actor, with the user in the row */
@@ -65,7 +90,14 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
       passkey({ rpID: new URL(url).hostname, rpName: "Soll", origin: url }),
       organization({
         creatorRole: "inhaber",
-        roles: Object.fromEntries(ROLLEN.map((rolle) => [rolle, undefined])) as never,
+        // Better Auth's access types are invariant in the statements; the roles are built from them
+        ac: defaultAc as never,
+        roles: Object.fromEntries(
+          ROLLEN.map((rolle) => [
+            rolle,
+            defaultAc.newRole((RECHTE_IN_BETTER_AUTH[rolle] ?? KEINE_RECHTE) as never),
+          ]),
+        ) as never,
         organizationHooks: {
           afterCreateOrganization: async ({ organization: org, member }) => {
             betriebAnlegen(schreibDb, kontext(org.id), org.name);

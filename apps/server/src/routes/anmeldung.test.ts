@@ -385,3 +385,46 @@ describe("passkeys", () => {
     ).toBe(401);
   });
 });
+
+describe("removing a member", () => {
+  it("is open to the owner, follows in the mirror and the chain, and closed to everyone else", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    const anna = await eingeladen(server, weber, "mitarbeiter", "anna");
+    const max = await eingeladen(server, weber, "mitarbeiter", "max");
+    const organisation = await json(
+      await weber.anfrage(
+        `/api/auth/organization/get-full-organization?organizationId=${weber.betriebId}`,
+      ),
+    );
+    const mitglieder = organisation.members as { id: string; userId: string }[];
+    const idVon = (nutzerId: string) => mitglieder.find((m) => m.userId === nutzerId)?.id;
+    const vonMax = await max.anfrage("/api/auth/organization/remove-member", {
+      body: { memberIdOrEmail: idVon(anna.nutzerId), organizationId: weber.betriebId },
+    });
+    expect(vonMax.ok).toBe(false);
+    const vomInhaber = await weber.anfrage("/api/auth/organization/remove-member", {
+      body: { memberIdOrEmail: idVon(anna.nutzerId), organizationId: weber.betriebId },
+    });
+    expect(vomInhaber.status).toBe(200);
+    expect((await anna.anfrage("/api/v1/betrieb")).status).toBe(403);
+    const zeilen = server.sqlite
+      .query("SELECT nutzer_id FROM mitgliedschaften WHERE nutzer_id = ?")
+      .all(anna.nutzerId);
+    expect(zeilen).toEqual([]);
+    expect(kettePruefen(server.db, weber.betriebId)).toEqual([]);
+  });
+
+  it("does not let the owner delete or rename the business through Better Auth", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    const loeschen = await weber.anfrage("/api/auth/organization/delete", {
+      body: { organizationId: weber.betriebId },
+    });
+    expect(loeschen.ok).toBe(false);
+    const umbenennen = await weber.anfrage("/api/auth/organization/update", {
+      body: { organizationId: weber.betriebId, data: { name: "Fremd" } },
+    });
+    expect(umbenennen.ok).toBe(false);
+  });
+});

@@ -13,6 +13,7 @@ import {
 import { ohne } from "./spannen.ts";
 import {
   mitTarif,
+  ohneVerkuerzung,
   ruheNachTarif,
   type Tarif,
   type TarifBefund,
@@ -59,7 +60,10 @@ export const bereitschaftBefunde = (
   const ueber12 = ueberZwoelf(tage, tarif);
   const ausgleich = einsatzAusgleich(tage, branche, ueber12);
   const ruheTage = ohneEinsaetze(tage, ausgleich.frei);
-  const ruhe = ruhezeit(ruheTage, optionen);
+  const ruhe = ruhezeit(ruheTage, {
+    ...optionen,
+    ohneVerkuerzung: ohneVerkuerzung(ruheTage, ueber12),
+  });
   const ergebnisse: Pruefergebnis<ArbzgBefund | BereitschaftBefund>[] = [
     { befunde: mitTarif(hoechst.befunde, tage, tarif), nichtHinterlegt: hoechst.nichtHinterlegt },
     ausgleichszeitraum(tage, optionen),

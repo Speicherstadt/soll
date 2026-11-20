@@ -467,7 +467,9 @@ Regel:
   Rufbereitschaft, die ganz zählt (R-12): Die Norm nennt nur Arbeitsbereitschaft und
   Bereitschaftsdienst. Über 12 h muss im unmittelbaren Anschluss an das Ende der Arbeit des Tages
   eine Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
-  Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG); eine Ruhezeit zwischen zwei Schichten dieses Tages
+  Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG). Ist sie kürzer, ist das keine Verkürzung nach § 5
+  Abs. 2: Sie bekommt keinen Befund nach R-05 und nimmt keiner anderen verkürzten Ruhezeit den
+  Ausgleich von 12 h. Eine Ruhezeit zwischen zwei Schichten dieses Tages
   liegt vor diesem Ende und bleibt bei R-05 und R-12. Gemessen wird bis zur nächsten Arbeit, auch bis
   zu einem Einsatz, der eine eigene Schicht ist (R-12). Ohne Einstellung gilt der Grenzwert von R-02.
 - **Schwere**: kein eigener Befund ohne Einstellung; die Zeit geht in die anderen Regeln ein.
@@ -488,6 +490,7 @@ Regel:
 | Tarif ohne Bereitschaft | 10:01 Arbeit ohne Bereitschaftsdienst, mit derselben Einstellung | Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG („wenn in die Arbeitszeit regelmäßig und in erheblichem Umfang Arbeitsbereitschaft oder Bereitschaftsdienst fällt“) |
 | über 12 h | Gastronomie, Einstellung nach § 7, Mo 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe | Verstoß „Ruhezeit nach über 12 h“ statt Hinweis nach R-05 | § 7 Abs. 9 ArbZG |
 | über 12 h, Ausgleich verpasst | Gastronomie, Einstellung nach § 7, Ausgleich im Kalendermonat, Mo 30.11.2026 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe, kein Ausgleich bis 30.11. | Verstoß „Ruhezeit nach über 12 h“ statt Verstoß „Ausgleich fehlt“ nach R-05 | § 7 Abs. 9 ArbZG |
+| über 12 h, ein Ausgleich | Beherbergung, Einstellung nach § 7, Ausgleich im Kalendermonat, Sa 28.11.2026 10:00 – 16:00 Arbeit + 16:15 – 23:00 Bereitschaftsdienst (12:45), So 9:30 – 15:30 und 16:00 – 19:30, Mo 30.11. 6:00 – 11:30, danach keine Arbeit mehr im November | Verstoß „Ruhezeit nach über 12 h“ für die 10:30 nach Sa; die 12 h ab Mo 11:30 gleichen die 10:30 nach So aus, kein Befund nach R-05 | § 7 Abs. 9 ArbZG; § 5 Abs. 2 ArbZG |
 | über 12 h, am selben Tag | Gastronomie, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Mo Schicht 16:30 – 22:30 und Bereitschaftsdienst 22:45 – 23:45 (13:00), Di Schicht 12:00 (12:15 Ruhe) | kein Befund zur Ruhezeit: die 10:30 zwischen den Schichten liegen vor dem Ende der Arbeit des Tages, die Verkürzung nach § 5 Abs. 2 ist ausgeglichen | § 7 Abs. 9 ArbZG („im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“) |
 
 Die Fälle erlaubt, Grenze, Verstoß und Tarif nehmen die Ruhepausen nach § 4 ArbZG als gewährt an;

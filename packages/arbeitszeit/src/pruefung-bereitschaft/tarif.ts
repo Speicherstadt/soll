@@ -84,11 +84,6 @@ export const ueberZwoelf = (
   );
 };
 
-const VERKUERZT: readonly RuhezeitBefund["art"][] = [
-  "ruhezeit_verkuerzt",
-  "ruhezeit_ausgleich_fehlt",
-];
-
 const MINUTE = 60_000;
 
 /** The rest after the end of a day's work, with the day and the day of the work that ends it */
@@ -111,11 +106,26 @@ const ruheNach = (tag: Tag, schichten: readonly BereitschaftsSchicht[]): RuheNac
   };
 };
 
+/** The rests after the days past 12 hours (`ueber12`), in the order of those days */
+const ruhenNach = (tage: readonly BereitschaftsTag[], ueber12: ReadonlySet<Tag>): RuheNach[] => {
+  const schichten = tage.flatMap((tag) => tag.schichten).sort((a, b) => a.beginn - b.beginn);
+  return [...ueber12].flatMap((tag) => ruheNach(tag, schichten) ?? []);
+};
+
+/**
+ * The beginnings of the rests § 7 Abs. 9 ArbZG keeps from the shortening of § 5 Abs. 2: R-05 gives
+ * them no finding of a shortening and no balance, R-11 reports them (`ruheNachTarif`)
+ */
+export const ohneVerkuerzung = (
+  tage: readonly BereitschaftsTag[],
+  ueber12: ReadonlySet<Tag>,
+): Set<number> => new Set(ruhenNach(tage, ueber12).map(({ ruhe }) => ruhe.beginn));
+
 /**
  * § 7 Abs. 9 ArbZG: the rest after a day of more than 12 hours is at least 11 hours, without the
- * shortening of § 5 Abs. 2. `befunde` are those of R-05 (and R-12) as the business may shorten; a
- * rest after such a day under 11 hours is a Verstoß of R-11, in place of a shortening of R-05 on the
- * same rest (Hinweis or „Ausgleich fehlt“), unless R-05 or R-12 already reports it as too short.
+ * shortening of § 5 Abs. 2. `befunde` are those of R-05 (and R-12), with these rests kept from the
+ * shortening (`ohneVerkuerzung`); a rest after such a day under 11 hours is a Verstoß of R-11,
+ * unless R-05 or R-12 already reports it as too short even for § 5.
  */
 export const ruheNachTarif = (
   befunde: readonly (RuhezeitBefund | EinsatzRuhezeitBefund)[],
@@ -124,37 +134,28 @@ export const ruheNachTarif = (
   tarif: Tarif | undefined,
 ): (RuhezeitBefund | EinsatzRuhezeitBefund | TarifRuhezeitBefund)[] => {
   if (tarif === undefined || ueber12.size === 0) return [...befunde];
-  const schichten = tage.flatMap((tag) => tag.schichten).sort((a, b) => a.beginn - b.beginn);
-  const nach = [...ueber12].flatMap((tag) => ruheNach(tag, schichten) ?? []);
-  const beginne = new Set(nach.map(({ ruhe }) => ruhe.beginn));
-  // a rest too short even for § 5 (R-05, R-12) keeps its Verstoß; a shortening § 7 Abs. 9 does
-  // not allow, balanced or not („Ausgleich fehlt“), gives way to R-11
-  const verkuerzt = (befund: { art: string }) => (VERKUERZT as string[]).includes(befund.art);
   const verstossen = new Set(
-    befunde
-      .filter((befund) => befund.schwere === "verstoss" && !verkuerzt(befund))
-      .map((befund) => befund.ruhe.beginn),
+    befunde.filter((befund) => befund.schwere === "verstoss").map((befund) => befund.ruhe.beginn),
   );
-  const neu = nach.flatMap(({ tage: tageDerRuhe, ruhe }): TarifRuhezeitBefund[] => {
-    const grenzen = bereitschaftGrenzenAm(tageDerRuhe[0] as Tag);
-    if (grenzen === null || ruhe.minuten >= grenzen.tarifRuhezeit || verstossen.has(ruhe.beginn))
-      return [];
-    return [
-      {
-        regel: "R-11",
-        norm: "§ 7 Abs. 9 ArbZG",
-        schwere: "verstoss",
-        art: "ruhezeit_nach_ueber_12h",
-        tage: tageDerRuhe,
-        ruhe,
-        mindestens: grenzen.tarifRuhezeit,
-        fehlt: grenzen.tarifRuhezeit - ruhe.minuten,
-        fundstelle: tarif.fundstelle,
-      },
-    ];
-  });
-  const bleiben = befunde.filter(
-    (befund) => !(beginne.has(befund.ruhe.beginn) && verkuerzt(befund)),
+  const neu = ruhenNach(tage, ueber12).flatMap(
+    ({ tage: tageDerRuhe, ruhe }): TarifRuhezeitBefund[] => {
+      const grenzen = bereitschaftGrenzenAm(tageDerRuhe[0] as Tag);
+      if (grenzen === null || ruhe.minuten >= grenzen.tarifRuhezeit || verstossen.has(ruhe.beginn))
+        return [];
+      return [
+        {
+          regel: "R-11",
+          norm: "§ 7 Abs. 9 ArbZG",
+          schwere: "verstoss",
+          art: "ruhezeit_nach_ueber_12h",
+          tage: tageDerRuhe,
+          ruhe,
+          mindestens: grenzen.tarifRuhezeit,
+          fehlt: grenzen.tarifRuhezeit - ruhe.minuten,
+          fundstelle: tarif.fundstelle,
+        },
+      ];
+    },
   );
-  return [...bleiben, ...neu].sort((a, b) => a.ruhe.beginn - b.ruhe.beginn);
+  return [...befunde, ...neu].sort((a, b) => a.ruhe.beginn - b.ruhe.beginn);
 };

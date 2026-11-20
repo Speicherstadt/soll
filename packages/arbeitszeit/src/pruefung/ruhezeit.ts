@@ -20,6 +20,12 @@ export type RuhezeitOptionen = {
   branche?: Branche;
   /** default "beide" */
   ausgleich?: RuhezeitAusgleich;
+  /**
+   * The beginnings of rests § 5 Abs. 2 ArbZG may not shorten (§ 7 Abs. 9, R-11): a rest too short
+   * even for § 5 stays a Verstoß; a shortening gets no finding here and takes no balance from
+   * another shortened rest, the rule that forbids it reports it. Default none.
+   */
+  ohneVerkuerzung?: ReadonlySet<number>;
 };
 
 /**
@@ -181,7 +187,7 @@ const befund = (
  */
 export const ruhezeit = (
   tage: readonly PruefTag[],
-  { jetzt, branche = "andere", ausgleich = "beide" }: RuhezeitOptionen,
+  { jetzt, branche = "andere", ausgleich = "beide", ohneVerkuerzung = new Set() }: RuhezeitOptionen,
 ): Pruefergebnis<RuhezeitBefund> => {
   const ruhen = ruhenAus(tage, jetzt);
   const befunde: RuhezeitBefund[] = [];
@@ -202,6 +208,7 @@ export const ruhezeit = (
       befunde.push(befund("ruhezeit_zu_kurz", ruhe, norm, mindestens, mindestens - ruhe.minuten));
       continue;
     }
+    if (ohneVerkuerzung.has(ruhe.beginn)) continue;
     const bis = ausgleichBis(ruhe, ausgleich, grenzen);
     verkuerzungen.push({ ruhe, grenzen, bis, fensterEnde: beginnInBerlin(plusTage(bis, 1)) });
   }

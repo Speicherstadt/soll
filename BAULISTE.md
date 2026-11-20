@@ -153,7 +153,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Regelversion, Feiertage oder vertragliche Wochenarbeitszeit wird „nicht hinterlegt“ statt geprüft.
 - [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
   Unterbrechung der Ruhezeit.
-- [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
+- [x] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.
   Fertig, wenn: die Beispiele aus R 3b LStR und H 3b LStH als Tests bestehen.
   Dazu: jeder Fall von R-29 in `docs/regeln.md` besteht wörtlich als Test, die Beispiele aus R 3b
   und H 3b stehen dort als Fälle mit Quelle; die Sätze des Betriebs (Basispunkte) werden je Minute

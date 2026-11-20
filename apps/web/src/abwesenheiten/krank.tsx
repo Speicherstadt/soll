@@ -76,7 +76,7 @@ const Laufend = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
             name="bis"
             type="date"
             class={feld}
-            value={props.a.bis ?? ""}
+            defaultValue={props.a.bis ?? ""}
             min={props.a.von}
             required
           />
@@ -123,11 +123,11 @@ export const Krank = (props: { quelle: AbwesenheitQuelle; heute: string; abTag: 
         <fieldset class="flex gap-5">
           <legend class="sr-only">{m.abw_krank_wer()}</legend>
           <label class="flex min-h-11 items-center gap-2">
-            <input type="radio" name="wer" checked={!kind()} onChange={() => setKind(false)} />
+            <input type="radio" name="wer" defaultChecked onChange={() => setKind(false)} />
             {m.abw_krank_ich()}
           </label>
           <label class="flex min-h-11 items-center gap-2">
-            <input type="radio" name="wer" checked={kind()} onChange={() => setKind(true)} />
+            <input type="radio" name="wer" onChange={() => setKind(true)} />
             {m.abw_krank_kind()}
           </label>
         </fieldset>

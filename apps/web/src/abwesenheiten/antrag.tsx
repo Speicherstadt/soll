@@ -61,7 +61,7 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
               name="von"
               type="date"
               class={feld}
-              value={props.heute}
+              defaultValue={props.heute}
               required
             />
           </div>
@@ -74,7 +74,7 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
               name="bis"
               type="date"
               class={feld}
-              value={props.heute}
+              defaultValue={props.heute}
               required
             />
           </div>

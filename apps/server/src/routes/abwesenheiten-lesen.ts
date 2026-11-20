@@ -121,6 +121,9 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
       const betriebId = c.get("betriebId");
       const freigeben = darf(c.get("rolle"), "abwesenheiten:freigeben");
       const mitglieder = new Map(mitgliederMitNamen(db, betriebId).map((m) => [m.nutzerId, m]));
+      // an open end reaches no further than today: in a window that begins later only a sickness
+      // would still be there, a year on as well, and tell itself by its length (review S-401)
+      const heute = tagInBerlin(jetzt());
       return c.json({
         von,
         bis,
@@ -128,7 +131,7 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
         // leave named, „abwesend“ would mean sickness (Art. 9 DSGVO, S-401); an open end shows as
         // the end of what is shown, like any absence reaching beyond it
         abwesenheiten: abwesenheitenIn(db, betriebId, { von, bis, status: ["genehmigt"] })
-          .filter((zeile) => mitglieder.has(zeile.nutzerId))
+          .filter((zeile) => mitglieder.has(zeile.nutzerId) && (zeile.bis !== null || von <= heute))
           .map((zeile) => ({
             abwesenheitId: zeile.abwesenheitId,
             nutzerId: zeile.nutzerId,

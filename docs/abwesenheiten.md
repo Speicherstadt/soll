@@ -118,7 +118,7 @@ Daten zum Mitarbeiter gibt, zählt der Wert für zwei Eltern.
 | die Person selbst | ihre Abwesenheiten mit Art, Bescheinigung und Kind |
 | Inhaber, Lohnbüro | die Art, die Bescheinigung und die Erinnerung an die eAU, weil sie die Entgeltfortzahlung abrechnen |
 | Planer | „abwesend“, ohne Bescheinigung, Kind und Grund; Urlaub, Sonderurlaub und Überstundenabbau mit Art, weil er sie freigibt |
-| alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als letzter gezeigter Tag; wer Urlaub freigibt, kann ihn dort stornieren |
+| alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als letzter gezeigter Tag, in einem Zeitraum, der erst nach heute beginnt, fehlt es; wer Urlaub freigibt, kann ihn dort stornieren |
 
 Dasselbe gilt im [Monatsabschluss](monatsabschluss.md): Wer „krank“ nicht sehen darf, liest dort
 „abwesend“, und der Hinweis „Krank im Urlaub“ fehlt.

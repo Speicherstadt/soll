@@ -130,6 +130,17 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   „nicht hinterlegt“ statt geprüft.
 - [ ] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
 - [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
+  Fertig, wenn: jeder Fall von R-15 bis R-21 in `docs/regeln.md` wörtlich als Test besteht, auch
+  am Tag vor und am Tag des 18. Geburtstags, bei einem Geburtstag am 29. Februar, über beide
+  Zeitumstellungen und an den Grenzen von Woche, Doppelwoche und Monat. Dazu: die Regeln nehmen
+  dieselben Arbeitstage wie S-202 (`PruefTag`); vom Mitarbeiter nur das Geburtsdatum und für den
+  Mutterschutz nur den Zeitraum und die Daten, die eine Regel braucht (Schutzfristen, Erklärungen,
+  Genehmigung nach § 28), nie eine Angabe zur Schwangerschaft selbst; jeder Befund nennt Regel,
+  Norm, Schwere und Tage, dazu die Minuten, die Grenze oder die fehlende Bedingung; Branche,
+  mehrschichtiger Betrieb, Bau- und Montagestellen, Berufsschultage, Ausnahmen nach §§ 16 und 17
+  JArbSchG und § 10 ArbZG, Genehmigungen und Erklärungen sind Parameter, deren Vorgabe nie weniger
+  streng ist als das Gesetz; Feiertage kommen aus S-105 nach dem Standort; ein Tag ohne
+  Regelversion, Feiertage oder vertragliche Wochenarbeitszeit wird „nicht hinterlegt“ statt geprüft.
 - [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
   Unterbrechung der Ruhezeit.
 - [ ] **S-207 Zuschläge** – steuerfreie Anteile nach § 3b EStG getrennt von steuerpflichtigen.

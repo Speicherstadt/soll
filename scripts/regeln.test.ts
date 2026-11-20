@@ -100,3 +100,72 @@ describe("docs/regeln.md", () => {
     }
   });
 });
+
+/*
+ * Review of S-103: cases whose expected result contradicts the norm they cite. Each check names the
+ * source that settles it.
+ */
+describe("docs/regeln.md against the law", () => {
+  const regel = (kennung: string): string =>
+    abschnitte().find((r) => r.kennung === kennung)?.text ?? "";
+  const zeile = (kennung: string, art: string): string[] =>
+    faelle(regel(kennung)).find((z) => z[0] === art) ?? [];
+
+  it("R-09: the Ersatzruhetag may lie anywhere in a two-week span that includes the Sunday", () => {
+    // § 11 Abs. 3 Satz 1 ArbZG: "innerhalb eines den Beschäftigungstag einschließenden Zeitraums von
+    // zwei Wochen" – a span of 14 days containing the Sunday reaches 13 days before or after it
+    // (KomNet NRW, Dialog 28918: also before the Sunday). The 7th day after a Sunday is a Sunday,
+    // never a Werktag, and checking only 7 days each side reports a Verstoß the law does not.
+    const text = regel("R-09");
+    expect(text).not.toMatch(/7 Tage davor und danach/);
+    expect(zeile("R-09", "Grenze").join(" ")).not.toMatch(/7\. Tag danach/);
+    expect(zeile("R-09", "Grenze").join(" ")).toMatch(/13\. Tag/);
+  });
+
+  it("R-20: three Sundays worked break § 17 Abs. 2 Satz 2 JArbSchG only in a month of four Sundays", () => {
+    // "mindestens zwei Sonntage im Monat müssen beschäftigungsfrei bleiben": in November 2026
+    // (Sundays 1, 8, 15, 22, 29) three worked Sundays leave two free; February 2026 has four.
+    const verstoss = faelle(regel("R-20")).find((z) => z[1]?.includes("Sonntage im Monat")) ?? [];
+    expect(verstoss[1]).toMatch(/vier Sonntage|4 Sonntage/);
+  });
+
+  it("R-23: a fraction under half a day is not rounded down (8,33 days are not 8)", () => {
+    // § 5 Abs. 2 BUrlG rounds up from half a day only; smaller fractions stay owed as they are
+    // (BAG, 26.01.1989, 8 AZR 730/87). Soll keeps half days and rounds 8,33 up to 8,5, as the
+    // note under the table says.
+    const teilurlaub = zeile("R-23", "Teilurlaub").join(" ");
+    expect(teilurlaub).not.toMatch(/→ 8 Tage/);
+    expect(teilurlaub).toMatch(/8,5 Tage/);
+  });
+
+  it("R-29: night and Sunday rates add up under R 3b Abs. 3 LStR, not Abs. 4", () => {
+    // R 3b Abs. 3 LStR "Nachtarbeit an Sonntagen und Feiertagen" allows both exemptions side by
+    // side; Abs. 4 "Feiertagsarbeit an Sonntagen" caps a Sunday that is a holiday at the holiday rate.
+    expect(regel("R-29")).not.toMatch(/addieren sich, R 3b Abs\. 4 LStR/);
+    expect(regel("R-29")).toMatch(/R 3b Abs\. 3 LStR/);
+  });
+
+  it("R-22: the Grenze case is the earliest day that keeps the four days' notice", () => {
+    // § 12 Abs. 3 Satz 2 TzBfG with § 187 Abs. 1 BGB, as the rule reads it: four full days between
+    // notice and work, so notice on Monday reaches Saturday exactly; Monday to Friday has three full
+    // days between (Di, Mi, Do), not four.
+    const grenze = zeile("R-22", "Grenze");
+    expect(grenze[1]).toMatch(/^Mo – Sa/);
+    expect(grenze[2]).toBe("kein Befund");
+    const bisFreitag = faelle(regel("R-22")).filter((z) => /^Mo( 10:00)? – Fr/.test(z[1] ?? ""));
+    for (const z of bisFreitag) expect(z.join(" ")).not.toMatch(/vier volle Tage/);
+  });
+
+  it("R-10: a month is removed after two years only when it carries no payroll", () => {
+    // docs/plan.md, "Fristen je Monatsabschluss": 2 years without payroll (§ 16 Abs. 2 ArbZG),
+    // 6 years as a payroll record, 10 years as an accounting voucher (§ 147 Abs. 3 AO).
+    const erlaubt = zeile("R-10", "erlaubt").join(" ");
+    expect(erlaubt).toMatch(/ohne Lohnbezug/);
+  });
+
+  it("R-21: work after the birth is allowed after two weeks when the child has died", () => {
+    // § 3 Abs. 4 MuSchG: after the death of the child the woman may work once the first two weeks
+    // after the birth have passed, if she asks for it and a medical certificate does not object.
+    expect(regel("R-21")).toMatch(/§ 3 Abs\. 4 MuSchG/);
+  });
+});

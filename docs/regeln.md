@@ -272,31 +272,35 @@ Regel:
   Wochen; § 11 Abs. 4 ArbZG (in Verbindung mit einer Ruhezeit).
 - **Regel**: Ein Ersatzruhetag ist ein Werktag ohne Arbeitszeit von 0 bis 24 Uhr. Soll ordnet jedem
   Sonntag den frühesten freien Werktag im Zeitraum zu, der noch keinem anderen zugeordnet ist.
-- **Grenzwerte**: Sonntag: Zeitraum von 14 Tagen, der den Sonntag einschließt (Soll prüft die
-  7 Tage davor und danach); Feiertag: 8 Wochen entsprechend.
+- **Grenzwerte**: Sonntag: ein Zeitraum von 14 Tagen, der den Sonntag einschließt; er kann vor oder
+  nach dem Sonntag liegen, der Ersatzruhetag also bis zu 13 Tage davor oder danach (Montag zwei
+  Wochen davor bis Samstag der übernächsten Woche). Feiertag: 8 Wochen entsprechend, bis zu 55 Tage
+  davor oder danach.
 - **Schwere**: Hinweis, solange der Zeitraum läuft; Verstoß, wenn er ohne Ersatzruhetag endet.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
 | erlaubt | Arbeit So, frei Di | kein Befund | § 11 Abs. 3 Satz 1 ArbZG |
-| Grenze | Arbeit So, einziger freier Werktag am 7. Tag danach | kein Befund | § 11 Abs. 3 Satz 1 ArbZG („zwei Wochen“) |
-| Verstoß | Arbeit So, 7 Tage davor und danach kein freier Werktag | Verstoß „Ersatzruhetag fehlt“ | § 11 Abs. 3 Satz 1 ArbZG |
+| Grenze | Arbeit So, einziger freier Werktag am 13. Tag danach (Sa der übernächsten Woche) | kein Befund | § 11 Abs. 3 Satz 1 ArbZG („den Beschäftigungstag einschließenden Zeitraums von zwei Wochen“) |
+| Verstoß | Arbeit So, 13 Tage davor und danach kein freier Werktag, der nächste am 15. Tag danach (Mo) | Verstoß „Ersatzruhetag fehlt“ | § 11 Abs. 3 Satz 1 ArbZG |
 | Feiertag | Arbeit Mo 25.5.2026 (Pfingstmontag), freier Werktag nach 7 Wochen | kein Befund | § 11 Abs. 3 Satz 2 ArbZG |
 
 ### R-10 Aufzeichnung und Aufbewahrung
 
 - **Norm**: § 16 Abs. 2 ArbZG: die über 8 h werktäglich hinausgehende Arbeitszeit aufzeichnen,
   „Die Nachweise sind mindestens zwei Jahre aufzubewahren.“
-- **Regel**: Soll zeichnet jede Arbeitszeit auf (R-01) und bewahrt sie mindestens zwei Jahre ab dem
-  Monatsabschluss auf; die Aussonderung (S-901) entfernt nichts vor Ablauf der längsten Frist.
+- **Regel**: Soll zeichnet jede Arbeitszeit auf (R-01) und bewahrt jeden abgeschlossenen Monat mindestens
+  zwei Jahre ab Ablauf seines Kalenderjahres auf, mit Lohnbezug 6 Jahre, als Buchungsbeleg 10 Jahre
+  (Projektplan, „Fristen je Monatsabschluss“); die Aussonderung (S-901) entfernt nichts vor Ablauf der längsten Frist.
 - **Schwere**: Verstoß, wenn eine Aussonderung eine Aufzeichnung vor Ablauf entfernen würde (die
   Aussonderung bricht dann ab).
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
-| erlaubt | Monat Januar 2026, Aussonderung am 1.1.2029 | entfernt | § 16 Abs. 2 Satz 2 ArbZG |
-| Grenze | Monat Dezember 2026, Aussonderung am 31.12.2028 | nicht entfernt (Frist mit Ablauf des Jahres 2026 + 2 Jahre) | § 16 Abs. 2 Satz 2 ArbZG; Projektplan, „Fristen“ |
+| erlaubt | Monat Januar 2026 ohne Lohnbezug, Aussonderung am 1.1.2029 | entfernt | § 16 Abs. 2 Satz 2 ArbZG |
+| Grenze | Monat Dezember 2026 ohne Lohnbezug, Aussonderung am 31.12.2028 | nicht entfernt (Frist mit Ablauf des Jahres 2026 + 2 Jahre) | § 16 Abs. 2 Satz 2 ArbZG; Projektplan, „Fristen“ |
 | Verstoß | Aussonderung eines Monats von 2026 im Jahr 2027 | abgelehnt | § 16 Abs. 2 Satz 2 ArbZG |
+| Lohnunterlage | Monat Januar 2026 mit Stundenlohn, Aussonderung am 1.1.2029 | nicht entfernt (6 Jahre als Lohnunterlage) | Projektplan, „Fristen“ |
 
 ### R-11 Bereitschaftsdienst
 
@@ -466,7 +470,8 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Grenze | Café (Gaststättengewerbe), Di–Sa gearbeitet, Mo frei | kein Befund | §§ 15, 16 Abs. 2 Nr. 6, Abs. 3 JArbSchG |
 | Verstoß | Mo–Sa gearbeitet | Verstoß „sechs Arbeitstage“ | § 15 Satz 1 JArbSchG |
 | Verstoß | SHK, Samstag gearbeitet | Verstoß „Samstag“ | § 16 Abs. 1 JArbSchG |
-| Verstoß | Café, drei Sonntage im Monat gearbeitet | Verstoß „mindestens zwei Sonntage frei“ | § 17 Abs. 2 Satz 2 JArbSchG |
+| Verstoß | Café, Februar 2026 (vier Sonntage), drei Sonntage im Monat gearbeitet | Verstoß „mindestens zwei Sonntage frei“ | § 17 Abs. 2 Satz 2 JArbSchG |
+| fünf Sonntage | Café, November 2026 (fünf Sonntage), drei gearbeitet, zwei frei | kein Befund | § 17 Abs. 2 Satz 2 JArbSchG („mindestens zwei“; „jeder zweite Sonntag soll“ ist keine Pflicht) |
 | Verstoß | Café, 24.12. 10:00 – 14:01 | Verstoß „nach 14 Uhr“ | § 18 Abs. 1 JArbSchG |
 
 ## Mutterschutz
@@ -482,7 +487,11 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
   Monatsdurchschnitt), Abs. 2 (Ruhezeit 11 h); § 5 Abs. 1 (nicht zwischen 20 und 6 Uhr, bis 22 Uhr
   nur unter den Voraussetzungen des § 28); § 6 Abs. 1 (Sonn- und Feiertage nur mit Erklärung, mit
   Ausnahme nach § 10 ArbZG und einem Ersatzruhetag je Woche).
-- **Schwere**: Verstoß. In der Schutzfrist nach der Entbindung ist jede Arbeitszeit ein Verstoß;
+- **Ausnahmen**: Nach dem Tod des Kindes darf die Frau nach Ablauf der ersten zwei Wochen nach der
+  Entbindung arbeiten, wenn sie es ausdrücklich verlangt und nach ärztlichem Zeugnis nichts dagegen
+  spricht (§ 3 Abs. 4 MuSchG); der Betrieb trägt dann das Ende der Schutzfrist am Mitarbeiter ein,
+  ohne Grund und ohne Zeugnis.
+- **Schwere**: Verstoß. In der Schutzfrist nach der Entbindung ist jede Arbeitszeit ein Verstoß (außer nach § 3 Abs. 4);
   vor der Entbindung nur, wenn keine ausdrückliche Erklärung der Frau eingetragen ist (§ 3 Abs. 1
   Satz 1 MuSchG).
 
@@ -512,9 +521,10 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 
 | Fall | Mitteilung – Schicht | Erwartet | Quelle |
 | --- | --- | --- | --- |
-| erlaubt | Mo – Sa | kein Befund | § 12 Abs. 3 Satz 2 TzBfG |
-| Grenze | Mo 10:00 – Fr 10:00 (vier volle Tage Di bis Fr) | Hinweis: der Mitteilungstag zählt nicht, Fr ist erst der vierte Tag | § 12 Abs. 3 Satz 2 TzBfG; § 187 Abs. 1 BGB |
-| Verstoß | Mo – Do | Hinweis „keine Pflicht zur Arbeit, Vorlauf 3 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
+| erlaubt | Mo – Mo der Folgewoche | kein Befund | § 12 Abs. 3 Satz 2 TzBfG |
+| Grenze | Mo – Sa (vier volle Tage Di bis Fr dazwischen) | kein Befund | § 12 Abs. 3 Satz 2 TzBfG; § 187 Abs. 1 BGB |
+| Verstoß | Mo 10:00 – Fr 10:00 (drei volle Tage Di bis Do dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 3 Tage“: der Mitteilungstag und der Tag der Arbeit zählen nicht | § 12 Abs. 3 Satz 2 TzBfG; § 187 Abs. 1 BGB |
+| Verstoß | Mo – Do (zwei volle Tage dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 2 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
 | Dauer | Abruf ohne vereinbarte Tagesdauer für 2:30 | Hinweis „mindestens 3 Stunden“ | § 12 Abs. 1 Satz 4 TzBfG |
 
 Hinweis zur Grenze: Die Frist von vier Tagen ist erst gewahrt, wenn zwischen dem Tag der Mitteilung
@@ -538,7 +548,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | erlaubt | 5-Tage-Woche, 25 Urlaubstage | kein Befund | § 3 Abs. 1 BUrlG |
 | Grenze | 5-Tage-Woche, 20 Urlaubstage | kein Befund | § 3 Abs. 1 BUrlG (24 × 5 ÷ 6 = 20) |
 | Verstoß | 5-Tage-Woche, 19,5 Urlaubstage | Hinweis „unter dem gesetzlichen Mindesturlaub“ | § 3 Abs. 1 BUrlG |
-| Teilurlaub | Eintritt 1.8., 20 Tage, 5 volle Monate | 5 × 20 ÷ 12 = 8,33 → 8 Tage, 0,5 wird aufgerundet | § 5 Abs. 1, 2 BUrlG |
+| Teilurlaub | Eintritt 1.8., 20 Tage, 5 volle Monate | 5 × 20 ÷ 12 = 8,33 → 8,5 Tage (nicht abgerundet; Soll führt halbe Tage und rundet zugunsten der Person auf) | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG; BAG, 26.01.1989, 8 AZR 730/87 |
 | Rundung | 7 volle Monate bei 20 Tagen: 11,67 | 12 Tage | § 5 Abs. 2 BUrlG |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
@@ -638,7 +648,7 @@ den Anspruch (Soll führt Urlaub in halben Tagen und rundet 8,33 auf 8,5 auf).
   Grundlohn höchstens 50 € je Stunde; Feiertage am Ort der Arbeitsstätte; bei Beginn vor 0 Uhr zählt
   0 bis 4 Uhr des Folgetags noch als Sonn- oder Feiertag (Abs. 3). R 3b LStR, H 3b LStH.
 - **Regel**: Soll rechnet je Minute den höchsten anwendbaren Sonn- oder Feiertagssatz plus den
-  Nachtsatz (die Sätze addieren sich, R 3b Abs. 4 LStR). Der Teil des gezahlten Zuschlags über den
+  Nachtsatz (die Sätze addieren sich, R 3b Abs. 3 LStR; ist ein Sonntag zugleich Feiertag, gilt nur der Feiertagssatz, R 3b Abs. 4 LStR). Der Teil des gezahlten Zuschlags über den
   steuerfreien Sätzen ist steuerpflichtig und wird getrennt an DATEV gegeben (S-308). Beträge in
   Cent, gerundet wird auf ganze Cent zugunsten der Steuerfreiheit nur bis zur Grenze.
 - **Schwere**: kein Befund; eine Berechnung. Die Beispiele aus R 3b LStR und H 3b LStH sind die Tests

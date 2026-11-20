@@ -140,6 +140,20 @@ describe("Urlaubsanspruch: Grenzen der Beschäftigung", () => {
     expect(wert.gesamtHalbtage).toBe(tage(16));
   });
 
+  it("keeps a half day of the full leave: § 5 Abs. 2 BUrlG rounds only the twelfths of § 5 Abs. 1", () => {
+    // a model with 25,5 days, the whole year: nothing to round (BAG, 26.01.1989, 8 AZR 730/87)
+    expect(anspruch({ modelle: mitUrlaub(25.5) })).toMatchObject({
+      art: "voll",
+      gesamtHalbtage: tage(25.5),
+    });
+    // Teilurlaub: 6 × 25 ÷ 12 = 12,5 is a fraction of § 5 Abs. 1 and rounds up to 13
+    const teil = anspruch({
+      modelle: mitUrlaub(25),
+      beschaeftigung: { eintritt: "2020-01-01", austritt: "2026-06-30" },
+    });
+    expect(teil).toMatchObject({ art: "teil_c", zwoelftel: 6, gesamtHalbtage: tage(13) });
+  });
+
   it("has no leave in a year without employment, and none is owed before the Eintritt", () => {
     expect(anspruch({ beschaeftigung: { eintritt: "2027-01-01" } })).toMatchObject({
       art: "keiner",

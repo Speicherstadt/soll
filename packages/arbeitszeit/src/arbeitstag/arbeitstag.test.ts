@@ -127,8 +127,64 @@ describe("R-01: Beginn, Ende und Dauer", () => {
   });
 });
 
+describe("R-01: the cases of the working day, as docs/regeln.md writes them", () => {
+  it("Pause: a stamped break of 30 min", () => {
+    const tag = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      weiter("2026-11-16T12:30+01:00"),
+      gehen("2026-11-16T16:30+01:00"),
+    ]);
+    expect([tag.arbeitsMinuten, tag.pausenMinuten]).toEqual([480, 30]);
+    expect(tag.schichten[0]?.pausen[0]?.art).toBe("gestempelt");
+  });
+
+  it("Lücke: a gap of 30 min between two pairs", () => {
+    const tag = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      gehen("2026-11-16T12:00+01:00"),
+      kommen("2026-11-16T12:30+01:00"),
+      gehen("2026-11-16T16:30+01:00"),
+    ]);
+    expect([tag.arbeitsMinuten, tag.pausenMinuten]).toEqual([480, 30]);
+    expect(tag.schichten[0]?.pausen[0]?.art).toBe("luecke");
+  });
+
+  it("kurze Pause: 14 min are working time, no break", () => {
+    const tag = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      pause("2026-11-16T12:00+01:00"),
+      weiter("2026-11-16T12:14+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+    ]);
+    expect([tag.arbeitsMinuten, tag.pausenMinuten]).toEqual([480, 0]);
+  });
+
+  it("doppelter Tipp: Kommen at 8:00:05 and 8:00:40 is no finding", () => {
+    const tag = einTag([
+      kommen("2026-11-16T08:00:05+01:00"),
+      kommen("2026-11-16T08:00:40+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+    ]);
+    expect(tag.befunde).toEqual([]);
+    expect(tag.arbeitsMinuten).toBe(480);
+  });
+
+  it("doppelt: Kommen 8:00 and 8:10, Gehen 16:00 and 16:20 count 8:20, with a Hinweis each", () => {
+    const tag = einTag([
+      kommen("2026-11-16T08:00+01:00"),
+      kommen("2026-11-16T08:10+01:00"),
+      gehen("2026-11-16T16:00+01:00"),
+      gehen("2026-11-16T16:20+01:00"),
+    ]);
+    expect(tag.arbeitsMinuten).toBe(500);
+    expect(arten(tag)).toEqual(["doppelt", "doppelt"]);
+    expect(tag.vollstaendig).toBe(true);
+  });
+});
+
 describe("breaks", () => {
-  it("counts a stamped break and a gap between two pairs, each with its kind", () => {
+  it("Teile: a stamped break and a gap between two pairs, each part with its minutes", () => {
     const tag = einTag([
       kommen("2026-11-16T08:00+01:00"),
       pause("2026-11-16T10:00+01:00"),
@@ -138,6 +194,7 @@ describe("breaks", () => {
       gehen("2026-11-16T16:30+01:00"),
     ]);
     const schicht = tag.schichten[0];
+    expect(schicht?.arbeit.map((teil) => teil.minuten)).toEqual([120, 105, 240]);
     expect(schicht?.pausen.map(({ art, minuten }) => [art, minuten])).toEqual([
       ["gestempelt", 15],
       ["luecke", 30],

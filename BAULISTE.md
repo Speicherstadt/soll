@@ -101,6 +101,15 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Zeitumstellung.
   Fertig, wenn: 22:00 bis 6:00 über den 25.10.2026 9 h und über den 28.03.2027 7 h ergibt und der
   Arbeitstag der Starttag ist.
+  Dazu: jeder Teil (Arbeit, gestempelte Pause, Lücke zwischen zwei Paaren) hat Beginn, Ende und
+  Minuten, und Arbeit und Pausen füllen die Schicht von Beginn bis Ende; eine Stempelung in der
+  doppelten Stunde im Oktober zählt als der Zeitpunkt, der sie ist; ein offenes „Kommen“ ohne
+  „Gehen“ wird nie beendet, sondern ist ab 0 Uhr des Folgetags, bei einer Nachtschicht 16 h nach
+  Beginn, der Hinweis „Gehen fehlt“ (R-01), ebenso eine Pause ohne Ende; Stempelungen in beliebiger
+  Reihenfolge ergeben dasselbe, ein doppelter Tipp keinen Befund, eine wiederholte Stempelung einen
+  Hinweis und die für die Beschäftigten günstigere Zeit; mehrere Schichten an einem Tag bleiben
+  getrennt, eine Pause über Mitternacht bleibt in der Schicht des Starttags; eine Unterbrechung
+  unter 15 min ist Arbeitszeit (R-04); jeder Fall dazu steht in `docs/regeln.md` unter R-01.
 - [ ] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
   oder 24 Wochen.
 - [ ] **S-203 Nacht, Sonn- und Feiertage** – §§ 2, 6, 9 bis 11 ArbZG, Ersatzruhetag.

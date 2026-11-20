@@ -50,3 +50,19 @@ describe("ostersonntag", () => {
     expect(ostersonntag(1954)).toBe("1954-04-18");
   });
 });
+
+describe("ostersonntag outside the Gregorian four-digit years", () => {
+  // The formula is Gregorian (from 1583, the first whole Gregorian year) and a Tag is `YYYY-MM-DD`
+  it("returns null instead of a string that is no Tag", () => {
+    expect(ostersonntag(10000)).toBeNull();
+    expect(ostersonntag(-1)).toBeNull();
+    expect(ostersonntag(Number.NaN)).toBeNull();
+    expect(ostersonntag(2026.5)).toBeNull();
+    expect(ostersonntag(1582)).toBeNull();
+  });
+
+  it("keeps the edges of the range", () => {
+    expect(ostersonntag(1583)).toBe(meeus(1583));
+    expect(ostersonntag(9999)).toBe(meeus(9999));
+  });
+});

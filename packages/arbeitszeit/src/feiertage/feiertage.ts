@@ -23,7 +23,8 @@ const bussUndBettag = (jahr: number): Tag => {
 
 const terminIn = (termin: Termin, jahr: number): Tag => {
   if (termin.art === "fest") return tagAus(jahr, termin.monat, termin.tag);
-  if (termin.art === "ostern") return plusTage(ostersonntag(jahr), termin.abstand);
+  // feiertage only asks for years within FRUEHESTES_JAHR to SPAETESTES_JAHR, where Easter is known
+  if (termin.art === "ostern") return plusTage(ostersonntag(jahr) as Tag, termin.abstand);
   return bussUndBettag(jahr);
 };
 

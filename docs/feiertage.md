@@ -75,7 +75,8 @@ Jeder Feiertag nennt das Feiertagsgesetz seines Landes:
 Ostersonntag berechnet Soll nach der Osterformel von Gauß in der Form von Lichtenberg; daraus folgen
 Karfreitag (−2 Tage), Ostermontag (+1), Christi Himmelfahrt (+39), Pfingstsonntag (+49),
 Pfingstmontag (+50) und Fronleichnam (+60). Ein Test vergleicht die Formel für 1900 bis 2100 mit
-einem unabhängigen Verfahren (Meeus/Jones/Butcher).
+einem unabhängigen Verfahren (Meeus/Jones/Butcher). Die Formel gilt für den gregorianischen Kalender;
+für ein Jahr vor 1583 oder nach 9999 gibt sie kein Datum zurück.
 
 ## Geprüft
 

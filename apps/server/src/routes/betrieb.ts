@@ -23,6 +23,10 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
       return c.json({
         betriebId: betrieb.betriebId,
         name: betrieb.name,
+        land: betrieb.land,
+        eingerichtet: betrieb.eingerichtetAm !== null,
+        // one's own role, so the app knows what to offer (the server checks it again on each call)
+        rolle: c.get("rolle"),
         module: moduleVon(betrieb),
       });
     })

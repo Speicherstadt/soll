@@ -73,12 +73,39 @@ export const testServer = (optionen: { log?: (line: string) => void; uhr?: () =>
     };
   };
 
+  type Person = Awaited<ReturnType<typeof inhaberMitBetrieb>>;
+
+  /** Invites someone into the owner's business, lets them accept and sign in with a username */
+  const eingeladen = async (inhaber: Person, rolle: string, benutzername: string) => {
+    const einladung = (await (
+      await inhaber.anfrage("/api/v1/einladungen", { body: { rolle, name: benutzername } })
+    ).json()) as { link: string };
+    const token = einladung.link.split("/einladung/")[1] ?? "";
+    const b = browser();
+    const passwort = "lange-genug-123";
+    const angenommen = await b.anfrage(`/api/v1/einladung/${token}/annehmen`, {
+      body: { benutzername, passwort },
+    });
+    if (angenommen.status !== 201) throw new Error(`annehmen ${angenommen.status}`);
+    const { nutzerId } = (await angenommen.json()) as { nutzerId: string };
+    const an = await b.anfrage("/api/auth/sign-in/username", {
+      body: { username: benutzername, password: passwort },
+    });
+    if (an.status !== 200) throw new Error(`sign-in ${an.status}`);
+    const aktiv = await b.anfrage("/api/auth/organization/set-active", {
+      body: { organizationId: inhaber.betriebId },
+    });
+    if (aktiv.status !== 200) throw new Error(`set-active ${aktiv.status}`);
+    return { ...b, nutzerId, token };
+  };
+
   return {
     ...datenbank,
     app,
     auth,
     browser,
     inhaberMitBetrieb,
+    eingeladen,
     stelleUhr: (ms: number) => {
       uhr = ms;
     },

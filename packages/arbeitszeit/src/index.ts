@@ -3,4 +3,20 @@
  * (docs/regeln.md, BAULISTE.md).
  */
 export * from "./feiertage/index.ts";
-export { istTag, jahrVon, plusTage, type Tag, tagAus, wochentag } from "./kalender/tag.ts";
+export {
+  istTag,
+  jahrVon,
+  plusTage,
+  type Tag,
+  tagAus,
+  tagInBerlin,
+  wochentag,
+} from "./kalender/tag.ts";
+export {
+  type Fragen,
+  fragenAusModulen,
+  MODULE,
+  type Modul,
+  type Module,
+  moduleAusFragen,
+} from "./module/module.ts";

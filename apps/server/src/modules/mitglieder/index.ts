@@ -59,29 +59,39 @@ export const EINLADUNG_GUELTIG_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type Einladung = typeof einladungen.$inferSelect;
 
+type NeueEinladung = { rolle: Rolle; name: string };
+
 /**
- * An invitation by link or QR code for a person without e-mail: the token goes into the link and only
- * its hash into the database
+ * Invitations by link or QR code for people without e-mail, all in one transaction (one or a list
+ * from the setup, S-303): each token goes into its link and only its hash into the database
  */
+export const einladungenErstellen = (
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  personen: readonly NeueEinladung[],
+): { einladung: Einladung; token: string }[] =>
+  schreiben(schreibDb, kontext, (s) =>
+    personen.map((angaben) => {
+      const token = randomBytes(32).toString("base64url");
+      const einladung = s.einfuegen("einladungen", {
+        betriebId: kontext.betriebId,
+        einladungId: crypto.randomUUID(),
+        tokenHash: sha256(token),
+        rolle: angaben.rolle,
+        name: angaben.name,
+        erstelltVon: kontext.akteur,
+        gueltigBis: kontext.jetzt + EINLADUNG_GUELTIG_MS,
+      });
+      return { einladung, token };
+    }),
+  );
+
 export const einladungErstellen = (
   schreibDb: SchreibDb,
   kontext: Kontext,
-  angaben: { rolle: Rolle; name: string },
-): { einladung: Einladung; token: string } => {
-  const token = randomBytes(32).toString("base64url");
-  const einladung = schreiben(schreibDb, kontext, (s) =>
-    s.einfuegen("einladungen", {
-      betriebId: kontext.betriebId,
-      einladungId: crypto.randomUUID(),
-      tokenHash: sha256(token),
-      rolle: angaben.rolle,
-      name: angaben.name,
-      erstelltVon: kontext.akteur,
-      gueltigBis: kontext.jetzt + EINLADUNG_GUELTIG_MS,
-    }),
-  );
-  return { einladung, token };
-};
+  angaben: NeueEinladung,
+): { einladung: Einladung; token: string } =>
+  einladungenErstellen(schreibDb, kontext, [angaben])[0] as { einladung: Einladung; token: string };
 
 export type EinladungErgebnis =
   | { ok: true; einladung: Einladung }

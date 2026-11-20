@@ -39,3 +39,14 @@ export const istTag = (text: string): boolean => {
 };
 
 export const jahrVon = (tag: Tag): number => Number(tag.slice(0, 4));
+
+// en-CA writes dates as YYYY-MM-DD; the time zone of a working day is Europe/Berlin (CLAUDE.md)
+const BERLIN = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Berlin",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** The calendar day in Europe/Berlin of an instant in UTC milliseconds */
+export const tagInBerlin = (ms: number): Tag => BERLIN.format(ms);

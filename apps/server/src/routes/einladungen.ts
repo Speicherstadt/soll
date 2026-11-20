@@ -6,7 +6,7 @@ import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { betriebLesen } from "../modules/betrieb/index.ts";
 import {
   einladungAngenommen,
-  einladungErstellen,
+  einladungenErstellen,
   einladungFinden,
 } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
@@ -15,31 +15,57 @@ const einladenSchema = z
   .object({ rolle: z.enum(ROLLEN), name: z.string().trim().min(1).max(100) })
   .strict();
 
+/** The people of the setup's list (S-303); as many as the CSV import reads at once */
+const listeSchema = z.object({ personen: z.array(einladenSchema).min(1).max(200) }).strict();
+
 /** Roles a planner may invite; owners, payroll and devices are invited by the owner (S-106) */
 const PLANER_DARF: readonly string[] = ["mitarbeiter", "extern"];
 
-/** POST /api/v1/einladungen: an invitation link for the caller's business */
-export const einladungRouten = (schreibDb: SchreibDb, url: string, jetzt: () => number) =>
-  new Hono<Anfrage>().post("/", recht("mitglieder:einladen"), async (c) => {
-    const eingabe = einladenSchema.safeParse(await c.req.json().catch(() => null));
-    if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
-    if (
-      !rollenVon(c.get("rolle")).includes("inhaber") &&
-      !PLANER_DARF.includes(eingabe.data.rolle)
-    ) {
-      return c.json({ fehler: "keine_berechtigung" }, 403);
-    }
-    const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
-    const { einladung, token } = einladungErstellen(schreibDb, kontext, eingabe.data);
-    return c.json(
-      {
-        einladungId: einladung.einladungId,
-        link: `${url}/einladung/${token}`,
-        gueltigBis: einladung.gueltigBis,
-      },
-      201,
-    );
-  });
+const darfEinladen = (rolleDesAufrufers: string, rolle: string): boolean =>
+  rollenVon(rolleDesAufrufers).includes("inhaber") || PLANER_DARF.includes(rolle);
+
+/**
+ * POST /api/v1/einladungen: an invitation link for the caller's business; POST …/liste: one link per
+ * person of a list, all or none
+ */
+export const einladungRouten = (schreibDb: SchreibDb, url: string, jetzt: () => number) => {
+  const erstellen = (
+    kontext: { betriebId: string; akteur: string; jetzt: number },
+    personen: z.infer<typeof einladenSchema>[],
+  ) =>
+    einladungenErstellen(schreibDb, kontext, personen).map(({ einladung, token }) => ({
+      einladungId: einladung.einladungId,
+      name: einladung.name,
+      rolle: einladung.rolle,
+      link: `${url}/einladung/${token}`,
+      gueltigBis: einladung.gueltigBis,
+    }));
+  return new Hono<Anfrage>()
+    .post("/", recht("mitglieder:einladen"), async (c) => {
+      const eingabe = einladenSchema.safeParse(await c.req.json().catch(() => null));
+      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      if (!darfEinladen(c.get("rolle"), eingabe.data.rolle))
+        return c.json({ fehler: "keine_berechtigung" }, 403);
+      const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      const [einladung] = erstellen(kontext, [eingabe.data]);
+      return c.json(
+        {
+          einladungId: einladung?.einladungId,
+          link: einladung?.link,
+          gueltigBis: einladung?.gueltigBis,
+        },
+        201,
+      );
+    })
+    .post("/liste", recht("mitglieder:einladen"), async (c) => {
+      const eingabe = listeSchema.safeParse(await c.req.json().catch(() => null));
+      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      if (!eingabe.data.personen.every((p) => darfEinladen(c.get("rolle"), p.rolle)))
+        return c.json({ fehler: "keine_berechtigung" }, 403);
+      const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      return c.json({ einladungen: erstellen(kontext, eingabe.data.personen) }, 201);
+    });
+};
 
 const annehmenSchema = z
   .object({

@@ -8,33 +8,8 @@ type Person = Awaited<ReturnType<Server["inhaberMitBetrieb"]>>;
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;
 
 /** Invites someone into the owner's business and lets them accept and sign in with a username */
-const eingeladen = async (server: Server, inhaber: Person, rolle: string, benutzername: string) => {
-  const einladung = await json(
-    await inhaber.anfrage("/api/v1/einladungen", { body: { rolle, name: benutzername } }),
-  );
-  const token = String(einladung.link).split("/einladung/")[1] ?? "";
-  const b = server.browser();
-  const angenommen = await b.anfrage(`/api/v1/einladung/${token}/annehmen`, {
-    body: { benutzername, passwort: "lange-genug-123" },
-  });
-  expect(angenommen.status).toBe(201);
-  const { nutzerId } = await json(angenommen);
-  expect(
-    (
-      await b.anfrage("/api/auth/sign-in/username", {
-        body: { username: benutzername, password: "lange-genug-123" },
-      })
-    ).status,
-  ).toBe(200);
-  expect(
-    (
-      await b.anfrage("/api/auth/organization/set-active", {
-        body: { organizationId: inhaber.betriebId },
-      })
-    ).status,
-  ).toBe(200);
-  return { ...b, nutzerId: String(nutzerId), token };
-};
+const eingeladen = (server: Server, inhaber: Person, rolle: string, benutzername: string) =>
+  server.eingeladen(inhaber, rolle, benutzername);
 
 describe("a business", () => {
   it("is created with its organization, the creator as owner, and stands in the chain", async () => {

@@ -14,6 +14,21 @@ describe("darf", () => {
     expect(darf("geraet", "betrieb:lesen")).toBe(false);
   });
 
+  it("lets the owner set up the business and nobody else", () => {
+    expect(darf("inhaber", "betrieb:einrichten")).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"]) {
+      expect(darf(rolle, "betrieb:einrichten"), rolle).toBe(false);
+    }
+  });
+
+  it("shows the wages of working-time models to the owner and payroll only", () => {
+    for (const rolle of ["inhaber", "lohnbuero"])
+      expect(darf(rolle, "modelle:lesen"), rolle).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "betriebsrat", "extern", "geraet"]) {
+      expect(darf(rolle, "modelle:lesen"), rolle).toBe(false);
+    }
+  });
+
   it("refuses unknown roles", () => {
     expect(darf("owner", "betrieb:lesen")).toBe(false);
   });

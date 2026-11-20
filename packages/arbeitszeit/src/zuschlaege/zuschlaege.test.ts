@@ -340,6 +340,29 @@ describe("zuschlaege: input and rounding", () => {
     });
   });
 
+  it("Rundung unter der Grenze: 13,90 € je Stunde, So 22:00 – 22:07, gezahlt 25 % Nacht; So 10:00 – 10:07, gezahlt 25 % Sonntag – je 0,41 € gezahlt und 0,41 € steuerfrei", () => {
+    // 40,54… cents paid, rounded up to 41; the limit is 25 % + 50 % (121,6 cents) or 50 % (81,08
+    // cents): the whole 41 cents do not exceed it (§ 3b Abs. 1 EStG), none of them is taxable
+    const nacht = einTag(
+      rechne(
+        schicht("2026-11-15T22:00+01:00", "2026-11-15T22:07+01:00"),
+        stundenlohn(1390),
+        NACHT_25,
+      ),
+    );
+    expect(nacht.summe).toEqual({ gezahltCent: 41, steuerfreiCent: 41, steuerpflichtigCent: 0 });
+    const sonntag = einTag(
+      rechne(schicht("2026-11-15T10:00+01:00", "2026-11-15T10:07+01:00"), stundenlohn(1390), {
+        sonntag: 2500,
+      }),
+    );
+    expect(sonntag.arten.sonntag).toEqual({
+      gezahltCent: 41,
+      steuerfreiCent: 41,
+      steuerpflichtigCent: 0,
+    });
+  });
+
   it("counts only the work of closed shifts, without Ruhepausen", () => {
     const tag = einTag(
       rechne(

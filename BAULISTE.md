@@ -236,7 +236,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   (Pause nach § 4, 8 und 10 Stunden nach § 3, Ruhezeit nach § 5, nicht hinterlegt vor der ersten
   Regelversion); Soll stempelt nie selbst aus und rundet nie zulasten der Person; Texte in allen
   sechs Sprachen, Arabisch von rechts nach links; axe grün in hell und dunkel.
-- [ ] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
+- [x] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
   einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
   Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der
   Nummer auffällt. Dazu: jede Stempelung der App bekommt auf dem Gerät eine fortlaufende Nummer je

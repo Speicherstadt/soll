@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ersterTag, istMonat, letzterTag, monatVon, plusMonate } from "./monat.ts";
+import { ersterTag, istMonat, letzterTag, monatVon, plusMonate, tageImMonat } from "./monat.ts";
 
 describe("Monat", () => {
   it("accepts real months only", () => {
@@ -22,5 +22,12 @@ describe("Monat", () => {
     expect(letzterTag("2028-02")).toBe("2028-02-29");
     expect(letzterTag("2026-12")).toBe("2026-12-31");
     expect(monatVon("2026-12-31")).toBe("2026-12");
+  });
+
+  it("lists every day of a month, the leap day included", () => {
+    expect(tageImMonat("2026-11")).toHaveLength(30);
+    expect(tageImMonat("2026-02").at(-1)).toBe("2026-02-28");
+    expect(tageImMonat("2028-02").at(-1)).toBe("2028-02-29");
+    expect(tageImMonat("2026-12")[0]).toBe("2026-12-01");
   });
 });

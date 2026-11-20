@@ -42,3 +42,6 @@ export const jahrVon = (tag: Tag): number => Number(tag.slice(0, 4));
 
 /** Whole calendar days from `von` to `bis`: 1 from one day to the next, negative backwards */
 export const tageZwischen = (von: Tag, bis: Tag): number => (alsMs(bis) - alsMs(von)) / MS_PRO_TAG;
+
+/** The Monday of a day's week: weeks run Monday to Sunday (§ 4 Abs. 4 Satz 1 JArbSchG) */
+export const wochenbeginn = (tag: Tag): Tag => plusTage(tag, -((wochentag(tag) + 6) % 7));

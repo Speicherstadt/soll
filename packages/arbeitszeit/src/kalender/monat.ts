@@ -21,3 +21,10 @@ export const plusMonate = (monat: Monat, anzahl: number): Monat => {
 };
 
 export const letzterTag = (monat: Monat): Tag => plusTage(ersterTag(plusMonate(monat, 1)), -1);
+
+/** Every day of a month, in order */
+export const tageImMonat = (monat: Monat): Tag[] => {
+  const tage: Tag[] = [];
+  for (let tag = ersterTag(monat); tag <= letzterTag(monat); tag = plusTage(tag, 1)) tage.push(tag);
+  return tage;
+};

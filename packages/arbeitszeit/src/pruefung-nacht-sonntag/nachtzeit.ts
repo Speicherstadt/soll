@@ -1,10 +1,10 @@
 import type { Stueck } from "../arbeitstag/schichten.ts";
 import { jahrVon, plusTage, type Tag } from "../kalender/tag.ts";
-import { tagInBerlin, zeitpunktInBerlin } from "../kalender/zeit.ts";
+import { zeitpunktInBerlin } from "../kalender/zeit.ts";
 import { type NachtSonntagGrenzen, nachtSonntagGrenzenAm, type Uhrzeitspanne } from "./grenzen.ts";
 import {
-  gemeinsameMinuten,
   geschlossen,
+  minutenInNaechten,
   type PruefSchicht,
   type PruefTag,
   sortiert,
@@ -42,18 +42,12 @@ const nachtAb = (tag: Tag, spanne: Uhrzeitspanne): Stueck => {
   return { beginn, ende, minuten: 0 };
 };
 
-/** Minutes of a span of work in the Nachtzeit: every night from the evening before its first day */
-const nachtMinutenIn = (stueck: Stueck, spanne: Uhrzeitspanne): number => {
-  let minuten = 0;
-  const letzter = tagInBerlin(stueck.ende);
-  for (let tag = plusTage(tagInBerlin(stueck.beginn), -1); tag <= letzter; tag = plusTage(tag, 1))
-    minuten += gemeinsameMinuten(stueck, nachtAb(tag, spanne));
-  return minuten;
-};
-
 /** § 2 Abs. 3 ArbZG: the minutes of a shift's work, short interruptions included, in the Nachtzeit */
 export const nachtMinuten = (schicht: PruefSchicht, spanne: Uhrzeitspanne): number =>
-  schicht.bloecke.reduce((summe, block) => summe + nachtMinutenIn(block, spanne), 0);
+  schicht.bloecke.reduce(
+    (summe, block) => summe + minutenInNaechten(block, (tag) => nachtAb(tag, spanne)),
+    0,
+  );
 
 const nachtzeitVon = (grenzen: NachtSonntagGrenzen, { baeckerei = false }: NachtOptionen) =>
   baeckerei ? grenzen.nachtzeitBaeckerei : grenzen.nachtzeit;

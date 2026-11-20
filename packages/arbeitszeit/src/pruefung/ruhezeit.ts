@@ -40,7 +40,7 @@ export type RuhezeitBefund = Befund<
 const MINUTE = 60_000;
 
 /** A rest from the end of a working day to the next; `bis` null for the rest still running at `jetzt` */
-type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
+export type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; minuten: number };
 
 /** The first Kommen and the last Gehen of a day; no end while one of its shifts is open */
 const rahmen = (tag: PruefTag) => ({
@@ -52,9 +52,10 @@ const rahmen = (tag: PruefTag) => ({
 
 /**
  * The rests between consecutive working days, from the last Gehen of one to the first Kommen of the
- * next (docs/regeln.md, R-05), and the rest since the last Gehen while no shift has followed yet
+ * next (docs/regeln.md, R-05), and the rest since the last Gehen while no shift has followed yet.
+ * The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured the same way.
  */
-const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
+export const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
   const mitArbeit = [...tage]
     .filter((tag) => tag.schichten.length > 0)
     .sort((a, b) => a.tag.localeCompare(b.tag));

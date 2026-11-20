@@ -267,7 +267,7 @@ Regel:
   Kalendermonats oder von vier Wochen durch eine Ruhezeit von mindestens 12:00 ausgeglichen wird
   (Branche am Betrieb). § 7 Abs. 1 Nr. 3 ArbZG (Tarif, bis 9:00) als Einstellung.
 - **Ausgleich nach § 5 Abs. 2**: Jede Verkürzung braucht eine eigene spätere Ruhezeit von
-  mindestens 12:00, die ganz im Ausgleichszeitraum liegt: im Kalendermonat, in dem die verkürzte
+  mindestens 12:00, deren erste 12:00 im Ausgleichszeitraum liegen: im Kalendermonat, in dem die verkürzte
   Ruhezeit beginnt, oder in vier Wochen ab diesem Tag (28 Tage). Der Betrieb wählt; ohne Wahl genügt
   jeder der beiden (wie R-03), der Verstoß kommt erst, wenn beide abgelaufen sind. Soll zählt nur
   einen Ausgleich nach der Verkürzung (vorsichtige Auslegung). Auch die Ruhezeit nach dem letzten

@@ -18,13 +18,16 @@ const plainKey = /^[A-Za-z0-9_.-]+$/;
 
 /**
  * One query part as it may be logged: `key=…` for a plain key with a value, else only `…`. A part
- * without `=` is all value (`feed.ics?<token>`), and a key is checked undecoded, so `token%3D<secret>`
- * does not show its value once decoded.
+ * without `=` is all value (`feed.ics?<token>`), and so is one whose `=` are only trailing, since that is
+ * how a padded base64 token ends (`feed.ics?<token>==`). A key is checked undecoded, so
+ * `token%3D<secret>` does not show its value once decoded.
  */
 const redactPart = (part: string): string => {
   const separator = part.indexOf("=");
   const key = part.slice(0, separator);
-  return separator > 0 && plainKey.test(key) ? `${key}=…` : "…";
+  const value = part.slice(separator + 1);
+  const hasValue = /[^=]/.test(value);
+  return separator > 0 && hasValue && plainKey.test(key) ? `${key}=…` : "…";
 };
 
 /** The path with each query value replaced by `…`, so the keys still show what was asked */

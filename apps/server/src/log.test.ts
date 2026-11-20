@@ -22,3 +22,10 @@ describe("redactUrl", () => {
     expect(redactUrl("/feed.ics?token%3Dgeheim=1&x=2")).toBe("/feed.ics?…&x=…");
   });
 });
+
+describe("redactUrl with a padded base64 token", () => {
+  it("leaves out a bare token that ends in base64 padding", () => {
+    expect(redactUrl("/feed.ics?c2stZ2VoZWltLTEyMw==")).toBe("/feed.ics?…");
+    expect(redactUrl("/feed.ics?c2stZ2VoZWltLTE=")).toBe("/feed.ics?…");
+  });
+});

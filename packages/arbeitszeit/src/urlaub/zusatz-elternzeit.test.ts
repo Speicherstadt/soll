@@ -56,16 +56,13 @@ describe("R-25: Zusatzurlaub", () => {
     expect(wert.zusatzHalbtage).toBe(tage(2.5));
   });
 
-  it("counts the working days of the months with the disability, not of the whole year", () => {
+  it("Modellwechsel: Mo–Di until 30.9., Mo–Fr from 1.10., disability from 1.10. – 1,25 → 1,5 days, counting only the days with the disability", () => {
     // Mo–Di until 30.9.2026, Mo–Fr from 1.10.2026, disability from 1.10.2026 (3 full months):
     // § 208 Abs. 2 SGB IX gives 3/12 of the additional leave of Abs. 1 for those months, at five
     // days a week 5 × 3 ÷ 12 = 1,25 → 1,5 days (EuGH C-415/12, Brandes); weighting the months
     // before the disability in would give 0,69 → 1 day
     const wert = anspruch({
-      modelle: [
-        modell("2020-01-01", [480, 480, 0, 0, 0, 0, 0]),
-        modell("2026-10-01"),
-      ],
+      modelle: [modell("2020-01-01", [480, 480, 0, 0, 0, 0, 0]), modell("2026-10-01")],
       schwerbehinderung: [{ von: "2026-10-01", bis: null }],
     });
     expect(wert.zusatzHalbtage).toBe(tage(1.5));

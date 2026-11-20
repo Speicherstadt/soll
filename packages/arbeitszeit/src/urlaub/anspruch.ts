@@ -180,17 +180,29 @@ const KEINER = (jahr: number): Urlaubsanspruch => ({
   befunde: [],
 });
 
-/** R-25 against what the business entered: below the law the law applies */
-const zusatzurlaub = (
-  e: UrlaubsEingaben,
-  teile: readonly Anteil[],
+/**
+ * The models' shares of the days with the disability in the employment: § 208 Abs. 2 SGB IX gives
+ * twelfths of the additional leave of Abs. 1 for the months with it, so only their working days count
+ * (EuGH C-415/12, Brandes); empty while the disability lies outside the employment
+ */
+const anteileMitSchwerbehinderung = (
+  modelle: readonly Modellabschnitt[],
+  spannen: readonly Tagesspanne[],
   spanne: Spanne,
-  zwoelftel: number,
-) => {
+): Anteil[] =>
+  spannen.flatMap((sb) => {
+    const von = spaeter(sb.von, spanne.von);
+    const bis = sb.bis === null ? spanne.bis : frueher(sb.bis, spanne.bis);
+    return von <= bis ? (anteile(modelle, { von, bis }) ?? []) : [];
+  });
+
+/** R-25 against what the business entered: below the law the law applies */
+const zusatzurlaub = (e: UrlaubsEingaben, spanne: Spanne, zwoelftel: number) => {
   const sb = e.schwerbehinderung ?? [];
   const sbZwoelftel = zusatzZwoelftel(sb, spanne, zwoelftel);
+  const teile = anteileMitSchwerbehinderung(e.modelle, sb, spanne);
   const gesetzlich =
-    sb.length === 0
+    sbZwoelftel === 0 || teile.length === 0
       ? 0
       : anteilig(
           teile,
@@ -243,7 +255,7 @@ export const urlaubsanspruch = (e: UrlaubsEingaben): UrlaubsanspruchErgebnis => 
     Math.max(0, zwoelftel - kuerzung.kuerzungZwoelftel),
     runden,
   );
-  const zusatz = zusatzurlaub(e, teile, spanne, zwoelftel);
+  const zusatz = zusatzurlaub(e, spanne, zwoelftel);
   const modelle = e.modelle.filter(
     (m) => m.ab <= spanne.bis && modellAm(e.modelle, spaeter(m.ab, spanne.von)) === m,
   );

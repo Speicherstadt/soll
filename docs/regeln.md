@@ -904,7 +904,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   oder weniger; Abs. 2: ein Zwölftel je vollem Monat, ab einem halben Tag aufrunden.
 - **Regel**: Die Schwerbehinderung steht am Mitarbeiter nur als Zeitraum. Besteht sie während der
   ganzen Beschäftigung im Jahr, folgt der Zusatzurlaub dem Urlaub (auch dem Teilurlaub nach § 5
-  BUrlG); sonst ein Zwölftel je vollem Monat. Er wird für sich gerundet und dem Urlaub hinzugerechnet
+  BUrlG); sonst ein Zwölftel je vollem Monat, und bei einem Modellwechsel zählen nur die Arbeitstage
+  je Woche der Tage mit Schwerbehinderung (EuGH C-415/12, Brandes). Er wird für sich gerundet und dem Urlaub hinzugerechnet
   (§ 208 Abs. 2 Satz 3 SGB IX); die Kürzung bei Elternzeit trifft ihn nicht.
 - **Schwere**: Hinweis, wenn der eingetragene Zusatzurlaub darunter liegt.
 
@@ -916,6 +917,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Verstoß | 5-Tage-Woche, ganzes Jahr, 4 Tage eingetragen | Hinweis „Zusatzurlaub unter dem Gesetz“ | § 208 Abs. 1 Satz 1 SGB IX |
 | 6-Tage-Woche | ganzes Jahr | 6 Tage | § 208 Abs. 1 Satz 1 SGB IX („entsprechend mehr“) |
 | Bruchteil | Schwerbehinderung ab 15.7., 5-Tage-Woche (5 volle Monate) | 5 × 5 ÷ 12 = 2,08 → 2,5 Tage | § 208 Abs. 2 SGB IX; BAG, 26.01.1989, 8 AZR 730/87 |
+| Modellwechsel | bis 30.9. Mo–Di, ab 1.10. Mo–Fr, Schwerbehinderung ab 1.10. (3 volle Monate) | 5 × 3 ÷ 12 = 1,25 → 1,5 Tage (nicht über das ganze Jahr gewichtet: 0,69 → 1) | § 208 Abs. 2 SGB IX; EuGH C-415/12 (Brandes) |
 
 ### R-26 Kürzung bei Elternzeit
 

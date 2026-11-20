@@ -228,6 +228,34 @@ describe("R-11: Bereitschaftsdienst", () => {
     ]);
   });
 
+  it("über 12 h, Ausgleich: Beherbergung, § 7, Sa 28.11. 12:45, then two 10:30 rests and one 12-hour rest by the end of November – it balances the second rest, not the one § 7 Abs. 9 forbids", () => {
+    // the 10:30 after Saturday is no shortening under § 5 Abs. 2 at all (§ 7 Abs. 9 ArbZG), so it
+    // takes no balance; the only 12-hour rest by 30.11. (from Mo 11:30) balances Sunday's 10:30
+    const stempel = [
+      ...schicht("2026-11-28T10:00+01:00", "2026-11-28T16:00+01:00"),
+      ...schicht("2026-11-29T09:30+01:00", "2026-11-29T15:30+01:00"),
+      ...schicht("2026-11-29T16:00+01:00", "2026-11-29T19:30+01:00"),
+      ...schicht("2026-11-30T06:00+01:00", "2026-11-30T11:30+01:00"),
+    ];
+    const eingabe = {
+      bereitschaftsdienste: [spanne("2026-11-28T16:15+01:00", "2026-11-28T23:00+01:00")],
+    };
+    const optionen = {
+      branche: "gastronomie_beherbergung",
+      ausgleich: "kalendermonat",
+      jetzt: um("2026-12-02T12:00+01:00"),
+    } as const;
+    const ruhen = (ergebnis: ReturnType<typeof pruefe>) =>
+      kurz(ergebnis).filter(([, art]) => String(art).startsWith("ruhezeit"));
+    // without the agreement the 12-hour rest balances Saturday's 10:30 and Sunday's lacks one
+    expect(ruhen(pruefe(stempel, eingabe, optionen))).toEqual([
+      ["R-05", "ruhezeit_ausgleich_fehlt", ["2026-11-29", "2026-11-30"]],
+    ]);
+    expect(ruhen(pruefe(stempel, eingabe, { ...optionen, ...TARIF }))).toEqual([
+      ["R-11", "ruhezeit_nach_ueber_12h", ["2026-11-28", "2026-11-29"]],
+    ]);
+  });
+
   it("über 12 h: a rest between two shifts of the day lies before its end – § 5 Abs. 2, not § 7 Abs. 9", () => {
     // § 7 Abs. 9 ArbZG: the 11 hours follow „im unmittelbaren Anschluss an die Beendigung der
     // Arbeitszeit“; the 10:30 between 6:00 and 16:30 lies before the day's work ends at 23:45

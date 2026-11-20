@@ -76,7 +76,9 @@ die alte bleibt, wie sie war, und beide stehen in der [Audit-Kette](audit-kette.
 > Jonas Weber hat Gehen 14:30 auf Gehen 13:30 geändert
 > Fr., 20. Nov., 09:01 · Grund: Arzttermin, früher gegangen
 
-Eine korrigierte Stempelung trägt in der Liste die Marke „korrigiert“.
+Eine Änderung steht an dem Arbeitstag, zu dem die Stempelung gehört: Wird das Gehen einer
+Nachtschicht nach Mitternacht entfernt, steht das am Tag, an dem die Schicht begann. Eine korrigierte
+Stempelung trägt in der Liste die Marke „korrigiert“.
 
 ## Arbeitszeitmodell zuordnen
 
@@ -90,7 +92,7 @@ aus ist:
 
 | Endpunkt | Was | Wer |
 | --- | --- | --- |
-| `GET /tag?datum=&nutzerId=` | ein Tag: Soll, Stand (`tagesstand`), Stempelungen, Änderungen; ohne Datum der laufende Tag | selbst; andere: Inhaber, Planer, Lohnbüro |
+| `GET /tag?datum=&nutzerId=` | ein Tag: Soll, Stand (`tagesstand`), Stempelungen, Änderungen; ohne Datum der laufende Tag | selbst; andere: Inhaber, Planer, Lohnbüro, auch für wen nicht mehr stempelt oder ausgeschieden ist (§ 16 Abs. 2 ArbZG) |
 | `POST /stempelungen` | `{ art, geraetZeitpunkt? }`, Zeitpunkt vom Server | selbst |
 | `POST /stempelungen/nachtrag` | `{ nutzerId?, art, zeitpunkt, grund }` | selbst; andere: Inhaber, Planer |
 | `PATCH /stempelungen/:id` | `{ art, zeitpunkt, grund }`, hängt eine neue Zeile an | selbst; andere: Inhaber, Planer |

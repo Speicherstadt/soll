@@ -92,3 +92,74 @@ describe("S-401 review", () => {
     expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-09" })).status).toBe(200);
   });
 });
+
+/** Findings of the second review of S-401 */
+describe("S-401 review, round 2", () => {
+  const team = async (wer: { anfrage: (pfad: string) => Promise<Response> }, abfrage: string) =>
+    ((await json(await wer.anfrage(`/api/v1/arbeitszeit/abwesenheiten/team?${abfrage}`)))
+      .abwesenheiten ?? []) as Json[];
+
+  it("shows no open-ended sickness in a team calendar that begins after today", async () => {
+    const w = await weberMitAbwesenheiten();
+    await angelegt(krank(w.sandra));
+    await genehmigt(w, w.max, { von: "2027-03-10", bis: "2027-03-12" });
+    // a year on, only an open end still reaches here: it would tell the sickness by its length
+    const maerz = await team(w.max, "von=2027-03-01&bis=2027-03-31");
+    expect(maerz.map((eintrag) => eintrag.nutzerId)).toEqual([w.max.nutzerId]);
+    // while today is shown, the open end stays the last day shown, as for any absence beyond it
+    const heute = await team(w.max, "von=2026-11-16&bis=2026-11-29");
+    expect(heute.map((eintrag) => [eintrag.nutzerId, eintrag.bis])).toEqual([
+      [w.sandra.nutzerId, "2026-11-29"],
+    ]);
+  });
+
+  it("answers a colleague's certificate or end alike for leave and sickness", async () => {
+    const w = await weberMitAbwesenheiten();
+    const krankheit = await angelegt(krank(w.sandra));
+    const urlaub = await genehmigt(w, w.anna, { von: "2026-12-21", bis: "2026-12-22" });
+    // the ids stand in the team calendar; the answer may not tell which one is a sickness
+    for (const id of [krankheit, urlaub]) {
+      expect((await schritt(w.max, id, "bescheinigung", { bescheinigung: null })).status).toBe(403);
+      expect((await schritt(w.max, id, "beenden", { bis: "2026-12-31" })).status).toBe(403);
+    }
+  });
+
+  it("keeps a closed month's Prüfwert when an open sickness in its leave gets its end", async () => {
+    const w = await weberMitAbwesenheiten();
+    w.server.stelleUhr(um("2026-10-20T08:00:00+01:00"));
+    const id = await angelegt(krank(w.sandra));
+    await genehmigt(w, w.sandra, { von: "2026-10-26", bis: "2026-10-30" });
+    w.server.stelleUhr(um("2026-11-03T09:00:00+01:00"));
+    expect((await bestaetigen(w.sandra)).status).toBe(201);
+    const abschluss = await abschliessen(w.jonas, w.sandra.nutzerId);
+    const pruefwert = ((await json(abschluss)).abschluss as Json).pruefwert as string;
+    // the end changes no day of October: the sickness counted to its last day all along
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-11-03" })).status).toBe(200);
+    expect((await pruefen(w.server, w.jonas.betriebId, pruefwert)).ergebnis).toBe(
+      "uebereinstimmend",
+    );
+  });
+
+  it("lets a sickness end after the month of a day off it gave way to is closed", async () => {
+    const w = await weberMitAbwesenheiten();
+    w.server.stelleUhr(um("2026-10-19T08:00:00+02:00"));
+    await genehmigt(w, w.sandra, { art: "sonderurlaub", von: "2026-10-26", bis: "2026-10-26" });
+    w.server.stelleUhr(um("2026-10-20T08:00:00+02:00"));
+    const id = await angelegt(krank(w.sandra));
+    w.server.stelleUhr(um("2026-11-03T09:00:00+01:00"));
+    expect((await bestaetigen(w.sandra)).status).toBe(201);
+    const abschluss = await abschliessen(w.jonas, w.sandra.nutzerId);
+    const pruefwert = ((await json(abschluss)).abschluss as Json).pruefwert as string;
+    // back at work on 6 November: the day off can no longer be cancelled, the end must still go in
+    w.server.stelleUhr(um("2026-11-06T09:00:00+01:00"));
+    const antwort = await schritt(w.sandra, id, "beenden", { bis: "2026-11-05" });
+    expect(antwort.status, JSON.stringify(await json(antwort.clone()))).toBe(200);
+    expect((await pruefen(w.server, w.jonas.betriebId, pruefwert)).ergebnis).toBe(
+      "uebereinstimmend",
+    );
+    const november = await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-11"));
+    const tage = (november.inhalt as { tage: Json[] }).tage;
+    expect(tage.find((t) => t.tag === "2026-11-05")?.abwesenheiten).toEqual([{ art: "krank" }]);
+    expect(tage.find((t) => t.tag === "2026-11-06")?.abwesenheiten).toBeUndefined();
+  });
+});

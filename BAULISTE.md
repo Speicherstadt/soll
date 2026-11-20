@@ -137,7 +137,8 @@ Alle Punkte: nach S-306.
     Bescheinigung ab dem 4. Tag oder früher, wenn der Betrieb es so einstellt (§ 5 EntgFG); Haken
     „Bescheinigung liegt vor“ mit „als eAU“ oder „auf Papier im Büro“ und Erinnerung an den
     Betrieb, die eAU über sein Lohnprogramm abzurufen, sobald sie fällig ist; kein Hochladen von
-    Bescheinigungen (Datensparsamkeit, siehe Projektplan); Zähler der Kinderkrankentage (§ 45 SGB V); eine eingeplante Schicht wird als offen
+    Bescheinigungen (Datensparsamkeit, siehe Projektplan); Zähler der Kinderkrankentage
+    (§ 45 SGB V); eine eingeplante Schicht wird als offen
     gemeldet.
   - **Datenschutz**: „krank“ ist ein Gesundheitsdatum (Art. 9 DSGVO); im Teamkalender und im
     Dienstplan steht nur „abwesend“.

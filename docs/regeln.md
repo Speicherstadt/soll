@@ -868,6 +868,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Monatsmitte | Eintritt 15.8., 20 Tage, 4 volle Monate (15.8. – 14.12.) | 4 × 20 ÷ 12 = 6,67 → 7 Tage | § 5 Abs. 1 Buchst. a, Abs. 2 BUrlG; § 188 Abs. 2 BGB |
 | vor der Wartezeit | Eintritt 1.2., Austritt 30.6., 20 Tage, 5 volle Monate | 8,5 Tage | § 5 Abs. 1 Buchst. b BUrlG |
 | zweites Halbjahr | Austritt 31.7. nach erfüllter Wartezeit, 20 Tage | 20 Tage | § 5 Abs. 1 Buchst. c BUrlG („in der ersten Hälfte eines Kalenderjahrs“) |
+| halber Tag im vollen Jahr | Modell mit 25,5 Tagen, ganzes Jahr | 25,5 Tage (nichts zu runden) | § 5 Abs. 2 BUrlG gilt nur für § 5 Abs. 1; BAG, 26.01.1989, 8 AZR 730/87 |
 | Modellwechsel | bis 30.6.2026 Mo–Fr, ab 1.7.2026 Mo–Mi, ohne eigenen Urlaub | 20 × 181 ÷ 365 + 12 × 184 ÷ 365 = 15,97 → 16 Tage | EuGH C-415/12 (Brandes); § 5 Abs. 2 BUrlG |
 | Verfall mit Hinweis | Resturlaub 2026 3 Tage, Hinweis am 1.10.2026 | Hinweis „Verfall droht“ bis 31.3.2027, danach 3 Tage verfallen | § 7 Abs. 3 Satz 3 BUrlG; BAG, 19.02.2019, 9 AZR 423/16 |
 | Verfall ohne Hinweis | Resturlaub 2026 3 Tage, kein Hinweis | ab 1.1.2027 Hinweis „Hinweis auf Verfall fehlt“, die 3 Tage verfallen nicht | EuGH C-684/16 (Max-Planck); BAG, 20.12.2022, 9 AZR 266/20 |
@@ -878,7 +879,8 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).
 Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halben Tag auf (8,33 auf
-8,5).
+8,5). § 5 Abs. 2 gilt nur für den Teilurlaub nach § 5 Abs. 1 (dieselbe Entscheidung): Ein Modell mit
+25,5 Tagen gibt im ganzen Jahr 25,5 Tage, nicht 26.
 
 ### R-24 Krank im Urlaub
 

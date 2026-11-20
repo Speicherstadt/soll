@@ -14,7 +14,7 @@ export {
   elternzeitKuerzung,
   volleElternzeitmonate,
 } from "./elternzeit.ts";
-export { type Halbtage, halbtageAufgerundet } from "./halbtage.ts";
+export { type Halbtage, halbtageAufgerundet, halbtageAufHalbeAufgerundet } from "./halbtage.ts";
 export {
   gesetzlicherUrlaub,
   gesetzlicherZusatzurlaub,

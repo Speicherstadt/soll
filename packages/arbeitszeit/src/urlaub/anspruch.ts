@@ -5,7 +5,7 @@ import { inSpanne, type Tagesspanne } from "../pruefung-mutterschutz/typen.ts";
 import { arbeitstageJeWoche, modellAm, modelleGueltig } from "../soll/modell.ts";
 import type { Beschaeftigung, Modellabschnitt } from "../soll/typen.ts";
 import { type Elternzeit, type ElternzeitBefund, elternzeitKuerzung } from "./elternzeit.ts";
-import { type Halbtage, halbtageAufgerundet } from "./halbtage.ts";
+import { type Halbtage, halbtageAufgerundet, halbtageAufHalbeAufgerundet } from "./halbtage.ts";
 import {
   gesetzlicherUrlaub,
   gesetzlicherZusatzurlaub,
@@ -114,15 +114,27 @@ const anteile = (modelle: readonly Modellabschnitt[], spanne: Spanne): Anteil[] 
   return teile;
 };
 
+/** How a share of leave is rounded: § 5 Abs. 2 BUrlG for twelfths, else only to a half day */
+type Rundung = (zaehler: number, nenner: number) => Halbtage;
+
+/** § 5 Abs. 2 BUrlG and § 208 Abs. 2 Satz 2 SGB IX apply to the twelfths they count, nothing else */
+const rundungFuer = (zwoelftelNachGesetz: boolean): Rundung =>
+  zwoelftelNachGesetz ? halbtageAufgerundet : halbtageAufHalbeAufgerundet;
+
 /**
  * Leave of `zwoelftel` twelfths, the models weighted by their days in the employment (a change of the
  * weekly working days in the year counts each span with its own days, EuGH C-415/12 Brandes),
- * rounded once (§ 5 Abs. 2 BUrlG)
+ * rounded once
  */
-const anteilig = (teile: readonly Anteil[], wert: (teil: Anteil) => number, zwoelftel: number) => {
+const anteilig = (
+  teile: readonly Anteil[],
+  wert: (teil: Anteil) => number,
+  zwoelftel: number,
+  runden: Rundung,
+) => {
   const tage = teile.reduce((summe, teil) => summe + teil.tage, 0);
   const zaehler = teile.reduce((summe, teil) => summe + wert(teil) * teil.tage, 0);
-  return halbtageAufgerundet(zaehler * zwoelftel, tage * 12);
+  return runden(zaehler * zwoelftel, tage * 12);
 };
 
 /**
@@ -176,13 +188,15 @@ const zusatzurlaub = (
   zwoelftel: number,
 ) => {
   const sb = e.schwerbehinderung ?? [];
+  const sbZwoelftel = zusatzZwoelftel(sb, spanne, zwoelftel);
   const gesetzlich =
     sb.length === 0
       ? 0
       : anteilig(
           teile,
           (t) => gesetzlicherZusatzurlaub(t.arbeitstage),
-          zusatzZwoelftel(sb, spanne, zwoelftel),
+          sbZwoelftel,
+          rundungFuer(sbZwoelftel < 12),
         );
   const eingetragen = e.zusatzurlaubHalbtage ?? null;
   const befunde: ZusatzurlaubBefund[] =
@@ -221,11 +235,13 @@ export const urlaubsanspruch = (e: UrlaubsEingaben): UrlaubsanspruchErgebnis => 
     e.elternzeit ?? [],
     e.elternzeitKuerzungZwoelftel ?? null,
   );
-  const ohneKuerzung = anteilig(teile, (t) => t.urlaub, zwoelftel);
+  const runden = rundungFuer(art !== "voll");
+  const ohneKuerzung = anteilig(teile, (t) => t.urlaub, zwoelftel, runden);
   const grund = anteilig(
     teile,
     (t) => t.urlaub,
     Math.max(0, zwoelftel - kuerzung.kuerzungZwoelftel),
+    runden,
   );
   const zusatz = zusatzurlaub(e, teile, spanne, zwoelftel);
   const modelle = e.modelle.filter(

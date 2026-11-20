@@ -101,6 +101,10 @@ Soll führt Urlaub in halben Tagen und rechnet den Anspruch eines Jahres so:
 3. **Rundung** (§ 5 Abs. 2 BUrlG): Ein Bruchteil ab einem halben Tag wird auf einen vollen Tag
    aufgerundet (6,67 → 7, 2,5 → 3). Ein kleinerer Bruchteil wird nicht abgerundet, sondern bleibt
    geschuldet (BAG, 26.01.1989, 8 AZR 730/87); Soll macht daraus einen halben Tag (8,33 → 8,5).
+   Diese Rundung gilt nur für die Zwölftel des Teilurlaubs (§ 5 Abs. 1 BUrlG) und des anteiligen
+   Zusatzurlaubs (§ 208 Abs. 2 SGB IX). Sonst bleibt ein halber Tag ein halber Tag (ein Modell mit
+   25,5 Tagen gibt im ganzen Jahr 25,5), und nur ein Rest unter einem halben Tag wird auf den
+   nächsten halben Tag aufgerundet.
 4. **Modellwechsel im Jahr**: Wechseln die Arbeitstage je Woche, zählt jedes Modell mit seinen Tagen
    im Jahr (EuGH C-415/12, Brandes): fünf Tage bis 30.6.2026, drei ab 1.7. ergibt
    20 × 181 ÷ 365 + 12 × 184 ÷ 365 = 15,97, also 16 Tage.

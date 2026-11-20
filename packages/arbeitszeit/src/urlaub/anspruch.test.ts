@@ -94,6 +94,10 @@ describe("R-23: Mindesturlaub und Teilurlaub", () => {
     expect(wert).toMatchObject({ art: "voll", gesamtHalbtage: tage(20) });
   });
 
+  it("halber Tag im vollen Jahr: model with 25,5 days, whole year – 25,5 days (nothing to round)", () => {
+    expect(anspruch({ modelle: mitUrlaub(25.5) }).gesamtHalbtage).toBe(tage(25.5));
+  });
+
   it("Modellwechsel: Mo–Fr to 30.6.2026, Mo–Mi from 1.7.2026 – 15,97 → 16 days", () => {
     const wert = anspruch({
       modelle: [modell("2020-01-01"), modell("2026-07-01", [480, 480, 480, 0, 0, 0, 0])],

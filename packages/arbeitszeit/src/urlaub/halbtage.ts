@@ -18,3 +18,12 @@ export const halbtageAufgerundet = (zaehler: number, nenner: number): Halbtage =
   if (rest === 0) return ganze * 2;
   return 2 * rest >= tagNenner ? (ganze + 1) * 2 : ganze * 2 + 1;
 };
+
+/**
+ * Leave outside § 5 Abs. 1 BUrlG and § 208 Abs. 2 SGB IX, where nothing provides for rounding to a
+ * full day (BAG, 26.01.1989, 8 AZR 730/87: § 5 Abs. 2 rounds only the twelfths of § 5 Abs. 1): a
+ * half day stays a half day, and only a remainder Soll cannot keep is rounded up to the next half
+ * day, never down (CLAUDE.md). `zaehler / nenner` are half days, never negative.
+ */
+export const halbtageAufHalbeAufgerundet = (zaehler: number, nenner: number): Halbtage =>
+  Math.ceil(zaehler / nenner);

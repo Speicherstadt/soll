@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { halbtageAufgerundet } from "./halbtage.ts";
+import { halbtageAufgerundet, halbtageAufHalbeAufgerundet } from "./halbtage.ts";
 
 /** Days as a fraction: `tage` = zaehler / nenner days, given to the function as half days */
 const tage = (zaehler: number, nenner: number) => halbtageAufgerundet(2 * zaehler, nenner);
@@ -27,5 +27,13 @@ describe("Rundung nach § 5 Abs. 2 BUrlG, in halben Tagen", () => {
     expect(tage(499_999, 1_000_000)).toBe(1);
     expect(tage(500_000, 1_000_000)).toBe(2);
     expect(tage(0, 7)).toBe(0);
+  });
+});
+
+describe("Rundung außerhalb von § 5 Abs. 1 BUrlG, in halben Tagen", () => {
+  it("keeps a half day and rounds only a smaller remainder up to the next half day", () => {
+    expect(halbtageAufHalbeAufgerundet(51, 1)).toBe(51);
+    expect(halbtageAufHalbeAufgerundet(440, 12)).toBe(37);
+    expect(halbtageAufHalbeAufgerundet(0, 7)).toBe(0);
   });
 });

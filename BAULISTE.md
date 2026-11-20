@@ -251,7 +251,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
   Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der
   Nummer auffällt.
-- [ ] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
+- [x] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
   Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF mit dem Prüfwert der Kette, den
   jede Person per Mail und zum Herunterladen bekommt; Prüfseite, auf der eine Person ihren Prüfwert
   gegen den Stand prüft.

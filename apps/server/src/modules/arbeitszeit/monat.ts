@@ -1,9 +1,9 @@
 import {
+  type Abwesenheit,
   type Arbeitstag,
   arbeitstage,
   ausgleichszeitraum,
   type Befund,
-  type Beschaeftigung,
   ersterTag,
   feiertage,
   hoechstarbeitszeit,
@@ -17,12 +17,11 @@ import {
   type Tag,
   tagInBerlin,
 } from "@soll/arbeitszeit";
-import { and, eq, gte, lte, min } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
-import { korrekturen, modellzuordnungen, stempelungen } from "../../db/schema.ts";
-import { betriebLesen } from "../betrieb/index.ts";
-import { mitgliedschaftVon } from "../mitglieder/index.ts";
-import { standorteLesen } from "../standorte/index.ts";
+import { korrekturen } from "../../db/schema.ts";
+import { abwesenheitstage } from "./abwesenheiten/lesen.ts";
+import { beschaeftigungVon, standortVon } from "./grundlagen.ts";
 import {
   type Aufzeichnung,
   aufzeichnungen,
@@ -45,54 +44,44 @@ const stempelDesMonats = (db: Db, betriebId: string, nutzerId: string, monat: Mo
   return stempelungenIn(db, betriebId, nutzerId, von, bis);
 };
 
-/** The records of a month now: what the check page compares with the month as closed */
+/**
+ * The approved absences of a month (S-401); an open sickness counts up to today, or to the month's
+ * last day once the month is over
+ */
+const abwesenheitenDesMonats = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  monat: Monat,
+  heute: Tag,
+): Abwesenheit[] => {
+  const ende = letzterTag(monat);
+  return abwesenheitstage(
+    db,
+    betriebId,
+    nutzerId,
+    ersterTag(monat),
+    ende,
+    heute < ende ? heute : ende,
+  );
+};
+
+/**
+ * The records of a month now: what the check page compares with the month as closed. It checks
+ * months that are over, so an open sickness counts to their last day.
+ */
 export const aufzeichnungenJetzt = (
   db: Db,
   betriebId: string,
   nutzerId: string,
   monat: Monat,
 ): Aufzeichnung[] =>
-  aufzeichnungen(monat, stempelDesMonats(db, betriebId, nutzerId, monat), (tag) =>
-    sollAm(db, betriebId, nutzerId, tag),
+  aufzeichnungen(
+    monat,
+    stempelDesMonats(db, betriebId, nutzerId, monat),
+    (tag) => sollAm(db, betriebId, nutzerId, tag),
+    abwesenheitenDesMonats(db, betriebId, nutzerId, monat, letzterTag(monat)),
   );
-
-/**
- * The holidays of a person come from the business's first site, else from its Land; a site per
- * person follows with the shift plan (docs/plan.md, "Feiertage im Monatsabschluss")
- */
-const standortVon = (db: Db, betriebId: string): Standort | null => {
-  const [erster] = standorteLesen(db, betriebId);
-  if (erster) return { land: erster.land, regionen: erster.regionen };
-  const land = betriebLesen(db, betriebId)?.land;
-  return land ? ({ land } as Standort) : null;
-};
-
-/**
- * The employment as Soll knows it: from the first of joining the business, the first stamp and the
- * first model; Soll has no date of leaving yet (docs/plan.md, "Beschäftigung im Monatsabschluss")
- */
-const beschaeftigungVon = (db: Db, betriebId: string, nutzerId: string): Beschaeftigung | null => {
-  const seit = mitgliedschaftVon(db, betriebId, nutzerId)?.seit;
-  const ersterStempel = db
-    .select({ zeitpunkt: min(stempelungen.zeitpunkt) })
-    .from(stempelungen)
-    .where(and(eq(stempelungen.betriebId, betriebId), eq(stempelungen.nutzerId, nutzerId)))
-    .get()?.zeitpunkt;
-  const ersteZuordnung = db
-    .select({ tag: min(modellzuordnungen.gueltigAb) })
-    .from(modellzuordnungen)
-    .where(
-      and(eq(modellzuordnungen.betriebId, betriebId), eq(modellzuordnungen.nutzerId, nutzerId)),
-    )
-    .get()?.tag;
-  const tage = [
-    seit == null ? null : tagInBerlin(seit),
-    ersterStempel == null ? null : tagInBerlin(ersterStempel),
-    ersteZuordnung ?? null,
-  ].filter((tag): tag is Tag => tag !== null);
-  const [eintritt] = tage.sort();
-  return eintritt === undefined ? null : { eintritt };
-};
 
 /** The holidays at the place in the year of the month and the one before, for R-03 */
 const feiertageUm = (standort: Standort | null, monat: Monat): Set<Tag> => {
@@ -107,20 +96,30 @@ const feiertageUm = (standort: Standort | null, monat: Monat): Set<Tag> => {
 };
 
 /**
- * R-01 from the stamps, R-02, R-04 and R-05 as the day view checks them (S-304), and R-03 over the
- * periods that reach into the month (docs/stempeln.md: the Ausgleichszeitraum comes with closing);
- * absences are no data yet (S-401), so no day is neutral
+ * Days of leave and sickness are neutral in the Ausgleichszeitraum (docs/regeln.md R-03): whole days
+ * of leave, sickness, Kind krank and Sonderurlaub; taking off overtime is compensation, not neutral
+ */
+const neutraleTage = (abwesenheiten: readonly Abwesenheit[]): Set<Tag> =>
+  new Set(
+    abwesenheiten.filter((a) => a.halb !== true && a.art !== "ueberstundenabbau").map((a) => a.tag),
+  );
+
+/**
+ * R-01 from the stamps, R-02, R-04 and R-05 as the day view checks them (S-304), R-03 over the
+ * periods that reach into the month (docs/stempeln.md: the Ausgleichszeitraum comes with closing),
+ * with the days of absence of the month neutral (S-401)
  */
 const befundeDesMonats = (
   tage: readonly Arbeitstag[],
   monat: Monat,
   jetzt: number,
   feiertageAmOrt: ReadonlySet<Tag>,
+  neutral: ReadonlySet<Tag>,
 ): Befund[] =>
   [
     ...tage.flatMap((tag) => tag.befunde),
     ...hoechstarbeitszeit(tage).befunde,
-    ...ausgleichszeitraum(tage, { jetzt, feiertage: feiertageAmOrt, neutral: new Set() }).befunde,
+    ...ausgleichszeitraum(tage, { jetzt, feiertage: feiertageAmOrt, neutral }).befunde,
     ...ruhepausen(tage).befunde,
     ...ruhezeit(tage, { jetzt }).befunde,
   ].filter((befund) => befund.tage.some((tag) => monatVon(tag) === monat));
@@ -133,31 +132,36 @@ const summenDesMonats = (
   monat: Monat,
   tage: readonly Arbeitstag[],
   aufzeichnung: readonly Aufzeichnung[],
-): { summen: Summen | null; nichtHinterlegt: Tag[] } => {
+  abwesenheiten: readonly Abwesenheit[],
+): { summen: Summen | null; nichtHinterlegt: Tag[]; befunde: Befund[] } => {
   const ohneModell = aufzeichnung.filter((tag) => tag.modellMinuten === null).map((t) => t.tag);
   const standort = standortVon(db, betriebId);
   const beschaeftigung = beschaeftigungVon(db, betriebId, nutzerId);
   if (standort === null || beschaeftigung === null)
-    return { summen: null, nichtHinterlegt: aufzeichnung.map((tag) => tag.tag) };
+    return { summen: null, nichtHinterlegt: aufzeichnung.map((tag) => tag.tag), befunde: [] };
   const stand = monatsstand(monat, {
     modelle: modellabschnitte(db, betriebId, nutzerId),
     standort,
     beschaeftigung,
     arbeitstage: tage,
+    abwesenheiten,
   });
   if (!stand.ok)
     return {
       summen: null,
       nichtHinterlegt: stand.grund === "nicht_hinterlegt" ? stand.tage : ohneModell,
+      befunde: [],
     };
   // a day of the employment without a model is never counted as 0 (CLAUDE.md, "Never")
   const fehlend = ohneModell.filter((tag) => tag >= beschaeftigung.eintritt);
-  if (fehlend.length > 0) return { summen: null, nichtHinterlegt: fehlend };
+  if (fehlend.length > 0) return { summen: null, nichtHinterlegt: fehlend, befunde: [] };
   const { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten } =
     stand.wert;
   return {
     summen: { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten },
     nichtHinterlegt: [],
+    // R-24: sickness without a certificate in leave (§ 9 BUrlG)
+    befunde: stand.wert.befunde,
   };
 };
 
@@ -219,25 +223,28 @@ export const monatJetzt = (
   const stempel = stempelDesMonats(db, betriebId, nutzerId, monat);
   const ergebnis = arbeitstage(stempel, jetzt);
   const alle = ergebnis.ok ? ergebnis.wert : [];
-  const tage = aufzeichnungen(monat, stempel, (tag) => sollAm(db, betriebId, nutzerId, tag));
+  const abwesenheiten = abwesenheitenDesMonats(db, betriebId, nutzerId, monat, tagInBerlin(jetzt));
+  const tage = aufzeichnungen(
+    monat,
+    stempel,
+    (tag) => sollAm(db, betriebId, nutzerId, tag),
+    abwesenheiten,
+  );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
-  const { summen, nichtHinterlegt } = summenDesMonats(
-    db,
-    betriebId,
-    nutzerId,
-    monat,
-    imMonat,
-    tage,
-  );
+  const stand = summenDesMonats(db, betriebId, nutzerId, monat, imMonat, tage, abwesenheiten);
+  const feiertageAmOrt = feiertageUm(standortVon(db, betriebId), monat);
   return {
     inhalt: monatsinhalt({
       monat,
       nutzerId,
       tage,
-      summen: summen && mitGegeneintraegen(summen, gegeneintraege),
-      nichtHinterlegt,
-      befunde: befundeDesMonats(alle, monat, jetzt, feiertageUm(standortVon(db, betriebId), monat)),
+      summen: stand.summen && mitGegeneintraegen(stand.summen, gegeneintraege),
+      nichtHinterlegt: stand.nichtHinterlegt,
+      befunde: [
+        ...befundeDesMonats(alle, monat, jetzt, feiertageAmOrt, neutraleTage(abwesenheiten)),
+        ...stand.befunde,
+      ],
       gegeneintraege,
     }),
     // a day with a shift still open; a stamp without Kommen opens none (it is an R-01 finding)

@@ -29,6 +29,9 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "abwesenheiten:freigeben",
+  "abwesenheiten:gesundheit",
+  "abwesenheiten:einstellen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -49,6 +52,10 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    // S-401: approves leave, sees sickness (it pays it, § 3 EntgFG) and sets when a certificate is due
+    "abwesenheiten:freigeben",
+    "abwesenheiten:gesundheit",
+    "abwesenheiten:einstellen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
@@ -60,11 +67,21 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "zeiten:korrigieren",
+    // planners approve leave for the plan, but see sickness only as "abwesend" (Art. 9 DSGVO)
+    "abwesenheiten:freigeben",
   ],
   // everyone who works for the business stamps, and sees and corrects their own times (S-304)
   mitarbeiter: ["betrieb:lesen", "stempeln"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
-  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen", "stempeln", "zeiten:alle"],
+  // payroll sees sickness: continued pay and the eAU go through its program (§ 109 SGB IV)
+  lohnbuero: [
+    "betrieb:lesen",
+    "mitglieder:lesen",
+    "modelle:lesen",
+    "stempeln",
+    "zeiten:alle",
+    "abwesenheiten:gesundheit",
+  ],
   betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln"],
   extern: ["betrieb:lesen"],
   // the terminal checks PINs and nothing else (S-801)

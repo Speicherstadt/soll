@@ -25,6 +25,7 @@ import {
 import { betriebLesen } from "../modules/betrieb/index.ts";
 import { type Mailer, zustellbar } from "../modules/mail/index.ts";
 import { adresseVon, namenVon } from "../modules/mitglieder/index.ts";
+import { inhaltSicht, siehtGesundheit } from "./abwesenheit-sicht.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon } from "./stempel-antwort.ts";
 import { liestEigene, person } from "./zeiten.ts";
@@ -86,8 +87,11 @@ const ansicht = (db: Db, c: Context<Anfrage>, nutzerId: string, status: MonatSta
     (wert): wert is string => wert !== undefined,
   );
   const namen = namenVon(db, ids);
+  const gesundheit = siehtGesundheit(c, nutzerId);
   return {
     ...status,
+    // sickness only as „abwesend“ for whoever may not see it (Art. 9 DSGVO, S-401)
+    inhalt: inhaltSicht(status.inhalt, gesundheit),
     nutzerId,
     /** whether the month is the caller's own: only they confirm it */
     eigen: nutzerId === c.get("nutzerId"),
@@ -98,6 +102,7 @@ const ansicht = (db: Db, c: Context<Anfrage>, nutzerId: string, status: MonatSta
     },
     abschluss: status.abschluss && {
       ...status.abschluss,
+      inhalt: inhaltSicht(status.abschluss.inhalt, gesundheit),
       vonName: namen.get(status.abschluss.von) ?? "",
     },
     geaenderteTage: geaenderteTage(db, betriebId, nutzerId, status.monat),
@@ -126,6 +131,7 @@ const zettelVon = (
     name: (wer) => namen.get(wer) ?? "",
     pruefseite: pruefseiteVon(url, c.get("betriebId")),
     jetzt,
+    gesundheit: siehtGesundheit(c, nutzerId),
   });
 };
 

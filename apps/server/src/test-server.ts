@@ -1,6 +1,7 @@
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
@@ -10,7 +11,12 @@ export const TEST_URL = "http://localhost:28200";
  * browser would (cookies between calls)
  */
 export const testServer = (
-  optionen: { log?: (line: string) => void; uhr?: () => number; mail?: Mailer | null } = {},
+  optionen: {
+    log?: (line: string) => void;
+    uhr?: () => number;
+    mail?: Mailer | null;
+    schichten?: Schichtquelle;
+  } = {},
 ) => {
   const datenbank = testDatenbank();
   let uhr = 1_790_000_000_000;
@@ -31,6 +37,7 @@ export const testServer = (
     auth,
     url: TEST_URL,
     mail: optionen.mail ?? null,
+    ...(optionen.schichten ? { schichten: optionen.schichten } : {}),
   });
 
   /** A browser of one person: keeps its cookies */

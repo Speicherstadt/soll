@@ -1,4 +1,5 @@
 import {
+  type Abwesenheit,
   type Befund,
   beginnInBerlin,
   ersterTag,
@@ -23,12 +24,20 @@ import { kanonisch, sha256 } from "../audit/hash.ts";
  * of that row. The check page compares the records kept here with what the database holds now.
  */
 
-/** What a day records: its stamps in force, in time order, and the minutes of the person's model */
+/** An absence of the day as the month records it: its kind, half, certificate there, child (S-401) */
+export type Tagesabwesenheit = Omit<Abwesenheit, "tag">;
+
+/**
+ * What a day records: its stamps in force, in time order, the minutes of the person's model and its
+ * approved absences. A day without an absence has no key `abwesenheiten` at all, so the content of a
+ * month closed before S-401 stays what it was and its Prüfwert keeps matching.
+ */
 export type Aufzeichnung = {
   tag: Tag;
   stempel: [Stempelart, number][];
   /** the model's minutes for the weekday; null without a model ("nicht hinterlegt") */
   modellMinuten: number | null;
+  abwesenheiten?: Tagesabwesenheit[];
 };
 
 /** A finding as the time sheet shows it: rule, norm (German in every language), severity, days */
@@ -68,15 +77,20 @@ export const lesefenster = (monat: Monat): { von: number; bis: number } => ({
   bis: beginnInBerlin(plusTage(letzterTag(monat), 3)),
 });
 
+/** The absences of one day in the order given, without their day */
+const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabwesenheit[] =>
+  abwesenheiten.filter((a) => a.tag === tag).map(({ tag: _, ...rest }) => rest);
+
 /**
  * The records of every day of the month: each stamp goes to the working day of its shift (a night
- * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"). Pass the stamps of
- * `lesefenster(monat)`.
+ * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"), each approved absence
+ * to its day. Pass the stamps of `lesefenster(monat)`.
  */
 export const aufzeichnungen = (
   monat: Monat,
   stempelungen: readonly Stempelung[],
   modellMinuten: (tag: Tag) => number | null,
+  abwesenheiten: readonly Abwesenheit[] = [],
 ): Aufzeichnung[] => {
   const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
   const tagVon = stempeltage(sortiert);
@@ -86,11 +100,15 @@ export const aufzeichnungen = (
     if (tag === undefined || monatVon(tag) !== monat) continue;
     jeTag.set(tag, [...(jeTag.get(tag) ?? []), [stempel.art, stempel.zeitpunkt]]);
   }
-  return tageImMonat(monat).map((tag) => ({
-    tag,
-    stempel: jeTag.get(tag) ?? [],
-    modellMinuten: modellMinuten(tag),
-  }));
+  return tageImMonat(monat).map((tag) => {
+    const abwesend = amTag(abwesenheiten, tag);
+    return {
+      tag,
+      stempel: jeTag.get(tag) ?? [],
+      modellMinuten: modellMinuten(tag),
+      ...(abwesend.length > 0 ? { abwesenheiten: abwesend } : {}),
+    };
+  });
 };
 
 /** A finding reduced to what the sheet shows, so extra fields of a rule do not enter the hash */

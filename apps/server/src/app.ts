@@ -2,7 +2,9 @@ import { Hono } from "hono";
 import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
+import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
@@ -28,10 +30,22 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
+  /** The planned shifts for absences (S-401); the shift plan (S-501) passes its own */
+  schichten?: Schichtquelle;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
-export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }: AppDeps) => {
+export const createApp = ({
+  log,
+  now,
+  version,
+  db,
+  schreibDb,
+  auth,
+  url,
+  mail,
+  schichten,
+}: AppDeps) => {
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -67,6 +81,7 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url, mail }:
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, { mail, schichten }),
           "/": zeitRouten(db, schreibDb, now),
         },
       }),

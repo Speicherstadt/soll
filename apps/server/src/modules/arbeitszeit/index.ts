@@ -3,6 +3,7 @@
  * (S-303, S-304, S-306)
  */
 export { monatAbgeschlossen } from "./abschluss.ts";
+export * from "./abwesenheiten/index.ts";
 export { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 export { type GegeneintragErgebnis, gegeneintragAnlegen } from "./gegeneintraege.ts";
 export {
@@ -14,6 +15,7 @@ export {
   type SignaturErgebnis,
   signaturPruefen,
 } from "./geraete.ts";
+export { arbeitstagVon, sollGrundlagen } from "./grundlagen.ts";
 export {
   type EntfernenErgebnis,
   type Modell,
@@ -31,6 +33,7 @@ export {
   monatStatus,
   type SchrittErgebnis,
 } from "./monatsabschluss.ts";
+export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
   hatStempelungen,

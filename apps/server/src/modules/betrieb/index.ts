@@ -134,3 +134,13 @@ export const einrichtungAbschliessen = (
   );
   return true;
 };
+
+/** From which day of a sickness the business wants the certificate (§ 5 Abs. 1 EntgFG, S-401) */
+export const bescheinigungAbTagSetzen = (
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  abTag: number,
+): Betrieb =>
+  schreiben(schreibDb, kontext, (s) =>
+    s.aendern("betriebe", { betriebId: kontext.betriebId }, { bescheinigungAbTag: abTag }),
+  );

@@ -1,4 +1,5 @@
 import {
+  abwesenheiten,
   arbeitszeitmodelle,
   betriebe,
   einladungen,
@@ -28,6 +29,7 @@ export const kettenTabellen = {
   geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
+  abwesenheiten: { tabelle: abwesenheiten, schluessel: ["abwesenheitId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

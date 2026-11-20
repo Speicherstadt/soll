@@ -3,7 +3,13 @@ import type { Befund } from "../befund.ts";
 import type { Tag } from "../kalender/tag.ts";
 import { ruhenAus } from "../pruefung/ruhezeit.ts";
 import { mutterschutzGrenzenAm } from "./grenzen.ts";
-import { inSpanne, type MutterschutzOptionen, type Pruefergebnis, type PruefTag } from "./typen.ts";
+import {
+  inSpanne,
+  type MutterschutzOptionen,
+  type Pruefergebnis,
+  type PruefTag,
+  sortiert,
+} from "./typen.ts";
 
 /** R-21, § 4 Abs. 2 MuSchG: the rest between two working days falls `fehlt` minutes short of 11 hours */
 export type MutterschutzRuhezeitBefund = Befund<"ruhezeit_zu_kurz"> & {
@@ -39,7 +45,7 @@ export const mutterschutzRuhezeit = (
       norm: "§ 4 Abs. 2 MuSchG",
       schwere: "verstoss",
       art: "ruhezeit_zu_kurz",
-      tage: [ruhe.von, ruhe.bis],
+      tage: sortiert([ruhe.von, ruhe.bis]),
       ruhe: { beginn: ruhe.beginn, ende: ruhe.ende, minuten: ruhe.minuten },
       mindestens: grenzen.ruhezeit,
       fehlt: grenzen.ruhezeit - ruhe.minuten,

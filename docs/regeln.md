@@ -463,9 +463,10 @@ Regel:
   (Einstellung des Betriebs mit Fundstelle): mehr als 10 h an einem Tag, in den Bereitschaftsdienst
   fällt. Ein Tag ohne Bereitschaftsdienst bleibt beim Grenzwert von R-02, auch mit einer
   Rufbereitschaft, die ganz zählt (R-12): Die Norm nennt nur Arbeitsbereitschaft und
-  Bereitschaftsdienst. Über 12 h muss danach eine
-  Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
-  Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG). Ohne Einstellung gilt der Grenzwert von R-02.
+  Bereitschaftsdienst. Über 12 h muss im unmittelbaren Anschluss an das Ende der Arbeit des Tages
+  eine Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
+  Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG); eine Ruhezeit zwischen zwei Schichten dieses Tages
+  liegt vor diesem Ende und bleibt bei R-05 und R-12. Ohne Einstellung gilt der Grenzwert von R-02.
 - **Schwere**: kein eigener Befund ohne Einstellung; die Zeit geht in die anderen Regeln ein.
   Hinweis, wenn ein Bereitschaftsdienst über 10 h nur mit tariflicher Einstellung nach § 7 erlaubt
   ist; Verstoß, wenn nach mehr als 12 h keine 11 h Ruhezeit folgen.
@@ -483,6 +484,7 @@ Regel:
 | Tarif | 6:00 Arbeit + 6:00 Bereitschaftsdienst, Einstellung nach § 7 Abs. 1 Nr. 1 Buchst. a | Hinweis „über 10 h nur mit Tarif“ statt Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG |
 | Tarif ohne Bereitschaft | 10:01 Arbeit ohne Bereitschaftsdienst, mit derselben Einstellung | Verstoß nach R-02 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG („wenn in die Arbeitszeit regelmäßig und in erheblichem Umfang Arbeitsbereitschaft oder Bereitschaftsdienst fällt“) |
 | über 12 h | Gastronomie, Einstellung nach § 7, Mo 6:00 Arbeit + 7:00 Bereitschaftsdienst (13:00), danach 10:30 Ruhe | Verstoß „Ruhezeit nach über 12 h“ statt Hinweis nach R-05 | § 7 Abs. 9 ArbZG |
+| über 12 h, am selben Tag | Gastronomie, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Mo Schicht 16:30 – 22:30 und Bereitschaftsdienst 22:45 – 23:45 (13:00), Di Schicht 12:00 (12:15 Ruhe) | kein Befund zur Ruhezeit: die 10:30 zwischen den Schichten liegen vor dem Ende der Arbeit des Tages, die Verkürzung nach § 5 Abs. 2 ist ausgeglichen | § 7 Abs. 9 ArbZG („im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“) |
 
 Die Fälle erlaubt, Grenze, Verstoß und Tarif nehmen die Ruhepausen nach § 4 ArbZG als gewährt an;
 ohne sie gilt der Fall „Pause“.
@@ -536,6 +538,7 @@ ohne sie gilt der Fall „Pause“.
 | Krankenhaus, über die Hälfte | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:31 (5:31), Di Schicht 8:00 (4:29 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 3 ArbZG |
 | selber Tag | Mo Schicht 5:00 – 9:00, Einsatz Mo 12:00 – 13:00, Mo Schicht 18:30 (eigene Schicht, 5:30 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo | § 5 Abs. 1 ArbZG |
 | Krankenhaus, selber Tag | Krankenhaus, dieselbe Lage | Hinweis „Einsatz ausgleichen 1:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
+| Krankenhaus, selber Tag über 12 h | Krankenhaus, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Einsatz Mo 10:00 – 11:00, Mo Schicht 17:00 – 23:00 und Bereitschaftsdienst 23:15 – 23:45, Di Schicht 12:00 | Hinweis „über 10 h nur mit Tarif“ und „Einsatz ausgleichen“, kein Verstoß: die Ruhezeit 6:00 – 17:00 liegt vor dem Ende der Arbeit des Tages | § 5 Abs. 3, § 7 Abs. 9 ArbZG |
 | Herbst | Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 echte Zeit) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
 

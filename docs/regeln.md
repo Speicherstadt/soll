@@ -508,6 +508,11 @@ Regel:
 | Hinweis | noch offen am Sa 7.11. um 0:00 | Hinweis „Aufzeichnung fällig“, Frist bis Mo 9.11. 23:59 | R-13, Schwere |
 | verspätet nachgetragen | Gehen erfasst am Di 10.11. um 0:00 | Verstoß „Aufzeichnung verspätet“, auch nachdem der Tag vollständig ist | § 17 Abs. 1 Satz 1 MiLoG |
 | geändert nach der Frist | vollständig erfasst am Mi 4.11., Gehen am Do 12.11. geändert | kein Befund, als nachgetragen gekennzeichnet | R-13, Regel |
+| gelöscht nach der Frist | vollständig erfasst am Mi 4.11., Kommen und Gehen am Do 12.11. gelöscht | kein Befund, als nachgetragen gekennzeichnet | R-13, Regel |
+| offen gelöscht nach der Frist | Kommen erfasst am Mo 2.11., am Do 12.11. gelöscht | Verstoß „Aufzeichnung verspätet“, als nachgetragen gekennzeichnet | § 17 Abs. 1 Satz 1 MiLoG |
+| gelöscht vor der Frist | Kommen erfasst am Mo 2.11., am Mi 4.11. gelöscht | kein Befund | R-13, Regel |
+| nach einer offenen Schicht | Kommen am Mo 2.11. offen, Mo 16.11. vollständig erfasst am 16.11., geprüft am Sa 21.11. | kein Befund für den 16.11. | R-13, Regel |
+| geändert nach einer offenen Schicht | Kommen am Mo 2.11. offen, Mo 16.11. vollständig erfasst, Gehen am Mo 30.11. geändert | 16.11. als nachgetragen gekennzeichnet | R-13, Regel |
 | Branche | Vollzeit in einer Gaststätte, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | § 17 Abs. 1 Satz 1 MiLoG; § 2a Abs. 1 Nr. 2 SchwarzArbG |
 | andere Branche | Vollzeit, Betrieb in keiner Branche des § 2a SchwarzArbG, offen am 10.11. | nur R-01 | § 17 Abs. 1 Satz 1 MiLoG |
 | Branche nicht eingestellt | Vollzeit, Branche am Betrieb nicht eingestellt, offen am 10.11. | Verstoß „Aufzeichnung verspätet“ | nie weniger streng als das Gesetz (BAULISTE.md, S-204) |
@@ -517,7 +522,9 @@ Ob ein Tag rechtzeitig aufgezeichnet ist, entscheidet sein Stand zum Ablauf der 
 Stempelung trägt den Zeitpunkt, zu dem sie erfasst wurde, und eine geänderte den, zu dem sie ersetzt
 wurde. War der Tag zum Ablauf des siebten Folgetags vollständig, ist er rechtzeitig, auch wenn er
 danach noch geändert wird (dann „nachgetragen“); war er es nicht, bleibt der Verstoß, auch wenn der
-Tag später vollständig wird. Nicht geprüft werden die Einschränkungen der
+Tag später vollständig wird. Wer alle Stempelungen eines Tags nach der Frist löscht, lässt ihn
+nicht verschwinden: Der Tag bleibt als nachgetragen gekennzeichnet, und war er zum Ablauf der Frist
+unvollständig, bleibt der Verstoß. Nicht geprüft werden die Einschränkungen der
 Mindestlohndokumentationspflichtenverordnung (§ 1 MiLoDokV: Monatsentgelt über 4.461 € oder über
 2.974 € seit zwölf Monaten, mitarbeitende Ehegatten, Kinder und Eltern); ohne Einstellung gilt die
 Pflicht.

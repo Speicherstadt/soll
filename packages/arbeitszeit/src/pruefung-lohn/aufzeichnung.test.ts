@@ -209,3 +209,66 @@ describe("R-13: review of PR #15", () => {
     });
   });
 });
+
+describe("R-13: second review of PR #15", () => {
+  const geloescht = (art: "kommen" | "gehen", zeit: string, wann: string, weg: string) =>
+    erfasst(art, `2026-11-02T${zeit}+01:00`, `2026-11-${wann}+01:00`, `2026-11-${weg}+01:00`);
+
+  it("gelöscht nach der Frist: vollständig am 4.11., Kommen und Gehen am 12.11. gelöscht – nachgetragen", () => {
+    const stempelungen = [
+      geloescht("kommen", "08:00", "04T10:00", "12T09:00"),
+      geloescht("gehen", "12:00", "04T10:00", "12T09:00"),
+    ];
+    expect(pruefe(stempelungen, SPAETER)).toEqual({
+      befunde: [],
+      nichtHinterlegt: [],
+      nachgetragen: ["2026-11-02"],
+    });
+  });
+
+  it("offen gelöscht nach der Frist: Kommen am 2.11., am 12.11. gelöscht – Verstoß, nachgetragen", () => {
+    const stempelungen = [geloescht("kommen", "08:00", "02T08:00", "12T09:00")];
+    expect(pruefe(stempelungen, SPAETER)).toEqual({
+      befunde: [verspaetet()],
+      nichtHinterlegt: [],
+      nachgetragen: ["2026-11-02"],
+    });
+  });
+
+  it("gelöscht vor der Frist: Kommen am 2.11., am 4.11. gelöscht – kein Befund", () => {
+    const stempelungen = [geloescht("kommen", "08:00", "02T08:00", "04T09:00")];
+    expect(pruefe(stempelungen, SPAETER)).toEqual({
+      befunde: [],
+      nichtHinterlegt: [],
+      nachgetragen: [],
+    });
+  });
+
+  const offenUnd16 = [
+    erfasst("kommen", "2026-11-02T08:00+01:00", "2026-11-02T08:00+01:00"),
+    erfasst("kommen", "2026-11-16T08:00+01:00", "2026-11-16T08:00+01:00"),
+  ];
+
+  it("nach einer offenen Schicht: 2.11. offen, 16.11. vollständig am 16.11., geprüft am 21.11. – kein Befund für den 16.11.", () => {
+    const stempelungen = [
+      ...offenUnd16,
+      erfasst("gehen", "2026-11-16T12:00+01:00", "2026-11-16T12:00+01:00"),
+    ];
+    const befunde = pruefe(stempelungen, um("2026-11-21T10:00+01:00")).befunde;
+    expect(befunde.map((befund) => befund.tage)).toEqual([["2026-11-02"]]);
+  });
+
+  it("geändert nach einer offenen Schicht: 2.11. offen, Gehen des 16.11. am 30.11. geändert – 16.11. nachgetragen", () => {
+    const stempelungen = [
+      ...offenUnd16,
+      erfasst(
+        "gehen",
+        "2026-11-16T12:00+01:00",
+        "2026-11-16T12:00+01:00",
+        "2026-11-30T09:00+01:00",
+      ),
+      erfasst("gehen", "2026-11-16T13:00+01:00", "2026-11-30T09:00+01:00"),
+    ];
+    expect(pruefe(stempelungen, SPAETER).nachgetragen).toEqual(["2026-11-16"]);
+  });
+});

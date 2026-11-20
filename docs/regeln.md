@@ -169,7 +169,8 @@ Regel:
   Kalendermonaten oder innerhalb von 24 Wochen im Durchschnitt acht Stunden werktäglich nicht
   überschritten werden.“
 - **Grenzwerte**: bis 8:00 kein Befund; über 8:00 bis 10:00 Hinweis (Ausgleich nötig, R-03); über
-  10:00 Verstoß. Sonn- und Feiertagsarbeit zählt mit (§ 11 Abs. 2 ArbZG).
+  10:00 Verstoß. Sonn- und Feiertagsarbeit zählt mit (§ 11 Abs. 2 ArbZG). Gemessen wird die
+  Arbeitszeit aller Schichten, die am Arbeitstag beginnen, in echten Minuten (S-201).
 - **Ausnahmen**: Tarifvertrag oder Betriebsvereinbarung nach § 7 Abs. 1 Nr. 1 ArbZG (über 10 h bei
   Arbeitsbereitschaft oder Bereitschaftsdienst) als Einstellung des Betriebs mit Fundstelle; ohne
   diese Einstellung gilt der Grenzwert.
@@ -182,6 +183,9 @@ Regel:
 | Hinweis | 8:01 | Hinweis „über 8 h, Ausgleich nötig“ | § 3 Satz 2 ArbZG |
 | Grenze | 10:00 | Hinweis | § 3 Satz 2 ArbZG („bis zu zehn Stunden“) |
 | Verstoß | 10:01 | Verstoß „über 10 h“ | § 3 Satz 2 ArbZG |
+| Herbst | Sa 24.10.2026 22:00 – So 7:00 (10:00 echte Zeit) | Hinweis für Sa | § 3 ArbZG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Sa 27.03.2027 22:00 – So 7:00 (8:00 echte Zeit) | kein Befund | § 3 ArbZG; SoZV (Beginn der Sommerzeit) |
+| Sonntag | So 8:00 – 18:01 | Verstoß „über 10 h“ für So | § 11 Abs. 2 ArbZG |
 
 ### R-03 Ausgleichszeitraum
 
@@ -194,6 +198,16 @@ Regel:
   senken den Durchschnitt nicht und sind kein Ausgleich (Art. 16 Buchst. b Unterabs. 2
   RL 2003/88/EG; BVerwG, 09.05.2018, 8 C 13/17; Soll behandelt auch übergesetzlichen Urlaub so,
   vorsichtige Auslegung).
+- **Lage der Zeiträume**: Die Zeiträume folgen lückenlos aufeinander, ab einem Beginn am Betrieb
+  (Einstellung; ohne sie der 1. Januar 2026): sechs Kalendermonate ab dem Ersten des Monats, in den
+  der Beginn fällt (ohne Einstellung also Kalenderhalbjahre), 24 Wochen (168 Tage) ab dem Beginn
+  selbst. Werktage sind alle Tage außer Sonntagen und den Feiertagen am Standort. Ohne Wahl zählt
+  ein überschrittener Zeitraum nur, wenn auch ein Zeitraum der anderen Art überschritten ist,
+  gleich ob sich die beiden überschneiden (dann verstößt jede der beiden Wahlen): Verstoß, wenn
+  beide beendet sind, sonst Hinweis.
+- **Laufender Zeitraum**: Der Hinweis kommt, sobald die Arbeitszeit seit Beginn des Zeitraums mehr
+  als 8 h je bisherigem Werktag beträgt, bei geplanten Schichten (S-502) bis zum letzten geplanten
+  Tag. Er nennt die Minuten, die bis zum Ende des Zeitraums auszugleichen sind.
 - **Ausnahmen**: anderer Ausgleichszeitraum nach § 7 Abs. 1 Nr. 1 Buchst. b ArbZG (Einstellung).
 - **Schwere**: Hinweis, sobald der laufende Zeitraum ohne Ausgleich überschritten würde; Verstoß,
   wenn der Zeitraum endet und der Durchschnitt über 8 h liegt.
@@ -204,6 +218,10 @@ Regel:
 | Grenze | 24 Wochen mit Ø 48:00 h (1152 h) | kein Befund | § 3 Satz 2 ArbZG („nicht überschritten“) |
 | Verstoß | 24 Wochen mit 1152 h und 1 Minute | Verstoß „Ausgleich nicht erreicht“ | § 3 Satz 2 ArbZG |
 | Urlaub | 22 Wochen mit 1056 h und 1 Minute, 2 Wochen Urlaub | Verstoß „Ausgleich nicht erreicht“ (Ø über 48 h in den 22 Wochen ohne Urlaub) | Art. 16 Buchst. b Unterabs. 2 RL 2003/88/EG |
+| Hinweis | 12 Wochen mit 50 h, der Zeitraum läuft noch | Hinweis „Ausgleich offen“: 24 h bis zum Ende der 24 Wochen auszugleichen | § 3 Satz 2 ArbZG |
+| Feiertag | Hamburg, erstes Halbjahr 2026: 8 h an jedem Werktag, dazu 4 h am Karfreitag | Verstoß „Ausgleich nicht erreicht“ für den Karfreitag (kein Werktag, seine Arbeit zählt) | § 3 ArbZG („werktäglich“); § 11 Abs. 2 ArbZG |
+| ohne Wahl | 24 Wochen ab 1.1.2026 um 8 h über dem Schnitt, die sechs Kalendermonate bis 30.6. darunter | kein Befund; mit gewählten 24 Wochen Verstoß | § 3 Satz 2 ArbZG („oder“) |
+| ohne Wahl | 1.1.2026 bis 30.6.2027 8 h an jedem Werktag, dazu 9 h am 22.6. und 15.12.2026, 7 h am 15.9.2026: nur das Halbjahr bis 30.6.2026 und nur die 24 Wochen ab 3.12.2026 sind überschritten, sie überschneiden sich nicht | Verstoß für beide (jede Wahl hätte einen Verstoß) | § 3 Satz 2 ArbZG („oder“) |
 
 ### R-04 Ruhepausen
 
@@ -214,6 +232,9 @@ Regel:
 - **Grenzwerte**: Arbeitszeit bis 6:00 keine Pause; über 6:00 bis 9:00 mindestens 30 min; über 9:00
   mindestens 45 min. Eine Unterbrechung unter 15 min zählt nicht als Pause, sondern als Arbeitszeit
   (das ändert auch die Dauer). Kein Block ohne Pause über 6:00.
+- **Je Schicht**: Soll misst § 4 an jeder Schicht für sich. Zwischen zwei Schichten eines Tages
+  liegen mindestens 9 h (Grundbegriff „Schicht“), mehr als jede Pause, die das Gesetz verlangt.
+  Eine Lücke zwischen zwei Paaren von mindestens 15 min ist eine Ruhepause wie eine gestempelte.
 - **Ausnahmen**: Kurzpausen in Schicht- und Verkehrsbetrieben nach § 7 Abs. 1 Nr. 2 ArbZG
   (Einstellung). Ein automatischer Pausenabzug am Arbeitszeitmodell gleicht eine fehlende Pause
   nicht aus: Soll zieht sie ab und meldet sie trotzdem, wenn sie nicht gestempelt ist.
@@ -230,6 +251,10 @@ Regel:
 | Grenze | 2 × 15 min Pause bei 8:00 Arbeit | kein Befund | § 4 Satz 2 ArbZG |
 | Verstoß | 14 min + 16 min Pause bei 8:00 Arbeit | Verstoß; die 14 min zählen als Arbeitszeit | § 4 Satz 2 ArbZG |
 | Verstoß | 8:00 bis 14:01 ohne Pause, dann 30 min | Verstoß „über 6 h ohne Pause“ | § 4 Satz 3 ArbZG |
+| ohne Pause | 8:00 bis 14:01 ohne Pause, dann Feierabend | Verstoß „Pause fehlt 30 min“ und Verstoß „über 6 h ohne Pause“ | § 4 Satz 1 und 3 ArbZG |
+| zwei Schichten | Mo 5:00 – 8:00 und 17:00 – 21:00 (7:00 Arbeit) | kein Befund | § 4 Satz 1 ArbZG; Grundbegriff „Schicht“ |
+| über Mitternacht | Mo 20:00 – Di 4:30, Pause 23:45 – 0:15 | kein Befund, die Pause gehört zur Schicht vom Mo | § 4 Satz 1 ArbZG; Grundbegriff „Arbeitstag“ |
+| Herbst | Sa 24.10.2026 22:00 – So 5:00 ohne Pause (8:00 echte Zeit) | Verstoß „Pause fehlt 30 min“ und „über 6 h ohne Pause“ für Sa | § 4 ArbZG; SoZV (Ende der Sommerzeit) |
 
 ### R-05 Ruhezeit
 
@@ -241,6 +266,15 @@ Regel:
   Verkehr, Rundfunk, Landwirtschaft und Tierhaltung bis 10:00, wenn jede Verkürzung innerhalb eines
   Kalendermonats oder von vier Wochen durch eine Ruhezeit von mindestens 12:00 ausgeglichen wird
   (Branche am Betrieb). § 7 Abs. 1 Nr. 3 ArbZG (Tarif, bis 9:00) als Einstellung.
+- **Ausgleich nach § 5 Abs. 2**: Jede Verkürzung braucht eine eigene spätere Ruhezeit von
+  mindestens 12:00, deren erste 12:00 im Ausgleichszeitraum liegen: im Kalendermonat, in dem die verkürzte
+  Ruhezeit beginnt, oder in vier Wochen ab diesem Tag (28 Tage). Der Betrieb wählt; ohne Wahl genügt
+  jeder der beiden (wie R-03), der Verstoß kommt erst, wenn beide abgelaufen sind. Soll zählt nur
+  einen Ausgleich nach der Verkürzung (vorsichtige Auslegung). Auch die Ruhezeit nach dem letzten
+  „Gehen“ zählt, sobald 12:00 vergangen sind, ehe die nächste Schicht beginnt. Ohne Branche am
+  Betrieb gilt keine Verkürzung.
+- **Offene Schicht**: Das Ende einer offenen Schicht steht nicht fest (R-01); die Ruhezeit danach
+  misst Soll erst nach dem „Gehen“. Ihr „Kommen“ beendet die Ruhezeit davor.
 - **Schwere**: Verstoß unter 11:00 (mit Branchenausnahme unter 10:00); mit Branchenausnahme zwischen
   10:00 und 11:00 Hinweis „Ausgleich bis … nötig“, Verstoß, wenn der Ausgleich ausbleibt.
 
@@ -251,6 +285,13 @@ Regel:
 | Verstoß | Mo 22:00 – Di 8:59 (10:59) | Verstoß „Ruhezeit 10:59“ | § 5 Abs. 1 ArbZG |
 | Gastronomie | Mo 23:00 – Di 9:00 (10:00), Ausgleich am Do mit 12:00 | Hinweis, nach dem Ausgleich keiner | § 5 Abs. 2 ArbZG |
 | Gastronomie | 10:00 ohne Ausgleich im Kalendermonat | Verstoß am Monatsende | § 5 Abs. 2 ArbZG |
+| unter 10 h | Gastronomie, Mo 23:00 – Di 8:59 (9:59) | Verstoß „Ruhezeit 9:59“ | § 5 Abs. 2 ArbZG („um bis zu eine Stunde“) |
+| ohne Branche | Betrieb ohne Branche nach § 5 Abs. 2, Mo 23:00 – Di 9:00 (10:00) | Verstoß „Ruhezeit 10:00“ | § 5 Abs. 1 ArbZG |
+| vier Wochen | Gastronomie, Fr 20.11.2026 23:00 – Sa 9:00 (10:00), die nächste Ruhezeit von 12:00 ab Di 1.12. 22:00 | kein Befund; mit gewähltem Kalendermonat Verstoß ab 1.12. | § 5 Abs. 2 ArbZG („oder innerhalb von vier Wochen“) |
+| je Verkürzung | Gastronomie, zwei Verkürzungen nacheinander, danach eine Ruhezeit von 16:00 | Hinweis für die zweite Verkürzung | § 5 Abs. 2 ArbZG („jede Verkürzung“) |
+| über Mitternacht | Mo 16:00 – Di 0:30, Di 11:00 Kommen (10:30) | Verstoß „Ruhezeit 10:30“ für Mo und Di | § 5 Abs. 1 ArbZG; Grundbegriff „Arbeitstag“ |
+| Herbst | Sa 24.10.2026 22:00 – So 8:00 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Sa 27.03.2027 22:00 – So 9:00 (10:00 echte Zeit) | Verstoß „Ruhezeit 10:00“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
 
 ### R-06 Arbeitszeit der Nachtarbeitnehmer
 

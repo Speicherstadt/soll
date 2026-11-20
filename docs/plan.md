@@ -50,6 +50,7 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Frage | Entscheidung | Warum |
 | --- | --- | --- |
 | Mandanten | mehrere Betriebe in einer Instanz; jede Tabelle mit `betrieb_id`, Test je Endpunkt | gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) brauchen es; bewusste Abweichung von Haben |
+| Module | Arbeitszeit (mit Abwesenheiten), Dienstplan, Projektzeit, Terminal; geschaltet über vier Fragen in der Einrichtung, später unter Einstellungen; ein abgeschaltetes Modul fehlt in Navigation, Routen und API, seine Daten bleiben; Arbeitszeit ist Pflicht, solange der Betrieb Beschäftigte hat | ein Freelancer sieht nur Projektzeit, ein Café keine Aufträge; das Gesetz bestimmt, was nicht abschaltbar ist |
 | Arbeitszeit und Projektzeit | getrennte Tabellen, Projektzeit kann auf eine Stempelung verweisen | eigene Regeln: Arbeitszeit wird gesperrt, Projektzeit bleibt bis „abgerechnet“ änderbar |
 | Änderungen an Stempelungen | bis zum Monatsabschluss erlaubt, mit Grund, im Audit-Log, für den Mitarbeiter sichtbar; danach gesperrt, Korrektur als Gegeneintrag | gleicher Schutz, weniger Reibung als eine Sperre ab dem Einfügen |
 | Unveränderbarkeit | eigene Hash-Kette im Code, Prüfwert auf dem Stundenzettel jeder Person, keine Datenbank-Trigger und kein gobd-kern | der Betreiber ist der Arbeitgeber und könnte Trigger abschalten; den Prüfwert in der Hand der Beschäftigten kann er nicht ändern. Die GoBD verlangen Protokollierung und Verfahrensdokumentation, keine Trigger |
@@ -156,7 +157,7 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 
 | Tabelle | Inhalt | Schutz |
 | --- | --- | --- |
-| `betriebe`, `standorte` | Name, Bundesland je Standort | Audit-Kette |
+| `betriebe`, `standorte` | Name, Module, Bundesland je Standort | Audit-Kette |
 | `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit-Kette |
 | `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Lohn in Cent je Stunde oder Monat, Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
 | `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit-Kette; gesperrt beim Abschluss |

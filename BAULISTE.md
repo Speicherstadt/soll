@@ -63,12 +63,15 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 - [ ] **S-106 Betriebe, Anmeldung, Rollen** – Better Auth mit Organization-Plugin (ein Betrieb je
   Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail,
   PIN mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
-  Extern, Gerät.
+  Extern, Gerät. Module je Betrieb: Arbeitszeit (mit Abwesenheiten), Dienstplan, Projektzeit,
+  Terminal; der Server lehnt jeden Aufruf eines abgeschalteten Moduls ab; Arbeitszeit lässt sich
+  nicht abschalten, solange der Betrieb Beschäftigte hat; Abschalten löscht keine Daten.
   Die Tabellen von Better Auth bleiben außerhalb der Audit-Kette; Mitgliedschaft und Rolle schreiben
   Hooks von Better Auth in die Kette. `SOLL_SECRET_KEY` wird beim Start geprüft.
   nach: S-102. Fertig, wenn: ein Test je Endpunkt zeigt, dass kein Betrieb Daten eines anderen sieht,
   die PIN-Sperre greift, eine Einladung ohne E-Mail-Adresse zum Konto führt, ein Rollenwechsel in der
-  Kette steht und der Server ohne Schlüssel nicht startet.
+  Kette steht, der Server ohne Schlüssel nicht startet und ein Test je Modul zeigt, dass ein
+  abgeschaltetes Modul abgelehnt wird.
 
 ## Phase 2 – Prüfregeln
 
@@ -102,8 +105,14 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   nach: S-301. Fertig, wenn: Playwright `desktop` und `phone` jede Seite öffnet, axe grün ist und der
   `pages`-Check jede Route kennt.
 - [ ] **S-303 Einrichtung** – Assistent: Betrieb, Bundesland, Standorte, Arbeitszeitmodelle mit
-  Vorlagen (Vollzeit, Teilzeit, Minijob), Mitarbeiter per CSV, Einladungen.
-  nach: S-106, S-302.
+  Vorlagen (Vollzeit, Teilzeit, Minijob), Mitarbeiter per CSV, Einladungen. Er beginnt mit vier
+  Fragen, die die Module schalten: Beschäftigte ja oder nein (nein: nur Projektzeit; ja: Arbeitszeit
+  mit Abwesenheiten, fest), Schichten oder Plan (Dienstplan), Stunden mit Kunden abrechnen
+  (Projektzeit), fester Stempelort (Terminal). Die Schritte des Assistenten, die Navigation und die
+  Hinweise richten sich nach den Modulen; unter Einstellungen lassen sie sich später ändern.
+  nach: S-106, S-302. Fertig, wenn: Playwright die Einrichtung für einen Freelancer (nur
+  Projektzeit), ein Café (Arbeitszeit, Dienstplan), einen SHK-Betrieb (Arbeitszeit, Projektzeit,
+  Terminal) und einen Betrieb mit allen Modulen zeigt, jeweils mit der passenden Navigation.
 - [ ] **S-304 Stempeln** – großer Knopf Kommen, Pause, Gehen; der laufende Tag mit Soll, Ist und dem
   nächsten Befund; Nachtragen und Ändern mit Grund bis zum Abschluss, jede Änderung für den
   Mitarbeiter sichtbar.
@@ -178,7 +187,11 @@ Alle Punkte: nach S-306.
   Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
 - [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
-- [ ] **S-603 Solo-Modus** – eine Person ohne Beschäftigte, ohne Arbeitszeitprüfung und Dienstplan.
+- [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
+  Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte Person ein, schaltet
+  Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).
+  Fertig, wenn: ein Test diesen Wechsel zeigt und ein abgeschaltetes Modul in Navigation, Routen und
+  API fehlt.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
 - [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.

@@ -149,6 +149,9 @@ past ~400 lines, a function past ~80. A refactor changes no behaviour.
   accounts, surcharges; pure functions, no database), `packages/import` (parsers for other tools),
   `packages/export` (DATEV, CSV, PDF), `packages/ui`, `apps/server` (Hono, Drizzle, SQLite,
   Better Auth), `apps/web` (Solid SPA/PWA, terminal view).
+- Modules per business: working time (with absences), shift plan, project time, terminal. A route of
+  a module that is switched off is refused by the server, not only hidden; working time cannot be
+  switched off while the business has employees.
 - Routes in `apps/server` stay thin: auth, Zod, then a call into `apps/server/src/modules/`; a module
   reaches another only through its `index.ts`.
 - Every table of Soll carries `betrieb_id`; every query filters by it; a test per endpoint proves

@@ -67,6 +67,36 @@ test("stamps a day on Heute with the minutes and the next finding @phone", async
   await expect(knopf(page, "stempeln_kommen")).toBeVisible();
 });
 
+test("stamps once when the button is pressed again before the day has reloaded", async ({
+  page,
+  browser,
+}) => {
+  await weberMitSandra(page, browser);
+  await page.goto("/");
+  await expect(knopf(page, "stempeln_kommen")).toBeVisible();
+  // a slow network: the day comes back only well after the stamp was taken
+  await page.route("**/api/v1/arbeitszeit/tag?**", async (route) => {
+    await new Promise((fertig) => setTimeout(fertig, 1_500));
+    await route.continue();
+  });
+  const stempel: string[] = [];
+  page.on("request", (anfrage) => {
+    if (anfrage.method() === "POST" && anfrage.url().endsWith("/api/v1/arbeitszeit/stempelungen"))
+      stempel.push(anfrage.postData() ?? "");
+  });
+  const angenommen = page.waitForResponse(
+    (antwort) =>
+      antwort.request().method() === "POST" &&
+      antwort.url().endsWith("/api/v1/arbeitszeit/stempelungen"),
+  );
+  await knopf(page, "stempeln_kommen").click();
+  await angenommen;
+  // pressed again while the old state still shows: no second Kommen
+  await knopf(page, "stempeln_kommen").click({ timeout: 500 }).catch(() => undefined);
+  await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
+  expect(stempel).toHaveLength(1);
+});
+
 test("shows the employee a correction by the owner: who, what, when and why @phone", async ({
   page,
   browser,

@@ -1,5 +1,5 @@
-import { and, count, eq, inArray } from "drizzle-orm";
-import { BESCHAEFTIGT } from "../../auth/rollen.ts";
+import { eq } from "drizzle-orm";
+import { istBeschaeftigt } from "../../auth/rollen.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { betriebe, mitgliedschaften } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
@@ -39,15 +39,24 @@ export const modulAktiv = (db: Db, betriebId: string, modul: Modul): boolean => 
 /** How many people who work for the business are members (owner, external staff and devices not) */
 export const beschaeftigte = (db: Db, betriebId: string): number =>
   db
-    .select({ anzahl: count() })
+    .select({ rolle: mitgliedschaften.rolle })
     .from(mitgliedschaften)
-    .where(
-      and(
-        eq(mitgliedschaften.betriebId, betriebId),
-        inArray(mitgliedschaften.rolle, [...BESCHAEFTIGT]),
-      ),
-    )
-    .get()?.anzahl ?? 0;
+    .where(eq(mitgliedschaften.betriebId, betriebId))
+    .all()
+    .filter(({ rolle }) => istBeschaeftigt(rolle)).length;
+
+/**
+ * Switches working time back on once the business has employees, whichever way they came (an
+ * invitation, a change of role): the duty to record holds for them (BAG 1 ABR 22/21). Called after
+ * every change of membership.
+ */
+export const arbeitszeitPflichtWahren = (db: Db, schreibDb: SchreibDb, kontext: Kontext): void => {
+  if (modulAktiv(db, kontext.betriebId, "arbeitszeit")) return;
+  if (!betriebLesen(db, kontext.betriebId) || beschaeftigte(db, kontext.betriebId) === 0) return;
+  schreiben(schreibDb, kontext, (s) =>
+    s.aendern("betriebe", { betriebId: kontext.betriebId }, { modulArbeitszeit: true }),
+  );
+};
 
 export type ModulErgebnis =
   | { ok: true; module: Record<Modul, boolean> }

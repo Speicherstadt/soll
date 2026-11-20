@@ -56,7 +56,8 @@ Audit-Kette.
 Der Inhaber schaltet die Module. Ein ausgeschaltetes Modul lehnt der Server ab, nicht nur die
 Oberfläche; seine Daten bleiben erhalten und sind beim Einschalten wieder da. Arbeitszeit lässt sich
 nicht abschalten, solange der Betrieb Beschäftigte hat, denn dann gilt die Pflicht zur Erfassung
-(BAG, 13.09.2022, 1 ABR 22/21).
+(BAG, 13.09.2022, 1 ABR 22/21). Kommt eine beschäftigte Person hinzu, durch Einladung oder
+Rollenwechsel, schaltet Soll die Arbeitszeit wieder ein.
 
 ## Start des Servers
 

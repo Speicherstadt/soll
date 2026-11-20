@@ -1,10 +1,11 @@
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { organization, username } from "better-auth/plugins";
 import * as authSchema from "../db/auth-schema.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
-import { betriebAnlegen } from "../modules/betrieb/index.ts";
+import { arbeitszeitPflichtWahren, betriebAnlegen } from "../modules/betrieb/index.ts";
 import { mitgliedschaftEntfernen, mitgliedschaftSpiegeln } from "../modules/mitglieder/index.ts";
 import { ROLLEN } from "./rollen.ts";
 
@@ -27,6 +28,16 @@ const AKTEUR = "anmeldung";
  */
 const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthDeps) => {
   const kontext = (betriebId: string) => ({ betriebId, akteur: AKTEUR, jetzt: jetzt() });
+  const spiegeln = (member: { organizationId: string; userId: string; role: string }) => {
+    mitgliedschaftSpiegeln(
+      db,
+      schreibDb,
+      kontext(member.organizationId),
+      member.userId,
+      member.role,
+    );
+    arbeitszeitPflichtWahren(db, schreibDb, kontext(member.organizationId));
+  };
   return betterAuth({
     baseURL: url,
     secret: Buffer.from(geheimerSchluessel).toString("base64"),
@@ -38,6 +49,17 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
     }),
     emailAndPassword: { enabled: true },
     telemetry: { enabled: false },
+    hooks: {
+      // Leaving a business has no organization hook in Better Auth (1.7.26, routes/crud-members
+      // leaveOrganization), so the mirror follows it here; otherwise the member's other sessions
+      // would keep the business
+      after: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/organization/leave") return;
+        const member = ctx.context.returned as { organizationId?: string; userId?: string } | null;
+        if (!member?.organizationId || !member.userId || member instanceof Error) return;
+        mitgliedschaftEntfernen(db, schreibDb, kontext(member.organizationId), member.userId);
+      }),
+    },
     plugins: [
       username(),
       passkey({ rpID: new URL(url).hostname, rpName: "Soll", origin: url }),
@@ -49,24 +71,8 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
             betriebAnlegen(schreibDb, kontext(org.id), org.name);
             mitgliedschaftSpiegeln(db, schreibDb, kontext(org.id), member.userId, member.role);
           },
-          afterAddMember: async ({ member }) => {
-            mitgliedschaftSpiegeln(
-              db,
-              schreibDb,
-              kontext(member.organizationId),
-              member.userId,
-              member.role,
-            );
-          },
-          afterUpdateMemberRole: async ({ member }) => {
-            mitgliedschaftSpiegeln(
-              db,
-              schreibDb,
-              kontext(member.organizationId),
-              member.userId,
-              member.role,
-            );
-          },
+          afterAddMember: async ({ member }) => spiegeln(member),
+          afterUpdateMemberRole: async ({ member }) => spiegeln(member),
           afterRemoveMember: async ({ member }) => {
             mitgliedschaftEntfernen(db, schreibDb, kontext(member.organizationId), member.userId);
           },

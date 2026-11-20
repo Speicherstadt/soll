@@ -52,3 +52,10 @@ export const darf = (rolle: string, recht: Recht): boolean =>
  * switched off (docs/plan.md, "Module"). The owner alone, external staff and devices are not.
  */
 export const BESCHAEFTIGT: readonly Rolle[] = ["planer", "mitarbeiter", "lohnbuero", "betriebsrat"];
+
+/**
+ * Whether a stored role names someone who works for the business. Better Auth stores several roles of
+ * one member joined by commas (its parseRoles), so each of them counts.
+ */
+export const istBeschaeftigt = (rolle: string): boolean =>
+  rolle.split(",").some((teil) => BESCHAEFTIGT.includes(teil.trim() as Rolle));

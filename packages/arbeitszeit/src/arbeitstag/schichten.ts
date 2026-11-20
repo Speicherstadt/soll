@@ -149,9 +149,28 @@ const offenAus = (
   return null;
 };
 
-/** A shift from its stretches; `pauseLaeuft` when its last stamp began a break that has not ended */
-export const schichtAus = (stuecke: readonly Rohstueck[], pauseLaeuft: boolean): Schicht => {
-  const teile = aufMinuten(stuecke);
+/**
+ * The end cut up to the minute may reach past the start of the next shift, which is cut down: only
+ * when an end 24 h after Kommen meets a Kommen in the same minute. That minute stays with the next
+ * shift, so two shifts never overlap and none of it is lost.
+ */
+const bisZurNaechsten = (teile: Minutenstueck[], naechste: number | null): Minutenstueck[] => {
+  const letztes = teile.at(-1) as Minutenstueck;
+  if (naechste === null || letztes.ende === null) return teile;
+  const grenze = Math.floor(naechste / MINUTE) * MINUTE;
+  return [...teile.slice(0, -1), { ...letztes, ende: Math.min(letztes.ende, grenze) }];
+};
+
+/**
+ * A shift from its stretches; `pauseLaeuft` when its last stamp began a break that has not ended,
+ * `naechste` the first stamp of the next shift (null: none)
+ */
+export const schichtAus = (
+  stuecke: readonly Rohstueck[],
+  pauseLaeuft: boolean,
+  naechste: number | null = null,
+): Schicht => {
+  const teile = bisZurNaechsten(aufMinuten(stuecke), naechste);
   const erstes = teile[0] as Minutenstueck;
   const letztes = teile.at(-1) as Minutenstueck;
   const tag = tagInBerlin(erstes.beginn);

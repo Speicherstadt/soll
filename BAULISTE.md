@@ -348,6 +348,21 @@ Alle Punkte: nach S-306.
 
 - [ ] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
   Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
+  Fertig, wenn: der Stundensatz eine reine Funktion in `packages/arbeitszeit` ist, deren Vorrang
+  dokumentiert und für jede Stufe getestet ist (Tätigkeit vor Auftrag vor Kunde, auf jeder Stufe die
+  Person vor allen, dann die Person allein, dann der Satz des Betriebs, wie die Punktzahl der Sätze in
+  Kimai), mit „nicht hinterlegt“ ohne passenden Satz und dem Satz, der am Tag gilt (gültig ab); ein
+  Budget in Minuten und in Cent je Auftrag als reine Funktion mit Warnung ab einer Schwelle (Vorgabe
+  80 %) und „aufgebraucht“ ab 100 %, ganze Zahlen ohne Brüche, und der Betrag aus Minuten und Satz
+  kaufmännisch auf den Cent gerundet (Test). Dazu: die vier festen internen Tätigkeiten sind in jedem
+  Betrieb da und lassen sich weder umbenennen noch archivieren oder löschen; was ein Auftrag oder ein
+  Satz noch nennt, wird archiviert statt gelöscht (409); ein Kunde, ein Auftrag und eine Tätigkeit
+  tragen optional eine Kennung in einer anderen Quelle (Haben, ein Import), eindeutig je Betrieb;
+  Anlegen, Ändern, Archivieren und Löschen gehen über die Audit-Kette und eine neue Migration; der
+  Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt, dass
+  kein Betrieb die Daten eines anderen sieht oder ändert; Sätze sehen und ändern nur Inhaber und
+  Planer; Playwright legt Kunde, Auftrag mit Budget, Tätigkeit und Satz an und archiviert (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
 - [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
 - [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne

@@ -46,3 +46,4 @@ export * from "./pruefung-lohn/index.ts";
 export * from "./pruefung-mutterschutz/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";
 export * from "./soll/index.ts";
+export * from "./urlaub/index.ts";

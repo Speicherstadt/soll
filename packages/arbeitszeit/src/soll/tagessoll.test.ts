@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { kindKrankTage, urlaubGenommen } from "./auszug.ts";
 import { monatsstand } from "./monat.ts";
 import { tagesSoll } from "./tagessoll.ts";
 import { abwesend, modell, SANDRA, tageVonBis } from "./testhilfen.ts";
@@ -133,5 +134,25 @@ describe("Soll eines Tages", () => {
 
   it("refuses a day that is none", () => {
     expect(tagesSoll("2026-02-30", SANDRA)).toEqual({ ok: false, grund: "ungueltig" });
+  });
+});
+
+describe("Auszug für die Konten", () => {
+  it("lists leave per day and Kind krank on working days only", () => {
+    const ergebnis = monatsstand("2026-05", {
+      ...SANDRA,
+      abwesenheiten: [
+        ...abwesend("urlaub", tageVonBis("2026-05-11", "2026-05-15")),
+        ...abwesend("kind_krank", ["2026-05-01", "2026-05-04"], { kind: "a" }),
+      ],
+    });
+    if (!ergebnis.ok) throw new Error(ergebnis.grund);
+    expect(urlaubGenommen(ergebnis.wert.tage).map((t) => t.tag)).toEqual([
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-15",
+    ]);
+    expect(kindKrankTage(ergebnis.wert.tage)).toEqual([{ tag: "2026-05-04", kind: "a" }]);
   });
 });

@@ -1,4 +1,5 @@
 export { abwesenheitenAufloesen, gutschrift, urlaubAmTag } from "./abwesenheit.ts";
+export { kindKrankTage, urlaubGenommen } from "./auszug.ts";
 export { arbeitstageJeWoche, minutenAmWochentag, modellAm, modelleGueltig } from "./modell.ts";
 export {
   type MonatsEingaben,

@@ -64,8 +64,11 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail,
   PIN mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
   Extern, Gerät.
+  Die Tabellen von Better Auth bleiben außerhalb der Audit-Kette; Mitgliedschaft und Rolle schreiben
+  Hooks von Better Auth in die Kette. `SOLL_SECRET_KEY` wird beim Start geprüft.
   nach: S-102. Fertig, wenn: ein Test je Endpunkt zeigt, dass kein Betrieb Daten eines anderen sieht,
-  die PIN-Sperre greift und eine Einladung ohne E-Mail-Adresse zum Konto führt.
+  die PIN-Sperre greift, eine Einladung ohne E-Mail-Adresse zum Konto führt, ein Rollenwechsel in der
+  Kette steht und der Server ohne Schlüssel nicht startet.
 
 ## Phase 2 – Prüfregeln
 
@@ -78,6 +81,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 - [ ] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
   oder 24 Wochen.
 - [ ] **S-203 Nacht, Sonn- und Feiertage** – §§ 2, 6, 9 bis 11 ArbZG, Ersatzruhetag.
+  nach: S-104, S-105.
 - [ ] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
 - [ ] **S-205 Jugendliche und Mutterschutz** – §§ 8, 11 bis 14 JArbSchG; §§ 4 bis 6 MuSchG.
 - [ ] **S-206 Bereitschaft** – Bereitschaftsdienst als Arbeitszeit, Rufbereitschaft mit Einsätzen,
@@ -114,8 +118,11 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   gegen den Stand prüft.
   Fertig, wenn: eine nachträgliche Änderung an einem abgeschlossenen Monat auf der Prüfseite als
   Abweichung erscheint (Test).
-- [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push und
-  Mail; nie automatisch ausstempeln.
+- [ ] **S-307 Erinnerungen** – Ausstempeln vergessen, Pause fällig, Monat bestätigen; Web Push mit
+  VAPID-Schlüsseln, die die Instanz beim ersten Start erzeugt, und Mail über SMTP aus der
+  Konfiguration; nie automatisch ausstempeln.
+  Fertig, wenn: Tests mit einem Ersatz für den Push-Dienst und einem SMTP-Testserver jede Erinnerung
+  zeigen.
 - [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
@@ -219,7 +226,10 @@ Alle Punkte: nach S-305.
 
 - [ ] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
   Wake Lock, Neuladen nach Fehler.
-- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der SUN-Nachricht.
+- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
+  SUN-Nachricht.
+  Fertig, wenn: Playwright mit einem Ersatz für `NDEFReader` Karte mit PIN, Karte ohne PIN und eine
+  gefälschte SUN-Nachricht prüft.
 - [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
 
 ## Phase 9 – Härtung und Betrieb
@@ -235,6 +245,8 @@ Alle Punkte: nach S-305.
 - [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
 - [ ] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
+  Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und
+  `/health` antwortet; veröffentlicht wird es erst mit den Zugangsdaten (Schritte für Menschen).
 - [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
@@ -252,6 +264,7 @@ Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie 
 Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 
 - [ ] GitHub Pages mit Domain soll.work, DNS
+- [ ] Zugangsdaten für Docker Hub als Secrets im Repo, dann das erste Release
 - [ ] Marke „Soll“ bei DPMA und EUIPO prüfen (Klassen 9 und 42)
 - [ ] Übersetzungen Türkisch, Polnisch, Ukrainisch und Arabisch von Muttersprachlern prüfen lassen
 - [ ] Regelwerk von einer Fachanwältin oder einem Fachanwalt für Arbeitsrecht gegenlesen lassen

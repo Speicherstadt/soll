@@ -151,17 +151,29 @@ past ~400 lines, a function past ~80. A refactor changes no behaviour.
   Better Auth), `apps/web` (Solid SPA/PWA, terminal view).
 - Routes in `apps/server` stay thin: auth, Zod, then a call into `apps/server/src/modules/`; a module
   reaches another only through its `index.ts`.
-- Every table carries `betrieb_id`; every query filters by it; a test per endpoint proves that no
-  business sees another's data.
-- Writes go through one function that appends to the audit chain in the same transaction (actor,
-  table, row, hash of the content, hash of the previous link); there is no other way to write. A
+- Every table of Soll carries `betrieb_id`; every query filters by it; a test per endpoint proves
+  that no business sees another's data. The tables of Better Auth (users, sessions, accounts,
+  organizations, members) are its own and exempt; changes of membership and role are written into
+  the audit chain through Better Auth's hooks.
+- Writes to Soll's tables go through one function that appends to the audit chain in the same
+  transaction (actor, table, row, hash of the content, hash of the previous link); there is no other
+  way to write. A
   closed month locks its rows. The chain hashes the content's hash, not the content, so content can
   be deleted after its retention period without breaking the check.
 - The protection against changes by the business itself is the Prüfwert on each employee's
   monthly time sheet, not the server: whoever runs the server can change its database, but not the
   Prüfwert an employee already holds.
-- Time: instants as `timestamptz`, calendar days in `Europe/Berlin`; a working day is the day the
-  shift starts. DST changes are tested, not assumed.
+- Time: instants as UTC milliseconds in an integer column, calendar days as text `YYYY-MM-DD` in
+  `Europe/Berlin`; a working day is the day the shift starts. DST changes are tested, not assumed.
+- Secrets: encrypted columns use the key from `SOLL_SECRET_KEY` (32 bytes, base64); the server refuses
+  to start without it. API tokens and PINs are stored as hashes, not encrypted. Web Push keys
+  (VAPID) are created by the instance on its first start.
+- PDFs (time sheets, audit export, work reports) with `pdf-lib`.
+- What the browser or the outside world provides is replaced in tests: `NDEFReader` for Web NFC,
+  the push service, an SMTP test server for mail, a stand-in for the Haben API and for each import
+  API built from their documentation.
+- Translations into `tr`, `pl`, `uk` and `ar` are written by the loop itself; native speakers check
+  them later (BAULISTE.md, "Schritte für Menschen").
 - Test data: "Weber Haustechnik" (SHK, Hamburg: Jonas Weber, owner; Anna, office; Sandra and Max,
   fitters; Leon, apprentice, 17) and "Café Elbblick" (Hamburg: Mia, owner; Tom, Lea and Yusuf in
   shifts; Olena and Piotr on mini-jobs). Addresses under `.test`.

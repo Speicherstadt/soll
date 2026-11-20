@@ -61,6 +61,10 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Terminal | PWA im Kiosk-Modus auf einem Tablet; keine eigene Hardware | derselbe Code wie im Browser |
 | Haben | wird von hier aus nicht geändert; Prüfwert, Texte der Verfahrensdokumentation und Dateispeicher aus gobd-kern werden mit Quellenangabe kopiert | gemeinsame Pakete werden erst herausgelöst, wenn der Code in beiden Apps stabil ist |
 | Sprachen | Deutsch und Englisch überall; Türkisch, Polnisch, Ukrainisch, Arabisch für die Ansichten der Beschäftigten | viele Beschäftigte in Gastronomie und Handwerk sprechen kein Deutsch |
+| PDF | `pdf-lib` | reines JavaScript ohne native Teile, läuft im Server und in `bun build --compile` |
+| Geheimnisse | verschlüsselte Spalten mit dem Schlüssel aus `SOLL_SECRET_KEY`, Start ohne Schlüssel verweigert; API-Tokens und PINs als Hash; VAPID-Schlüssel erzeugt die Instanz beim ersten Start | nichts Geheimes im Repo oder in der Datenbank im Klartext |
+| Was sich in der CI nicht echt testen lässt | Ersatz für `NDEFReader`, Push-Dienst, SMTP, Haben-API und die APIs der Import-Quellen, nach deren Doku gebaut | die Kriterien für „fertig“ bleiben erfüllbar |
+| Übersetzungen | der Loop übersetzt `tr`, `pl`, `uk` und `ar` selbst; Muttersprachler prüfen später | er wartet nicht auf Menschen |
 | Merge | der Loop merged selbst, wenn CI grün ist und das unabhängige Review keine Befunde mehr hat | er wartet nie auf einen Menschen |
 | Lizenz | AGPL-3.0 mit Namensnennung nach § 7(b) und kommerzieller Lizenz wie bei Haben | |
 
@@ -81,7 +85,7 @@ zwei begründete Abweichungen, beide wie bei Kennwort; sie stehen auch im CLAUDE
 | Unveränderbarkeit | Audit-Kette im Code, Prüfwert nach `pruefwert.ts` aus gobd-kern (kopiert) | siehe „Entscheidungen“ |
 | Anmeldung | Better Auth: Organization-Plugin (Betriebe), Passkeys, Einladungslinks, PIN für das Terminal | Stack-Vorgabe für Apps mit vielen Benutzern |
 | Validierung | Zod an jeder Grenze | |
-| Exporte | eigene Funktionen in `packages/export`: DATEV-ASCII, CSV; PDF für Stundenzettel und Regiebericht | |
+| Exporte | eigene Funktionen in `packages/export`: DATEV-ASCII, CSV; PDF mit `pdf-lib` für Stundenzettel, Prüfexport und Regiebericht | |
 | Import | reine Funktionen in `packages/import`, Fuzzing mit fast-check | |
 | Betrieb | Docker-Image (amd64, arm64), Compose, Quadlet; Release-Workflow aus firsttris/workflows | |
 | Doku | Zensical auf GitHub Pages unter soll.work | wie Kennwort |
@@ -154,7 +158,7 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | --- | --- | --- |
 | `betriebe`, `standorte` | Name, Bundesland je Standort | Audit-Kette |
 | `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit-Kette |
-| `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
+| `arbeitszeitmodelle` | Soll je Wochentag, Art (Gehalt, Stundenlohn, Minijob), Lohn in Cent je Stunde oder Monat, Zuschläge, Pausenabzug, gültig ab | Audit-Kette |
 | `stempelungen` | Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Änderung | Audit-Kette; gesperrt beim Abschluss |
 | `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | Audit-Kette; nur anfügen |
 | `abwesenheiten` | Art, von, bis, halbe Tage, Status, Bescheinigung liegt vor (eAU oder Papier im Büro) | Audit-Kette; im abgeschlossenen Monat gesperrt |
@@ -165,8 +169,13 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | `importe` | Tool, Datei-Hash, Zuordnung, Zeitpunkt, wer | Audit-Kette; nur anfügen |
 | `jahreswerte` | Mindestlohn, Minijob-Grenze, Regelversion | per Migration |
 
-Dauern in ganzen Minuten, Geld in Cent, Urlaub in halben Tagen, Zeitpunkte als `timestamptz`,
-Kalendertage in `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem die Schicht beginnt.
+Dauern in ganzen Minuten, Geld in Cent, Urlaub in halben Tagen, Zeitpunkte als UTC-Millisekunden
+(Integer), Kalendertage als Text `JJJJ-MM-TT` in `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem
+die Schicht beginnt. Der Lohn am Arbeitszeitmodell braucht es für Mindestlohn, Minijob-Grenze und den
+steuerfreien Teil der Zuschläge (Grundlohn bis 50 € je Stunde, § 3b Abs. 2 EStG). Die Tabellen von
+Better Auth (Benutzer, Sitzungen, Organisationen, Mitglieder) gehören Better Auth, haben keine
+`betrieb_id` und stehen nicht in der Audit-Kette; Mitgliedschaft und Rolle schreiben Hooks in die
+Kette.
 
 ## Import aus anderen Tools
 

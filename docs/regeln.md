@@ -273,8 +273,8 @@ Regel:
 - **Regel**: Ein Ersatzruhetag ist ein Werktag ohne Arbeitszeit von 0 bis 24 Uhr. Soll ordnet jedem
   Sonntag den frühesten freien Werktag im Zeitraum zu, der noch keinem anderen zugeordnet ist.
 - **Grenzwerte**: Sonntag: ein Zeitraum von 14 Tagen, der den Sonntag einschließt; er kann vor oder
-  nach dem Sonntag liegen, der Ersatzruhetag also bis zu 13 Tage davor oder danach (Montag zwei
-  Wochen davor bis Samstag der übernächsten Woche). Feiertag: 8 Wochen entsprechend, bis zu 55 Tage
+  nach dem Sonntag liegen, der Ersatzruhetag also bis zu 13 Tage davor oder danach (Montag der
+  Vorwoche bis Samstag der übernächsten Woche). Feiertag: 8 Wochen entsprechend, bis zu 55 Tage
   davor oder danach.
 - **Schwere**: Hinweis, solange der Zeitraum läuft; Verstoß, wenn er ohne Ersatzruhetag endet.
 
@@ -366,7 +366,9 @@ Regel:
   (Jahreswert, S-104).
 - **Regel**: Lohn des Monats in Cent ÷ Arbeitszeit des Monats in Minuten ≥ Mindestlohn je Stunde ÷ 60.
   Gerechnet wird ohne Rundung mit ganzen Zahlen: `lohnCent × 60 ≥ mindestlohnCent × minuten`.
-  Zuschläge für Nacht, Sonn- und Feiertage zählen nicht mit. Fehlt der Mindestlohn des Jahres, heißt
+  Zuschläge für Sonn- und Feiertagsarbeit zählen mit (BAG, 24.05.2017, 5 AZR 431/16; 17.01.2018,
+  5 AZR 69/17), Nachtzuschläge nach § 6 Abs. 5 ArbZG nicht (Zahlung mit besonderer gesetzlicher
+  Zweckbestimmung, BAG, 25.05.2016, 5 AZR 135/16). Fehlt der Mindestlohn des Jahres, heißt
   das Ergebnis „nicht hinterlegt“, nie der Wert des Vorjahres (CLAUDE.md).
 - **Ausnahmen**: § 22 MiLoG (Auszubildende, Jugendliche ohne Berufsabschluss, bestimmte Praktika,
   Langzeitarbeitslose in den ersten sechs Monaten) als Merkmal am Mitarbeiter.
@@ -537,11 +539,13 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 
 - **Norm**: § 3 BUrlG (mindestens 24 Werktage, Werktage sind alle Tage außer Sonn- und Feiertagen);
   § 5 (ein Zwölftel je vollem Monat, Bruchteile ab einem halben Tag aufrunden); § 7 Abs. 3 (Urlaub im
-  Kalenderjahr, übertragen nur bis 31. März des Folgejahres).
+  Kalenderjahr, übertragen nur bis 31. März des Folgejahres; Teilurlaub nach § 5 Abs. 1 Buchst. a
+  auf Verlangen der Person in das ganze nächste Kalenderjahr, § 7 Abs. 3 Satz 4).
 - **Regel**: Das Arbeitszeitmodell gibt den Urlaub in Arbeitstagen; Soll prüft, dass er umgerechnet
   nicht unter dem gesetzlichen Mindesturlaub liegt (24 Werktage bei 6 Tagen = 20 Arbeitstage bei 5,
   allgemein `24 × Arbeitstage je Woche ÷ 6`). Urlaub in halben Tagen (CLAUDE.md).
-- **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März.
+- **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
+  übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -552,8 +556,9 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Rundung | 7 volle Monate bei 20 Tagen: 11,67 | 12 Tage | § 5 Abs. 2 BUrlG |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
-Bruchteile bleiben als halbe Tage nach unten gerundet stehen, nie zulasten der Beschäftigten unter
-den Anspruch (Soll führt Urlaub in halben Tagen und rundet 8,33 auf 8,5 auf).
+Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).
+Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halben Tag auf (8,33 auf
+8,5).
 
 ### R-24 Krank im Urlaub
 

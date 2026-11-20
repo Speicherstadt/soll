@@ -168,4 +168,33 @@ describe("docs/regeln.md against the law", () => {
     // after the birth have passed, if she asks for it and a medical certificate does not object.
     expect(regel("R-21")).toMatch(/§ 3 Abs\. 4 MuSchG/);
   });
+  it("R-09: thirteen days before a Sunday is the Monday of the week before, not two weeks before", () => {
+    // § 11 Abs. 3 Satz 1 ArbZG, 14-day span: Sunday 15.11.2026 − 13 days = Monday 2.11.2026, the
+    // Monday of the week 2.–8.11. (the week before 9.–15.11.); "zwei Wochen davor" would be 26.10.
+    // The mirror image of "Samstag der übernächsten Woche" (+13 days, 28.11.2026).
+    expect(regel("R-09")).not.toMatch(/Montag\s+zwei\s+Wochen\s+davor/);
+    expect(regel("R-09")).toMatch(/Montag\s+der\s+Vorwoche/);
+  });
+
+  it("R-23: fractions under half a day are never rounded down", () => {
+    // § 5 Abs. 2 BUrlG rounds up from half a day only; smaller fractions stay owed (BAG, 26.01.1989,
+    // 8 AZR 730/87). The note must not say they are rounded down, which the Teilurlaub case denies.
+    expect(regel("R-23")).not.toMatch(/nach unten gerundet/);
+  });
+
+  it("R-23: Teilurlaub under § 5 Abs. 1 Buchst. a is carried over the whole next year on request", () => {
+    // § 7 Abs. 3 Satz 4 BUrlG: "Auf Verlangen des Arbeitnehmers ist ein nach § 5 Abs. 1 Buchstabe a
+    // entstehender Teilurlaub jedoch auf das nächste Kalenderjahr zu übertragen" – not only to
+    // 31 March. The rule's own Teilurlaub case (Eintritt 1.8.) is exactly that Teilurlaub.
+    expect(regel("R-23")).toMatch(/§ 7 Abs\. 3 Satz 4/);
+  });
+
+  it("R-14: Sunday and holiday surcharges count toward the minimum wage, night surcharges do not", () => {
+    // BAG, 24.05.2017, 5 AZR 431/16, and 17.01.2018, 5 AZR 69/17: Sonn- und Feiertagszuschläge are
+    // "grundsätzlich mindestlohnwirksam"; payments with a special statutory purpose such as the
+    // night surcharge of § 6 Abs. 5 ArbZG are not (BAG, 25.05.2016, 5 AZR 135/16). Leaving Sunday
+    // surcharges out reports a Verstoß the law does not.
+    expect(regel("R-14")).not.toMatch(/Zuschläge für Nacht, Sonn- und Feiertage zählen nicht mit/);
+    expect(regel("R-14")).toMatch(/5 AZR 431\/16/);
+  });
 });

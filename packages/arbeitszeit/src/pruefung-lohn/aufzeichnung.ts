@@ -68,11 +68,22 @@ const tageAm = (stempelungen: readonly ErfassteStempelung[], zeitpunkt: number) 
   return ergebnis.ok ? new Map(ergebnis.wert.map((tag) => [tag.tag, tag] as const)) : null;
 };
 
-/** The day a stamp belongs to: the day of the shift it falls in, else its own calendar day */
-const tagDer = (zeitpunkt: number, tage: readonly Arbeitstag[]): Tag =>
-  tage.find((tag) =>
-    tag.schichten.some((s) => s.beginn <= zeitpunkt && (s.ende === null || zeitpunkt <= s.ende)),
-  )?.tag ?? tagInBerlin(zeitpunkt);
+/**
+ * The day a stamp belongs to: the day of the shift it falls in, else its own calendar day. An open
+ * shift has no end, so it reaches only up to the next shift: the latest shift begun by then wins.
+ */
+const tagDer = (zeitpunkt: number, tage: readonly Arbeitstag[]): Tag => {
+  let gefunden: { tag: Tag; beginn: number } | null = null;
+  for (const tag of tage)
+    for (const s of tag.schichten)
+      if (
+        s.beginn <= zeitpunkt &&
+        (s.ende === null || zeitpunkt <= s.ende) &&
+        (gefunden === null || s.beginn > gefunden.beginn)
+      )
+        gefunden = { tag: tag.tag, beginn: s.beginn };
+  return gefunden?.tag ?? tagInBerlin(zeitpunkt);
+};
 
 type Kontext = {
   stempelungen: readonly ErfassteStempelung[];
@@ -113,30 +124,72 @@ const geaendertAb = (tag: Tag, frist: number, kontext: Kontext): boolean =>
 
 type Urteil = { befund: AufzeichnungBefund | null; nachgetragen: boolean };
 
+/** 0:00 on the day after the last day of the time (§ 17 Abs. 1 Satz 1 MiLoG) */
+const fristVon = (tag: Tag, grenzen: LohnGrenzen): number =>
+  beginnInBerlin(plusTage(tag, grenzen.aufzeichnungTage + 1));
+
+const befundAm = (
+  tag: Tag,
+  frist: number,
+  seit: number | null,
+  art: AufzeichnungBefund["art"],
+): AufzeichnungBefund => ({
+  regel: "R-13",
+  norm: "§ 17 Abs. 1 Satz 1 MiLoG",
+  schwere: art === "aufzeichnung_verspaetet" ? "verstoss" : "hinweis",
+  art,
+  tage: [tag],
+  frist,
+  vollstaendigSeit: seit,
+});
+
 const amTag = (tag: Arbeitstag, grenzen: LohnGrenzen, kontext: Kontext): Urteil => {
-  const frist = beginnInBerlin(plusTage(tag.tag, grenzen.aufzeichnungTage + 1));
+  const frist = fristVon(tag.tag, grenzen);
   const seit = vollstaendigSeit(tag, kontext);
-  const befund = (art: AufzeichnungBefund["art"]): AufzeichnungBefund => ({
-    regel: "R-13",
-    norm: "§ 17 Abs. 1 Satz 1 MiLoG",
-    schwere: art === "aufzeichnung_verspaetet" ? "verstoss" : "hinweis",
-    art,
-    tage: [tag.tag],
-    frist,
-    vollstaendigSeit: seit,
-  });
   if (kontext.jetzt < frist) {
     const faellig = kontext.jetzt >= beginnInBerlin(plusTage(tag.tag, grenzen.hinweisAbTag));
     return {
-      befund: faellig && seit === null ? befund("aufzeichnung_faellig") : null,
+      befund:
+        faellig && seit === null ? befundAm(tag.tag, frist, seit, "aufzeichnung_faellig") : null,
       nachgetragen: false,
     };
   }
   const damals = tageAm(kontext.stempelungen, frist - 1)?.get(tag.tag);
   return {
-    befund: damals?.vollstaendig === true ? null : befund("aufzeichnung_verspaetet"),
+    befund:
+      damals?.vollstaendig === true
+        ? null
+        : befundAm(tag.tag, frist, seit, "aufzeichnung_verspaetet"),
     nachgetragen: geaendertAb(tag.tag, frist, kontext),
   };
+};
+
+/**
+ * A day whose stamps were all deleted: no working day any more, but deleting it after its time ran
+ * out is nachgetragen, and if it stood incomplete at that instant it stays a Verstoß. A day
+ * deleted in time was no working day when the time ran out and is not judged.
+ */
+const amGeloeschtenTag = (tag: Tag, grenzen: LohnGrenzen, kontext: Kontext): Urteil => {
+  const frist = fristVon(tag, grenzen);
+  if (kontext.jetzt < frist) return { befund: null, nachgetragen: false };
+  const damals = tageAm(kontext.stempelungen, frist - 1)?.get(tag);
+  return {
+    befund:
+      damals === undefined || damals.vollstaendig
+        ? null
+        : befundAm(tag, frist, null, "aufzeichnung_verspaetet"),
+    nachgetragen: geaendertAb(tag, frist, kontext),
+  };
+};
+
+/** The days that versions replaced by now belonged to and that no standing stamp keeps */
+const geloeschteTage = (kontext: Kontext): Tag[] => {
+  const stehend = new Set(kontext.tage.map((tag) => tag.tag));
+  const tage = kontext.stempelungen
+    .filter((s) => s.erfasst <= kontext.jetzt && s.ersetzt != null && s.ersetzt <= kontext.jetzt)
+    .map((s) => tagDerVersion(s, kontext))
+    .filter((tag) => !stehend.has(tag));
+  return [...new Set(tage)];
 };
 
 /**
@@ -159,15 +212,25 @@ export const aufzeichnungsfrist = (
   const befunde: AufzeichnungBefund[] = [];
   const nichtHinterlegt: Tag[] = [];
   const nachgetragen: Tag[] = [];
-  for (const tag of kontext.tage) {
-    const grenzen = lohnGrenzenAm(tag.tag);
+  const zuPruefen = [
+    ...kontext.tage.map((tag) => ({
+      tag: tag.tag,
+      urteil: (g: LohnGrenzen) => amTag(tag, g, kontext),
+    })),
+    ...geloeschteTage(kontext).map((tag) => ({
+      tag,
+      urteil: (g: LohnGrenzen) => amGeloeschtenTag(tag, g, kontext),
+    })),
+  ].sort((a, b) => (a.tag < b.tag ? -1 : 1));
+  for (const { tag, urteil } of zuPruefen) {
+    const grenzen = lohnGrenzenAm(tag);
     if (grenzen === null) {
-      nichtHinterlegt.push(tag.tag);
+      nichtHinterlegt.push(tag);
       continue;
     }
-    const urteil = amTag(tag, grenzen, kontext);
-    if (urteil.befund !== null) befunde.push(urteil.befund);
-    if (urteil.nachgetragen) nachgetragen.push(tag.tag);
+    const { befund, nachgetragen: spaeter } = urteil(grenzen);
+    if (befund !== null) befunde.push(befund);
+    if (spaeter) nachgetragen.push(tag);
   }
   return { ok: true, wert: { befunde, nichtHinterlegt: sortiert(nichtHinterlegt), nachgetragen } };
 };

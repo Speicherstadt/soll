@@ -274,7 +274,7 @@ describe("R-13: second review of PR #15", () => {
 });
 
 describe("R-13: third review of PR #15", () => {
-  it("erst nach der Frist erfasst, dann gelöscht: Kommen und Gehen am 12.11. erfasst, am 13.11. gelöscht – Verstoß, nachgetragen", () => {
+  it("erst nach der Frist erfasst, dann gelöscht: Kommen und Gehen am Do 12.11. erfasst, am Fr 13.11. gelöscht – Verstoß wie ohne Löschen, nachgetragen", () => {
     const behalten = vollstaendigAm("2026-11-12T09:00+01:00");
     expect(pruefe(behalten, SPAETER).befunde).toEqual([verspaetet(um("2026-11-12T09:00+01:00"))]);
     const geloescht = behalten.map((s) => ({ ...s, ersetzt: um("2026-11-13T09:00+01:00") }));
@@ -285,7 +285,7 @@ describe("R-13: third review of PR #15", () => {
     });
   });
 
-  it("Gehen ohne Kommen nach einer offenen Schicht: 2.11. offen, Gehen am Do 5.11., am 20.11. gelöscht – Verstoß für den 5.11. bleibt", () => {
+  it("Gehen ohne Kommen nach einer offenen Schicht: Kommen am Mo 2.11. offen, Gehen am Do 5.11., am Fr 20.11. gelöscht – Verstoß für den 2.11. und den 5.11., 5.11. nachgetragen", () => {
     const stempelungen = [
       kommen,
       erfasst(
@@ -300,7 +300,7 @@ describe("R-13: third review of PR #15", () => {
     expect(ergebnis.nachgetragen).toEqual(["2026-11-05"]);
   });
 
-  it("Gehen während der Pause nach Mitternacht, am 12.11. gelöscht – der 2.11. ist nachgetragen", () => {
+  it("Gehen während der Pause nach Mitternacht: Kommen Mo 2.11. 22:00, Pause Di 1:00, Gehen Di 2:00, das Gehen am Do 12.11. gelöscht – Verstoß, 2.11. nachgetragen", () => {
     const stempelungen = [
       erfasst("kommen", "2026-11-02T22:00+01:00", "2026-11-02T22:00+01:00"),
       erfasst("pause_beginn", "2026-11-03T01:00+01:00", "2026-11-03T01:00+01:00"),

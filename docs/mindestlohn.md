@@ -27,7 +27,7 @@ Privathaushalt (§ 8a SGB IV) ist ausgenommen.
 | ab Sa 7.11. (fünfter Folgetag) noch unvollständig | Hinweis „Aufzeichnung fällig“ mit der Frist |
 | zum Ablauf von Mo 9.11. (0:00 am Di 10.11.) noch unvollständig | Verstoß „Aufzeichnung verspätet“ |
 | zum Ablauf vollständig, danach geändert | keiner, der Tag ist „nachgetragen“ |
-| nach Ablauf ganz gelöscht | der Tag bleibt „nachgetragen“; war er zum Ablauf unvollständig, bleibt der Verstoß |
+| nach Ablauf ganz gelöscht | der Tag bleibt „nachgetragen“; war er zum Ablauf unvollständig oder erst danach erfasst, bleibt der Verstoß |
 
 Jede Stempelung trägt den Zeitpunkt, zu dem sie **erfasst** wurde, und eine geänderte oder gelöschte
 den, zu dem sie **ersetzt** wurde. So sieht Soll jeden Tag so, wie er zum Ablauf der Frist stand:

@@ -1,4 +1,5 @@
 import { type Arbeitstag, arbeitstage } from "../arbeitstag/arbeitstag.ts";
+import { LAENGSTE_SCHICHT } from "../arbeitstag/schichten.ts";
 import type { Stempelung } from "../arbeitstag/stempelungen.ts";
 import type { Befund } from "../befund.ts";
 import { plusTage, type Tag } from "../kalender/tag.ts";
@@ -69,16 +70,20 @@ const tageAm = (stempelungen: readonly ErfassteStempelung[], zeitpunkt: number) 
 };
 
 /**
- * The day a stamp belongs to: the day of the shift it falls in, else its own calendar day. An open
- * shift has no end, so it reaches only up to the next shift: the latest shift begun by then wins.
+ * The day a stamp belongs to, as `arbeitstage` files it: a stamp that did not fit (R-01) the day
+ * of its finding, which names the stamp's instant; else the day of the shift it falls in, else its
+ * own calendar day. An open shift has no end, so it reaches only up to the next shift (the latest
+ * shift begun by then wins) and never 24 hours past its start, after which no stamp can end it.
  */
 const tagDer = (zeitpunkt: number, tage: readonly Arbeitstag[]): Tag => {
+  const gemeldet = tage.find((tag) => tag.befunde.some((befund) => befund.zeitpunkt === zeitpunkt));
+  if (gemeldet !== undefined) return gemeldet.tag;
   let gefunden: { tag: Tag; beginn: number } | null = null;
   for (const tag of tage)
     for (const s of tag.schichten)
       if (
         s.beginn <= zeitpunkt &&
-        (s.ende === null || zeitpunkt <= s.ende) &&
+        zeitpunkt <= (s.ende ?? s.beginn + LAENGSTE_SCHICHT) &&
         (gefunden === null || s.beginn > gefunden.beginn)
       )
         gefunden = { tag: tag.tag, beginn: s.beginn };
@@ -164,20 +169,26 @@ const amTag = (tag: Arbeitstag, grenzen: LohnGrenzen, kontext: Kontext): Urteil 
   };
 };
 
+/** Whether a version of a stamp of the day was first recorded from `frist` on */
+const erstNachDerFrist = (tag: Tag, frist: number, kontext: Kontext): boolean =>
+  kontext.stempelungen.some(
+    (s) => s.erfasst >= frist && s.erfasst <= kontext.jetzt && tagDerVersion(s, kontext) === tag,
+  );
+
 /**
  * A day whose stamps were all deleted: no working day any more, but deleting it after its time ran
- * out is nachgetragen, and if it stood incomplete at that instant it stays a Verstoß. A day
- * deleted in time was no working day when the time ran out and is not judged.
+ * out is nachgetragen, and if it stood incomplete at that instant, or was first recorded only after
+ * it, it stays a Verstoß, as it would if kept. A day deleted in time was no working day when the
+ * time ran out and is not judged.
  */
 const amGeloeschtenTag = (tag: Tag, grenzen: LohnGrenzen, kontext: Kontext): Urteil => {
   const frist = fristVon(tag, grenzen);
   if (kontext.jetzt < frist) return { befund: null, nachgetragen: false };
   const damals = tageAm(kontext.stempelungen, frist - 1)?.get(tag);
+  const rechtzeitig =
+    damals === undefined ? !erstNachDerFrist(tag, frist, kontext) : damals.vollstaendig;
   return {
-    befund:
-      damals === undefined || damals.vollstaendig
-        ? null
-        : befundAm(tag, frist, null, "aufzeichnung_verspaetet"),
+    befund: rechtzeitig ? null : befundAm(tag, frist, null, "aufzeichnung_verspaetet"),
     nachgetragen: geaendertAb(tag, frist, kontext),
   };
 };

@@ -20,8 +20,11 @@ export const ALLE_MODULE: Module = {
   terminal: true,
 };
 
+/** An area is its first path segment: "/projekte/", "/projekte/42" and "/projekte" are one area */
+const bereichVon = (pfad: string): string => `/${pfad.split("/")[1] ?? ""}`;
+
 export const sichtbar = (module: Module, pfad: string): boolean => {
-  const modul = MODUL_VON_PFAD[pfad];
+  const modul = MODUL_VON_PFAD[bereichVon(pfad)];
   return modul === undefined || module[modul];
 };
 

@@ -36,6 +36,15 @@ export const modulAktiv = (db: Db, betriebId: string, modul: Modul): boolean => 
   return betrieb ? betrieb[SPALTE[modul]] : false;
 };
 
+/** The businesses that use a module, for the reminder loop (S-307) */
+export const betriebeMitModul = (db: Db, modul: Modul): string[] =>
+  db
+    .select({ betriebId: betriebe.betriebId })
+    .from(betriebe)
+    .where(eq(betriebe[SPALTE[modul]], true))
+    .all()
+    .map(({ betriebId }) => betriebId);
+
 /** How many people who work for the business are members (owner, external staff and devices not) */
 export const beschaeftigte = (db: Db, betriebId: string): number =>
   db

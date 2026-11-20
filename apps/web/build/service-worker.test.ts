@@ -36,6 +36,91 @@ describe("serviceWorkerSource", () => {
   });
 });
 
+type Handler = (event: Record<string, unknown>) => void;
+
+/** Runs the worker's source against a stand-in for `self`, and collects what it does */
+const worker = (fenster: { url: string }[] = []) => {
+  const handler = new Map<string, Handler>();
+  const gezeigt: { titel: string; optionen: Record<string, unknown> }[] = [];
+  const geoeffnet: string[] = [];
+  const navigiert: string[] = [];
+  const self = {
+    location: { origin: "https://soll.example.test" },
+    addEventListener: (name: string, h: Handler) => handler.set(name, h),
+    registration: {
+      showNotification: async (titel: string, optionen: Record<string, unknown>) => {
+        gezeigt.push({ titel, optionen });
+      },
+    },
+    clients: {
+      matchAll: async () =>
+        fenster.map((f) => ({
+          ...f,
+          focus: async () => ({ navigate: async (url: string) => navigiert.push(url) }),
+        })),
+      openWindow: async (url: string) => geoeffnet.push(url),
+    },
+  };
+  new Function("self", "caches", serviceWorkerSource([]))(self, {});
+  let warten: Promise<unknown> = Promise.resolve();
+  const senden = (name: string, event: Record<string, unknown>) => {
+    handler.get(name)?.({
+      ...event,
+      waitUntil: (p: Promise<unknown>) => {
+        warten = p;
+      },
+    });
+    return warten;
+  };
+  return { senden, gezeigt, geoeffnet, navigiert };
+};
+
+const nachricht = (daten: unknown) => ({ data: { json: () => daten } });
+
+describe("notifications of the service worker (S-307)", () => {
+  it("shows a reminder from a push message with its text, tag and page", async () => {
+    const w = worker();
+    await w.senden(
+      "push",
+      nachricht({ titel: "Pause fällig", text: "Um 14:00 Uhr …", ziel: "/", tag: "pause" }),
+    );
+    expect(w.gezeigt).toEqual([
+      {
+        titel: "Pause fällig",
+        optionen: {
+          body: "Um 14:00 Uhr …",
+          tag: "pause",
+          icon: "/icon.svg",
+          dir: "auto",
+          data: { ziel: "/" },
+        },
+      },
+    ]);
+  });
+
+  it("shows nothing for a message it cannot read", async () => {
+    const w = worker();
+    await w.senden("push", { data: { json: () => JSON.parse("kein json") } });
+    await w.senden("push", nachricht({ text: "ohne Titel" }));
+    await w.senden("push", { data: null });
+    expect(w.gezeigt).toEqual([]);
+  });
+
+  it("opens the page of the reminder, in an open window of the app or a new one", async () => {
+    const klick = (ziel: unknown) => ({ notification: { close: () => undefined, data: { ziel } } });
+    const neu = worker();
+    await neu.senden("notificationclick", klick("/monat"));
+    expect(neu.geoeffnet).toEqual(["https://soll.example.test/monat"]);
+    const offen = worker([{ url: "https://soll.example.test/zeiten" }]);
+    await offen.senden("notificationclick", klick("/"));
+    expect(offen.navigiert).toEqual(["https://soll.example.test/"]);
+    expect(offen.geoeffnet).toEqual([]);
+    const fremd = worker();
+    await fremd.senden("notificationclick", klick("https://fremd.example.test/"));
+    expect(fremd.geoeffnet).toEqual([]);
+  });
+});
+
 describe("service worker of a real build", () => {
   it("precaches every file the build writes, the public files included", () => {
     const outDir = mkdtempSync(join(tmpdir(), "soll-sw-"));

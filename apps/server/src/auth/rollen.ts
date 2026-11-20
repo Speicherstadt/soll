@@ -29,6 +29,7 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
   "personen:angaben",
@@ -52,6 +53,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    // the times of the reminders hold for the whole business (S-307)
+    "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
     // birth date, Mutterschutz and the like are the employer's records, read and kept by the owner;

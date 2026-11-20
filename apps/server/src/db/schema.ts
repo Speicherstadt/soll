@@ -12,6 +12,9 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/erinnerungen.ts";
+export * from "./schema/personenangaben.ts";
+
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
   betriebId: text("betrieb_id").primaryKey(),
@@ -34,26 +37,6 @@ export const betriebe = sqliteTable("betriebe", {
   ausgleichszeitraum: text("ausgleichszeitraum", { enum: ["sechs_monate", "24_wochen"] }),
   ausgleichBeginn: text("ausgleich_beginn"),
 });
-
-/**
- * What the rules need of a person and nothing more (S-502, docs/plan.md "Daten zur Person"): the
- * birth date (JArbSchG), Wechselschicht (§ 2 Abs. 5 Nr. 1 ArbZG), Arbeit auf Abruf (§ 12 TzBfG) and
- * the spans of the Mutterschutz as a JSON array of `{ von, bis }` (bis null while it lasts), which
- * say neither pregnant nor breastfeeding (Art. 9 DSGVO). Only the owner reads and writes them.
- */
-export const personenangaben = sqliteTable(
-  "personenangaben",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    nutzerId: text("nutzer_id").notNull(),
-    geburtsdatum: text("geburtsdatum"),
-    wechselschicht: integer("wechselschicht", { mode: "boolean" }).notNull().default(false),
-    abruf: integer("abruf", { mode: "boolean" }).notNull().default(false),
-    mutterschutz: text("mutterschutz").notNull().default("[]"),
-    geaendertAm: integer("geaendert_am").notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
-);
 
 /**
  * Where people work: the Land and the regional holidays of the municipality decide the holidays of
@@ -128,7 +111,9 @@ export const stempelungen = sqliteTable(
     betriebId: text("betrieb_id").notNull(),
     stempelId: text("stempel_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
-    art: text("art", { enum: ["kommen", "gehen", "pause_beginn", "pause_ende"] }).notNull(),
+    art: text("art", {
+      enum: ["kommen", "gehen", "pause_beginn", "pause_ende"],
+    }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
     quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
@@ -171,7 +156,9 @@ export const monatsabschluesse = sqliteTable(
     abschlussId: text("abschluss_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
     monat: text("monat").notNull(),
-    schritt: text("schritt", { enum: ["bestaetigt", "abgeschlossen"] }).notNull(),
+    schritt: text("schritt", {
+      enum: ["bestaetigt", "abgeschlossen"],
+    }).notNull(),
     inhalt: text("inhalt").notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     grund: text("grund"),
@@ -358,7 +345,9 @@ export const auditGlieder = sqliteTable(
     akteur: text("akteur").notNull(),
     tabelle: text("tabelle").notNull(),
     zeile: text("zeile").notNull(),
-    aktion: text("aktion", { enum: ["einfuegen", "aendern", "loeschen"] }).notNull(),
+    aktion: text("aktion", {
+      enum: ["einfuegen", "aendern", "loeschen"],
+    }).notNull(),
     inhaltHash: text("inhalt_hash").notNull(),
     vorgaengerHash: text("vorgaenger_hash").notNull(),
     hash: text("hash").notNull(),

@@ -415,7 +415,7 @@ ergänzen Menschen (siehe unten).
 
 Alle Punkte: nach S-305.
 
-- [ ] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
+- [x] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
   Wake Lock, Neuladen nach Fehler.
   Fertig, wenn: Playwright im Projekt `terminal` (1280 × 800, `e2e/terminal/`, `@terminal`) ein
   Tablet mit einem Code des Inhabers koppelt, eine Person per PIN und eine per QR-Code erkennt, beide

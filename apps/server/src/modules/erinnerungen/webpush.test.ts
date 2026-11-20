@@ -128,4 +128,21 @@ describe("VAPID contact (RFC 8292, Section 2.1: mailto: or https:)", () => {
       expect(vapidKontakt(url, undefined)).toBe("mailto:push@soll.invalid");
     }
   });
+
+  // RFC 3986 allows ASCII only, RFC 6068 (Section 2) percent-encodes "?", "#", "%" and the like in
+  // the address and wants an internationalised domain as its A-label
+  it("is a valid mailto: URI for a sender with an umlaut domain or reserved characters", () => {
+    expect(vapidKontakt("http://soll.lan", "Café <info@café-elbblick.test>")).toBe(
+      "mailto:info@xn--caf-elbblick-deb.test",
+    );
+    expect(vapidKontakt("http://soll.lan", "zeit?betreff=x@weber-haustechnik.test")).toBe(
+      "mailto:zeit%3Fbetreff%3Dx@weber-haustechnik.test",
+    );
+  });
+
+  it("never carries user and password of SOLL_URL to the push services", () => {
+    expect(vapidKontakt("https://admin:geheim@soll.weber.test/zeit", undefined)).toBe(
+      "https://soll.weber.test",
+    );
+  });
 });

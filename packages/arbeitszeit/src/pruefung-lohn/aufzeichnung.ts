@@ -1,9 +1,13 @@
-import { type Arbeitstag, arbeitstage } from "../arbeitstag/arbeitstag.ts";
-import { LAENGSTE_SCHICHT } from "../arbeitstag/schichten.ts";
+import {
+  type Arbeitstag,
+  arbeitstage,
+  stempelSchluessel,
+  stempeltage,
+} from "../arbeitstag/arbeitstag.ts";
 import type { Stempelung } from "../arbeitstag/stempelungen.ts";
 import type { Befund } from "../befund.ts";
 import { plusTage, type Tag } from "../kalender/tag.ts";
-import { beginnInBerlin, tagInBerlin } from "../kalender/zeit.ts";
+import { beginnInBerlin } from "../kalender/zeit.ts";
 import { type Pruefergebnis, sortiert } from "../pruefung/typen.ts";
 import { type LohnGrenzen, lohnGrenzenAm, type SchwarzArbGBranche } from "./grenzen.ts";
 import type { LohnErgebnis } from "./lohn.ts";
@@ -69,32 +73,20 @@ const tageAm = (stempelungen: readonly ErfassteStempelung[], zeitpunkt: number) 
   return ergebnis.ok ? new Map(ergebnis.wert.map((tag) => [tag.tag, tag] as const)) : null;
 };
 
-/**
- * The day a stamp belongs to, as `arbeitstage` files it: a stamp that did not fit (R-01) the day
- * of its finding, which names the stamp's instant; else the day of the shift it falls in, else its
- * own calendar day. An open shift has no end, so it reaches only up to the next shift (the latest
- * shift begun by then wins) and never 24 hours past its start, after which no stamp can end it.
- */
-const tagDer = (zeitpunkt: number, tage: readonly Arbeitstag[]): Tag => {
-  const gemeldet = tage.find((tag) => tag.befunde.some((befund) => befund.zeitpunkt === zeitpunkt));
-  if (gemeldet !== undefined) return gemeldet.tag;
-  let gefunden: { tag: Tag; beginn: number } | null = null;
-  for (const tag of tage)
-    for (const s of tag.schichten)
-      if (
-        s.beginn <= zeitpunkt &&
-        zeitpunkt <= (s.ende ?? s.beginn + LAENGSTE_SCHICHT) &&
-        (gefunden === null || s.beginn > gefunden.beginn)
-      )
-        gefunden = { tag: tag.tag, beginn: s.beginn };
-  return gefunden?.tag ?? tagInBerlin(zeitpunkt);
-};
-
 type Kontext = {
   stempelungen: readonly ErfassteStempelung[];
   jetzt: number;
   tage: readonly Arbeitstag[];
+  /** the day each standing stamp is filed under, from the same run as `tage` */
+  stempeltage: ReadonlyMap<string, Tag>;
 };
+
+/**
+ * The day a stamp is filed under among `stempelungen`: the one `arbeitstage` shows it on, so R-13
+ * keeps no second rule of its own (fourth review of PR #15)
+ */
+const tagDer = (stempel: Stempelung, stempelungen: readonly Stempelung[]): Tag =>
+  stempeltage([...stempelungen, stempel]).get(stempelSchluessel(stempel)) as Tag;
 
 /** When the day as it stands was recorded in full: its latest standing stamp; null if incomplete */
 const vollstaendigSeit = (tag: Arbeitstag, kontext: Kontext): number | null => {
@@ -103,19 +95,19 @@ const vollstaendigSeit = (tag: Arbeitstag, kontext: Kontext): number | null => {
     (s) =>
       s.erfasst <= kontext.jetzt &&
       (s.ersetzt ?? Infinity) > kontext.jetzt &&
-      tagDer(s.zeitpunkt, kontext.tage) === tag.tag,
+      kontext.stempeltage.get(stempelSchluessel(s)) === tag.tag,
   );
   return stehend.length === 0 ? null : Math.max(...stehend.map((s) => s.erfasst));
 };
 
 /**
- * The day a version belonged to while it stood: a replaced one by the days just before it was
+ * The day a version belonged to while it stood: a replaced one among the stamps just before it was
  * replaced, so the deleted part of a night shift after midnight stays with the day it began
  */
 const tagDerVersion = (version: ErfassteStempelung, kontext: Kontext): Tag => {
   const ersetzt = version.ersetzt ?? Infinity;
-  const damals = ersetzt <= kontext.jetzt ? tageAm(kontext.stempelungen, ersetzt - 1) : null;
-  return tagDer(version.zeitpunkt, damals === null ? kontext.tage : [...damals.values()]);
+  if (ersetzt > kontext.jetzt) return kontext.stempeltage.get(stempelSchluessel(version)) as Tag;
+  return tagDer(version, standAm(kontext.stempelungen, ersetzt - 1));
 };
 
 /** Whether a version of a stamp of the day was recorded or replaced from `frist` on */
@@ -219,7 +211,12 @@ export const aufzeichnungsfrist = (
   if (jetztTage === null) return { ok: false, grund: "ungueltig" };
   const leer = { befunde: [], nichtHinterlegt: [], nachgetragen: [] };
   if (!aufzeichnungspflichtig(optionen)) return { ok: true, wert: leer };
-  const kontext: Kontext = { stempelungen, jetzt, tage: [...jetztTage.values()] };
+  const kontext: Kontext = {
+    stempelungen,
+    jetzt,
+    tage: [...jetztTage.values()],
+    stempeltage: stempeltage(standAm(stempelungen, jetzt)),
+  };
   const befunde: AufzeichnungBefund[] = [];
   const nichtHinterlegt: Tag[] = [];
   const nachgetragen: Tag[] = [];

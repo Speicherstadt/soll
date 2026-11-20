@@ -93,8 +93,13 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     });
     server.stelleUhr(JETZT + 180_000);
     expect((await versuch("471100")).status).toBe(200);
-    // a person recognised starts the count afresh
+    // a person recognised lifts nothing: the next lock is the third of the day, four minutes
     expect(await json(await versuch("0000"))).toEqual({ fehler: "unbekannt", rest: 4 });
+    for (let i = 1; i <= 3; i++) await versuch("0000");
+    expect(await json(await versuch("0000"))).toEqual({
+      fehler: "gesperrt",
+      gesperrtBis: JETZT + 180_000 + 240_000,
+    });
     const glieder = server.sqlite
       .query("SELECT COUNT(*) AS n FROM audit_glieder WHERE tabelle = 'terminals' AND akteur = ?")
       .get(`terminal:${geraet.terminalId}`) as { n: number };

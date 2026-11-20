@@ -6,8 +6,9 @@ import { integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core"
  * A tablet in kiosk mode (S-801). The owner creates it with a pairing code (`kopplung_hash`, valid
  * until `kopplung_bis`, used once); the tablet trades the code for its device token
  * (`token_hash`). Both are random values kept only as SHA-256. A revoked terminal
- * (`widerrufen_am`) is refused. Wrong PINs and QR codes in a row (`fehlversuche`) lock it until
- * `gesperrt_bis`, each lock (`sperren`) longer than the last.
+ * (`widerrufen_am`) is refused. Wrong PINs and QR codes (`fehlversuche`) lock it until
+ * `gesperrt_bis`, each lock (`sperren`) longer than the last; both count per calendar day
+ * (`fehler_tag`, Europe/Berlin), and a person recognised lifts nothing.
  */
 export const terminals = sqliteTable(
   "terminals",
@@ -23,6 +24,7 @@ export const terminals = sqliteTable(
     fehlversuche: integer("fehlversuche").notNull().default(0),
     sperren: integer("sperren").notNull().default(0),
     gesperrtBis: integer("gesperrt_bis"),
+    fehlerTag: text("fehler_tag"),
     angelegtVon: text("angelegt_von").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
   },

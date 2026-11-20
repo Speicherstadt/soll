@@ -20,6 +20,7 @@ CREATE TABLE `terminals` (
 	`fehlversuche` integer DEFAULT 0 NOT NULL,
 	`sperren` integer DEFAULT 0 NOT NULL,
 	`gesperrt_bis` integer,
+	`fehler_tag` text,
 	`angelegt_von` text NOT NULL,
 	`angelegt_am` integer NOT NULL,
 	PRIMARY KEY(`betrieb_id`, `terminal_id`)

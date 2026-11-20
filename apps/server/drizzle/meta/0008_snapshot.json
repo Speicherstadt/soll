@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8eb731f4-53ac-4144-9e4c-cb27e0289eac",
+  "id": "ff70645f-8959-4915-a549-420085b1426c",
   "prevId": "e65908dd-6330-4307-93a9-81bca46a7f7e",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1816,6 +1816,13 @@
         "gesperrt_bis": {
           "name": "gesperrt_bis",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fehler_tag": {
+          "name": "fehler_tag",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

@@ -5,13 +5,7 @@ import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { personVonPin } from "../pin/index.ts";
 import { personVonAusweis } from "./ausweise.ts";
 import { pinKennung } from "./geheimnis.ts";
-import {
-  istGesperrt,
-  mussZuruecksetzen,
-  nachFehlversuch,
-  OHNE_SPERRE,
-  type Sperrstand,
-} from "./sperre.ts";
+import { istGesperrt, nachFehlversuch, type Sperrstand } from "./sperre.ts";
 import { type Terminal, terminalAkteur, terminalLesen } from "./terminals.ts";
 
 /** What identifies a person at the terminal: the PIN alone or the value of the QR code */
@@ -26,6 +20,7 @@ const sperrstand = (t: Terminal): Sperrstand => ({
   fehlversuche: t.fehlversuche,
   sperren: t.sperren,
   gesperrtBis: t.gesperrtBis,
+  fehlerTag: t.fehlerTag,
 });
 
 /** A member who stamps (S-304): someone who left, external staff and devices are nobody here */
@@ -42,8 +37,8 @@ const personVon = (db: Db, terminal: Terminal, ausweis: Ausweis, schluessel: Uin
 
 /**
  * Recognises a person at a terminal by PIN or QR code (S-801). A locked terminal compares nothing;
- * each wrong try counts toward the lock of the terminal (sperre.ts) and stands in the audit chain,
- * a person recognised ends the count. The count is read again inside the write transaction, which
+ * each wrong try counts toward the lock of the terminal (sperre.ts) and stands in the audit chain;
+ * a person recognised lifts nothing, so one's own PIN between guesses does not reset the count. The count is read again inside the write transaction, which
  * holds the write lock, so parallel wrong tries are not lost (as in modules/pin).
  */
 export const erkennen = (
@@ -68,11 +63,7 @@ export const erkennen = (
     const stand = sperrstand(aktuell);
     if (istGesperrt(stand, jetzt))
       return { ok: false, grund: "gesperrt", gesperrtBis: stand.gesperrtBis ?? jetzt };
-    if (erkannt) {
-      if (mussZuruecksetzen(stand))
-        s.aendern("terminals", { terminalId: terminal.terminalId }, OHNE_SPERRE);
-      return { ok: true, nutzerId };
-    }
+    if (erkannt) return { ok: true, nutzerId };
     const neu = nachFehlversuch(stand, jetzt);
     s.aendern("terminals", { terminalId: terminal.terminalId }, neu);
     return neu.gesperrtBis !== null && neu.gesperrtBis > jetzt

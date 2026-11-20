@@ -29,11 +29,11 @@ describe("guessing PINs at the terminal (S-801)", { timeout: 60_000 }, () => {
     expect(antworten).toContain(423);
   });
 
-  it("compares at most twenty wrong PINs a day", async () => {
+  it("compares at most twenty wrong PINs a calendar day", async () => {
     const server = neuerServer();
     const { inhaber } = await betriebMitTerminal(server);
     const geraet = await gekoppelt(server, inhaber);
-    const tagesende = JETZT + 24 * 60 * 60_000;
+    const tagesende = Date.parse("2026-11-21T00:00:00+01:00");
     let uhr = JETZT;
     let verglichen = 0;
     // each time the terminal is locked, wait until it opens again, then guess on
@@ -51,6 +51,11 @@ describe("guessing PINs at the terminal (S-801)", { timeout: 60_000 }, () => {
       verglichen++;
     }
     expect(verglichen).toBeLessThanOrEqual(20);
+    // the last lock held until midnight; on the next day the terminal is open again
+    expect(uhr).toBe(tagesende);
+    expect(
+      (await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } })).status,
+    ).toBe(200);
   });
 
   it("takes only PINs of six to eight digits", async () => {

@@ -59,3 +59,52 @@ describe("shifts under 9 h apart across the start of a closed month", () => {
     );
   });
 });
+
+describe("closing within 9 h after the month's last Gehen (docs/plan.md, Entscheidungen)", () => {
+  it("is refused with the time from which closing is possible, so a live Kommen is recorded", async () => {
+    const w = await weber();
+    // Jonas works 31 October 14:00 to 22:30
+    await w.tag(w.jonas, [
+      ["kommen", "2026-10-31T14:00:00+01:00"],
+      ["gehen", "2026-10-31T22:30:00+01:00"],
+    ]);
+    w.server.stelleUhr(um("2026-11-01T00:30:00+01:00"));
+    expect((await bestaetigen(w.jonas)).status).toBe(201);
+    const zuFrueh = await abschliessen(w.jonas, w.jonas.nutzerId);
+    expect(zuFrueh.status).toBe(409);
+    expect(await json(zuFrueh)).toEqual({
+      fehler: "schicht_kann_weiterlaufen",
+      ab: um("2026-11-01T07:30:00+01:00"),
+    });
+    // 7.5 h after the Gehen: the same shift goes on, and it is recorded
+    w.server.stelleUhr(um("2026-11-01T06:00:00+01:00"));
+    const kommen = await w.jonas.anfrage("/api/v1/arbeitszeit/stempelungen", {
+      body: { art: "kommen" },
+    });
+    expect(kommen.status).toBe(201);
+  });
+
+  it("is possible from 9 h after the Gehen on", async () => {
+    const w = await weber();
+    await w.tag(w.jonas, [
+      ["kommen", "2026-10-31T14:00:00+01:00"],
+      ["gehen", "2026-10-31T22:30:00+01:00"],
+    ]);
+    w.server.stelleUhr(um("2026-11-01T07:30:00+01:00"));
+    await bestaetigen(w.jonas);
+    expect((await abschliessen(w.jonas, w.jonas.nutzerId)).status).toBe(201);
+    const status = await json(await w.jonas.anfrage("/api/v1/arbeitszeit/monat?monat=2026-10"));
+    expect(status.abschliessbarAb).toBeNull();
+  });
+
+  it("names the time on the month's status while it is too early", async () => {
+    const w = await weber();
+    await w.tag(w.jonas, [
+      ["kommen", "2026-10-31T14:00:00+01:00"],
+      ["gehen", "2026-10-31T22:30:00+01:00"],
+    ]);
+    w.server.stelleUhr(um("2026-11-01T00:30:00+01:00"));
+    const status = await json(await w.jonas.anfrage("/api/v1/arbeitszeit/monat?monat=2026-10"));
+    expect(status.abschliessbarAb).toBe(um("2026-11-01T07:30:00+01:00"));
+  });
+});

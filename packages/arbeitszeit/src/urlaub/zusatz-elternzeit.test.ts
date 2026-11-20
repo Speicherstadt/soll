@@ -68,6 +68,19 @@ describe("R-25: Zusatzurlaub", () => {
     expect(wert.zusatzHalbtage).toBe(tage(1.5));
   });
 
+  it("Bescheid verlängert: 1.2.–15.4. and 16.4.–30.6. count as one span of 5 full months – 2,08 → 2,5 days", () => {
+    // a limited Bescheid followed seamlessly by the next one: the disability lasts 1.2.–30.6.2026
+    // without a break, 5 full months (§§ 187, 188 BGB), 5 × 5 ÷ 12 = 2,08 → 2,5 days (§ 208 Abs. 2
+    // SGB IX); counted per entry it would be 2 + 2 months, 1,67 → 2 days
+    const wert = anspruch({
+      schwerbehinderung: [
+        { von: "2026-02-01", bis: "2026-04-15" },
+        { von: "2026-04-16", bis: "2026-06-30" },
+      ],
+    });
+    expect(wert.zusatzHalbtage).toBe(tage(2.5));
+  });
+
   it("follows the Teilurlaub of § 5 BUrlG while the disability lasts the whole employment", () => {
     // Eintritt 1.8.2026 with disability: 5 × 5 ÷ 12 = 2,08 → 2,5 days besides 8,5 days of leave
     const wert = anspruch({

@@ -152,6 +152,8 @@ Regel:
 | 24 h, Gehen | Mo 8:00 Kommen, Mi 8:00 Gehen | Hinweis „Gehen fehlt“ für Mo, „Kommen fehlt“ für Mi | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | 24 h, Zeitumstellung | So 25.10.2026 0:30 MESZ Kommen, kein Gehen, So 23:30 MEZ | Hinweis „Gehen fehlt“ für So (24 h nach Beginn, vor Mitternacht) | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | 9 h, Gehen | Mo 8:00 Kommen, 12:00 Gehen, Di 7:30 Gehen | Mo 4:00 Arbeitszeit, vollständig; Hinweis „Kommen fehlt“ für Di | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 9 h, Pause | Mo 8:00 Kommen, 12:00 Pause, Di 7:00 Kommen, 15:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo (4:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
+| 24 h, Sekunden | Mo 8:00:30 Kommen, Di 8:00:30 Gehen und Kommen, 12:00 Gehen | Mo 24:00, Di 4:00 Arbeitszeit: die Minute ab 8:00 zählt einmal, bei Di | Grundbegriff „Schicht“; CLAUDE.md (nie zulasten der Beschäftigten) |
 | ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
 | doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
 | doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |

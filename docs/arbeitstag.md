@@ -45,7 +45,7 @@ vergangen ist:
 | So 25.10.2026, 2:30 Sommerzeit, bis 2:30 Winterzeit | 1:00 | So 25.10. |
 
 Gerundet wird nie zulasten der Beschäftigten: Ein Beginn zählt ab der angefangenen Minute, ein Ende
-bis zur nächsten vollen. Kommen um 8:00:59 und Gehen um 16:00:01 ergeben 8:01. Eine Pause wird so
+bis zur nächsten vollen. Kommen um 8:00:59 und Gehen um 16:00:01 ergeben 8:01. Zwei Schichten teilen sich nie eine Minute: Endet eine Schicht in der Minute, in der die nächste beginnt, zählt diese Minute bei der nächsten. Eine Pause wird so
 auf die vollen Minuten in ihr gekürzt.
 
 **Ruhepausen**: Nur eine Unterbrechung von mindestens 15 Minuten ist eine Pause. Eine kürzere zählt
@@ -60,7 +60,7 @@ Soll ergänzt nie eine Stempelung und stempelt nie selbst aus.
 | Was | Ergebnis |
 | --- | --- |
 | Kommen ohne Gehen | Die Schicht bleibt offen, ihre Zeit zählt noch nicht. Ab dem späteren von zwei Zeitpunkten, 0 Uhr des Folgetags oder 16 Stunden nach Beginn, ist das der Hinweis „Gehen fehlt“: Eine Nachtschicht darf noch laufen. Spätestens 24 Stunden nach Beginn ist es der Hinweis, denn danach kann kein Gehen die Schicht mehr beenden (am Tag der Zeitumstellung im Oktober liegt Mitternacht sonst später). |
-| Pause ohne Pause-Ende | ebenso, Hinweis „Pause-Ende fehlt“; die Arbeit bis zur Pause zählt |
+| Pause ohne Pause-Ende | ebenso, Hinweis „Pause-Ende fehlt“; die Arbeit bis zur Pause zählt. Ein Kommen oder Pause-Ende 9 Stunden oder mehr nach Beginn der Pause beendet sie nicht, denn die Schicht ist dann vorbei: Die Stempelung zählt, als liefe keine Schicht. |
 | Gehen während der Pause | Hinweis „Pause-Ende fehlt“; gezählt wird die Arbeit bis zur Pause |
 | Gehen ohne Kommen | Hinweis „Kommen fehlt“ an dem Tag, nichts wird gezählt |
 | Pause-Ende ohne Pause | Hinweis „Pause-Beginn fehlt“, die Stempelung zählt nicht |

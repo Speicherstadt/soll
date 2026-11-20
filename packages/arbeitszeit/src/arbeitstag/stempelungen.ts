@@ -115,12 +115,14 @@ const nachDerRuhe = (lauf: Lauf, { zeitpunkt }: Stempelung): boolean => {
 
 /**
  * A stamp outside a running shift cannot end it (docs/regeln.md, Grundbegriff "Schicht"): the shift
- * is left as it is, open, and the stamp is read as if none were running. Nothing is guessed.
+ * is left as it is, open, and the stamp is read as if none were running. Nothing is guessed. A
+ * break of 9 h or more is time off, so a stamp after it other than Gehen (which reports the missing
+ * end itself) cannot end the break.
  */
 const lasseOffen = (lauf: Lauf, stempel: Stempelung): Lauf => {
   const ausserhalb =
     nachDerSchicht(lauf, stempel) ||
-    (lauf.zustand === "pause" && stempel.art === "pause_beginn" && nachDerRuhe(lauf, stempel));
+    (lauf.zustand === "pause" && stempel.art !== "gehen" && nachDerRuhe(lauf, stempel));
   if (lauf.zustand === "aus" || !ausserhalb) return lauf;
   const letztes = lauf.stuecke.length - 1;
   const offenePausen =

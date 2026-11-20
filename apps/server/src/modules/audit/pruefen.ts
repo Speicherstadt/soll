@@ -15,6 +15,18 @@ export type Befund =
 
 type Glied = typeof auditGlieder.$inferSelect;
 
+/**
+ * A hash of what the database holds now, or null when it cannot be hashed: whoever changes the
+ * database past the chain can store a fraction, and the check reports that instead of failing
+ */
+const hashOderNull = (berechnen: () => string): string | null => {
+  try {
+    return berechnen();
+  } catch {
+    return null;
+  }
+};
+
 const gliederPruefen = (glieder: readonly Glied[]): Befund[] =>
   glieder.flatMap((glied, index): Befund[] => {
     const vorgaenger = glieder[index - 1];
@@ -23,7 +35,7 @@ const gliederPruefen = (glieder: readonly Glied[]): Befund[] =>
     if (glied.vorgaengerHash !== (vorgaenger?.hash ?? GENESIS)) {
       befunde.push({ art: "glied", seq: glied.seq, grund: "vorgaenger" });
     }
-    if (gliedHash(glied.vorgaengerHash, glied) !== glied.hash) {
+    if (hashOderNull(() => gliedHash(glied.vorgaengerHash, glied)) !== glied.hash) {
       befunde.push({ art: "glied", seq: glied.seq, grund: "hash" });
     }
     return befunde;
@@ -76,7 +88,7 @@ const zeilenPruefen = (db: Db, betriebId: string, glieder: readonly Glied[]): Be
       const glied = letzte.get(id);
       if (!glied || glied.aktion === "loeschen")
         return [{ art: "zeile", tabelle: name, zeile: id, grund: "ohne_glied" }];
-      return sha256(kanonisch(zeile)) === glied.inhaltHash
+      return hashOderNull(() => sha256(kanonisch(zeile))) === glied.inhaltHash
         ? []
         : [{ art: "zeile", tabelle: name, zeile: id, grund: "geaendert" }];
     });

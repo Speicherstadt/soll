@@ -31,7 +31,7 @@ describe("GET /api/v1/arbeitszeit/pruefexport", () => {
     const nacht = zeilen.find((z) => z.includes(";31.10.2026;")) ?? "";
     expect(nacht).toContain(";20:00;01.11.2026 02:00;0;360;");
     // the change to the Gehen after midnight belongs to the working day the shift began on
-    expect(nacht).toContain("Gehen 02:00, Grund: Zettel");
+    expect(nacht).toContain("Gehen 01.11.2026 02:00, Grund: Zettel");
     expect(zeilen.filter((z) => z.startsWith("sandra;"))).toHaveLength(2);
   });
 

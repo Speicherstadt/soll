@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { REGELVERSIONEN } from "../jahreswerte/werte.ts";
 import { ARBZG_GRENZEN, type ArbzgGrenzen, arbzgGrenzenAm } from "./grenzen.ts";
-import { tageVonBis, ueberschneiden, zeitraumAm } from "./zeitraeume.ts";
+import { tageVonBis, zeitraumAm } from "./zeitraeume.ts";
 
 const GRENZEN = ARBZG_GRENZEN["2026-1"] as ArbzgGrenzen;
 
@@ -37,17 +37,13 @@ describe("Ausgleichszeiträume (§ 3 Satz 2 ArbZG)", () => {
     });
   });
 
-  it("lists the days of a period and knows when two overlap", () => {
+  it("lists the days of a period", () => {
     expect(tageVonBis("2026-02-27", "2026-03-01")).toEqual([
       "2026-02-27",
       "2026-02-28",
       "2026-03-01",
     ]);
     expect(tageVonBis("2026-03-01", "2026-02-28")).toEqual([]);
-    const a = { art: "24_wochen", von: "2026-01-01", bis: "2026-06-17" } as const;
-    const b = { art: "sechs_monate", von: "2026-06-17", bis: "2026-12-31" } as const;
-    expect(ueberschneiden(a, b)).toBe(true);
-    expect(ueberschneiden(a, { ...b, von: "2026-06-18" })).toBe(false);
   });
 });
 

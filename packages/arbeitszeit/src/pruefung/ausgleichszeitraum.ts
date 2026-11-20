@@ -6,7 +6,6 @@ import { arbeitsMinutenAm, type Pruefergebnis, type PruefTag, sortiert } from ".
 import {
   spaeterer,
   tageVonBis,
-  ueberschneiden,
   type Zeitraum,
   type Zeitraumart,
   zeitraumAm,
@@ -134,14 +133,13 @@ const bewerteArt = (tage: readonly PruefTag[], art: Zeitraumart, beginn: Tag, ko
 };
 
 /**
- * Without a choice the law lets either period do, so a period over the limit counts only when an
- * overlapping period of the other kind is over it too: a Verstoß when that one has ended as well,
- * else a Hinweis while either still runs.
+ * Without a choice the law lets either period do, so a period over the limit counts only when a
+ * period of the other kind is over it too: then whichever kind the business had chosen breaks the
+ * law, overlapping or not. A Verstoß when that one has ended as well, else a Hinweis while either
+ * still runs.
  */
 const zaehlt = (eigene: Bewertung, andere: readonly Bewertung[]): boolean => {
-  const ueber = andere.filter(
-    (bewertung) => bewertung.ueberschritten && ueberschneiden(bewertung.zeitraum, eigene.zeitraum),
-  );
+  const ueber = andere.filter((bewertung) => bewertung.ueberschritten);
   return eigene.beendet ? ueber.some((bewertung) => bewertung.beendet) : ueber.length > 0;
 };
 

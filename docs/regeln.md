@@ -202,8 +202,9 @@ Regel:
   (Einstellung; ohne sie der 1. Januar 2026): sechs Kalendermonate ab dem Ersten des Monats, in den
   der Beginn fällt (ohne Einstellung also Kalenderhalbjahre), 24 Wochen (168 Tage) ab dem Beginn
   selbst. Werktage sind alle Tage außer Sonntagen und den Feiertagen am Standort. Ohne Wahl zählt
-  ein überschrittener Zeitraum nur, wenn ein Zeitraum der anderen Art, der sich mit ihm
-  überschneidet, ebenfalls überschritten ist: Verstoß, wenn beide beendet sind, sonst Hinweis.
+  ein überschrittener Zeitraum nur, wenn auch ein Zeitraum der anderen Art überschritten ist,
+  gleich ob sich die beiden überschneiden (dann verstößt jede der beiden Wahlen): Verstoß, wenn
+  beide beendet sind, sonst Hinweis.
 - **Laufender Zeitraum**: Der Hinweis kommt, sobald die Arbeitszeit seit Beginn des Zeitraums mehr
   als 8 h je bisherigem Werktag beträgt, bei geplanten Schichten (S-502) bis zum letzten geplanten
   Tag. Er nennt die Minuten, die bis zum Ende des Zeitraums auszugleichen sind.
@@ -220,6 +221,7 @@ Regel:
 | Hinweis | 12 Wochen mit 50 h, der Zeitraum läuft noch | Hinweis „Ausgleich offen“: 24 h bis zum Ende der 24 Wochen auszugleichen | § 3 Satz 2 ArbZG |
 | Feiertag | Hamburg, erstes Halbjahr 2026: 8 h an jedem Werktag, dazu 4 h am Karfreitag | Verstoß „Ausgleich nicht erreicht“ für den Karfreitag (kein Werktag, seine Arbeit zählt) | § 3 ArbZG („werktäglich“); § 11 Abs. 2 ArbZG |
 | ohne Wahl | 24 Wochen ab 1.1.2026 um 8 h über dem Schnitt, die sechs Kalendermonate bis 30.6. darunter | kein Befund; mit gewählten 24 Wochen Verstoß | § 3 Satz 2 ArbZG („oder“) |
+| ohne Wahl | 1.1.2026 bis 30.6.2027 8 h an jedem Werktag, dazu 9 h am 22.6. und 15.12.2026, 7 h am 15.9.2026: nur das Halbjahr bis 30.6.2026 und nur die 24 Wochen ab 3.12.2026 sind überschritten, sie überschneiden sich nicht | Verstoß für beide (jede Wahl hätte einen Verstoß) | § 3 Satz 2 ArbZG („oder“) |
 
 ### R-04 Ruhepausen
 

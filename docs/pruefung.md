@@ -42,8 +42,8 @@ nimmt Soll samt ihrer Zeit aus dem Zeitraum heraus.
   Zeitraums auszugleichen sind.
 - Endet der Zeitraum über dem Durchschnitt, ist es ein **Verstoß** „Ausgleich nicht erreicht“.
 - Hat der Betrieb keinen Zeitraum gewählt, lässt das Gesetz jeden genügen. Soll meldet dann nur, wenn
-  sich ein Zeitraum der einen und einer der anderen Art überschneiden und beide über dem Durchschnitt
-  liegen; einen Verstoß erst, wenn beide beendet sind.
+  ein Zeitraum der einen und einer der anderen Art über dem Durchschnitt liegen, ob sie sich
+  überschneiden oder nicht: Dann verstößt jede Wahl. Einen Verstoß erst, wenn beide beendet sind.
 
 ## Ruhepausen (R-04, § 4 ArbZG)
 

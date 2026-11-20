@@ -45,8 +45,5 @@ export const tageVonBis = (von: Tag, bis: Tag): Tag[] =>
     plusTage(von, index),
   );
 
-export const ueberschneiden = (a: Zeitraum, b: Zeitraum): boolean =>
-  a.von <= b.bis && b.von <= a.bis;
-
 /** The later of two days */
 export const spaeterer = (a: Tag, b: Tag): Tag => (a.localeCompare(b) >= 0 ? a : b);

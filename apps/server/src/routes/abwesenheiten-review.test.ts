@@ -75,5 +75,20 @@ describe("S-401 review", () => {
     // sick from today, the end not known yet: a day off in three weeks is no reason to refuse it
     const antwort = await krank(w.sandra);
     expect(antwort.status, JSON.stringify(await json(antwort.clone()))).toBe(201);
+    const id = (await json(antwort)).abwesenheitId as string;
+    // still sick on the day off: until the end is known, the day off holds its day, counted once
+    w.server.stelleUhr(um("2026-12-11T09:00:00+01:00"));
+    const dezember = await json(await w.sandra.anfrage("/api/v1/arbeitszeit/monat?monat=2026-12"));
+    const inhalt = dezember.inhalt as { tage: Json[]; summen: Json | null };
+    expect(inhalt.tage.find((t) => t.tag === "2026-12-10")?.abwesenheiten).toEqual([
+      { art: "sonderurlaub" },
+    ]);
+    expect(inhalt.tage.find((t) => t.tag === "2026-12-11")?.abwesenheiten).toEqual([
+      { art: "krank" },
+    ]);
+    expect(inhalt.summen).not.toBeNull();
+    // an end beyond the day off is refused until the business cancels it
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-11" })).status).toBe(409);
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-12-09" })).status).toBe(200);
   });
 });

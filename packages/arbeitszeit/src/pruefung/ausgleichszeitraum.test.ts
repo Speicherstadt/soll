@@ -205,6 +205,36 @@ describe("R-03: Werktage, holidays and the two periods", () => {
     ]);
   });
 
+  // Review of PR #12: 8 h on every day but Sunday from 1.1.2026 to 30.6.2027, 9 h on Mo 22.6.2026
+  // and Tu 15.12.2026, 7 h on Tu 15.9.2026. The half-year to 30.6.2026 is over (only it), so is
+  // the 24 weeks from 3.12.2026 (only it); the two do not overlap. Whichever period the business
+  // had chosen, it would have a Verstoß, so without a choice it has one (§ 3 Satz 2 ArbZG, "oder").
+  it("ohne Wahl: each kind has an ended period over, the two do not overlap – a Verstoß for each", () => {
+    const abweichung: Record<Tag, number> = {
+      "2026-06-22": 540,
+      "2026-09-15": 420,
+      "2026-12-15": 540,
+    };
+    const tage = tageVonBis("2026-01-01", "2027-06-30")
+      .filter((tag) => wochentag(tag) !== 0)
+      .map((tag) => tagMit(tag, abweichung[tag] ?? 480));
+    const jetzt = um("2027-07-01T12:00+02:00");
+    const gewaehlt = (zeitraum: "sechs_monate" | "24_wochen") =>
+      ausgleichszeitraum(tage, { ...optionen, jetzt, zeitraum }).befunde.map((befund) => [
+        befund.zeitraum,
+        befund.schwere,
+      ]);
+    const halbjahr = { art: "sechs_monate", von: "2026-01-01", bis: "2026-06-30" };
+    const wochen24 = { art: "24_wochen", von: "2026-12-03", bis: "2027-05-19" };
+    expect(gewaehlt("sechs_monate")).toEqual([[halbjahr, "verstoss"]]);
+    expect(gewaehlt("24_wochen")).toEqual([[wochen24, "verstoss"]]);
+    const { befunde } = ausgleichszeitraum(tage, { ...optionen, jetzt });
+    expect(befunde.map((befund) => [befund.zeitraum, befund.schwere])).toEqual([
+      [halbjahr, "verstoss"],
+      [wochen24, "verstoss"],
+    ]);
+  });
+
   it("names the days before the first rule version instead of judging them", () => {
     const ergebnis = ausgleichszeitraum([tagMit("2025-12-30", 600)], optionen);
     expect(ergebnis).toEqual({ befunde: [], nichtHinterlegt: ["2025-12-30"] });

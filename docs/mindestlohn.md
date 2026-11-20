@@ -88,4 +88,4 @@ mit. Kurzfristige Beschäftigung (§ 8 Abs. 1 Nr. 2 SGB IV) und mehrere Beschäf
 | Branche nach § 2a SchwarzArbG am Betrieb | nicht eingestellt: die Pflicht gilt | nie weniger streng als das Gesetz |
 | Minijob im Privathaushalt | nein | nur § 8a SGB IV nimmt aus |
 | Ausnahme nach § 22 MiLoG am Mitarbeiter | keine | ohne Ausnahme gilt der Mindestlohn |
-| Zuschlag steuerfrei nach § 3b EStG | nein, bis S-207 es berechnet | ein versteuerter Zuschlag zählt zur Minijob-Grenze |
+| Zuschlag steuerfrei nach § 3b EStG | nein, außer er kommt aus der [Berechnung der Zuschläge](zuschlaege.md) (`alsLohnzuschlaege`) | ein versteuerter Zuschlag zählt zur Minijob-Grenze |

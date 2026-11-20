@@ -120,6 +120,11 @@ describe("R-29 Steuerfreie Zuschläge (§ 3b EStG)", () => {
   });
 });
 
+/*
+ * The examples of R 3b Abs. 3 and 4 LStR (Lohnsteuer-Richtlinien 2023) as docs/regeln.md states them.
+ * The official handbook (lsth.bundesfinanzministerium.de) could not be reached from the session that
+ * wrote them; the norm text of § 3b EStG was read on gesetze-im-internet.de/estg/__3b.html.
+ */
 describe("R-29: the examples of R 3b LStR and H 3b LStH", () => {
   it("R 3b Abs. 3 LStR, Beispiel: Beginn 1.5. 22:00, Ende 2.5. 7:00 – 175 %, 190 % von 0 bis 4 Uhr, 25 % von 4 bis 6 Uhr", () => {
     const tag = einTag(

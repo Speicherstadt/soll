@@ -103,14 +103,38 @@ describe("R-07: Sonn- und Feiertagsruhe (§§ 9, 10 ArbZG)", () => {
     // § 9 Abs. 2 ArbZG: „wenn für die auf den Beginn der Ruhezeit folgenden 24 Stunden der Betrieb
     // ruht“ (gesetze-im-internet.de/arbzg/__9.html). Moved six hours earlier, the rest of Sunday
     // 29.3.2026 begins Sa 18:00 CET and ends 24 h later at So 19:00 CEST; that of Sunday 25.10.2026
-    // begins Sa 18:00 CEST and ends at So 17:00 CET.
+    // begins Sa 18:00 CEST and ends at So 18:00 CET: its 25 hours are more than 24 (see below).
     const optionen = { standort: HAMBURG, verschiebung: -360 };
     const maerz = tage(schicht("2026-03-29T18:00+02:00", "2026-03-29T19:00+02:00"));
     expect(kurz(sonntagsruhe(maerz, optionen).befunde)).toEqual([
       { art: "sonntagsarbeit", tage: ["2026-03-29"], minuten: 60 },
     ]);
-    const oktober = tage(schicht("2026-10-25T17:00+01:00", "2026-10-25T18:00+01:00"));
-    expect(sonntagsruhe(oktober, optionen).befunde).toEqual([]);
+    const nachMaerz = tage(schicht("2026-03-29T19:00+02:00", "2026-03-29T20:00+02:00"));
+    expect(sonntagsruhe(nachMaerz, optionen).befunde).toEqual([]);
+  });
+
+  it("§ 9 Abs. 2: on 25.10. a rest moved six hours earlier still ends at 18:00, not at 17:00", () => {
+    // § 9 Abs. 2 ArbZG: „Beginn oder Ende der Sonn- und Feiertagsruhe um bis zu sechs Stunden vor-
+    // oder zurückverlegt …, wenn für die auf den Beginn der Ruhezeit folgenden 24 Stunden der Betrieb
+    // ruht“ (gesetze-im-internet.de/arbzg/__9.html). The 24 hours are a minimum: Sunday 25.10.2026
+    // has 25, and an end at 17:00 would move it seven hours, past the six the law allows.
+    const optionen = { standort: HAMBURG, verschiebung: -360 };
+    const vorEnde = tage(schicht("2026-10-25T17:00+01:00", "2026-10-25T18:00+01:00"));
+    expect(kurz(sonntagsruhe(vorEnde, optionen).befunde)).toEqual([
+      { art: "sonntagsarbeit", tage: ["2026-10-25"], minuten: 60 },
+    ]);
+    const nachEnde = tage(schicht("2026-10-25T18:00+01:00", "2026-10-25T19:00+01:00"));
+    expect(sonntagsruhe(nachEnde, optionen).befunde).toEqual([]);
+  });
+
+  it("§ 9 Abs. 2: no gap between a moved Sunday rest on 31.10.2027 and Allerheiligen in Bayern", () => {
+    // Sunday 31.10.2027 is the end of summer time, Monday 1.11.2027 Allerheiligen (Art. 1 BayFTG):
+    // moved six hours earlier, the two rests run from Sa 18:00 to Mo 18:00 without a break
+    const optionen = { standort: BAYERN, verschiebung: -360 };
+    const luecke = tage(schicht("2027-10-31T17:00+01:00", "2027-10-31T18:00+01:00"));
+    expect(kurz(sonntagsruhe(luecke, optionen).befunde)).toEqual([
+      { art: "sonntagsarbeit", tage: ["2027-10-31"], minuten: 60 },
+    ]);
   });
 
   it("§ 9 Abs. 2: a move past six hours is no move, the rest stays 0 to 24 Uhr", () => {

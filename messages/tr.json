@@ -407,5 +407,17 @@
   "plan_vorlagen_hinweis": "Bir şablonu bir güne sürükle:",
   "plan_vorlagen_leer": "Henüz şablon yok.",
   "plan_wochentag": "Haftanın günü",
-  "plan_ziel": "Hedef: {ort}."
+  "plan_ziel": "Hedef: {ort}.",
+  "export_titel": "Denetim dışa aktarımı ve bilgi talebi",
+  "pruefexport_titel": "Denetim dışa aktarımı",
+  "pruefexport_text": "Gümrük ve iş güvenliği denetimi için kişi ve döneme göre çalışma süreleri: başlangıç, bitiş, molalar, süre, kayıt zamanı, gerekçeli değişiklikler, normuyla bulgular ve kapatılan her ayın kontrol değeri.",
+  "pruefexport_von": "Başlangıç",
+  "pruefexport_bis": "Bitiş",
+  "pruefexport_alle": "Herkes",
+  "pruefexport_csv": "CSV indir",
+  "pruefexport_pdf": "PDF indir",
+  "pruefexport_fehler_zeitraum": "Dönem ilk günden son güne kadar sürer ve en fazla iki yılı kapsar.",
+  "auskunft_titel": "Verilerim (Art. 15 DSGVO)",
+  "auskunft_text": "Soll'un bu işletmede senin hakkında sakladığı her şey, JSON dosyası olarak: hesap, tüm değişiklikleri ve gerekçeleriyle damgalar, karşı kayıtlar, kontrol değeriyle kapanışlar, çalışma süresi modelleri, vardiyalar, cihazlar ve verilerine ilişkin denetim zinciri kayıtları.",
+  "auskunft_herunterladen": "Verilerimi indir"
 }

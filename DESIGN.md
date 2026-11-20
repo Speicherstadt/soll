@@ -1,7 +1,9 @@
 # Design
 
-Wie Soll aussieht und sich bedient, für Menschen und Agenten. Vorbild ist der Look von Kennwort und
-Kontext: ruhig, kompakt, Zinc-Grautöne, Geist. `packages/ui` übernimmt die Komponenten von Kennwort.
+Wie Soll aussieht und sich bedient, für Menschen und Agenten. Vorbild ist das Mockup in
+[`design/mockup/`](design/mockup/README.md) (Heute, Abwesenheit, Terminal, Dienstplan,
+Monatsabschluss, Einrichtung) und der Look von Kennwort und Kontext: ruhig, kompakt, Zinc-Grautöne,
+Geist. `packages/ui` übernimmt die Komponenten von Kennwort. Bei Widerspruch gilt diese Datei.
 Eine neue Regel kommt im selben Pull Request hierher wie die Änderung, die sie braucht.
 
 ## Grundsätze

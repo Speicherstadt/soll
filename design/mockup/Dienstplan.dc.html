@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Dienstplan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:.8}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 960px; box-sizing: border-box; display: flex; flex-wrap: wrap; font-family: Geist, system-ui, sans-serif; font-size: 13px; background: {{t.bg}}; color: {{t.fg}}">
+<nav aria-label="Bereiche" style="flex: 1 1 232px; max-width: 232px; min-width: 200px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; padding: 20px 12px; background: {{t.muted}}; border-right: 1px solid {{t.border}}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px">
+<span aria-hidden="true" style="width: 28px; height: 28px; border-radius: 7px; background: {{t.primary}}; color: {{t.pfg}}; display: flex; align-items: center; justify-content: center; font-weight: 700">S</span>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 600">Café Elbblick</span><span style="font-size: 12px; color: {{t.mfg}}">Mia · Inhaberin</span></div>
+</div>
+<sc-for list="{{nav}}" as="item" hint-placeholder-count="7">
+<a href="#" aria-current="{{item.current}}" style="display: flex; align-items: center; min-height: 36px; padding: 0 10px; border-radius: 6px; text-decoration: none; background: {{item.bg}}; font-weight: {{item.weight}}">{{item.label}}</a>
+</sc-for>
+</nav>
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 24px 32px; box-sizing: border-box">
+<header style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h1 style="margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em">Dienstplan</h1>
+<span style="color: {{t.mfg}}">KW 48 · 23.–29. November 2026 · Entwurf</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<button type="button" aria-label="Vorige Woche" style="width: 36px; height: 36px; border: 1px solid {{t.border}}; border-radius: 6px; background: transparent; color: {{t.fg}}; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+<button type="button" aria-label="Nächste Woche" style="width: 36px; height: 36px; border: 1px solid {{t.border}}; border-radius: 6px; background: transparent; color: {{t.fg}}; cursor: pointer"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 1px solid {{t.border}}; border-radius: 6px; background: transparent; color: {{t.fg}}; font-family: inherit; font-size: 13px; cursor: pointer">Vorlagen</button>
+<button type="button" style="height: 36px; padding: 0 14px; border: 0; border-radius: 6px; background: {{t.primary}}; color: {{t.pfg}}; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Veröffentlichen</button>
+</div>
+</header>
+<div style="overflow-x: auto; border: 1px solid {{t.border}}; border-radius: 12px">
+<table style="width: 100%; min-width: 980px; border-collapse: collapse; table-layout: fixed">
+<thead>
+<tr>
+<th scope="col" style="width: 150px; text-align: left; padding: 10px 12px; font-weight: 600; color: {{t.mfg}}; border-bottom: 1px solid {{t.border}}">Person</th>
+<sc-for list="{{days}}" as="day" hint-placeholder-count="7">
+<th scope="col" style="text-align: left; padding: 10px 8px; font-weight: 600; border-bottom: 1px solid {{t.border}}; background: {{day.bg}}"><span>{{day.name}}</span> <span style="font-weight: 400; color: {{t.mfg}}">{{day.date}}</span></th>
+</sc-for>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="row" hint-placeholder-count="7">
+<tr>
+<th scope="row" style="text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid {{t.border}}; font-weight: 500"><div style="display: flex; flex-direction: column; gap: 2px"><span>{{row.name}}</span><span style="font-size: 12px; font-weight: 400; color: {{t.mfg}}">{{row.role}}</span></div></th>
+<sc-for list="{{row.cells}}" as="cell" hint-placeholder-count="7">
+<td style="vertical-align: top; padding: 6px; border-bottom: 1px solid {{t.border}}; background: {{cell.colBg}}">
+<sc-if value="{{cell.hasBlock}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 2px; padding: 6px 8px; border-radius: 6px; border: {{cell.border}}; background: {{cell.bg}}; color: {{cell.fg}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px">{{cell.time}}</span>
+<sc-if value="{{cell.warn}}" hint-placeholder-val="{{ false }}"><svg role="img" aria-label="Verstoß, siehe Hinweise" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{t.danger}}" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path><path d="M12 9v4M12 17h.01"></path></svg></sc-if>
+</div>
+<span style="font-size: 12px; color: {{cell.sub}}">{{cell.label}}</span>
+</div>
+</sc-if>
+</td>
+</sc-for>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<section aria-labelledby="hinweise-titel" style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="hinweise-titel" style="margin: 0; font-size: 15px; font-weight: 600">Hinweise zum Plan (4)</h2>
+<sc-for list="{{findings}}" as="f" hint-placeholder-count="4">
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; padding: 10px 12px; border-radius: 8px; background: {{f.bg}}">
+<span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid {{f.color}}; color: {{f.color}}">{{f.kind}}</span>
+<span style="flex: 1 1 360px">{{f.text}}</span>
+<span style="color: {{t.mfg}}">{{f.norm}}</span>
+</div>
+</sc-for>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":960}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var light = { bg: '#ffffff', muted: '#fafafa', accent: '#f4f4f5', border: '#e4e4e7', fg: '#09090b', mfg: '#71717a', primary: '#18181b', pfg: '#fafafa', warning: '#b45309', warnSurface: '#fef3c7', danger: '#b91c1c', dangerSurface: '#fef2f2' };
+    var dark = { bg: '#09090b', muted: '#18181b', accent: '#27272a', border: '#27272a', fg: '#fafafa', mfg: '#a1a1aa', primary: '#fafafa', pfg: '#18181b', warning: '#fbbf24', warnSurface: '#422006', danger: '#f87171', dangerSurface: '#450a0a' };
+    var t = this.props.dark ? dark : light;
+    var weekend = [false, false, false, false, false, true, true];
+    var days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(function (n, i) {
+      return { name: n, date: (23 + i) + '.', bg: weekend[i] ? t.accent : 'transparent' };
+    });
+    var F = { k: 'shift', time: '07:00–15:00', label: 'Früh · Theke' };
+    var S = { k: 'shift', time: '14:00–22:00', label: 'Spät · Service' };
+    var L = { k: 'shift', time: '08:00–16:30', label: 'Früh · Küche' };
+    var O = { k: 'free' };
+    var A = { k: 'absent', time: 'ganztags', label: 'abwesend' };
+    function c(k, time, label, warn) { return { k: k, time: time, label: label, warn: !!warn }; }
+    var rows = [
+      { name: 'Mia', role: 'Inhaberin', cells: [F, F, F, F, O, c('shift', '08:00–16:00', 'Früh · Theke'), O] },
+      { name: 'Tom', role: 'Vollzeit', cells: [c('shift', '14:00–22:30', 'Spät · Service', true), c('shift', '07:00–15:00', 'Früh · Theke', true), O, S, S, O, c('shift', '08:00–16:00', 'Früh · Theke')] },
+      { name: 'Lea', role: 'Vollzeit', cells: [L, L, O, L, L, S, O] },
+      { name: 'Yusuf', role: 'Teilzeit', cells: [S, S, S, A, A, S, O] },
+      { name: 'Olena', role: 'Minijob', cells: [O, O, O, O, O, c('shift', '10:00–15:00', 'Service'), c('shift', '10:00–15:00', 'Service')] },
+      { name: 'Piotr', role: 'Minijob · auf Abruf', cells: [O, O, c('shift', '17:00–22:00', 'Spül'), O, c('shift', '17:00–22:00', 'Spül'), O, O] },
+      { name: 'Offen', role: 'noch zu besetzen', cells: [O, O, O, c('open', '14:00–22:00', 'Spät · offen'), c('open', '14:00–22:00', 'Spät · offen'), O, O] }
+    ];
+    rows = rows.map(function (r) {
+      return {
+        name: r.name, role: r.role,
+        cells: r.cells.map(function (x, i) {
+          var open = x.k === 'open', absent = x.k === 'absent';
+          return {
+            hasBlock: x.k !== 'free',
+            time: x.time, label: x.label, warn: !!x.warn,
+            colBg: weekend[i] ? t.muted : 'transparent',
+            bg: absent ? 'transparent' : (open ? 'transparent' : (x.warn ? t.dangerSurface : t.accent)),
+            border: open ? '1px dashed ' + t.mfg : (x.warn ? '1px solid ' + t.danger : '1px solid transparent'),
+            fg: absent ? t.mfg : t.fg,
+            sub: t.mfg
+          };
+        })
+      };
+    });
+    var findings = [
+      { kind: 'Verstoß', color: t.danger, bg: t.dangerSurface, text: 'Tom: zwischen Montag 22:30 und Dienstag 07:00 liegen 8:30 Stunden Ruhezeit statt 11.', norm: '§ 5 ArbZG' },
+      { kind: 'Hinweis', color: t.warning, bg: t.warnSurface, text: 'Piotr arbeitet auf Abruf: Die Schicht am Mittwoch muss heute veröffentlicht werden.', norm: '§ 12 Abs. 3 TzBfG' },
+      { kind: 'Hinweis', color: t.warning, bg: t.warnSurface, text: 'Olena: im November geplant 551 € von 603 € Minijob-Grenze.', norm: '§ 8 SGB IV' },
+      { kind: 'Offen', color: t.mfg, bg: t.muted, text: 'Donnerstag und Freitag Spätschicht unbesetzt, Yusuf ist abwesend.', norm: '' }
+    ];
+    var nav = ['Heute', 'Zeiten', 'Abwesenheiten', 'Dienstplan', 'Projekte', 'Auswertungen', 'Einstellungen'].map(function (l) {
+      var cur = l === 'Dienstplan';
+      return { label: l, current: cur ? 'page' : 'false', bg: cur ? t.accent : 'transparent', weight: cur ? '600' : '400' };
+    });
+    return { t: t, days: days, rows: rows, findings: findings, nav: nav };
+  }
+}
+</script>
+</body>
+</html>

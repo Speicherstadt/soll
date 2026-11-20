@@ -14,7 +14,7 @@ connection goes through an open standard or a documented API (OpenID Connect, RE
 | --- | --- |
 | What to build next, acceptance criteria, how the loop works | `BAULISTE.md` |
 | Why: goals, decisions, stack, law, GoBD, data model, tests | `docs/plan.md` |
-| Look and behaviour of the UI | `DESIGN.md` |
+| Look and behaviour of the UI | `DESIGN.md`, the mockup in `design/mockup/` (read the screen before building it) |
 | Every rule the app checks, with its norm and test cases (before anything in `packages/arbeitszeit`) | `docs/regeln.md` (written in S-103) |
 
 The documentation is in `docs/` (<https://soll.work/>), German only. Links in the README and the docs

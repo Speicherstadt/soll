@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/*.md", "!overrides"]
+    "includes": ["**", "!**/*.md", "!overrides", "!design/mockup"]
   },
   "formatter": {
     "indentStyle": "space",

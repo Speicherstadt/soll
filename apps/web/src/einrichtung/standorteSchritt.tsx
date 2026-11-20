@@ -25,6 +25,7 @@ const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => 
   const landId = createUniqueId();
   const [land, setLand] = createSignal(props.land);
   const [fehler, setFehler] = createSignal("");
+  let landFeld: HTMLSelectElement | undefined;
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
@@ -40,6 +41,8 @@ const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => 
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
     form.reset();
+    // reset() puts the select on its first option; the next site gets the Land it shows
+    if (landFeld) landFeld.value = land();
     props.angelegt(antwort.daten);
   };
   return (
@@ -62,6 +65,9 @@ const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => 
           {m.betrieb_land()}
         </label>
         <select
+          ref={(el: HTMLSelectElement) => {
+            landFeld = el;
+          }}
           id={landId}
           class={feld}
           value={land()}

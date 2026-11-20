@@ -8,7 +8,7 @@ import { Fuss, SchrittKopf } from "./geruest.tsx";
 import type { Person } from "./mitarbeiterSchritt.tsx";
 import { ROLLEN_NAMEN } from "./namen.ts";
 
-type Einladung = { einladungId: string; name: string; rolle: Person["rolle"]; link: string };
+export type Einladung = { einladungId: string; name: string; rolle: Person["rolle"]; link: string };
 
 /** A link to pass on; selecting the field or the button copies it */
 const LinkZeile = (props: { einladung: Einladung }) => {
@@ -56,20 +56,27 @@ const LinkZeile = (props: { einladung: Einladung }) => {
 export const EinladungenSchritt = (props: {
   personen: Person[];
   setzePersonen: (personen: Person[]) => void;
+  einladungen: Einladung[];
+  setzeEinladungen: (einladungen: Einladung[]) => void;
   nummer: number;
   anzahl: number;
   zurueck?: (() => void) | undefined;
   weiter: () => void;
 }) => {
-  const [einladungen, setEinladungen] = createSignal<Einladung[]>([]);
+  const einladungen = () => props.einladungen;
   const [fehler, setFehler] = createSignal("");
+  const [arbeitet, setArbeitet] = createSignal(false);
   const erstellen = async () => {
+    // a second click while the first is on its way would invite everyone twice
+    if (arbeitet()) return;
+    setArbeitet(true);
     const antwort = await api<{ einladungen: Einladung[] }>("/api/v1/einladungen/liste", {
       body: { personen: props.personen },
     });
+    setArbeitet(false);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
-    setEinladungen((bisher) => [...bisher, ...antwort.daten.einladungen]);
+    props.setzeEinladungen([...props.einladungen, ...antwort.daten.einladungen]);
     // invited now: the list is empty again, so nobody gets two links
     props.setzePersonen([]);
   };
@@ -78,7 +85,7 @@ export const EinladungenSchritt = (props: {
       <SchrittKopf id="schritt-titel" titel={m.einladungen_titel()} text={m.einladungen_text()} />
       <Show when={props.personen.length > 0}>
         <p>{m.einladungen_offen({ anzahl: props.personen.length })}</p>
-        <Button variant="outline" class="self-start" onClick={erstellen}>
+        <Button variant="outline" class="self-start" disabled={arbeitet()} onClick={erstellen}>
           {m.einladungen_erstellen()}
         </Button>
       </Show>

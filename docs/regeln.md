@@ -43,6 +43,8 @@ ab dem 1. Januar 2026. Grundlage sind die Gesetzestexte auf gesetze-im-internet.
 | Nachtarbeitnehmer | wer normalerweise Nachtarbeit in Wechselschicht leistet oder an mindestens 48 Tagen im Kalenderjahr | § 2 Abs. 5 ArbZG |
 | Jugendlicher | wer 15, aber noch nicht 18 Jahre alt ist (Geburtsdatum am Mitarbeiter) | § 2 Abs. 2 JArbSchG |
 | Doppelwoche | zwei aufeinanderfolgende Wochen, Sonntage eingerechnet | § 4 Abs. 1 Satz 3 MuSchG |
+| Nachtarbeit (Steuer) | 20 bis 6 Uhr, für die steuerfreien Zuschläge; nicht die Nachtzeit des ArbZG | § 3b Abs. 2 Satz 2 EStG |
+| Grundlohn | laufender Arbeitslohn bei der regelmäßigen Arbeitszeit des Lohnzahlungszeitraums, umgerechnet in einen Stundenlohn (beim Monatslohn durch die Wochenstunden × 4,35), für die Steuerfreiheit höchstens 50 € je Stunde | § 3b Abs. 2 Satz 1 EStG; R 3b Abs. 2 LStR |
 
 Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäftigten (CLAUDE.md).
 
@@ -1021,6 +1023,16 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   Nachtsatz (die Sätze addieren sich, R 3b Abs. 3 LStR; ist ein Sonntag zugleich Feiertag, gilt nur der Feiertagssatz, R 3b Abs. 4 LStR). Der Teil des gezahlten Zuschlags über den
   steuerfreien Sätzen ist steuerpflichtig und wird getrennt an DATEV gegeben (S-308). Beträge in
   Cent, gerundet wird auf ganze Cent zugunsten der Steuerfreiheit nur bis zur Grenze.
+  Im Einzelnen: Die Sätze des Betriebs (in Basispunkten, 2500 = 25 %) gelten für dieselben Zeiten
+  wie § 3b EStG. Zahlt der Betrieb nur einen Zuschlag, ist er bis zur Summe der Sätze steuerfrei
+  („auch dann zusammenzurechnen, wenn nur ein Zuschlag gezahlt wird“, R 3b Abs. 3 LStR). „Vor 0 Uhr
+  aufgenommen“ heißt: Dieselbe Schicht hat zwischen 20 und 0 Uhr des Vorabends gearbeitet. Es zählt
+  die Uhrzeit am Ort, die Nacht der Umstellung im Oktober hat von 0 bis 4 Uhr fünf Stunden, die im
+  März drei. Der Stundenlohn aus dem Grundlohn bleibt ein genauer Bruch; gerundet wird erst die
+  Summe eines Arbeitstags (des Tags, an dem die Schicht beginnt): der gezahlte Betrag auf, der
+  steuerfreie ab, nie über die Grenze; lässt ein Abschnitt mit diesem Zuschlag unter seiner Grenze
+  Raum, bleibt der aufgerundete Bruchteil eines Cents steuerfrei. 24.12. und 31.12. ab 14 Uhr sind keine Feiertage und tragen
+  sich nicht in den Folgetag (Abs. 3 Nr. 2: „des auf den Sonntag oder Feiertag folgenden Tages“).
 - **Schwere**: kein Befund; eine Berechnung. Die Beispiele aus R 3b LStR und H 3b LStH sind die Tests
   (S-207).
 
@@ -1032,6 +1044,23 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Abs. 3 | Beginn Sa 22:00, Arbeit So 0:00 – 4:00 | 40 % Nacht + 50 % Sonntag je Stunde | § 3b Abs. 1 Nr. 2, Abs. 3 Nr. 1 EStG |
 | Abs. 3 | Beginn So 22:00, Arbeit Mo 0:00 – 4:00 | 40 % Nacht + 50 % (Mo bis 4 Uhr gilt als Sonntag) | § 3b Abs. 3 Nr. 2 EStG |
 | Feiertag | Arbeit am 1.5. 10:00 – 12:00 | 150 % | § 3b Abs. 1 Nr. 4 EStG |
+| R 3b Abs. 3 LStR, Beispiel | Beginn 1.5. 22:00, Ende 2.5. 7:00 | 175 % von 22 bis 24 Uhr (25 % Nacht + 150 % Feiertag), 190 % von 0 bis 4 Uhr (40 % + 150 %), 25 % von 4 bis 6 Uhr, danach nichts | R 3b Abs. 3 LStR (Beispiel) |
+| R 3b Abs. 3 LStR, nur ein Zuschlag | So 22:00 – 23:00, gezahlt nur 60 % Nacht | 12,00 € steuerfrei (bis 25 % + 50 %) | R 3b Abs. 3 LStR („auch dann …, wenn nur ein Zuschlag gezahlt wird“) |
+| R 3b Abs. 3 LStR, über beiden Sätzen | So 22:00 – 23:00, gezahlt nur 80 % Nacht | 15,00 € steuerfrei, 1,00 € steuerpflichtig | R 3b Abs. 3 LStR |
+| R 3b Abs. 4 LStR | Ostersonntag 5.4.2026 10:00 – 12:00 in Brandenburg, gezahlt 50 % Sonntag und 125 % Feiertag | 125 %, nicht 175 %; in Hamburg (kein Feiertag) 50 % | R 3b Abs. 4 LStR; § 2 FTG Brandenburg |
+| R 3b Abs. 4 LStR, nur Sonntagszuschlag | Ostersonntag in Brandenburg, gezahlt nur 100 % Sonntag | 40,00 € steuerfrei (bis 125 %) | R 3b Abs. 4 LStR („auch dann, wenn nur ein Sonntagszuschlag gezahlt wird“) |
+| H 3b LStH, Grundlohn | 1.589,28 € im Monat, 38 h je Woche | 9,61 € je Stunde (1.589,28 € ÷ 38 h × 4,35) | H 3b LStH (Beispiel zur Ermittlung des Grundlohns); R 3b Abs. 2 LStR |
+| Beginn um 0 Uhr | Mo 0:00 – 4:00 nach freiem Sonntag | 25 %, kein Sonntag, keine 40 % | § 3b Abs. 3 EStG („vor 0 Uhr aufgenommen“) |
+| Zeitumstellung Oktober | Sa 24.10.2026 22:00 – So 25.10. 6:00 | 0 bis 4 Uhr sind 5 h zu 90 %, 4 bis 6 Uhr 75 % | § 3b Abs. 2 Satz 2, Abs. 3 Nr. 1 EStG |
+| Zeitumstellung März | Sa 27.3.2027 22:00 – So 28.3. 6:00 | 0 bis 4 Uhr sind 3 h zu 90 % | § 3b Abs. 2 Satz 2, Abs. 3 Nr. 1 EStG |
+| Feiertag über Mitternacht | Do 30.4.2026 22:00 – Fr 1.5. 6:00 | 25 %, 190 % von 0 bis 4 Uhr, 175 % von 4 bis 6 Uhr; Arbeitstag 30.4. | § 3b Abs. 1 Nr. 4, Abs. 3 Nr. 1 EStG |
+| 24.12. ab 14 Uhr | Do 24.12.2026 12:00 – 16:00 | bis 14 Uhr nichts, danach 150 % | § 3b Abs. 1 Nr. 4 EStG |
+| 31.12. ab 14 Uhr | Do 31.12.2026 12:00 – 16:00 | bis 14 Uhr nichts, danach 125 % | § 3b Abs. 1 Nr. 3 EStG |
+| Jahreswechsel | Do 31.12.2026 22:00 – Fr 1.1.2027 6:00 | 150 %, 165 % von 0 bis 4 Uhr (40 % + 125 % Neujahr), 150 % von 4 bis 6 Uhr | § 3b Abs. 1 Nr. 3, Abs. 3 Nr. 1 EStG |
+| Grundlohn über 50 € | 80 € je Stunde, 1.5. 10:00 – 11:00, gezahlt 150 % | 75,00 € steuerfrei, 45,00 € steuerpflichtig | § 3b Abs. 2 Satz 1 EStG |
+| Rundung | 13,90 € je Stunde, Mi 22:00 – 22:07, gezahlt 25 % | 0,41 € gezahlt (aufgerundet), 0,40 € steuerfrei (abgerundet), 0,01 € steuerpflichtig | CLAUDE.md, „Never“; § 3b Abs. 1 EStG („nicht übersteigen“) |
+| Rundung unter der Grenze | 13,90 € je Stunde, So 22:00 – 22:07, gezahlt 25 % Nacht; So 10:00 – 10:07, gezahlt 25 % Sonntag | je 0,41 € gezahlt und 0,41 € steuerfrei (Grenze 75 % bzw. 50 %) | § 3b Abs. 1 EStG („nicht übersteigen“) |
+| nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 
 ## Mitbestimmung und Datenschutz
 

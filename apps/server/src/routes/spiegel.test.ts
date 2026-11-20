@@ -177,3 +177,34 @@ describe("roles set through Better Auth", () => {
     expect(aus.status).toBe(409);
   });
 });
+
+describe("the actor of a membership change in the audit chain", () => {
+  const akteure = (server: Server, betriebId: string) =>
+    server.sqlite
+      .query(
+        "SELECT akteur, aktion FROM audit_glieder WHERE betrieb_id = ? AND tabelle = 'mitgliedschaften' ORDER BY seq",
+      )
+      .all(betriebId) as { akteur: string; aktion: string }[];
+
+  it("is the owner who changed the role, the person who joined or left", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    const anna = await einladen(server, weber, "mitarbeiter", "anna");
+    const wechsel = await weber.anfrage("/api/auth/organization/update-member-role", {
+      body: {
+        memberId: await mitgliedId(weber, anna),
+        role: "planer",
+        organizationId: weber.betriebId,
+      },
+    });
+    expect(wechsel.status).toBe(200);
+    const b = await anmelden(server, weber, "anna");
+    await b.anfrage("/api/auth/organization/leave", { body: { organizationId: weber.betriebId } });
+    expect(akteure(server, weber.betriebId)).toEqual([
+      { akteur: weber.nutzerId, aktion: "einfuegen" },
+      { akteur: anna, aktion: "einfuegen" },
+      { akteur: weber.nutzerId, aktion: "aendern" },
+      { akteur: anna, aktion: "loeschen" },
+    ]);
+  });
+});

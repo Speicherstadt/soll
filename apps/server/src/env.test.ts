@@ -28,6 +28,12 @@ describe("parseEnv", () => {
     );
   });
 
+  it("drops a trailing slash of SOLL_URL, so invitation links have no double slash", () => {
+    expect(parseEnv({ SOLL_SECRET_KEY: KEY, SOLL_URL: "https://soll.example/" }).url).toBe(
+      "https://soll.example",
+    );
+  });
+
   it("refuses to start without SOLL_SECRET_KEY", () => {
     expect(() => parseEnv({})).toThrow(/SOLL_SECRET_KEY/);
   });

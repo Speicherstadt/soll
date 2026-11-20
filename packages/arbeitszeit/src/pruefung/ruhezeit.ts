@@ -81,29 +81,20 @@ const stellen = (schicht: PruefSchicht): Stelle[] => {
 };
 
 /**
- * The pieces whose start ends the rest before them: the first piece of each working day that is not
- * a call-out, and a shift of its own that follows a call-out on the same day (R-12: after the
- * call-out a new rest begins, whichever day the next shift is on)
+ * The pieces whose start ends the rest before them: the first piece of each shift that is not a
+ * call-out, whatever its calendar day (two shifts of one day are two working days by the 9 hours of
+ * S-201); after a call-out a new rest begins (R-12)
  */
-const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> => {
-  const tage = new Set<Tag>();
-  const erste = new Set<Stelle>();
-  stellen.forEach((stelle, index) => {
-    if (stelle.einsatz) return;
-    const nachEinsatz = stelle.ersteDerSchicht && stellen[index - 1]?.einsatz === true;
-    if (tage.has(stelle.tag) && !nachEinsatz) return;
-    tage.add(stelle.tag);
-    erste.add(stelle);
-  });
-  return erste;
-};
+const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> =>
+  new Set(stellen.filter((stelle) => stelle.ersteDerSchicht && !stelle.einsatz));
 
 /**
- * The rests before each working day, from the last end of work before it to its first Kommen
- * (docs/regeln.md, R-05), and the rest since the last end of work while nothing has followed yet.
- * A call-out in Rufbereitschaft ends no rest but begins a new one (R-12): the rest that counts is the
- * one after it, up to the next working day or a shift of its own on the same day. Without call-outs this is the last Gehen of one working day to the first Kommen of
- * the next. The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured the same way.
+ * The rests before each working day (each shift), from the last end of work before it to its first
+ * Kommen (docs/regeln.md, R-05), and the rest since the last end of work while nothing has followed
+ * yet. A call-out in Rufbereitschaft ends no rest but begins a new one (R-12): the rest that counts
+ * is the one after it, up to the next shift. Without call-outs this is the last Gehen of one shift
+ * to the first Kommen of the next. The rests of JArbSchG § 13 and MuSchG § 4 Abs. 2 are measured
+ * the same way.
  */
 export const ruhenAus = (tage: readonly PruefTag[], jetzt: number): Ruhe[] => {
   const alle = tage

@@ -266,7 +266,8 @@ Regel:
 - **Norm**: § 5 Abs. 1 ArbZG: „ununterbrochene Ruhezeit von mindestens elf Stunden“ nach Ende der
   täglichen Arbeitszeit.
 - **Grenzwerte**: vom letzten „Gehen“ eines Arbeitstags bis zum ersten „Kommen“ des nächsten
-  mindestens 11:00. Ein Einsatz in der Rufbereitschaft beendet die Ruhezeit (R-12).
+  mindestens 11:00, auch zwischen zwei Schichten desselben Kalendertags (zwei Arbeitstage nach den
+  9 h von R-01). Ein Einsatz in der Rufbereitschaft beendet die Ruhezeit (R-12).
 - **Ausnahmen**: § 5 Abs. 2 ArbZG: in Krankenhäusern, Pflege, Gastronomie und Beherbergung,
   Verkehr, Rundfunk, Landwirtschaft und Tierhaltung bis 10:00, wenn jede Verkürzung innerhalb eines
   Kalendermonats oder von vier Wochen durch eine Ruhezeit von mindestens 12:00 ausgeglichen wird
@@ -295,6 +296,7 @@ Regel:
 | vier Wochen | Gastronomie, Fr 20.11.2026 23:00 – Sa 9:00 (10:00), die nächste Ruhezeit von 12:00 ab Di 1.12. 22:00 | kein Befund; mit gewähltem Kalendermonat Verstoß ab 1.12. | § 5 Abs. 2 ArbZG („oder innerhalb von vier Wochen“) |
 | je Verkürzung | Gastronomie, zwei Verkürzungen nacheinander, danach eine Ruhezeit von 16:00 | Hinweis für die zweite Verkürzung | § 5 Abs. 2 ArbZG („jede Verkürzung“) |
 | über Mitternacht | Mo 16:00 – Di 0:30, Di 11:00 Kommen (10:30) | Verstoß „Ruhezeit 10:30“ für Mo und Di | § 5 Abs. 1 ArbZG; Grundbegriff „Arbeitstag“ |
+| am selben Tag | Mo 0:00 – 4:00, Mo 14:00 – 22:00 (10:00), Di 6:00 – 12:00 gehört zur zweiten Schicht | Verstoß „Ruhezeit 10:00“ für Mo | § 5 Abs. 1 ArbZG; R-01 (Schicht ab 9 h Unterbrechung) |
 | Herbst | Sa 24.10.2026 22:00 – So 8:00 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Sa 27.03.2027 22:00 – So 9:00 (10:00 echte Zeit) | Verstoß „Ruhezeit 10:00“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
 
@@ -730,6 +732,7 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Verstoß | 19:01 – 7:00 (11:59) | Verstoß „Freizeit 11:59“ | § 13 JArbSchG |
 | Herbst | Sa 24.10.2026 19:00 – So 6:00 (12:00 echte Zeit) | kein Befund | § 13 JArbSchG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Sa 27.3.2027 19:00 – So 7:00 (11:00 echte Zeit) | Verstoß „Freizeit 11:00“ | § 13 JArbSchG; SoZV (Beginn der Sommerzeit) |
+| am selben Tag | Mo 0:00 – 4:00, Mo 14:00 – 19:00 (10:00) | Verstoß „Freizeit 10:00“ | § 13 JArbSchG; R-05 |
 
 ### R-19 Nachtruhe
 
@@ -846,6 +849,7 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | 18. Geburtstag | geboren 4.11.2008: Mi 4.11. bis So 15.11.2026 je 7:00 (84:00) | Verstoß „über 80 h in der Doppelwoche“ ab 2.11. (am Mo und Di noch 17) | § 4 Abs. 1 Satz 2 und 3 MuSchG |
 | Monat | vertraglich 20:00 je Woche, November 2026 (30 Tage) mit 85:42 | kein Befund (20:00 × 30 ÷ 7 = 85:42 und 6/7 min); mit 85:43 Verstoß „über der vertraglichen Arbeitszeit“ | § 4 Abs. 1 Satz 4 MuSchG |
 | Ruhezeit | Mo 19:30 – Di 6:29 (10:59) | Verstoß „Ruhezeit 10:59“; Mo 19:00 – Di 6:00 (11:00) kein Befund | § 4 Abs. 2 MuSchG |
+| Ruhezeit am selben Tag | Mo 0:00 – 4:00, Mo 14:00 – 18:00 (10:00) | Verstoß „Ruhezeit 10:00“ | § 4 Abs. 2 MuSchG; R-05 |
 | Genehmigung | Genehmigung nach § 28, 12:00 – 22:00 | kein Befund; 12:00 – 22:01 Verstoß „nach 22 Uhr“ | § 5 Abs. 1 Satz 2, § 28 MuSchG |
 | Herbst | Sa 24.10.2026 22:00 – So 6:00 | Verstoß „nach 20 Uhr“ für 9:00 (echte Zeit) | § 5 Abs. 1 MuSchG; SoZV (Ende der Sommerzeit) |
 | Sonntag | Café mit Ausnahme nach § 10 Abs. 1 Nr. 4 ArbZG, So 15.11.2026 10:00 – 16:00, ohne Erklärung | Verstoß „Sonntag“ | § 6 Abs. 1 Satz 1 MuSchG |

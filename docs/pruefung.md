@@ -66,7 +66,8 @@ Zwischen ihnen liegen mindestens 9 Stunden.
 
 Vom letzten „Gehen“ eines Arbeitstags bis zum ersten „Kommen“ des nächsten müssen mindestens
 11 Stunden liegen. Kürzer ist ein Verstoß „Ruhezeit“ mit der Dauer der Ruhezeit und den fehlenden
-Minuten (§ 5 Abs. 1 ArbZG).
+Minuten (§ 5 Abs. 1 ArbZG). Das gilt auch für zwei Schichten am selben Tag: Wer von 0 bis 4 Uhr
+und von 14 bis 22 Uhr arbeitet, hat dazwischen nur 10 Stunden Ruhezeit.
 Ein Einsatz in der Rufbereitschaft unterbricht die Ruhezeit: Gemessen wird ab seinem Ende, und eine
 zu kurze Ruhezeit danach heißt „Ruhezeit durch Einsatz unterbrochen“ (R-12, siehe
 [Bereitschaftsdienst und Rufbereitschaft](bereitschaft.md)).

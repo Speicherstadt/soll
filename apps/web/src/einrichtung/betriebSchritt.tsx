@@ -115,6 +115,8 @@ export const BetriebSchritt = (props: {
       land: String(daten.get("land")),
       fragen,
     });
+    // the business may exist now even if saving failed: asked again, a retry creates no second one
+    await sitzungNeu();
     setArbeitet(false);
     if (!antwort.ok)
       return setFehler(
@@ -122,7 +124,6 @@ export const BetriebSchritt = (props: {
           ? m.fehler_arbeitszeit_pflicht()
           : m.fehler_speichern(),
       );
-    await sitzungNeu();
     props.weiter();
   };
   return (

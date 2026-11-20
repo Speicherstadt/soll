@@ -57,6 +57,7 @@ markdown_extensions:
       custom_checkbox: true
 nav:
   - Soll: index.md
+  - Einrichtung: einrichtung.md
   - Anmeldung, Rollen und Module: anmeldung.md
   - Regelwerk: regeln.md
   - Feiertage: feiertage.md

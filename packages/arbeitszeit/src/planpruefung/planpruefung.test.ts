@@ -126,6 +126,24 @@ describe("the rules of Phase 2 on planned shifts (S-502)", () => {
     );
   });
 
+  it("R-09: a Sunday already worked whose Ersatzruhetag the plan takes away", () => {
+    const gestempelt = Array.from({ length: 14 }, (_, index) =>
+      schicht(plusTage("2026-11-09", index), "08:00", "12:00"),
+    );
+    const ist = planTage(gestempelt, [], "2026-11-09").tage;
+    const geplant = Array.from({ length: 13 }, (_, index) => plusTage(HEUTE, index))
+      .filter((tag) => tag !== "2026-11-29")
+      .map((tag) => schicht(tag, "08:00", "12:00"));
+    const ergebnis = pruefe(geplant, { ist, betrieb: CAFE });
+    const r09 = ergebnis.befunde.filter((befund) => befund.regel === "R-09");
+    expect(r09).toEqual([
+      expect.objectContaining({
+        tage: ["2026-11-22"],
+        schichtIds: geplant.map((s) => s.schichtId),
+      }),
+    ]);
+  });
+
   it("R-14: a monthly wage below the minimum wage for the planned hours", () => {
     const lohnAm = () => ({ lohn: { art: "monat" as const, cent: 100 }, minijob: false });
     expect(regeln(pruefe([schicht("2026-11-24", "08:00", "12:00")], { lohnAm }))).toEqual([

@@ -50,6 +50,18 @@ const baustelle = async (page: Page) => {
   });
 };
 
+/**
+ * axe in light and dark; after a switch of the theme it waits for the buttons' color transition to
+ * end, so axe reads the colors of the theme, not a mix in between
+ */
+const axeGruen = async (page: Page) => {
+  for (const theme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme: theme });
+    await page.waitForFunction(() => document.getAnimations().length === 0);
+    expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
+  }
+};
+
 /** A signature drawn with the pointer: two strokes across the surface */
 const unterschreiben = async (page: Page) => {
   const flaeche = page.getByTestId("unterschrift");
@@ -94,10 +106,7 @@ test("the customer signs the report on the phone and the PDF downloads @phone", 
   await expect(form.getByRole("alert")).toHaveText(t("nachweis_fehler_unterschrift"));
   await unterschreiben(page);
 
-  for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
-    expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
-  }
+  await axeGruen(page);
 
   await form.getByRole("button", { name: t("nachweis_unterschreiben") }).click();
   await expect(page.getByRole("status")).toHaveText(t("nachweis_unterschrieben", { nummer: "1" }));
@@ -118,8 +127,5 @@ test("the customer signs the report on the phone and the PDF downloads @phone", 
   const { readFileSync } = await import("node:fs");
   expect(readFileSync(pfad).subarray(0, 5).toString("latin1")).toBe("%PDF-");
 
-  for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
-    expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
-  }
+  await axeGruen(page);
 });

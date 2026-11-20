@@ -477,7 +477,7 @@ Alle Punkte: nach S-306.
   Wechsel.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
-- [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
+- [x] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
   Fertig, wenn: ein Stundennachweis für einen Auftrag und eine Spanne von Arbeitstagen aus den
   beendeten Buchungen entsteht, die noch in keinem unterschriebenen Nachweis stehen (je Zeile Tag,
   Person, Beginn und Ende, Tätigkeit, ganze Minuten und Notiz, dazu die Summe und eine freie

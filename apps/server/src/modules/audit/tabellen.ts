@@ -3,8 +3,10 @@ import {
   betriebe,
   einladungen,
   mitgliedschaften,
+  modellzuordnungen,
   pins,
   standorte,
+  stempelungen,
 } from "../../db/schema.ts";
 
 /**
@@ -18,6 +20,8 @@ export const kettenTabellen = {
   pins: { tabelle: pins, schluessel: ["nutzerId"] },
   standorte: { tabelle: standorte, schluessel: ["standortId"] },
   arbeitszeitmodelle: { tabelle: arbeitszeitmodelle, schluessel: ["modellId"] },
+  modellzuordnungen: { tabelle: modellzuordnungen, schluessel: ["nutzerId", "gueltigAb"] },
+  stempelungen: { tabelle: stempelungen, schluessel: ["stempelId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { Rolle } from "../../auth/rollen.ts";
+import { user } from "../../db/auth-schema.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { einladungen, mitgliedschaften } from "../../db/schema.ts";
 import { sha256 } from "../audit/hash.ts";
@@ -18,6 +19,34 @@ export const mitgliedschaftVon = (
     .from(mitgliedschaften)
     .where(and(eq(mitgliedschaften.betriebId, betriebId), eq(mitgliedschaften.nutzerId, nutzerId)))
     .get();
+
+export type MitgliedMitName = { nutzerId: string; name: string; rolle: string };
+
+/** The members of a business with the names of their accounts, by name */
+export const mitgliederMitNamen = (db: Db, betriebId: string): MitgliedMitName[] =>
+  db
+    .select({ nutzerId: mitgliedschaften.nutzerId, name: user.name, rolle: mitgliedschaften.rolle })
+    .from(mitgliedschaften)
+    .innerJoin(user, eq(user.id, mitgliedschaften.nutzerId))
+    .where(eq(mitgliedschaften.betriebId, betriebId))
+    .orderBy(user.name)
+    .all();
+
+/**
+ * The names of accounts, for who changed what: also of someone who has left the business since,
+ * whose changes stay visible
+ */
+export const namenVon = (db: Db, nutzerIds: readonly string[]): Map<string, string> =>
+  nutzerIds.length === 0
+    ? new Map()
+    : new Map(
+        db
+          .select({ id: user.id, name: user.name })
+          .from(user)
+          .where(inArray(user.id, [...new Set(nutzerIds)]))
+          .all()
+          .map(({ id, name }) => [id, name]),
+      );
 
 /**
  * Mirrors a member and role of Better Auth into Soll's table, so each change stands in the audit

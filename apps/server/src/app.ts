@@ -10,6 +10,7 @@ import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
 import { standortRouten } from "./routes/standorte.ts";
+import { zeitRouten } from "./routes/zeiten.ts";
 
 export type AppDeps = {
   /** Where log lines go; stdout in production, a list in tests */
@@ -54,7 +55,15 @@ export const createApp = ({ log, now, version, db, schreibDb, auth, url }: AppDe
     .route("/einladungen", einladungRouten(schreibDb, url, now))
     .route("/pins", pinRouten(db, schreibDb, now))
     .route("/terminal/pins", pinPruefRouten(db, schreibDb, now))
-    .route("/", modulRouten(db, { arbeitszeit: { "/modelle": modellRouten(db, schreibDb, now) } }));
+    .route(
+      "/",
+      modulRouten(db, {
+        arbeitszeit: {
+          "/modelle": modellRouten(db, schreibDb, now),
+          "/": zeitRouten(db, schreibDb, now),
+        },
+      }),
+    );
   app.route("/api/v1", v1);
 
   return app;

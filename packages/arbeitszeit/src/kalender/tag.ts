@@ -39,3 +39,6 @@ export const istTag = (text: string): boolean => {
 };
 
 export const jahrVon = (tag: Tag): number => Number(tag.slice(0, 4));
+
+/** Whole calendar days from `von` to `bis`: 1 from one day to the next, negative backwards */
+export const tageZwischen = (von: Tag, bis: Tag): number => (alsMs(bis) - alsMs(von)) / MS_PRO_TAG;

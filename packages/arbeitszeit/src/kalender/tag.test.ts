@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { istTag, plusTage, tagAus, wochentag } from "./tag.ts";
+import { istTag, plusTage, tagAus, tageZwischen, wochentag } from "./tag.ts";
 
 describe("Tag", () => {
   it("writes a day with leading zeros", () => {
@@ -10,6 +10,13 @@ describe("Tag", () => {
     expect(plusTage("2028-02-28", 1)).toBe("2028-02-29");
     expect(plusTage("2026-12-31", 1)).toBe("2027-01-01");
     expect(plusTage("2026-04-05", -2)).toBe("2026-04-03");
+  });
+
+  it("counts the days between two days, also over the leap day and backwards", () => {
+    expect(tageZwischen("2026-01-01", "2026-01-01")).toBe(0);
+    expect(tageZwischen("2028-02-28", "2028-03-01")).toBe(2);
+    expect(tageZwischen("2026-03-28", "2026-03-30")).toBe(2);
+    expect(tageZwischen("2026-01-02", "2026-01-01")).toBe(-1);
   });
 
   it("is not shifted by the change to summer time", () => {

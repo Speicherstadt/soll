@@ -40,15 +40,32 @@ const quellen = (ordner: string): string[] =>
       : [];
   });
 
+/**
+ * Drizzle's write builders by what follows them, on any table expression (a renamed import, a
+ * destructured `tabelle`) and across lines, as the formatter breaks long chains
+ */
+const BAUSTEIN =
+  /\.\s*(insert\s*\([^;]*?\)\s*\.\s*(values|select)|update\s*\([^;]*?\)\s*\.\s*set|delete\s*\([^;]*?\)\s*\.\s*(where|run|returning|all|get|execute))\s*\(/g;
+
+/** The line numbers (from 0) where a write builder starts */
+const bausteinZeilen = (text: string): Set<number> =>
+  new Set(
+    [...text.matchAll(BAUSTEIN)].map(
+      (treffer) => text.slice(0, treffer.index).split("\n").length - 1,
+    ),
+  );
+
 /** The lines of one file that write */
-const umwegeIn = (datei: string, text: string): string[] =>
-  text
+const umwegeIn = (datei: string, text: string): string[] => {
+  const bausteine = bausteinZeilen(text);
+  return text
     .split("\n")
     .flatMap((zeile, index) =>
-      SCHREIBEN.some((muster) => muster.test(zeile))
+      bausteine.has(index) || SCHREIBEN.some((muster) => muster.test(zeile))
         ? [`${datei}:${index + 1}: ${zeile.trim()}`]
         : [],
     );
+};
 
 describe("no write past the audit chain", () => {
   it("only the chain's own files call a write function", () => {
@@ -75,6 +92,21 @@ describe("no write past the audit chain", () => {
       umwegeIn("x.ts", zeile),
     );
     expect(umwege).toHaveLength(1);
+  });
+
+  it("recognises a write to a table held under any name, also across lines", () => {
+    // pruefen.ts itself takes `const { tabelle } = kettenTabellen[name]`; a named import can rename a table
+    const dateien = [
+      "const { tabelle } = kettenTabellen.betriebe;\ndb.delete(tabelle).where(bedingung).run();",
+      'import { betriebe as firmen } from "../../db/schema.ts";\ndb.insert(firmen).values(werte).run();',
+      "const { tabelle } = kettenTabellen.betriebe;\ntx\n  .update(tabelle)\n  .set(neu)\n  .run();",
+    ];
+    expect(dateien.map((text) => umwegeIn("x.ts", text).length)).toEqual([1, 1, 1]);
+  });
+
+  it("does not mistake a hash or a Map for a write", () => {
+    const text = 'createHash("sha256").update(text, "utf8").digest("hex");\ngesehen.delete(id);';
+    expect(umwegeIn("x.ts", text)).toEqual([]);
   });
 
   it("every table of Soll with betrieb_id goes through the chain", () => {

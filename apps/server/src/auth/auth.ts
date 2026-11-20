@@ -1,14 +1,14 @@
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware } from "better-auth/api";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { organization, username } from "better-auth/plugins";
 import { defaultAc } from "better-auth/plugins/organization/access";
 import * as authSchema from "../db/auth-schema.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { arbeitszeitPflichtWahren, betriebAnlegen } from "../modules/betrieb/index.ts";
 import { mitgliedschaftEntfernen, mitgliedschaftSpiegeln } from "../modules/mitglieder/index.ts";
-import { ROLLEN } from "./rollen.ts";
+import { istRolle, ROLLEN, rollenVon } from "./rollen.ts";
 
 export type AuthDeps = {
   db: Db;
@@ -104,6 +104,11 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
             mitgliedschaftSpiegeln(db, schreibDb, kontext(org.id), member.userId, member.role);
           },
           afterAddMember: async ({ member }) => spiegeln(member),
+          // Better Auth also accepts its own default roles (owner, admin, member); Soll knows only its own
+          beforeUpdateMemberRole: async ({ newRole }) => {
+            if (!rollenVon(newRole).every(istRolle))
+              throw new APIError("BAD_REQUEST", { message: "unknown role" });
+          },
           afterUpdateMemberRole: async ({ member }) => spiegeln(member),
           afterRemoveMember: async ({ member }) => {
             mitgliedschaftEntfernen(db, schreibDb, kontext(member.organizationId), member.userId);

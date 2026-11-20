@@ -44,8 +44,12 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
 
 export const istRolle = (wert: unknown): wert is Rolle => ROLLEN.includes(wert as Rolle);
 
+/** The roles of one member: Better Auth stores several joined by commas (its parseRoles) */
+export const rollenVon = (rolle: string): string[] => rolle.split(",").map((teil) => teil.trim());
+
+/** A member with several roles has the rights of each */
 export const darf = (rolle: string, recht: Recht): boolean =>
-  istRolle(rolle) && RECHTE_JE_ROLLE[rolle].includes(recht);
+  rollenVon(rolle).some((teil) => istRolle(teil) && RECHTE_JE_ROLLE[teil].includes(recht));
 
 /**
  * Roles of people who work for the business: while one of them is a member, working time cannot be
@@ -58,4 +62,4 @@ export const BESCHAEFTIGT: readonly Rolle[] = ["planer", "mitarbeiter", "lohnbue
  * one member joined by commas (its parseRoles), so each of them counts.
  */
 export const istBeschaeftigt = (rolle: string): boolean =>
-  rolle.split(",").some((teil) => BESCHAEFTIGT.includes(teil.trim() as Rolle));
+  rollenVon(rolle).some((teil) => BESCHAEFTIGT.includes(teil as Rolle));

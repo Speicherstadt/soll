@@ -35,6 +35,9 @@ export const pinPruefRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number
     modul(db, "terminal"),
     recht("pin:pruefen"),
     async (c) => {
+      // a PIN outlives a membership in its table; a person who left the business is unknown here
+      if (!mitgliedschaftVon(db, c.get("betriebId"), c.req.param("nutzerId")))
+        return c.json({ ergebnis: "unbekannt" }, 404);
       const eingabe = pinSchema.safeParse(await c.req.json().catch(() => null));
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
       const ergebnis = await pinPruefen(

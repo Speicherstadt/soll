@@ -121,3 +121,59 @@ describe("the duty to record working time", () => {
     expect(aus.status).toBe(409);
   });
 });
+
+describe("the terminal", () => {
+  it("does not accept the PIN of a person who left the business", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    await weber.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { terminal: true } });
+    const max = await einladen(server, weber, "mitarbeiter", "max");
+    await einladen(server, weber, "geraet", "terminal");
+    const terminal = await anmelden(server, weber, "terminal");
+    await weber.anfrage(`/api/v1/pins/${max}`, { method: "PUT", body: { pin: "4711" } });
+    const pruefen = () =>
+      terminal.anfrage(`/api/v1/terminal/pins/${max}/pruefen`, { body: { pin: "4711" } });
+    expect((await pruefen()).status).toBe(200);
+    const entfernt = await weber.anfrage("/api/auth/organization/remove-member", {
+      body: { memberIdOrEmail: await mitgliedId(weber, max), organizationId: weber.betriebId },
+    });
+    expect(entfernt.status).toBe(200);
+    expect((await pruefen()).status).toBe(404);
+  });
+});
+
+describe("roles set through Better Auth", () => {
+  it("give a member with several roles the rights of each", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    const anna = await einladen(server, weber, "mitarbeiter", "anna");
+    const wechsel = await weber.anfrage("/api/auth/organization/update-member-role", {
+      body: {
+        memberId: await mitgliedId(weber, anna),
+        role: ["mitarbeiter", "planer"],
+        organizationId: weber.betriebId,
+      },
+    });
+    expect(wechsel.status).toBe(200);
+    const b = await anmelden(server, weber, "anna");
+    expect((await b.anfrage("/api/v1/betrieb")).status).toBe(200);
+  });
+
+  it("are only Soll's roles, not Better Auth's defaults", async () => {
+    const server = testServer();
+    const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");
+    const anna = await einladen(server, weber, "mitarbeiter", "anna");
+    for (const role of ["member", "admin", "owner", ["mitarbeiter", "member"]]) {
+      const wechsel = await weber.anfrage("/api/auth/organization/update-member-role", {
+        body: { memberId: await mitgliedId(weber, anna), role, organizationId: weber.betriebId },
+      });
+      expect(wechsel.status, JSON.stringify(role)).toBe(400);
+    }
+    // she still counts as an employee
+    const aus = await weber.anfrage("/api/v1/betrieb/module", {
+      method: "PATCH",
+      body: { arbeitszeit: false },
+    });
+    expect(aus.status).toBe(409);
+  });
+});

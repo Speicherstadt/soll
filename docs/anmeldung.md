@@ -26,7 +26,8 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 | Extern | lesen, ohne Pflicht zur Arbeitszeiterfassung |
 | Gerät | nur PINs am Terminal prüfen |
 
-Die Rechte prüft der Server bei jedem Aufruf. Jede Änderung einer Mitgliedschaft oder Rolle steht in
+Die Rechte prüft der Server bei jedem Aufruf. Hat eine Person mehrere Rollen, darf sie, was jede
+davon darf; andere als diese sieben Rollen nimmt der Server nicht an. Jede Änderung einer Mitgliedschaft oder Rolle steht in
 der [Audit-Kette](audit-kette.md).
 
 ## Einladung ohne E-Mail
@@ -42,7 +43,7 @@ Hash des Links, nicht der Link selbst. Passkeys lassen sich danach zum Konto hin
 Für das Terminal setzt der Inhaber jeder Person eine PIN aus 4 bis 8 Ziffern; gespeichert wird sie
 als Hash (Argon2id). Nach **fünf falschen Versuchen in Folge** ist sie gesperrt, bis der Inhaber eine
 neue setzt; eine richtige PIN dazwischen setzt den Zähler zurück. Jeder Fehlversuch steht in der
-Audit-Kette.
+Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nicht mehr erkannt.
 
 ## Module
 

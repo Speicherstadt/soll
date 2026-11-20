@@ -1,6 +1,6 @@
 /** DATEV, CSV and PDF exports (S-306, S-308, S-309). */
 
-export { datumText, monatText } from "./stundenzettel/format.ts";
+export { datumText, monatText, uhrzeitText } from "./stundenzettel/format.ts";
 export {
   type Stundenzettel,
   stundenzettelPdf,

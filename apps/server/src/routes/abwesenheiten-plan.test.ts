@@ -44,7 +44,8 @@ const mitPlan = async (optionen: Parameters<typeof weberMitAbwesenheiten>[0] = {
       schreiben(
         w.server.schreibDb,
         { betriebId: w.jonas.betriebId, akteur: w.jonas.nutzerId, jetzt: um("2026-11-01T12:00Z") },
-        (s) => s.aendern("schichten", { schichtId }, { veroeffentlichtAm: um("2026-11-01T12:00Z") }),
+        (s) =>
+          s.aendern("schichten", { schichtId }, { veroeffentlichtAm: um("2026-11-01T12:00Z") }),
       );
     return schichtId;
   };
@@ -127,7 +128,9 @@ describe("Krankmeldung mit offenen Schichten (S-401, S-501)", () => {
       "Offene Schichten: 20.11.2026 Montage, 21.11.2026 Montage (Entwurf), 23.11.2026 Montage",
     );
     expect(an("weber@betrieb.test")).toContain("21.11.2026 Montage (Entwurf)");
-    expect(an("lohn@weber.test")).toContain("Offene Schichten: 20.11.2026 Montage, 23.11.2026 Montage");
+    expect(an("lohn@weber.test")).toContain(
+      "Offene Schichten: 20.11.2026 Montage, 23.11.2026 Montage",
+    );
     expect(an("lohn@weber.test")).not.toContain("Entwurf");
   });
 });

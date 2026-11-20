@@ -45,8 +45,8 @@ Tag, und ein genehmigter freier Tag später verhindert die Krankmeldung nicht. B
 zählt an einem solchen Tag der freie Tag; ein Ende darüber hinaus nimmt Soll erst an, wenn der
 Betrieb den freien Tag storniert hat.
 
-Gibt es einen Dienstplan, nennt der Antrag die eigenen Schichten im Zeitraum, und wer freigibt, sieht
-sie auch. Der Dienstplan kommt mit S-501; bis dahin gibt es keine Schichten.
+Ist das Modul Dienstplan eingeschaltet, nennt der Antrag die eigenen Schichten im Zeitraum, soweit
+sie veröffentlicht sind; einen Entwurf des Plans sehen nur Inhaber und Planer.
 
 ## Krank melden
 
@@ -57,8 +57,11 @@ der Betrieb tragen den letzten Krankheitstag ein, sobald er feststeht. Eine Kran
 Versehen storniert, wer Krankheit sehen darf (Inhaber, Lohnbüro), mit Grund.
 
 Mit der Krankmeldung bekommen Inhaber und Lohnbüro eine Mail mit Art und Fälligkeit der
-Bescheinigung, Planer eine Mail mit „abwesend“ und den eingeplanten Schichten, die nun offen sind
-(sobald es den Dienstplan gibt).
+Bescheinigung, Planer eine Mail mit „abwesend“. Ist das Modul Dienstplan eingeschaltet, nennen die
+Mails die eingeplanten Schichten der Person ab heute als offen: bis zum letzten Krankheitstag, bei
+offenem Ende bis zu dem Tag, an dem die Bescheinigung fällig ist. Wer plant (Inhaber, Planer), liest
+auch Schichten aus dem Entwurf, mit „(Entwurf)“ markiert, das Lohnbüro nur veröffentlichte. Die
+Schichten bleiben im Plan bei der Person; neu besetzt sie, wer plant.
 
 ### Bescheinigung ab dem vierten Tag
 
@@ -150,8 +153,10 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | `bescheinigungFaellig`, `bescheinigungPruefen` | R-27: Fälligkeit, Stand, Erinnerung an die eAU, Befund |
 | `sichtbareArt(art, gesundheitSehen)` | „abwesend“ statt „krank“ und „Kind krank“ ohne Recht |
 
-Der Dienstplan (S-501) gibt `createApp` eine `Schichtquelle`
-(`apps/server/src/modules/arbeitszeit/abwesenheiten/plan.ts`): Sie liefert die geplanten Schichten
-einer Person in einem Zeitraum, für den Antrag und die offenen Schichten einer Krankmeldung.
+Der Dienstplan (S-501) liefert über sein `index.ts` eine `Schichtquelle`
+(`schichtquelle` in `apps/server/src/modules/dienstplan/abwesenheit.ts`, der Typ in
+`apps/server/src/modules/arbeitszeit/abwesenheiten/plan.ts`): Sie gibt die Schichten einer Person
+in einem Zeitraum, auf Wunsch mit Entwurf, für den Antrag und die offenen Schichten einer
+Krankmeldung; bei abgeschaltetem Modul keine.
 Umgekehrt liest der Plan mit `abwesenheitenIn` die genehmigten Abwesenheiten eines Tags und zeigt
 jede nur als „abwesend“, wie der Teamkalender.

@@ -3,6 +3,7 @@ import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
+import { schichtquelle } from "./modules/dienstplan/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
@@ -31,7 +32,7 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
-  /** The planned shifts for absences (S-401); the shift plan (S-501) passes its own */
+  /** The planned shifts for absences (S-401); the plan itself (S-501) unless a test passes one */
   schichten?: Schichtquelle;
 };
 
@@ -82,7 +83,10 @@ export const createApp = ({
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
-          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, { mail, schichten }),
+          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
+            mail,
+            schichten: schichten ?? schichtquelle(db),
+          }),
           "/": zeitRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },

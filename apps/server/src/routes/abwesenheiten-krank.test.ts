@@ -160,7 +160,15 @@ describe("R-27: Frist am 4. Tag und Erinnerung an die eAU (§ 5 EntgFG, § 109 S
   it("reports the planned shifts of a sickness as open (S-501)", async () => {
     const w = await weberMitAbwesenheiten({
       schichten: (_, nutzerId, von) => [
-        { schichtId: "s1", nutzerId, tag: von, beginn: 0, ende: 1, bezeichnung: "Frühschicht" },
+        {
+          schichtId: "s1",
+          nutzerId,
+          tag: von,
+          beginn: 0,
+          ende: 1,
+          bezeichnung: "Frühschicht",
+          entwurf: false,
+        },
       ],
     });
     const daten = await json(await krank(w.sandra));

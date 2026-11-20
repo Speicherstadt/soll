@@ -81,9 +81,18 @@ export const entscheidungMelden = async (db: Db, mail: Mailer | null, zeile: Abw
   );
 };
 
+/** The line of the open shifts, drafts marked; nothing without shifts */
+const schichtZeilen = (offen: readonly GeplanteSchicht[]): string[] =>
+  offen.length === 0
+    ? []
+    : [
+        `Offene Schichten: ${offen.map((s) => `${datumText(s.tag)} ${s.bezeichnung}${s.entwurf ? " (Entwurf)" : ""}`).join(", ")}`,
+      ];
+
 /**
  * A sickness, to the business: whoever may see sickness reads the kind and when the certificate is
- * due, with the reminder to fetch the eAU; whoever plans reads „abwesend“ and the open shifts
+ * due, with the reminder to fetch the eAU; whoever plans reads „abwesend“. Each reads the open
+ * shifts, the drafts among them only whoever plans (S-503).
  */
 export const krankheitMelden = async (
   db: Db,
@@ -96,32 +105,28 @@ export const krankheitMelden = async (
   const planer = adressenMit(db, zeile.betriebId, "abwesenheiten:freigeben", zeile.nutzerId).filter(
     (adresse) => !gesundheit.includes(adresse),
   );
-  const schichten =
-    angaben.offeneSchichten.length === 0
-      ? []
-      : [
-          `Offene Schichten: ${angaben.offeneSchichten.map((s) => `${datumText(s.tag)} ${s.bezeichnung}`).join(", ")}`,
-        ];
+  const planend = adressenMit(db, zeile.betriebId, "plan:planen", zeile.nutzerId);
+  const veroeffentlicht = angaben.offeneSchichten.filter((schicht) => !schicht.entwurf);
+  /** Sends to each address the shifts it may know of */
+  const jeSicht = async (an: readonly string[], betreff: string, zeilen: readonly string[]) => {
+    const mitEntwurf = an.filter((adresse) => planend.includes(adresse));
+    const ohneEntwurf = an.filter((adresse) => !planend.includes(adresse));
+    const text = (offen: readonly GeplanteSchicht[]) =>
+      [...zeilen, ...schichtZeilen(offen)].join("\n");
+    await senden(mail, mitEntwurf, betreff, text(angaben.offeneSchichten));
+    await senden(mail, ohneEntwurf, betreff, text(veroeffentlicht));
+  };
   const frist =
     angaben.faelligAm === null
       ? []
       : [
           `Die Bescheinigung ist am ${datumText(angaben.faelligAm)} fällig (§ 5 EntgFG). Bei gesetzlich Versicherten rufst du die eAU dann über dein Lohnprogramm bei der Krankenkasse ab (§ 109 SGB IV).`,
         ];
-  await senden(
-    mail,
-    gesundheit,
-    `${name}: ${ART[zeile.art]} ${zeitraum(zeile)}`,
-    [
-      `${name} hat sich ${zeitraum(zeile)} ${ART[zeile.art]} gemeldet.`,
-      ...frist,
-      ...schichten,
-    ].join("\n"),
-  );
-  await senden(
-    mail,
-    planer,
-    `${name}: abwesend ${zeitraum(zeile)}`,
-    [`${name} ist ${zeitraum(zeile)} abwesend.`, ...schichten].join("\n"),
-  );
+  await jeSicht(gesundheit, `${name}: ${ART[zeile.art]} ${zeitraum(zeile)}`, [
+    `${name} hat sich ${zeitraum(zeile)} ${ART[zeile.art]} gemeldet.`,
+    ...frist,
+  ]);
+  await jeSicht(planer, `${name}: abwesend ${zeitraum(zeile)}`, [
+    `${name} ist ${zeitraum(zeile)} abwesend.`,
+  ]);
 };

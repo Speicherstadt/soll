@@ -176,6 +176,7 @@ describe("Schnittstelle zum Dienstplan (S-501)", () => {
       beginn: Date.parse("2026-12-23T07:00:00+01:00"),
       ende: Date.parse("2026-12-23T15:00:00+01:00"),
       bezeichnung: "Frühschicht",
+      entwurf: false,
     };
     const w = await weberMitAbwesenheiten({
       schichten: (_, nutzerId, von, bis) =>

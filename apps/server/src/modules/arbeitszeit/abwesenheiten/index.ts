@@ -10,7 +10,7 @@ export {
   abwesenheitLesen,
   type Status,
 } from "./lesen.ts";
-export { type GeplanteSchicht, ohnePlan, type Schichtquelle } from "./plan.ts";
+export type { GeplanteSchicht, Schichtquelle } from "./plan.ts";
 export {
   type AbwesenheitErgebnis,
   type AbwesenheitFehler,

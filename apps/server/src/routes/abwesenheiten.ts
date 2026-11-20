@@ -15,7 +15,6 @@ import {
   krankheitBeenden,
   krankheitMelden,
   krankMelden,
-  ohnePlan,
   type Rechte,
   type Schichtquelle,
   sollGrundlagen,
@@ -64,7 +63,7 @@ const einstellungSchema = z
   })
   .strict();
 
-export type AbwesenheitOptionen = { mail: Mailer | null; schichten?: Schichtquelle | undefined };
+export type AbwesenheitOptionen = { mail: Mailer | null; schichten: Schichtquelle };
 
 const rechteVon = (c: Context<Anfrage>): Rechte => ({
   freigeben: darf(c.get("rolle"), "abwesenheiten:freigeben"),
@@ -80,7 +79,7 @@ type Deps = { db: Db; schreibDb: SchreibDb; jetzt: () => number; optionen: Abwes
 
 /** A request and a sickness report, each for the caller, with the mails after the write */
 const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
-  const schichten = optionen.schichten ?? ohnePlan;
+  const { schichten } = optionen;
   return new Hono<Anfrage>()
     .post("/antrag", recht("stempeln"), async (c) => {
       const eingabe = await koerper(c, antragSchema);
@@ -105,12 +104,13 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
           ...sicht(zeile, true),
           urlaubHalbtage: urlaubstageVon(grundlagen, zeile),
           urlaub: urlaubsstand(grundlagen, imJahr, jahr, heute),
-          // the person's own shifts in the span, which the approver sees too (S-501)
+          // the person's own shifts in the span, as far as they are published (S-501, S-503)
           eigeneSchichten: schichten(
             kontext.betriebId,
             nutzerId,
             zeile.von,
             zeile.bis ?? zeile.von,
+            false,
           ),
         },
         201,
@@ -128,17 +128,16 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
       const { zeile } = ergebnis;
       const heute = tagInBerlin(kontext.jetzt);
       const frist = bescheinigungVon(db, zeile, heute);
-      // the planned shifts of the sickness are reported as open (S-501 fills them)
-      const offeneSchichten = schichten(
-        kontext.betriebId,
-        zeile.nutzerId,
-        zeile.von,
-        zeile.bis ?? heute,
-      );
+      // the planned shifts from today are reported to whoever plans as open, not taken off the
+      // plan; with the end still open up to the day the certificate is due (docs/plan.md)
+      // (a sickness begins today, so its certificate is never due before today)
+      const bis = zeile.bis ?? frist?.faelligAm ?? heute;
+      const geplant = schichten(kontext.betriebId, zeile.nutzerId, zeile.von, bis, true);
       await krankheitMelden(db, optionen.mail, zeile, {
         faelligAm: frist?.faelligAm ?? null,
-        offeneSchichten,
+        offeneSchichten: geplant,
       });
+      const offeneSchichten = geplant.filter((schicht) => !schicht.entwurf);
       return c.json({ ...sicht(zeile, true), frist, offeneSchichten }, 201);
     });
 };

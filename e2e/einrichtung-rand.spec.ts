@@ -96,3 +96,51 @@ test("finishing the setup fails: the step says so and stays", async ({ page }) =
   await expect(page.getByRole("alert")).toHaveText(t("fehler_speichern"));
   await expect(page).toHaveURL("/einrichtung");
 });
+
+test("a name of only spaces joins no list, so it cannot block the invitations of the others", async ({
+  page,
+}) => {
+  await bisZuDenEinladungen(page, "Name\nSandra Kühn");
+  await page.getByRole("button", { name: t("einrichtung_zurueck") }).click();
+  await page.getByLabel(t("person_name"), { exact: true }).fill("   ");
+  await page.getByRole("button", { name: t("person_hinzufuegen") }).click();
+  await expect(
+    page.getByRole("list", { name: t("mitarbeiter_liste") }).getByRole("listitem"),
+  ).toHaveCount(1);
+  await weiter(page);
+  await page.getByRole("button", { name: t("einladungen_erstellen") }).click();
+  await expect(
+    page.getByRole("list", { name: t("einladungen_liste") }).getByRole("textbox"),
+  ).toHaveCount(1);
+});
+
+test("a list longer than one request takes is invited whole", async ({ page }) => {
+  const csv = ["Name", ...Array.from({ length: 200 }, (_, i) => `Person ${i + 1}`)].join("\n");
+  await bisZuDenEinladungen(page, csv);
+  await page.getByRole("button", { name: t("einrichtung_zurueck") }).click();
+  await page.getByLabel(t("person_name"), { exact: true }).fill("Leon Brandt");
+  await page.getByRole("button", { name: t("person_hinzufuegen") }).click();
+  await weiter(page);
+  await expect(page.getByText(t("einladungen_offen", { anzahl: 201 }))).toBeVisible();
+  await page.getByRole("button", { name: t("einladungen_erstellen") }).click();
+  await expect(
+    page.getByRole("list", { name: t("einladungen_liste") }).getByRole("textbox"),
+  ).toHaveCount(201);
+});
+
+test("38,5 hours a week are stored as whole minutes that sum to the week", async ({ page }) => {
+  await amAnfang(page);
+  await weiter(page);
+  await page.getByLabel(t("standort_name"), { exact: true }).fill("Werkstatt");
+  await page.getByRole("button", { name: t("standort_hinzufuegen") }).click();
+  await expect(page.getByRole("list", { name: t("standorte_liste") })).toContainText("Werkstatt");
+  await weiter(page);
+  const vollzeit = page.getByRole("form", { name: "Vollzeit" });
+  await vollzeit.getByLabel(t("modell_stunden")).fill("38,5");
+  const gesendet = page.waitForRequest(
+    (a) => a.url().endsWith("/api/v1/arbeitszeit/modelle") && a.method() === "POST",
+  );
+  await vollzeit.getByRole("button").click();
+  expect((await gesendet).postDataJSON().sollMinuten).toEqual([462, 462, 462, 462, 462, 0, 0]);
+  await expect(page.getByRole("list", { name: t("modelle_liste") })).toContainText("38:30");
+});

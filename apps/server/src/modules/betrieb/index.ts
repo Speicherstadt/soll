@@ -143,3 +143,10 @@ export const einrichtungAbschliessen = (
   );
   return true;
 };
+
+export {
+  type Pruefeinstellungen,
+  planBetriebAus,
+  pruefeinstellungenSetzen,
+  pruefeinstellungenVon,
+} from "./pruefung.ts";

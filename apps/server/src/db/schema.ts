@@ -13,6 +13,7 @@ import {
  */
 
 export * from "./schema/erinnerungen.ts";
+export * from "./schema/personenangaben.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
@@ -28,6 +29,13 @@ export const betriebe = sqliteTable("betriebe", {
   land: text("land"),
   // When the owner finished the setup; until then the app leads the owner there (S-303)
   eingerichtetAm: integer("eingerichtet_am"),
+  // The settings the rules read (S-502); null keeps the default, never less strict than the law:
+  // the industry of § 5 Abs. 2 ArbZG (BRANCHEN), the number of § 10 Abs. 1 ArbZG that allows work
+  // on Sundays and holidays, and the Ausgleichszeitraum of § 3 Satz 2 ArbZG with its first day
+  branche: text("branche"),
+  sonntagsausnahme: integer("sonntagsausnahme"),
+  ausgleichszeitraum: text("ausgleichszeitraum", { enum: ["sechs_monate", "24_wochen"] }),
+  ausgleichBeginn: text("ausgleich_beginn"),
 });
 
 /**

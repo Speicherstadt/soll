@@ -14,6 +14,7 @@ export {
   type SignaturErgebnis,
   signaturPruefen,
 } from "./geraete.ts";
+export { istTage } from "./isttage.ts";
 export {
   type EntfernenErgebnis,
   type Modell,

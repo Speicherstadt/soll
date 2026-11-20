@@ -32,6 +32,7 @@ export const RECHTE = [
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
+  "personen:angaben",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -56,6 +57,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
+    // birth date, Mutterschutz and the like are the employer's records, read and kept by the owner;
+    // whoever plans sees only the findings they lead to (Art. 5 Abs. 1 lit. c, Art. 9 DSGVO; S-502)
+    "personen:angaben",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)

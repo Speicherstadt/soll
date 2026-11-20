@@ -78,4 +78,5 @@ Arbeitstage in Kalenderfolge zurück, je Tag die Schichten mit ihren Teilen, die
 Pausenminuten, ob der Tag vollständig ist, und die Befunde. `jetzt` entscheidet, ob eine offene
 Schicht noch läuft oder schon ein Befund ist; die Schicht nennt den Zeitpunkt (`offen.faellig`).
 Damit eine Nachtschicht am Anfang eines Zeitraums ihr Kommen behält, gibt der Aufrufer die
-Stempelungen ab dem Vortag mit.
+Stempelungen ab dem Vortag mit. Auf diesen Arbeitstagen prüft Soll Höchstarbeitszeit, Pausen und
+Ruhezeit: [Prüfung nach §§ 3 bis 5 ArbZG](pruefung.md).

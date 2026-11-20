@@ -6,6 +6,7 @@ import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
+import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
@@ -84,6 +85,7 @@ export const createApp = ({
           "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, { mail, schichten }),
           "/": zeitRouten(db, schreibDb, now),
         },
+        dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
       }),
     );
   app.route("/api/v1", v1);

@@ -18,11 +18,11 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, Urlaub freigeben, Krankheit sehen, die Frist der Bescheinigung einstellen |
-| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, Urlaub freigeben, ablehnen und stornieren; Krankheit nur als „abwesend“ |
-| Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, Urlaub beantragen, sich krank melden |
-| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, Krankheit sehen und die Bescheinigung markieren |
-| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG), stempeln |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, Urlaub freigeben, Krankheit sehen, die Frist der Bescheinigung einstellen, den Dienstplan planen |
+| Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, Urlaub freigeben, ablehnen und stornieren, den Dienstplan planen; Krankheit nur als „abwesend“ |
+| Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, Urlaub beantragen, sich krank melden, den veröffentlichten Dienstplan sehen |
+| Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, Krankheit sehen und die Bescheinigung markieren, den veröffentlichten Dienstplan sehen |
+| Betriebsrat | lesen, die Mitgliederliste (§ 80 Abs. 2 BetrVG), stempeln, den veröffentlichten Dienstplan sehen |
 | Extern | die eigenen Daten, ohne Pflicht zur Arbeitszeiterfassung; stempelt nicht, sieht aber die eigenen Zeiten aus der Zeit davor |
 | Gerät | nur PINs am Terminal prüfen |
 

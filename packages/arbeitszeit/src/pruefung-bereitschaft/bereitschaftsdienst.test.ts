@@ -200,6 +200,23 @@ describe("R-11: Bereitschaftsdienst", () => {
     ]);
   });
 
+  it("über 12 h: a rest between two shifts of the day lies before its end – § 5 Abs. 2, not § 7 Abs. 9", () => {
+    // § 7 Abs. 9 ArbZG: the 11 hours follow „im unmittelbaren Anschluss an die Beendigung der
+    // Arbeitszeit“; the 10:30 between 6:00 and 16:30 lies before the day's work ends at 23:45
+    const stempel = [
+      ...schicht(uhr(MO, "0:00"), uhr(MO, "6:00")),
+      ...schicht(uhr(MO, "16:30"), uhr(MO, "22:30")),
+      ...schicht(uhr("17", "12:00"), uhr("17", "14:00")),
+    ];
+    const eingabe = { bereitschaftsdienste: [spanne(uhr(MO, "22:45"), uhr(MO, "23:45"))] };
+    const optionen = { ...TARIF, branche: "gastronomie_beherbergung" } as const;
+    const ruhen = kurz(pruefe(stempel, eingabe, optionen)).filter(([, art]) =>
+      String(art).startsWith("ruhezeit"),
+    );
+    // the shortened rest is balanced by the 12:15 after the day's work: no finding of a rest
+    expect(ruhen).toEqual([]);
+  });
+
   it("über 12 h: a day no rule version covers is no day past 12 hours – the Hinweis of R-05 stays", () => {
     // 31.12.2025 lies before the first rule version: § 7 Abs. 9 is „nicht hinterlegt“ for it and
     // must not take the shortened rest of R-05 (rule version 2026-1, the day it ends on) away

@@ -281,4 +281,26 @@ describe("R-12: Rufbereitschaft", () => {
       },
     ]);
   });
+
+  it("§ 5 Abs. 3 on a day over 12 h: a call-out in the rest between two shifts of the day stays free – § 7 Abs. 9 wants only the rest after the day's end", () => {
+    // § 7 Abs. 9 ArbZG: „im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“; the rest
+    // 6:00 – 17:00 lies before the day's work ends at 23:45, so § 5 Abs. 3 still applies to it
+    const stempel = [
+      ...schicht(uhr(MO, "0:00"), uhr(MO, "6:00")),
+      ...schicht(uhr(MO, "17:00"), uhr(MO, "23:00")),
+      ...diSchicht("12:00", "14:00"),
+    ];
+    const eingabe = {
+      einsaetze: [spanne(uhr(MO, "10:00"), uhr(MO, "11:00"))],
+      bereitschaftsdienste: [spanne(uhr(MO, "23:15"), uhr(MO, "23:45"))],
+    };
+    const optionen = { ...KRANKENHAUS, tarif: { fundstelle: "TV-Ärzte/VKA § 10 Abs. 1" } };
+    const ruhen = kurz(pruefe(stempel, eingabe, optionen)).filter(
+      ([regel]) => regel === "R-12" || regel === "R-05" || regel === "R-11",
+    );
+    expect(ruhen).toEqual([
+      ["R-11", "ueber_10h_tarif", ["2026-11-16"]],
+      ["R-12", "einsatz_ausgleich", ["2026-11-16"]],
+    ]);
+  });
 });

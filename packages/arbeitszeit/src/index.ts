@@ -31,4 +31,5 @@ export {
 } from "./module/module.ts";
 export * from "./pruefung/index.ts";
 export * from "./pruefung-jugend/index.ts";
+export * from "./pruefung-mutterschutz/index.ts";
 export * from "./pruefung-nacht-sonntag/index.ts";

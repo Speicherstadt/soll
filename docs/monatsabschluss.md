@@ -47,8 +47,9 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
 
 Fällt nach dem Abschluss ein Fehler auf, tragen Inhaber oder Planer einen **Gegeneintrag** ein: den
 Tag, die Minuten (mit Minus zieht er ab) und einen Grund. Der abgeschlossene Monat und sein
-Prüfwert bleiben, wie sie sind. Der Gegeneintrag zählt im laufenden Monat, steht auf dessen
-Stundenzettel und auf der Prüfseite des abgeschlossenen Monats als Korrektur, nicht als Abweichung.
+Prüfwert bleiben, wie sie sind. Der Gegeneintrag zählt im laufenden Monat: Seine Minuten gehen in
+Ist und Saldo dieses Monats ein. Er steht auf dessen Stundenzettel und auf der Prüfseite des
+abgeschlossenen Monats als Korrektur, nicht als Abweichung.
 
 ## Stundenzettel
 

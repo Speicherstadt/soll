@@ -47,7 +47,7 @@ export type Monatsinhalt = {
   summen: Summen | null;
   nichtHinterlegt: Tag[];
   befunde: Blattbefund[];
-  /** counter-entries to closed months entered in this month; Ist and balance do not include them */
+  /** counter-entries to closed months entered in this month; Ist and balance include them */
   gegeneintraege: Gegeneintrag[];
 };
 

@@ -167,6 +167,19 @@ const summenDesMonats = (
   };
 };
 
+/**
+ * A counter-entry counts in the month it is entered in (docs/plan.md, "Korrektur nach dem
+ * Abschluss"): its minutes go into the Ist and the balance of that month
+ */
+const mitGegeneintraegen = (summen: Summen, gegeneintraege: readonly Gegeneintrag[]): Summen => {
+  const minuten = gegeneintraege.reduce((summe, eintrag) => summe + eintrag.minuten, 0);
+  return {
+    ...summen,
+    istMinuten: summen.istMinuten + minuten,
+    saldoMinuten: summen.saldoMinuten + minuten,
+  };
+};
+
 /** Counter-entries entered in a month (`gebucht_in`) or made to its days (`tag`) */
 export const gegeneintraegeVon = (
   db: Db,
@@ -221,6 +234,7 @@ export const monatJetzt = (
   const alle = ergebnis.ok ? ergebnis.wert : [];
   const tage = aufzeichnungen(monat, stempel, (tag) => sollAm(db, betriebId, nutzerId, tag));
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
+  const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
   const { summen, nichtHinterlegt } = summenDesMonats(
     db,
     betriebId,
@@ -234,10 +248,10 @@ export const monatJetzt = (
       monat,
       nutzerId,
       tage,
-      summen,
+      summen: summen && mitGegeneintraegen(summen, gegeneintraege),
       nichtHinterlegt,
       befunde: befundeDesMonats(alle, monat, jetzt, feiertageUm(standortVon(db, betriebId), monat)),
-      gegeneintraege: gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat }),
+      gegeneintraege,
     }),
     // a day with a shift still open; a stamp without Kommen opens none (it is an R-01 finding)
     offeneTage: imMonat

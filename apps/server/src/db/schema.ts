@@ -15,6 +15,7 @@ import {
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";
+export * from "./schema/zugaenge.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
@@ -115,7 +116,8 @@ export const stempelungen = sqliteTable(
     }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
-    quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
+    // "api": stamped with a personal access token (S-607)
+    quelle: text("quelle", { enum: ["app", "terminal", "api"] }).notNull(),
     ersetzt: text("ersetzt"),
     entfernt: integer("entfernt", { mode: "boolean" }).notNull().default(false),
     // required for every row a person entered by hand: an addition, a change, a removal

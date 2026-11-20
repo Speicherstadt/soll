@@ -34,6 +34,7 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   datev_einstellungen:
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
+  api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -95,6 +96,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   datev_personalnummern: frei(
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
   ),
+  api_zugaenge: aus("Zugänge der Person zur API sieht der Inhaber sonst nirgends"),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

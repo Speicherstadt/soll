@@ -21,12 +21,18 @@ const OHNE_MODUL: readonly string[] = [
   "DELETE /api/v1/standorte/:standortId",
   "POST /api/v1/einladungen",
   "POST /api/v1/einladungen/liste",
+  // a person's own tokens for the API serve every module (S-607)
+  "GET /api/v1/zugaenge",
+  "POST /api/v1/zugaenge",
+  "DELETE /api/v1/zugaenge/:zugangId",
   // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
   "GET /api/v1/auskunft",
   // public: an invitation and the check page of a Prüfwert (docs/plan.md, "Prüfseite")
   "GET /api/v1/einladung/:token",
   "POST /api/v1/einladung/:token/annehmen",
   "POST /api/v1/pruefen",
+  // public: the description of the API (S-607)
+  "GET /api/v1/openapi.json",
 ];
 
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;

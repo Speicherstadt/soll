@@ -24,7 +24,7 @@ const lohnartenSchema = z.partialRecord(
   z.string().trim().regex(DATEV_FORMAT.lohnart),
 );
 
-const einstellungenSchema = z
+export const einstellungenSchema = z
   .object({
     beraterNr: nummer(DATEV_FORMAT.beraterNr),
     mandantenNr: nummer(DATEV_FORMAT.mandantenNr),
@@ -33,7 +33,7 @@ const einstellungenSchema = z
   })
   .strict();
 
-const exportSchema = z
+export const exportSchema = z
   .object({ monat: z.string().refine(istMonat), ziel: z.enum(["lodas", "lug"]) })
   .strict();
 

@@ -12,7 +12,7 @@ const id = z.string().min(1).nullable().default(null);
 const tag = z.string().refine(istTag);
 
 /** A rate names an order or a customer, not both: the order brings its customer */
-const neuSchema = z
+export const neuSchema = z
   .object({
     kundeId: id,
     projektId: id,
@@ -24,7 +24,7 @@ const neuSchema = z
   .strict()
   .refine(({ kundeId, projektId }) => kundeId === null || projektId === null);
 
-const giltSchema = z.object({
+export const giltSchema = z.object({
   projektId: z.string().min(1).nullable().default(null),
   taetigkeitId: z.string().min(1),
   nutzerId: z.string().min(1),

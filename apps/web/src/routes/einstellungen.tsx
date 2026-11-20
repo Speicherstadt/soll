@@ -11,6 +11,7 @@ import { Darstellung } from "../rahmen/darstellung.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { abgemeldet, sitzungNeu } from "../sitzung/sitzung.ts";
+import { Zugaenge } from "../zugaenge/zugaenge.tsx";
 
 const Einstellungen = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Einstellungen = () => {
       <ModuleSchalter />
       <Erinnerungen />
       <DatevZuordnung />
+      <Zugaenge />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>
         <Darstellung />

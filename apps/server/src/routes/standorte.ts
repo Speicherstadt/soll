@@ -9,7 +9,7 @@ import { type Anfrage, recht } from "./kontext.ts";
 const REGION_NAMEN = Object.keys(REGIONEN) as [Region, ...Region[]];
 
 /** A site; its regions must lie in its Land (REGIONEN in packages/arbeitszeit) */
-const standortSchema = z
+export const standortSchema = z
   .object({
     name: z.string().trim().min(1).max(100),
     adresse: z.string().trim().max(200).default(""),

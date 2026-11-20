@@ -11,7 +11,7 @@ import {
 } from "../modules/betrieb/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const moduleSchema = z
+export const moduleSchema = z
   .object({
     arbeitszeit: z.boolean(),
     dienstplan: z.boolean(),

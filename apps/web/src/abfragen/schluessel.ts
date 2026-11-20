@@ -26,6 +26,7 @@ export const PFAD = {
   taetigkeiten: `${PZ}/taetigkeiten`,
   saetze: `${PZ}/saetze`,
   satzPersonen: `${PZ}/saetze/personen`,
+  zugaenge: "/api/v1/zugaenge",
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -62,6 +63,7 @@ export const ressourcen = {
   taetigkeiten: () => einfach(PFAD.taetigkeiten),
   saetze: () => einfach(PFAD.saetze),
   satzPersonen: () => einfach(PFAD.satzPersonen),
+  zugaenge: () => einfach(PFAD.zugaenge),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

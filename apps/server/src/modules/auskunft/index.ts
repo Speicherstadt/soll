@@ -45,6 +45,7 @@ const zeilenVon = (
   projekt: Projektteil,
   lohn: Lohnteil,
   einladungen: { einladungId: string }[],
+  zugaenge: { zugangId: string }[],
 ) =>
   ({
     pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
@@ -61,6 +62,7 @@ const zeilenVon = (
     einladungen: einladungen.map(({ einladungId }) => ({ einladungId })),
     stundensaetze: projekt.stundensaetze.map(({ satzId }) => ({ satzId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
+    apiZugaenge: zugaenge.map(({ zugangId }) => ({ zugangId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -85,7 +87,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     db,
     betriebId,
     nutzerId,
-    zeilenVon(nutzerId, arbeit, erinnerung, projekt, lohn, konto.einladungen),
+    zeilenVon(nutzerId, arbeit, erinnerung, projekt, lohn, konto.einladungen, konto.zugaenge),
     name,
     iso,
   );

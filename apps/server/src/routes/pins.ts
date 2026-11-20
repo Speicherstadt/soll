@@ -5,7 +5,7 @@ import { mitgliedschaftVon } from "../modules/mitglieder/index.ts";
 import { istPin, pinPruefen, pinSetzen } from "../modules/pin/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const pinSchema = z.object({ pin: z.string().refine(istPin) }).strict();
+export const pinSchema = z.object({ pin: z.string().refine(istPin) }).strict();
 
 const kontextVon = (
   c: { get: (key: "betriebId" | "nutzerId") => string },

@@ -1,4 +1,5 @@
 import {
+  apiZugaenge,
   arbeitszeitmodelle,
   bedarfe,
   betriebe,
@@ -56,6 +57,7 @@ export const kettenTabellen = {
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
   datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
+  apiZugaenge: { tabelle: apiZugaenge, schluessel: ["zugangId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

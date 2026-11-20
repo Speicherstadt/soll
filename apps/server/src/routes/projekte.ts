@@ -30,14 +30,14 @@ const budget = {
   warnungProzent: z.number().int().min(1).max(100),
 };
 
-const neuSchema = z
+export const neuSchema = z
   .object({ kundeId: z.string().min(1), name, nummer, ...budget })
   .partial({ nummer: true, budgetMinuten: true, budgetCent: true, warnungProzent: true })
   .extend(extern)
   .strict()
   .refine(beideOderKeins);
 
-const aenderungSchema = z
+export const aenderungSchema = z
   .object({ name, nummer, ...budget, archiviert })
   .partial()
   .strict()

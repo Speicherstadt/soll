@@ -21,12 +21,16 @@ import {
   ungueltig,
 } from "./projektzeit-gemeinsam.ts";
 
-const neuSchema = z
+export const neuSchema = z
   .object({ name, nummer: nummer.optional(), ...extern })
   .strict()
   .refine(beideOderKeins);
 
-const aenderungSchema = z.object({ name, nummer, archiviert }).partial().strict().refine(nichtLeer);
+export const aenderungSchema = z
+  .object({ name, nummer, archiviert })
+  .partial()
+  .strict()
+  .refine(nichtLeer);
 
 /** The customers of the caller's business, below /api/v1/projektzeit (S-601) */
 export const kundenRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>

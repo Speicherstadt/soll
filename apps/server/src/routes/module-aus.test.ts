@@ -27,6 +27,12 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/einladung/:token",
   "POST /api/v1/einladung/:token/annehmen",
   "POST /api/v1/pruefen",
+  // the tablet's own API: a device token instead of a session, refused with its business's module
+  // Terminal by kiosk.ts itself (terminal-kopplung.test.ts, "the module Terminal switched off")
+  "POST /api/v1/kiosk/koppeln",
+  "GET /api/v1/kiosk",
+  "POST /api/v1/kiosk/erkennen",
+  "POST /api/v1/kiosk/stempeln",
 ];
 
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;

@@ -18,7 +18,7 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln und QR-Codes ausstellen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
 | Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, den Dienstplan planen |
 | Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, den veröffentlichten Dienstplan sehen |
 | Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, den veröffentlichten Dienstplan sehen |
@@ -47,12 +47,18 @@ Hash des Links, nicht der Link selbst. Passkeys lassen sich danach zum Konto hin
 
 ## PIN
 
-Für das Terminal setzt der Inhaber jeder Person eine PIN aus 4 bis 8 Ziffern; gespeichert wird sie
+Für das Terminal setzt der Inhaber jeder Person eine PIN aus 6 bis 8 Ziffern; gespeichert wird sie
 als Hash (Argon2id). Nach **fünf falschen Versuchen in Folge** ist sie gesperrt, bis der Inhaber eine
 neue setzt; eine richtige PIN dazwischen setzt den Zähler zurück. Jeder Fehlversuch steht in der
 Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nicht mehr erkannt.
 PINs gehören zum Modul Terminal: Ist es aus, lehnt der Server Setzen und Prüfen ab; gesetzte PINs
 bleiben und gelten wieder, sobald es an ist.
+
+Am [Terminal](terminal.md) erkennt die PIN die Person allein. Deshalb gibt es jede PIN im Betrieb
+nur einmal, und Soll speichert daneben eine Kennung (HMAC-SHA-256 mit einem Schlüssel aus
+`SOLL_SECRET_KEY`), über die es die Person findet; eine gesperrte PIN gilt dort nicht. Falsche
+Versuche am Terminal sperren das Terminal, nicht die Person. Eine PIN mit 4 oder 5 Ziffern von vor
+S-801 wird weiter geprüft, neu setzen lässt sich nur eine mit 6 bis 8.
 
 ## Module
 

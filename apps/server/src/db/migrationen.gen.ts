@@ -49,7 +49,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `projektzeiten` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`projekt_id` text,\n\t`taetigkeit_id` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer,\n\t`tag` text NOT NULL,\n\t`notiz` text DEFAULT '' NOT NULL,\n\t`abgerechnet_am` integer,\n\t`cent_pro_stunde` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `projektzeiten_person` ON `projektzeiten` (`betrieb_id`,`nutzer_id`,`beginn`);--> statement-breakpoint\nCREATE INDEX `projektzeiten_projekt` ON `projektzeiten` (`betrieb_id`,`projekt_id`);--> statement-breakpoint\nCREATE INDEX `projektzeiten_taetigkeit` ON `projektzeiten` (`betrieb_id`,`taetigkeit_id`);--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_laeuft` ON `projektzeiten` (`betrieb_id`,`nutzer_id`) WHERE \"projektzeiten\".\"ende\" is null;"
   },
   {
-    "tag": "0012_auslastung",
+    "tag": "0012_terminal",
+    "sql": "CREATE TABLE `ausweise` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`token_hash` text NOT NULL,\n\t`ausgestellt_von` text NOT NULL,\n\t`ausgestellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `ausweise_token_hash_unique` ON `ausweise` (`token_hash`);--> statement-breakpoint\nCREATE TABLE `terminals` (\n\t`betrieb_id` text NOT NULL,\n\t`terminal_id` text NOT NULL,\n\t`name` text NOT NULL,\n\t`kopplung_hash` text,\n\t`kopplung_bis` integer,\n\t`token_hash` text,\n\t`gekoppelt_am` integer,\n\t`widerrufen_am` integer,\n\t`fehlversuche` integer DEFAULT 0 NOT NULL,\n\t`sperren` integer DEFAULT 0 NOT NULL,\n\t`gesperrt_bis` integer,\n\t`fehler_tag` text,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `terminal_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `terminals_kopplung_hash_unique` ON `terminals` (`kopplung_hash`);--> statement-breakpoint\nCREATE UNIQUE INDEX `terminals_token_hash_unique` ON `terminals` (`token_hash`);--> statement-breakpoint\nALTER TABLE `pins` ADD `pin_kennung` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `pins_kennung` ON `pins` (`betrieb_id`,`pin_kennung`);--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `terminal_id` text;"
+  },
+  {
+    "tag": "0013_auslastung",
     "sql": "ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;"
   }
 ];

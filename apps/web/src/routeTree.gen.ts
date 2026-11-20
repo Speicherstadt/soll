@@ -22,6 +22,7 @@ import { Route as MonatRouteImport } from './routes/monat'
 import { Route as ProjekteRouteImport } from './routes/projekte'
 import { Route as PruefenRouteImport } from './routes/pruefen'
 import { Route as RegistrierenRouteImport } from './routes/registrieren'
+import { Route as TerminalRouteImport } from './routes/terminal'
 import { Route as ZeitenRouteImport } from './routes/zeiten'
 import { Route as EinladungTokenRouteImport } from './routes/einladung.$token'
 
@@ -90,6 +91,11 @@ const RegistrierenRoute = RegistrierenRouteImport.update({
   path: '/registrieren',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalRoute = TerminalRouteImport.update({
+  id: '/terminal',
+  path: '/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ZeitenRoute = ZeitenRouteImport.update({
   id: '/zeiten',
   path: '/zeiten',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   ProjekteRoute: typeof ProjekteRoute
   PruefenRoute: typeof PruefenRoute
   RegistrierenRoute: typeof RegistrierenRoute
+  TerminalRoute: typeof TerminalRoute
   ZeitenRoute: typeof ZeitenRoute
   EinladungTokenRoute: typeof EinladungTokenRoute
 }
@@ -318,6 +331,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof RegistrierenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminal': {
+      id: '/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof TerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/zeiten': {
       id: '/zeiten'
       path: '/zeiten'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjekteRoute: ProjekteRoute,
   PruefenRoute: PruefenRoute,
   RegistrierenRoute: RegistrierenRoute,
+  TerminalRoute: TerminalRoute,
   ZeitenRoute: ZeitenRoute,
   EinladungTokenRoute: EinladungTokenRoute,
 }

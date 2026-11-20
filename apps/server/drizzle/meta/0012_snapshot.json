@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5bed3d39-d149-4a2c-9632-bd76175a93a0",
+  "id": "02dd1775-afce-4863-97f1-f0b31e190bd5",
   "prevId": "54e04e6e-eaba-409b-95cd-eea7e41c9331",
   "tables": {
     "arbeitszeitmodelle": {
@@ -415,13 +415,6 @@
         },
         "pflicht_hinweis_am": {
           "name": "pflicht_hinweis_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "auswertung_je_person_seit": {
-          "name": "auswertung_je_person_seit",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -913,9 +906,25 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "pin_kennung": {
+          "name": "pin_kennung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "pins_kennung": {
+          "name": "pins_kennung",
+          "columns": [
+            "betrieb_id",
+            "pin_kennung"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "pins_betrieb_id_nutzer_id_pk": {
@@ -1327,6 +1336,13 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "terminal_id": {
+          "name": "terminal_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1765,6 +1781,200 @@
             "abo_id"
           ],
           "name": "push_abos_betrieb_id_abo_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "ausweise": {
+      "name": "ausweise",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ausgestellt_von": {
+          "name": "ausgestellt_von",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ausgestellt_am": {
+          "name": "ausgestellt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "ausweise_token_hash_unique": {
+          "name": "ausweise_token_hash_unique",
+          "columns": [
+            "token_hash"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "ausweise_betrieb_id_nutzer_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "nutzer_id"
+          ],
+          "name": "ausweise_betrieb_id_nutzer_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "terminals": {
+      "name": "terminals",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "terminal_id": {
+          "name": "terminal_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kopplung_hash": {
+          "name": "kopplung_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "kopplung_bis": {
+          "name": "kopplung_bis",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gekoppelt_am": {
+          "name": "gekoppelt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "widerrufen_am": {
+          "name": "widerrufen_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fehlversuche": {
+          "name": "fehlversuche",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "sperren": {
+          "name": "sperren",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "gesperrt_bis": {
+          "name": "gesperrt_bis",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fehler_tag": {
+          "name": "fehler_tag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_von": {
+          "name": "angelegt_von",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "terminals_kopplung_hash_unique": {
+          "name": "terminals_kopplung_hash_unique",
+          "columns": [
+            "kopplung_hash"
+          ],
+          "isUnique": true
+        },
+        "terminals_token_hash_unique": {
+          "name": "terminals_token_hash_unique",
+          "columns": [
+            "token_hash"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "terminals_betrieb_id_terminal_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "terminal_id"
+          ],
+          "name": "terminals_betrieb_id_terminal_id_pk"
         }
       },
       "uniqueConstraints": {},

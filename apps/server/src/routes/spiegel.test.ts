@@ -130,9 +130,9 @@ describe("the terminal", () => {
     const max = await einladen(server, weber, "mitarbeiter", "max");
     await einladen(server, weber, "geraet", "terminal");
     const terminal = await anmelden(server, weber, "terminal");
-    await weber.anfrage(`/api/v1/terminal/pins/${max}`, { method: "PUT", body: { pin: "4711" } });
+    await weber.anfrage(`/api/v1/terminal/pins/${max}`, { method: "PUT", body: { pin: "471100" } });
     const pruefen = () =>
-      terminal.anfrage(`/api/v1/terminal/pins/${max}/pruefen`, { body: { pin: "4711" } });
+      terminal.anfrage(`/api/v1/terminal/pins/${max}/pruefen`, { body: { pin: "471100" } });
     expect((await pruefen()).status).toBe(200);
     const entfernt = await weber.anfrage("/api/auth/organization/remove-member", {
       body: { memberIdOrEmail: await mitgliedId(weber, max), organizationId: weber.betriebId },

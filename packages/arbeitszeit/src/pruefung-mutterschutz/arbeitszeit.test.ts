@@ -116,9 +116,7 @@ describe("R-21: Arbeitszeit in der Schwangerschaft und Stillzeit", () => {
       ...woche("2026-11-04", ["7:00", "7:00", "7:00", "7:00", "7:00"]),
       ...woche("2026-11-09", ["7:00", "7:00", "7:00", "7:00", "7:00", "7:00", "7:00"]),
     ];
-    expect(
-      mutterschutzArbeitszeit(ab18, { ...LEA, geburtsdatum: "2008-11-04" }).befunde,
-    ).toEqual([
+    expect(mutterschutzArbeitszeit(ab18, { ...LEA, geburtsdatum: "2008-11-04" }).befunde).toEqual([
       expect.objectContaining({
         art: "doppelwoche",
         norm: "§ 4 Abs. 1 Satz 2 und 3 MuSchG",

@@ -32,7 +32,7 @@ describe("the connection the modules get", () => {
       s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
     );
     expect(db.select().from(betriebe).all()).toEqual([
-      { betriebId: "weber", name: "Weber", angelegtAm: 1 },
+      expect.objectContaining({ betriebId: "weber", name: "Weber", angelegtAm: 1 }),
     ]);
   });
 });

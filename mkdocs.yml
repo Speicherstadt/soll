@@ -57,6 +57,7 @@ markdown_extensions:
       custom_checkbox: true
 nav:
   - Soll: index.md
+  - Anmeldung, Rollen und Module: anmeldung.md
   - Feiertage: feiertage.md
   - Entwicklung:
       - Projektplan: plan.md

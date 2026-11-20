@@ -9,7 +9,14 @@ import { kettenTabellen } from "./tabellen.ts";
 const SRC = join(import.meta.dirname, "../..");
 
 /** The only files that may write: the chain itself, and the migrations on their own bookkeeping table */
-const ERLAUBT = new Set(["modules/audit/schreiben.ts", "db/migrieren.ts", "db/oeffnen.ts"]);
+const ERLAUBT = new Set([
+  "modules/audit/schreiben.ts",
+  "db/migrieren.ts",
+  "db/oeffnen.ts",
+  // Better Auth writes its own tables (users, sessions, organizations, members), which stay outside
+  // the chain by design (CLAUDE.md); its hooks write Soll's mirror of them through `schreiben`
+  "auth/auth.ts",
+]);
 
 const TABELLEN = Object.keys(schema).join("|");
 

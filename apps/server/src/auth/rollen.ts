@@ -1,0 +1,54 @@
+/**
+ * The roles of a business (BAULISTE.md S-106) and what each may do in Soll. Better Auth stores the
+ * role at the member; the rights are checked here, on the server, for every route.
+ */
+export const ROLLEN = [
+  "inhaber",
+  "planer",
+  "mitarbeiter",
+  "lohnbuero",
+  "betriebsrat",
+  "extern",
+  "geraet",
+] as const;
+
+export type Rolle = (typeof ROLLEN)[number];
+
+export const RECHTE = [
+  "betrieb:lesen",
+  "betrieb:module",
+  "mitglieder:einladen",
+  "mitglieder:rolle",
+  "pin:setzen",
+  "pin:pruefen",
+] as const;
+
+export type Recht = (typeof RECHTE)[number];
+
+const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
+  inhaber: [
+    "betrieb:lesen",
+    "betrieb:module",
+    "mitglieder:einladen",
+    "mitglieder:rolle",
+    "pin:setzen",
+  ],
+  planer: ["betrieb:lesen", "mitglieder:einladen"],
+  mitarbeiter: ["betrieb:lesen"],
+  lohnbuero: ["betrieb:lesen"],
+  betriebsrat: ["betrieb:lesen"],
+  extern: ["betrieb:lesen"],
+  // the terminal checks PINs and nothing else (S-801)
+  geraet: ["pin:pruefen"],
+};
+
+export const istRolle = (wert: unknown): wert is Rolle => ROLLEN.includes(wert as Rolle);
+
+export const darf = (rolle: string, recht: Recht): boolean =>
+  istRolle(rolle) && RECHTE_JE_ROLLE[rolle].includes(recht);
+
+/**
+ * Roles of people who work for the business: while one of them is a member, working time cannot be
+ * switched off (docs/plan.md, "Module"). The owner alone, external staff and devices are not.
+ */
+export const BESCHAEFTIGT: readonly Rolle[] = ["planer", "mitarbeiter", "lohnbuero", "betriebsrat"];

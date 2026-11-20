@@ -194,7 +194,7 @@ den Hash des Inhalts gebildet (S-102), gebaut wird die Aussonderung in S-901.
 | `betriebe`, `standorte` | Name, Module, Bundesland, Abschluss der Einrichtung; je Standort Name, Adresse, Bundesland und Regionen | Audit-Kette |
 | `mitarbeiter` | Eintritt, Austritt, Geburtsdatum, Personalnummer, Art (beschäftigt, extern), Mutterschutz mit Zeitraum | Audit-Kette |
 | `arbeitszeitmodelle` | Soll in Minuten je Wochentag, Lohn je Monat oder Stunde in Cent (oder nicht hinterlegt), Minijob, gültig ab; Zuschläge und Pausenabzug folgen mit S-207 und S-208 | Audit-Kette |
-| `stempelungen` | Person, Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Nachtrag, Änderung und Entfernung, ersetzte Zeile, erfasst und ersetzt am (für § 17 MiLoG) | Audit-Kette; nur anfügen; gesperrt beim Abschluss |
+| `stempelungen` | Person, Art, Zeitpunkt Server und Gerät, Quelle, Grund bei Nachtrag, Änderung und Entfernung, ersetzte Zeile; für § 17 MiLoG gilt `erstellt_am` als erfasst und das `erstellt_am` der ersetzenden Zeile als ersetzt | Audit-Kette; nur anfügen; gesperrt beim Abschluss |
 | `modellzuordnungen` | Person, Arbeitszeitmodell, gültig ab | Audit-Kette |
 | `korrekturen` | nach dem Abschluss: Tag, neuer Wert, Grund, Bestätigung | Audit-Kette; nur anfügen |
 | `abwesenheiten` | Art, von, bis, halbe Tage, Status, Bescheinigung liegt vor (eAU oder Papier im Büro) | Audit-Kette; im abgeschlossenen Monat gesperrt |

@@ -578,12 +578,41 @@ Die Höhe des Mindestlohns und die Minijob-Grenze stehen nicht hier, sondern als
 Gilt für Beschäftigte unter 18 Jahren am Arbeitstag (Geburtsdatum am Mitarbeiter, § 2 Abs. 2
 JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 
+- **Alter**: Soll nimmt vom Mitarbeiter nur das Geburtsdatum. Ein Lebensjahr ist mit dem Ablauf des
+  Tages vor dem Geburtstag vollendet (§ 187 Abs. 2 Satz 2, § 188 Abs. 2 BGB): Die Regeln gelten bis
+  zum Tag vor dem 18. Geburtstag, am Geburtstag nicht mehr. Wer am 29. Februar geboren ist, wird in
+  einem Jahr ohne 29. Februar am 1. März 18 (§ 188 Abs. 2 und 3 BGB). Unter 15 gelten die strengeren
+  Regeln für Kinder (§§ 5 bis 7 JArbSchG), die Soll nicht prüft; die Regeln für Jugendliche prüft
+  es auch dann.
+- **Woche** ist Montag bis Sonntag (§ 4 Abs. 4 Satz 1 JArbSchG). In Wochen, Monate und
+  Schichtzeiten zählen nur die Tage, an denen die Person noch nicht 18 ist; für eine Ruhezeit genügt
+  es, dass sie es an einem der beiden Tage ist.
+- **Einstellungen** (Vorgabe nie weniger streng als das Gesetz): Branche (Gaststätten,
+  Schausteller, Landwirtschaft und Tierhaltung, Bäckereien und Konditoreien, Bergbau unter Tage;
+  Vorgabe keine), mehrschichtiger Betrieb (Vorgabe nein), die Tage auf Bau- und Montagestellen,
+  die Berufsschultage mit Unterricht vor 9 Uhr (ohne Eintrag kann jeder Tag einer sein) und die
+  Ausnahmen nach § 16 Abs. 2 und § 17 Abs. 2 (Vorgabe keine; die Branche bringt ihre mit:
+  Gaststätten Samstag Nr. 6 und Sonntag Nr. 8, Schausteller Nr. 6 und Nr. 4, Landwirtschaft und
+  Tierhaltung Samstag Nr. 4, Bäckereien und Konditoreien Samstag Nr. 2). Die Ausnahmen nach § 14
+  Abs. 5 bis 7 (Anzeige an die Aufsichtsbehörde, Hitze, Aufführungen, Sport) und die Verteilung nach
+  § 8 Abs. 2 und 3 prüft Soll nicht; ohne sie gelten die strengeren Grenzen.
+
 ### R-15 Arbeitszeit
 
 - **Norm**: § 8 Abs. 1 JArbSchG: „nicht mehr als acht Stunden täglich und nicht mehr als 40 Stunden
   wöchentlich“; Abs. 2a: bis 8,5 h, wenn an anderen Werktagen derselben Woche weniger als 8 h.
 - **Grenzwerte**: Tag ≤ 8:00, oder ≤ 8:30, wenn die Woche 40:00 nicht übersteigt und an einem
   anderen Werktag weniger als 8 h gearbeitet wird; Woche (Mo–So) ≤ 40:00.
+- **Verkürzt** ist ein anderer Werktag derselben Woche (Montag bis Samstag, kein Feiertag am
+  Standort), an dem die Person arbeitet, aber weniger als 8:00. Ein freier Tag ist keine verkürzte
+  Arbeitszeit (vorsichtige Auslegung von „an einzelnen Werktagen die Arbeitszeit … verkürzt“).
+  8:30 gelten nur an einem Werktag („an den übrigen Werktagen“), an einem Sonn- oder Feiertag
+  bleibt es bei 8:00.
+- **Feiertage**: Die Arbeitszeit, die an einem Werktag wegen eines gesetzlichen Feiertags ausfällt,
+  zählt zur Woche (§ 4 Abs. 4 Satz 2 JArbSchG). Solange das Soll des Tages nicht bekannt ist (S-208),
+  rechnet Soll 8:00 für jeden Feiertag von Montag bis Freitag ohne Arbeit, am Samstag nur mit einer
+  Ausnahme nach § 16 Abs. 2, und nur so viele, dass mit den gearbeiteten Tagen höchstens fünf Tage
+  der Woche Arbeitstage sind (§ 15).
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -591,12 +620,22 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | erlaubt | Mo–Fr je 8:00 (40:00) | kein Befund | § 8 Abs. 1 JArbSchG |
 | Grenze | Mo–Do je 8:30, Fr 6:00 (40:00) | kein Befund | § 8 Abs. 2a JArbSchG |
 | Verstoß | Mo–Fr je 8:00, Sa 0:30 (40:30) | Verstoß „über 40 h in der Woche“ | § 8 Abs. 1 JArbSchG |
-| Verstoß | Mo 8:31 | Verstoß „über 8:30“ | § 8 Abs. 2a JArbSchG |
+| Verstoß | Mo 8:31, Di 6:00 | Verstoß „über 8:30“ für Mo | § 8 Abs. 2a JArbSchG |
+| ohne kürzeren Tag | Mo 8:31 | Verstoß „über 8 h“, 31 Minuten über | § 8 Abs. 1 JArbSchG (8:30 nur nach Abs. 2a) |
+| kein Ausgleich | Mo–Do je 8:30, Fr frei (34:00) | Verstoß „über 8 h“ für Mo bis Do | § 8 Abs. 2a JArbSchG („an einzelnen Werktagen die Arbeitszeit auf weniger als acht Stunden verkürzt“) |
+| Feiertag | Hamburg, Woche mit Pfingstmontag 25.5.2026, Di–Do je 8:30, Fr 7:00 (32:30) | Verstoß „über 40 h in der Woche“: 8:00 für den Feiertag angerechnet (40:30) | § 4 Abs. 4 Satz 2 JArbSchG |
+| Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:31 | Verstoß „über 8 h“ nur für Mo | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2 BGB |
+| 29. Februar | geboren 29.2.2008: Sa 28.2.2026 und So 1.3.2026 je 8:31 | Verstoß „über 8 h“ nur für den 28.2. (18 ab dem 1.3.) | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2, § 188 Abs. 2 und 3 BGB |
+| Sonntag | Café, Mo 16.11.2026 6:00, So 22.11.2026 8:15 | Verstoß „über 8 h“ für So | § 8 Abs. 2a JArbSchG („an den übrigen Werktagen“) |
 
 ### R-16 Ruhepausen
 
 - **Norm**: § 11 Abs. 1 JArbSchG: 30 min bei mehr als 4,5 bis 6 h, 60 min bei mehr als 6 h, Blöcke
   ab 15 min; Abs. 2: frühestens 1 h nach Beginn, spätestens 1 h vor Ende, höchstens 4,5 h am Stück.
+- **Je Schicht** wie R-04: Arbeitszeit bis 4:30 keine Pause, über 4:30 bis 6:00 mindestens 30 min,
+  über 6:00 mindestens 60 min; eine Unterbrechung unter 15 min ist Arbeitszeit; kein Block ohne Pause
+  über 4:30. Die Lage prüft Soll an jeder Ruhepause einer Schicht, die eine Pause braucht: Beginn
+  frühestens 1:00 nach dem Beginn der Schicht, Ende spätestens 1:00 vor ihrem Ende.
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -605,11 +644,16 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Grenze | 6:01 Arbeit, 60 min Pause, erste Pause nach 1:00 | kein Befund | § 11 Abs. 1 Nr. 2, Abs. 2 JArbSchG |
 | Verstoß | 6:01 Arbeit, 45 min Pause | Verstoß „Pause fehlt 15 min“ | § 11 Abs. 1 Nr. 2 JArbSchG |
 | Verstoß | Pause nach 0:59 Arbeit | Verstoß „Pause zu früh“ | § 11 Abs. 2 Satz 1 JArbSchG |
+| eine Pause | 1:00 Arbeit, 60 min Pause, 5:01 Arbeit | Verstoß „über 4:30 ohne Pause“ (die Grenze braucht eine zweite Pause) | § 11 Abs. 2 Satz 2 JArbSchG |
+| am Stück | 4:31 Arbeit, 30 min Pause, 0:59 Arbeit (5:30) | Verstoß „über 4:30 ohne Pause“ und „Pause zu spät“ | § 11 Abs. 2 JArbSchG |
+| zu spät | 4:00 Arbeit, 30 min Pause, 0:59 Arbeit (4:59) | Verstoß „Pause zu spät“ | § 11 Abs. 2 Satz 1 JArbSchG („spätestens eine Stunde vor Ende“) |
 
 ### R-17 Schichtzeit
 
 - **Norm**: § 12 JArbSchG: Schichtzeit (Arbeitszeit mit Pausen, § 4 Abs. 2) höchstens 10 h; im
   Bergbau unter Tage 8 h; im Gaststättengewerbe, in Landwirtschaft und Tierhaltung, auf Bau- und Montagestellen 11 h.
+- **Grenzwerte**: Schichtzeit eines Arbeitstags vom ersten Beginn bis zum letzten Ende seiner
+  Schichten, in echten Minuten (§ 4 Abs. 2: die tägliche Arbeitszeit mit allen Pausen).
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -618,6 +662,8 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Grenze | 7:00 – 17:00 (10:00) | kein Befund | § 12 JArbSchG |
 | Verstoß | 7:00 – 17:01 (10:01), kein Montageeinsatz | Verstoß „Schichtzeit über 10 h“ | § 12 JArbSchG |
 | Montage | 7:00 – 18:00 (11:00) auf einer Montagestelle | kein Befund | § 12 JArbSchG |
+| Gaststätte | Café, 10:00 – 21:01 (11:01) | Verstoß „Schichtzeit über 11 h“ | § 12 JArbSchG |
+| zwei Schichten | Mo 6:00 – 9:00 und 18:00 – 20:00 | Verstoß „Schichtzeit über 10 h“ (14:00 vom ersten Beginn bis zum letzten Ende) | § 4 Abs. 2, § 12 JArbSchG |
 
 ### R-18 Tägliche Freizeit
 
@@ -630,6 +676,8 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | erlaubt | 17:00 – 7:00 (14:00) | kein Befund | § 13 JArbSchG |
 | Grenze | 19:00 – 7:00 (12:00) | kein Befund | § 13 JArbSchG |
 | Verstoß | 19:01 – 7:00 (11:59) | Verstoß „Freizeit 11:59“ | § 13 JArbSchG |
+| Herbst | Sa 24.10.2026 19:00 – So 6:00 (12:00 echte Zeit) | kein Befund | § 13 JArbSchG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Sa 27.3.2027 19:00 – So 7:00 (11:00 echte Zeit) | Verstoß „Freizeit 11:00“ | § 13 JArbSchG; SoZV (Beginn der Sommerzeit) |
 
 ### R-19 Nachtruhe
 
@@ -637,6 +685,10 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
   Schaustellergewerbe bis 22 Uhr, in mehrschichtigen Betrieben bis 23 Uhr, in der Landwirtschaft ab
   5 oder bis 21 Uhr, in Bäckereien ab 5 Uhr; Abs. 3: über 17 in Bäckereien ab 4 Uhr; Abs. 4: vor
   einem Berufsschultag mit Beginn vor 9 Uhr nicht nach 20 Uhr.
+- **Grenzwerte**: Uhrzeit in `Europe/Berlin`, gezählt werden die echten Minuten der Arbeit außerhalb
+  der erlaubten Zeit (kurze Unterbrechungen mit). „Über 16 Jahre“ ist, wer 16 geworden ist. Das
+  Alter und die Branche des Arbeitstags bestimmen die Grenzen. In der Landwirtschaft wählt der
+  Betrieb „ab 5 Uhr“ oder „bis 21 Uhr“; ohne Wahl gilt 6 bis 20 Uhr.
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -646,6 +698,9 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Verstoß | SHK, 12:00 – 20:01 | Verstoß „nach 20 Uhr“ | § 14 Abs. 1 JArbSchG |
 | Gastronomie | 17-jährige im Café, 14:00 – 22:00, nächster Tag kein Berufsschultag | kein Befund | § 14 Abs. 2 Nr. 1 JArbSchG |
 | Berufsschule | Café, 14:00 – 22:00, am nächsten Tag Berufsschule ab 8:00 | Verstoß | § 14 Abs. 4 JArbSchG |
+| ohne Eintrag | Café, 17 Jahre, 14:00 – 22:00, keine Berufsschultage eingetragen | Verstoß für 2:00 nach 20 Uhr (jeder Tag kann ein Berufsschultag sein) | § 14 Abs. 4 JArbSchG; Regel dieser Seite |
+| unter 16 | 15-jährige im Café, 14:00 – 22:00, kein Berufsschultag | Verstoß für 2:00 nach 20 Uhr | § 14 Abs. 1, Abs. 2 JArbSchG („über 16 Jahre“) |
+| Bäckerei | 17-jähriger in einer Bäckerei, 4:00 – 12:00 | kein Befund; mit 16 Jahren Verstoß für 1:00 vor 5 Uhr | § 14 Abs. 2 Nr. 4, Abs. 3 JArbSchG |
 
 ### R-20 Fünf-Tage-Woche, Samstag, Sonntag, Feiertag
 
@@ -653,6 +708,13 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
   Abs. 2, dann Freistellung an einem anderen Tag derselben Woche); § 17 (Sonntag nur in den Fällen
   des Abs. 2, mindestens zwei Sonntage im Monat frei); § 18 (Feiertage, am 24. und 31.12. nicht
   nach 14 Uhr; nie am 25.12., 1.1., Ostersonntag, 1.5.).
+- **Grenzwerte**: Ein Tag mit Arbeit ist jeder Kalendertag, in den von 0 bis 24 Uhr Arbeit fällt.
+  Je Woche (Mo–So) höchstens fünf; Samstag und Sonntag nur mit einer Ausnahme nach § 16 Abs. 2 und
+  § 17 Abs. 2 (Einstellung oder Branche); mit Ausnahme sind im Kalendermonat mindestens zwei
+  Sonntage frei, ein Verstoß, sobald so viele gearbeitet sind, dass es nicht mehr geht. Feiertage
+  am Standort nur mit einer Ausnahme nach § 17 Abs. 2, nie am 25.12., 1.1., Ostersonntag und 1.5.;
+  am 24. und 31.12. keine Arbeit nach 14 Uhr. Die Freistellung für einen Feiertag an einem Werktag
+  (§ 18 Abs. 3) braucht den Dienstplan und kommt mit S-502.
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -664,6 +726,11 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Verstoß | Café, Februar 2026 (vier Sonntage), drei Sonntage im Monat gearbeitet | Verstoß „mindestens zwei Sonntage frei“ | § 17 Abs. 2 Satz 2 JArbSchG |
 | fünf Sonntage | Café, November 2026 (fünf Sonntage), drei gearbeitet, zwei frei | kein Befund | § 17 Abs. 2 Satz 2 JArbSchG („mindestens zwei“; „jeder zweite Sonntag soll“ ist keine Pflicht) |
 | Verstoß | Café, 24.12. 10:00 – 14:01 | Verstoß „nach 14 Uhr“ | § 18 Abs. 1 JArbSchG |
+| Heiligabend | Café, Do 24.12.2026 10:00 – 14:00 | kein Befund | § 18 Abs. 1 JArbSchG („nach 14 Uhr“) |
+| Sonntag | SHK, So 10:00 – 12:00 | Verstoß „Sonntag“ | § 17 Abs. 1 JArbSchG |
+| Feiertag | SHK in Hamburg, Mo 25.5.2026 (Pfingstmontag) 8:00 – 12:00 | Verstoß „Feiertag“ | § 18 Abs. 1 JArbSchG |
+| 25. Dezember | Café, Fr 25.12.2026 10:00 – 14:00 | Verstoß „Feiertag“ (auch im Gaststättengewerbe) | § 18 Abs. 2 JArbSchG |
+| Ostersonntag | Café in Hamburg, So 5.4.2026 10:00 – 14:00 | Verstoß „Feiertag“ (der erste Osterfeiertag, auch wo er kein gesetzlicher Feiertag ist) | § 18 Abs. 2 JArbSchG; Regel dieser Seite |
 
 ## Mutterschutz
 
@@ -685,6 +752,27 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
   Entbindung arbeiten, wenn sie es ausdrücklich verlangt und nach ärztlichem Zeugnis nichts dagegen
   spricht (§ 3 Abs. 4 MuSchG); der Betrieb trägt dann das Ende der Schutzfrist am Mitarbeiter ein,
   ohne Grund und ohne Zeugnis.
+- **Eingaben**: der Zeitraum (schwanger oder stillend, ohne zu sagen, was), das Geburtsdatum (ohne
+  Geburtsdatum gelten die Grenzen für unter 18 Jahre), die vertragliche Wochenarbeitszeit je Tag
+  (aus dem Arbeitszeitmodell; ohne sie ist der Monat „nicht hinterlegt“), die Schutzfristen mit
+  Beginn, Ende, Art und einer ausdrücklichen Erklärung der Frau, die Erklärung zur Sonn- und
+  Feiertagsarbeit mit Zeitraum, die Ausnahmen nach § 10 ArbZG am Betrieb (R-07) und eine
+  Genehmigung nach § 28 mit Fundstelle. Was nicht eingetragen ist, gilt als nicht gegeben.
+- **Grenzwerte**: Tag ≤ 8:30 (unter 18 Jahren 8:00), gemessen wie R-02. Doppelwoche: je zwei
+  aufeinanderfolgende Kalenderwochen (Mo–So), also jede Woche mit der folgenden und mit der
+  vorigen, ≤ 90:00 (unter 18 Jahren, wenn sie es an einem Tag der Doppelwoche ist, 80:00).
+  Monat: Arbeitszeit des Kalendermonats × 7 ≤ Summe der vertraglichen Wochenarbeitszeit über
+  seine Tage, ganze Minuten ohne Rundung; es zählen nur die Tage im Zeitraum. Ruhezeit ≥ 11:00
+  zwischen zwei Arbeitstagen, wenn einer davon im Zeitraum liegt (wie R-05, ohne Verkürzung).
+  Nacht: keine Arbeit von 20 bis 6 Uhr, mit Genehmigung nach § 28 von 22 bis 6 Uhr, Uhrzeit, echte
+  Minuten. Sonn- und Feiertag (0 bis 24 Uhr am Standort, wie R-07, ohne Verschiebung) nur mit
+  Erklärung und einer Ausnahme nach § 10 ArbZG, dazu in derselben Woche (Mo–So) ein vergangener
+  Werktag ohne Arbeit als Ersatzruhetag, vor dem 11:00 ohne Arbeit liegen (die Woche wird geprüft,
+  wenn sie vorbei ist). Schutzfrist: jeder Kalendertag in ihr, in den Arbeit fällt.
+- **Schutzfristen** rechnet Soll so: vor der Entbindung die sechs Wochen vor dem voraussichtlichen
+  Tag und dieser Tag selbst, nach der Entbindung die acht (zwölf) Wochen nach dem Tag der Entbindung,
+  nach einer Fehlgeburt der Tag selbst und die zwei, sechs oder acht Wochen danach. Die Woche der
+  Schwangerschaft braucht Soll nur für diese Rechnung, gespeichert wird der Zeitraum.
 - **Schwere**: Verstoß. In der Schutzfrist nach der Entbindung ist jede Arbeitszeit ein Verstoß (außer nach § 3 Abs. 4);
   vor der Entbindung und nach einer Fehlgeburt nur, wenn keine ausdrückliche Erklärung der Frau
   eingetragen ist (§ 3 Abs. 1 Satz 1, Abs. 5 Satz 1 MuSchG).
@@ -700,6 +788,20 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | Verstoß | Arbeit in der Woche nach der Entbindung | Verstoß „Schutzfrist“ | § 3 Abs. 2 MuSchG |
 | Fehlgeburt | Fehlgeburt in der 18. Schwangerschaftswoche, Arbeit in der 5. Woche danach ohne Erklärung | Verstoß „Schutzfrist“ | § 3 Abs. 5 Satz 1 Nr. 2 MuSchG |
 | Fehlgeburt | wie zuvor, mit ausdrücklicher Erklärung der Frau | kein Befund | § 3 Abs. 5 Satz 1 MuSchG |
+| unter 18 | 17 Jahre, Arbeitszeit 8:01 | Verstoß „über 8 h“ | § 4 Abs. 1 Satz 2 MuSchG |
+| Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:01 | Verstoß „über 8 h“ nur für Mo | § 4 Abs. 1 Satz 2 MuSchG; § 187 Abs. 2 Satz 2 BGB |
+| Doppelwoche | 2.–8.11.2026 und 16.–22.11.2026 je 45:00, dazwischen 9.–15.11. 45:01 | Verstoß für die Doppelwochen ab 2.11. und ab 9.11. | § 4 Abs. 1 Satz 1 und 3 MuSchG; Grundbegriff „Doppelwoche“ |
+| 18. Geburtstag | geboren 4.11.2008: Mi 4.11. bis So 15.11.2026 je 7:00 (84:00) | Verstoß „über 80 h in der Doppelwoche“ ab 2.11. (am Mo und Di noch 17) | § 4 Abs. 1 Satz 2 und 3 MuSchG |
+| Monat | vertraglich 20:00 je Woche, November 2026 (30 Tage) mit 85:42 | kein Befund (20:00 × 30 ÷ 7 = 85:42 und 6/7 min); mit 85:43 Verstoß „über der vertraglichen Arbeitszeit“ | § 4 Abs. 1 Satz 4 MuSchG |
+| Ruhezeit | Mo 19:30 – Di 6:29 (10:59) | Verstoß „Ruhezeit 10:59“; Mo 19:00 – Di 6:00 (11:00) kein Befund | § 4 Abs. 2 MuSchG |
+| Genehmigung | Genehmigung nach § 28, 12:00 – 22:00 | kein Befund; 12:00 – 22:01 Verstoß „nach 22 Uhr“ | § 5 Abs. 1 Satz 2, § 28 MuSchG |
+| Herbst | Sa 24.10.2026 22:00 – So 6:00 | Verstoß „nach 20 Uhr“ für 9:00 (echte Zeit) | § 5 Abs. 1 MuSchG; SoZV (Ende der Sommerzeit) |
+| Sonntag | Café mit Ausnahme nach § 10 Abs. 1 Nr. 4 ArbZG, So 15.11.2026 10:00 – 16:00, ohne Erklärung | Verstoß „Sonntag“ | § 6 Abs. 1 Satz 1 MuSchG |
+| Erklärung | wie zuvor, mit Erklärung; in derselben Woche Mo 9.11. 8:00 – 13:00, Di 10.11. frei, Mi bis Sa gearbeitet | kein Befund | § 6 Abs. 1 Satz 2 MuSchG |
+| Nachtruhe | wie zuvor, aber Mo 9.11. bis 13:01 (10:59 vor dem freien Di) | Verstoß „Ersatzruhetag fehlt“ | § 6 Abs. 1 Satz 2 Nr. 3 MuSchG |
+| ohne Ausnahme | SHK ohne Ausnahme nach § 10 ArbZG, mit Erklärung, So 10:00 – 12:00 | Verstoß „Sonntag“ | § 6 Abs. 1 Satz 2 Nr. 2 MuSchG |
+| Feiertag | Hamburg, Fr 25.12.2026 8:00 – 12:00, ohne Erklärung | Verstoß „Feiertag“ | § 6 Abs. 1 Satz 1 MuSchG |
+| Ende der Schutzfrist | Entbindung Mo 2.11.2026, Arbeit am Mo 28.12.2026 | Verstoß „Schutzfrist“ (Ablauf der acht Wochen); am Di 29.12. kein Befund | § 3 Abs. 2 Satz 1 MuSchG |
 
 ## Arbeit auf Abruf
 

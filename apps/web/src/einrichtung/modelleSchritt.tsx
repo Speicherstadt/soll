@@ -6,6 +6,7 @@ import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Fuss, SchrittKopf } from "./geruest.tsx";
+import { ergaenzt } from "./liste.ts";
 import { VORLAGE_NAMEN } from "./namen.ts";
 import { VORLAGEN, type Vorlage } from "./vorlagen.ts";
 import { centAus, dauerText, euroText, minutenAus, verteilen } from "./werte.ts";
@@ -126,7 +127,7 @@ export const ModelleSchritt = (props: {
     return true;
   };
   api<{ modelle: Modell[] }>("/api/v1/arbeitszeit/modelle").then(
-    (a) => a.ok && setModelle(a.daten.modelle),
+    (a) => a.ok && setModelle((hier) => ergaenzt(a.daten.modelle, hier, (x) => x.modellId)),
   );
   const entfernen = async (modell: Modell) => {
     const antwort = await api(`/api/v1/arbeitszeit/modelle/${modell.modellId}`, {

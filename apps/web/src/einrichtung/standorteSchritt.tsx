@@ -6,6 +6,7 @@ import { api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Fuss, SchrittKopf } from "./geruest.tsx";
+import { ergaenzt } from "./liste.ts";
 import { LAND_NAMEN, REGION_NAMEN } from "./namen.ts";
 import { feld } from "./stil.ts";
 
@@ -121,7 +122,7 @@ export const StandorteSchritt = (props: {
   const [fehler, setFehler] = createSignal("");
   const [arbeitet, setArbeitet] = createSignal(false);
   api<{ standorte: Standort[] }>("/api/v1/standorte").then(
-    (a) => a.ok && setStandorte(a.daten.standorte),
+    (a) => a.ok && setStandorte((hier) => ergaenzt(a.daten.standorte, hier, (s) => s.standortId)),
   );
   const entfernen = async (standort: Standort) => {
     const antwort = await api(`/api/v1/standorte/${standort.standortId}`, { method: "DELETE" });

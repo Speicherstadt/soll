@@ -119,6 +119,8 @@ export const EinladungenSchritt = (props: {
         anzahl={props.anzahl}
         zurueck={props.zurueck}
         weiter={props.weiter}
+        // leaving while parts are on their way would lose their links or whoever joins the list meanwhile
+        arbeitet={arbeitet()}
       />
     </>
   );

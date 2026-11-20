@@ -99,7 +99,8 @@ export const SchrittKopf = (props: { id: string; titel: string; text: string }) 
 
 /**
  * The foot of a step: where it stands, back, and on: "Weiter", or on the last step finishing the
- * setup. With `form` the button submits that form, so the browser checks its fields first.
+ * setup. With `form` the button submits that form, so the browser checks its fields first. While
+ * `arbeitet`, neither button leaves the step.
  */
 export const Fuss = (props: {
   nummer: number;
@@ -116,7 +117,7 @@ export const Fuss = (props: {
     <div class="flex gap-2">
       <Show when={props.zurueck}>
         {(zurueck) => (
-          <Button variant="outline" size="lg" onClick={() => zurueck()()}>
+          <Button variant="outline" size="lg" disabled={props.arbeitet} onClick={() => zurueck()()}>
             {m.einrichtung_zurueck()}
           </Button>
         )}

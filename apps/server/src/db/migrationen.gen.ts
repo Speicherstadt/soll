@@ -11,5 +11,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0002_einrichtung",
     "sql": "CREATE TABLE `arbeitszeitmodelle` (\n\t`betrieb_id` text NOT NULL,\n\t`modell_id` text NOT NULL,\n\t`name` text NOT NULL,\n\t`soll_minuten` text NOT NULL,\n\t`lohn_art` text NOT NULL,\n\t`lohn_cent` integer,\n\t`minijob` integer DEFAULT false NOT NULL,\n\t`gueltig_ab` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `modell_id`)\n);\n--> statement-breakpoint\nCREATE TABLE `standorte` (\n\t`betrieb_id` text NOT NULL,\n\t`standort_id` text NOT NULL,\n\t`name` text NOT NULL,\n\t`adresse` text DEFAULT '' NOT NULL,\n\t`land` text NOT NULL,\n\t`regionen` text DEFAULT '[]' NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `standort_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `land` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `eingerichtet_am` integer;"
+  },
+  {
+    "tag": "0003_stempeln",
+    "sql": "CREATE TABLE `modellzuordnungen` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`gueltig_ab` text NOT NULL,\n\t`modell_id` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`, `gueltig_ab`)\n);\n--> statement-breakpoint\nCREATE TABLE `stempelungen` (\n\t`betrieb_id` text NOT NULL,\n\t`stempel_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`zeitpunkt` integer NOT NULL,\n\t`geraet_zeitpunkt` integer,\n\t`quelle` text NOT NULL,\n\t`ersetzt` text,\n\t`entfernt` integer DEFAULT false NOT NULL,\n\t`grund` text,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `stempel_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `stempelungen_person` ON `stempelungen` (`betrieb_id`,`nutzer_id`,`zeitpunkt`);--> statement-breakpoint\nCREATE UNIQUE INDEX `stempelungen_ersetzt` ON `stempelungen` (`betrieb_id`,`ersetzt`);"
   }
 ];

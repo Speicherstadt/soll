@@ -24,6 +24,10 @@ export const RECHTE = [
   "mitglieder:rolle",
   "pin:setzen",
   "pin:pruefen",
+  "stempeln",
+  "zeiten:alle",
+  "zeiten:korrigieren",
+  "modelle:zuordnen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -38,14 +42,27 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "mitglieder:einladen",
     "mitglieder:rolle",
     "pin:setzen",
+    "stempeln",
+    "zeiten:alle",
+    "zeiten:korrigieren",
+    "modelle:zuordnen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
-  planer: ["betrieb:lesen", "mitglieder:lesen", "mitglieder:einladen"],
-  mitarbeiter: ["betrieb:lesen"],
+  // planners correct times with a reason (docs/plan.md, "Änderungen an Stempelungen")
+  planer: [
+    "betrieb:lesen",
+    "mitglieder:lesen",
+    "mitglieder:einladen",
+    "stempeln",
+    "zeiten:alle",
+    "zeiten:korrigieren",
+  ],
+  // everyone who works for the business stamps, and sees and corrects their own times (S-304)
+  mitarbeiter: ["betrieb:lesen", "stempeln"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
-  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen"],
-  betriebsrat: ["betrieb:lesen", "mitglieder:lesen"],
+  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen", "stempeln", "zeiten:alle"],
+  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln"],
   extern: ["betrieb:lesen"],
   // the terminal checks PINs and nothing else (S-801)
   geraet: ["pin:pruefen"],

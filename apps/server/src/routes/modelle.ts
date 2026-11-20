@@ -40,7 +40,8 @@ export const modellRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) 
     })
     .delete("/:modellId", recht("betrieb:einrichten"), (c) => {
       const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
-      if (!modellEntfernen(db, schreibDb, kontext, c.req.param("modellId")))
-        return c.json({ fehler: "unbekannt" }, 404);
+      const ergebnis = modellEntfernen(db, schreibDb, kontext, c.req.param("modellId"));
+      if (!ergebnis.ok)
+        return c.json({ fehler: ergebnis.grund }, ergebnis.grund === "unbekannt" ? 404 : 409);
       return c.body(null, 204);
     });

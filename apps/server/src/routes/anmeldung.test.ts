@@ -243,7 +243,10 @@ describe("a change of role", () => {
   });
 });
 
-describe("the PIN", () => {
+// Each PIN check is an Argon2id verify with Bun's default cost (64 MiB), and these tests run seven or
+// more plus the hashes: about 1.8 s alone, past the default 5 s when the suite runs beside e2e. The
+// limit fits the work; the assertions are unchanged.
+describe("the PIN", { timeout: 20_000 }, () => {
   it("is locked after five wrong tries and unlocked by a new one", async () => {
     const server = testServer();
     const weber = await server.inhaberMitBetrieb("Weber Haustechnik", "weber");

@@ -41,7 +41,8 @@ export type ArbeitstageErgebnis =
 const ERSTER = beginnInBerlin("0000-01-01");
 const LETZTER = beginnInBerlin("9999-12-31");
 
-const zeitpunktGueltig = (ms: number): boolean =>
+/** Whether an instant names a day (S-206 checks its spans with it too) */
+export const zeitpunktGueltig = (ms: number): boolean =>
   Number.isSafeInteger(ms) && ms >= ERSTER && ms < LETZTER;
 
 const gueltig = (stempelungen: readonly Stempelung[], jetzt: number): boolean =>

@@ -113,8 +113,10 @@ describe("kettePruefen", () => {
     expect(kettePruefen(db, "weber")).toEqual([
       { art: "zeile", tabelle: "betriebe", zeile: '["weber"]', grund: "fehlt" },
     ]);
-    sqlite.run("INSERT INTO betriebe VALUES ('weber', 'Weber', 1)");
-    sqlite.run("INSERT INTO betriebe VALUES ('elbblick', 'Café', 1)");
+    sqlite.run("INSERT INTO betriebe (betrieb_id, name, angelegt_am) VALUES ('weber', 'Weber', 1)");
+    sqlite.run(
+      "INSERT INTO betriebe (betrieb_id, name, angelegt_am) VALUES ('elbblick', 'Café', 1)",
+    );
     expect(kettePruefen(db, "elbblick")).toEqual([
       { art: "zeile", tabelle: "betriebe", zeile: '["elbblick"]', grund: "ohne_glied" },
     ]);

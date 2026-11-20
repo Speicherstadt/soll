@@ -74,7 +74,7 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   Tabelle, jeder Feiertag nennt das Landesgesetz, und ein Standort mit Region (Augsburg, katholische
   Gemeinden in Bayern, Fronleichnam in Gemeinden in Sachsen und Thüringen) bekommt seine regionalen
   Feiertage, einer ohne Region nicht.
-- [ ] **S-106 Betriebe, Anmeldung, Rollen** – Better Auth mit Organization-Plugin (ein Betrieb je
+- [x] **S-106 Betriebe, Anmeldung, Rollen** – Better Auth mit Organization-Plugin (ein Betrieb je
   Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail, PIN
   mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
   Extern, Gerät. Module je Betrieb: Arbeitszeit (mit Abwesenheiten), Dienstplan, Projektzeit,
@@ -85,7 +85,10 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   nach: S-102. Fertig, wenn: ein Test je Endpunkt zeigt, dass kein Betrieb Daten eines anderen sieht,
   die PIN-Sperre greift, eine Einladung ohne E-Mail-Adresse zum Konto führt, ein Rollenwechsel in der
   Kette steht, der Server ohne Schlüssel nicht startet und ein Test je Modul zeigt, dass ein
-  abgeschaltetes Modul abgelehnt wird.
+  abgeschaltetes Modul abgelehnt wird. Dazu: Passkeys werden einem angemeldeten Konto angeboten, ein
+  Wechsel in einen fremden Betrieb scheitert ohne Daten, eine Einladung gilt einmal und sieben Tage,
+  ein Planer lädt nur Mitarbeiter und Externe ein, Arbeitszeit bleibt an, solange es Beschäftigte
+  gibt, und das Binary verweigert ohne `SOLL_SECRET_KEY` den Start (CI).
 
 ## Phase 2 – Prüfregeln
 

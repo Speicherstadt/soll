@@ -107,8 +107,6 @@ const einfuegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neu): Zeile =>
     }),
   );
 
-const TAG_MS = 24 * 60 * 60 * 1000;
-
 /**
  * Whether a change would touch a month closed for the person (S-306): `weg` leaves force, `neu`
  * comes in. The stamps around are read only when a month is closed.
@@ -124,14 +122,7 @@ const gesperrt = (
   );
   return aenderungGesperrt(db, betriebId, nutzerId, {
     zeitpunkte,
-    vorher: () =>
-      stempelungenIn(
-        db,
-        betriebId,
-        nutzerId,
-        Math.min(...zeitpunkte) - 3 * TAG_MS,
-        Math.max(...zeitpunkte) + 3 * TAG_MS,
-      ),
+    vorher: (von, bis) => stempelungenIn(db, betriebId, nutzerId, von, bis),
     nachher: (vorher) => [
       ...vorher.filter((stempel) => stempel.stempelId !== aenderung.weg?.stempelId),
       ...(aenderung.neu ? [aenderung.neu] : []),

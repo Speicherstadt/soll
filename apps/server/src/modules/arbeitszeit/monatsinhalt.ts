@@ -1,8 +1,13 @@
 import {
   type Befund,
+  beginnInBerlin,
+  ersterTag,
+  letzterTag,
   type Monat,
   type Monatsstand,
   monatVon,
+  plusMonate,
+  plusTage,
   type Stempelart,
   type Stempelung,
   stempelSchluessel,
@@ -52,9 +57,21 @@ export type Monatsinhalt = {
 };
 
 /**
+ * The stamps a month is read from (UTC milliseconds, `bis` exclusive), by closing, the check page and
+ * the lock alike: a shift ends 24 h after its start at the latest, so with shifts under 9 h apart
+ * where one ends depends on where the chain began, days back. Reading every month from the same
+ * window keeps the three in step. It begins six months back (with two days for a night shift), as a
+ * period of R-03 reaching into the month began at most that long before, and ends two days after.
+ */
+export const lesefenster = (monat: Monat): { von: number; bis: number } => ({
+  von: beginnInBerlin(plusTage(ersterTag(plusMonate(monat, -6)), -2)),
+  bis: beginnInBerlin(plusTage(letzterTag(monat), 3)),
+});
+
+/**
  * The records of every day of the month: each stamp goes to the working day of its shift (a night
- * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"). Pass the stamps from
- * two days before the month to two days after it, so shifts across its edges are read whole.
+ * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"). Pass the stamps of
+ * `lesefenster(monat)`.
  */
 export const aufzeichnungen = (
   monat: Monat,

@@ -4,7 +4,6 @@ import {
   ausgleichszeitraum,
   type Befund,
   type Beschaeftigung,
-  beginnInBerlin,
   ersterTag,
   feiertage,
   hoechstarbeitszeit,
@@ -12,8 +11,6 @@ import {
   type Monat,
   monatsstand,
   monatVon,
-  plusMonate,
-  plusTage,
   ruhepausen,
   ruhezeit,
   type Standort,
@@ -30,6 +27,7 @@ import {
   type Aufzeichnung,
   aufzeichnungen,
   type Gegeneintrag,
+  lesefenster,
   type Monatsinhalt,
   monatsinhalt,
   type Summen,
@@ -41,15 +39,11 @@ import { modellabschnitte, sollAm } from "./zuordnungen.ts";
  * A person's month as the database holds it now, brought into the form of `monatsinhalt` (S-306).
  */
 
-/** The stamps a month needs: from two days before it to two days after, for shifts across its edges */
-const stempelDesMonats = (db: Db, betriebId: string, nutzerId: string, monat: Monat) =>
-  stempelungenIn(
-    db,
-    betriebId,
-    nutzerId,
-    beginnInBerlin(plusTage(ersterTag(monat), -2)),
-    beginnInBerlin(plusTage(letzterTag(monat), 3)),
-  );
+/** The stamps a month is read from (`lesefenster`) */
+const stempelDesMonats = (db: Db, betriebId: string, nutzerId: string, monat: Monat) => {
+  const { von, bis } = lesefenster(monat);
+  return stempelungenIn(db, betriebId, nutzerId, von, bis);
+};
 
 /** The records of a month now: what the check page compares with the month as closed */
 export const aufzeichnungenJetzt = (
@@ -222,14 +216,7 @@ export const monatJetzt = (
   monat: Monat,
   jetzt: number,
 ): { inhalt: Monatsinhalt; offeneTage: Tag[] } => {
-  // six months back: a period of R-03 that reaches into the month began at most that long before
-  const stempel = stempelungenIn(
-    db,
-    betriebId,
-    nutzerId,
-    beginnInBerlin(plusTage(ersterTag(plusMonate(monat, -6)), -2)),
-    beginnInBerlin(plusTage(letzterTag(monat), 3)),
-  );
+  const stempel = stempelDesMonats(db, betriebId, nutzerId, monat);
   const ergebnis = arbeitstage(stempel, jetzt);
   const alle = ergebnis.ok ? ergebnis.wert : [];
   const tage = aufzeichnungen(monat, stempel, (tag) => sollAm(db, betriebId, nutzerId, tag));

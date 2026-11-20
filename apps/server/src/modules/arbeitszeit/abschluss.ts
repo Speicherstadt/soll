@@ -1,16 +1,9 @@
-import {
-  type Monat,
-  monatVon,
-  plusTage,
-  type Stempelung,
-  type Tag,
-  tagInBerlin,
-} from "@soll/arbeitszeit";
+import { type Monat, monatVon, type Stempelung, type Tag } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch } from "../audit/hash.ts";
-import { aufzeichnungen } from "./monatsinhalt.ts";
+import { aufzeichnungen, lesefenster } from "./monatsinhalt.ts";
 
 /** The months the business closed for a person (S-306); a closed month locks its records */
 export const abgeschlosseneMonate = (db: Db, betriebId: string, nutzerId: string): Set<Monat> =>
@@ -37,18 +30,23 @@ export const monatAbgeschlossen = (
   tag: Tag,
 ): boolean => abgeschlosseneMonate(db, betriebId, nutzerId).has(monatVon(tag));
 
-const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) =>
-  kanonisch(aufzeichnungen(monat, stempelungen, () => null).map((tag) => tag.stempel));
+/** The records of a month's stamps in force, read from the month's window (`lesefenster`) */
+const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) => {
+  const { von, bis } = lesefenster(monat);
+  const imFenster = stempelungen.filter(({ zeitpunkt }) => zeitpunkt >= von && zeitpunkt < bis);
+  return kanonisch(aufzeichnungen(monat, imFenster, () => null).map((tag) => tag.stempel));
+};
 
 /**
- * Whether a change of a person's stamps alters the records of a closed month: the months of its
- * instants and of the days next to them are compared before and after, as a night shift's Gehen
- * after midnight belongs to the day the shift began (CLAUDE.md, "Time"). So the Gehen on the first
+ * Whether a change of a person's stamps alters the records of a closed month: every closed month
+ * whose window (`lesefenster`) holds an instant of the change is read from that window before and
+ * after, as closing and the check page read it, so a change let through leaves the records the
+ * Prüfwert stands for, and only a change that would alter them is refused. So the Gehen on the first
  * of a closed month of a night shift of an open last day stays correctable (it is no record of the
  * closed month, and a counter-entry is only for closed days), while every stamp the closed month
- * records, and a shift the first shift of a closed month would join, is locked. `vorher` loads the
- * stamps in force around the instants (only when a month is closed), `nachher` gives them as the
- * change would leave them.
+ * records, and a shift its shifts would join or be cut by, is locked. `vorher` loads the stamps in
+ * force from `von` to before `bis` (only when a month is closed), `nachher` gives them as the change
+ * would leave them.
  */
 export const aenderungGesperrt = <S extends Stempelung>(
   db: Db,
@@ -56,21 +54,20 @@ export const aenderungGesperrt = <S extends Stempelung>(
   nutzerId: string,
   aenderung: {
     zeitpunkte: readonly number[];
-    vorher: () => S[];
+    vorher: (von: number, bis: number) => S[];
     nachher: (vorher: S[]) => Stempelung[];
   },
 ): boolean => {
-  const geschlossen = abgeschlosseneMonate(db, betriebId, nutzerId);
-  if (geschlossen.size === 0) return false;
-  const betroffen = [
-    ...new Set(
-      aenderung.zeitpunkte
-        .map(tagInBerlin)
-        .flatMap((tag) => [plusTage(tag, -1), tag, plusTage(tag, 1)].map(monatVon)),
-    ),
-  ].filter((monat) => geschlossen.has(monat));
+  const betroffen = [...abgeschlosseneMonate(db, betriebId, nutzerId)].filter((monat) => {
+    const { von, bis } = lesefenster(monat);
+    return aenderung.zeitpunkte.some((zeitpunkt) => zeitpunkt >= von && zeitpunkt < bis);
+  });
   if (betroffen.length === 0) return false;
-  const vorher = aenderung.vorher();
+  const fenster = betroffen.map(lesefenster);
+  const vorher = aenderung.vorher(
+    Math.min(...fenster.map(({ von }) => von)),
+    Math.max(...fenster.map(({ bis }) => bis)),
+  );
   const nachher = aenderung.nachher(vorher);
   return betroffen.some(
     (monat) => stempelDesMonats(monat, vorher) !== stempelDesMonats(monat, nachher),

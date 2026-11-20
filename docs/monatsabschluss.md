@@ -43,7 +43,14 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
   abgeschlossenen Monats in eine Schicht dieses Tags zöge oder aus ihr löste: etwa eine Schicht am
   Abend, der sich die erste Schicht des Monats weniger als 9 Stunden später anschlösse, oder das
   Entfernen des Kommens einer Nachtschicht, deren Gehen im Monat liegt,
+- früher im Vormonat jede Änderung, die über eine Kette von Schichten mit weniger als 9 Stunden
+  Abstand die Schichten des Monats anders schnitte (eine Schicht reicht höchstens 24 Stunden über
+  ihren Beginn hinaus, gezählt ab dem Beginn der Kette),
 - eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde.
+
+Erlaubt bleibt jede Änderung, die an den Stempelungen des Monats je Arbeitstag nichts ändert.
+Abschluss, Prüfseite und Sperre lesen einen Monat dafür aus denselben Stempelungen: von sechs
+Monaten und zwei Tagen vor ihm bis zwei Tage nach ihm.
 
 ### Korrektur als Gegeneintrag
 
@@ -133,7 +140,8 @@ Die Tabelle `monatsabschluesse` hat je Schritt eine Zeile (`bestaetigt`, `abgesc
 Inhalt als kanonischem JSON und seinem SHA-256; ein eindeutiger Index auf `sperrt` lässt je Person
 und Monat einen Abschluss zu. `korrekturen` hält die Gegeneinträge. Beide stehen in der
 Audit-Kette und werden nur angefügt. Den Inhalt baut `monatsinhalt.ts` als reine Funktion, mit
-Testvektoren; die Sperre prüft `aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen.
+Testvektoren, das Fenster, aus dem ein Monat gelesen wird, `lesefenster()`; die Sperre prüft
+`aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen.
 
 Mail kommt über SMTP aus `SOLL_SMTP_URL` (etwa `smtps://soll:geheim@mail.example.de:465`) mit dem
 Absender aus `SOLL_MAIL_VON`; beide zusammen oder keins. Die Tests schicken an einen SMTP-Testserver.

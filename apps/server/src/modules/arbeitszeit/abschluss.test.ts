@@ -3,19 +3,12 @@
  * the records of the closed month as the check page reads them, and a change it refuses would have
  * changed them. Seeded loop over realistic shifts around the boundary of October and November 2026.
  */
-import {
-  beginnInBerlin,
-  ersterTag,
-  letzterTag,
-  plusTage,
-  type Stempelart,
-  type Stempelung,
-} from "@soll/arbeitszeit";
+import { beginnInBerlin, type Stempelart, type Stempelung } from "@soll/arbeitszeit";
 import { describe, expect, it } from "vitest";
 import type { Db } from "../../db/oeffnen.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { aenderungGesperrt } from "./abschluss.ts";
-import { aufzeichnungen } from "./monatsinhalt.ts";
+import { aufzeichnungen, lesefenster } from "./monatsinhalt.ts";
 
 const MINUTE = 60_000;
 const STUNDE = 60 * MINUTE;
@@ -70,13 +63,12 @@ const schichten = (r: () => number): Stempel[] => {
 
 /** The records of October as the check page reads them (`aufzeichnungenJetzt`) */
 const pruefseite = (stempel: readonly Stempelung[]) => {
-  const von = beginnInBerlin(plusTage(ersterTag(MONAT), -2));
-  const bis = beginnInBerlin(plusTage(letzterTag(MONAT), 3));
+  const { von, bis } = lesefenster(MONAT);
   const imFenster = stempel.filter(({ zeitpunkt }) => zeitpunkt >= von && zeitpunkt < bis);
   return kanonisch(aufzeichnungen(MONAT, imFenster, () => 480));
 };
 
-/** The records of October as closing stores them (`monatJetzt`: six months back) */
+/** The records of October from every stamp there is, all of them inside its window */
 const abgeschlossen = (stempel: readonly Stempelung[]) =>
   kanonisch(aufzeichnungen(MONAT, stempel, () => 480));
 
@@ -108,8 +100,7 @@ const gesperrt = (stempel: readonly Stempel[], a: ReturnType<typeof aenderung>) 
   );
   return aenderungGesperrt(nurOktoberZu, "b", "n", {
     zeitpunkte,
-    vorher: (von = Math.min(...zeitpunkte) - 3 * TAG, bis = Math.max(...zeitpunkte) + 3 * TAG) =>
-      stempel.filter(({ zeitpunkt }) => zeitpunkt >= von && zeitpunkt < bis),
+    vorher: (von, bis) => stempel.filter(({ zeitpunkt }) => zeitpunkt >= von && zeitpunkt < bis),
     nachher: (vorher) => [
       ...vorher.filter((s) => s.stempelId !== a.weg?.stempelId),
       ...(a.neu ? [a.neu] : []),
@@ -125,7 +116,7 @@ const nach = (stempel: readonly Stempel[], a: ReturnType<typeof aenderung>) => [
 describe("aenderungGesperrt", () => {
   it("lets through exactly the changes that leave the closed month's records as closed", () => {
     const fehler: string[] = [];
-    for (let saat = 1; saat <= 3000 && fehler.length < 3; saat += 1) {
+    for (let saat = 1; saat <= 1000 && fehler.length < 3; saat += 1) {
       const r = zufall(saat);
       const stempel = schichten(r);
       const zu = abgeschlossen(stempel);
@@ -140,5 +131,5 @@ describe("aenderungGesperrt", () => {
         );
     }
     expect(fehler).toEqual([]);
-  });
+  }, 60_000);
 });

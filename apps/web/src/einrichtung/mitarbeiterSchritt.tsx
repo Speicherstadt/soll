@@ -81,15 +81,22 @@ const Einzeln = (props: { hinzu: (person: Person) => void }) => {
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
     const daten = new FormData(form);
-    props.hinzu({
-      name: String(daten.get("name")).trim(),
-      rolle: String(daten.get("rolle")) as CsvRolle,
-    });
+    const name = String(daten.get("name")).trim();
+    // the server refuses a list with a blank name whole (min 1), so none joins it
+    if (!name) return;
+    props.hinzu({ name, rolle: String(daten.get("rolle")) as CsvRolle });
     form.reset();
   };
   return (
     <form class="flex flex-wrap items-end gap-3" onSubmit={absenden}>
-      <Input label={m.person_name()} name="name" required maxlength={100} class="min-w-48 flex-1" />
+      <Input
+        label={m.person_name()}
+        name="name"
+        required
+        pattern=".*\S.*"
+        maxlength={100}
+        class="min-w-48 flex-1"
+      />
       <div class="flex min-w-40 flex-col gap-1.5">
         <label for={rolleId} class="font-medium">
           {m.person_rolle()}

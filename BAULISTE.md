@@ -348,7 +348,7 @@ Alle Punkte: nach S-306.
   abgeschalteten Moduls Dienstplan wird abgelehnt; ein Test je Endpunkt, dass kein Betrieb Daten
   eines anderen sieht oder ändert. Playwright in `desktop` und `phone` (am Handy ein Tag zur Zeit),
   axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku `docs/dienstplan.md`.
-- [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
+- [x] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
   TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
   Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.
   Dazu: eine reine Funktion in `packages/arbeitszeit` baut aus den geplanten Schichten einer Person

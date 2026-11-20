@@ -14,20 +14,20 @@ const buchtProjektzeit = () =>
 
 /**
  * Heute: the stamp button and the running day with working time, the stopwatch with project time
- * (S-602); without either there is nothing to do here
+ * (S-602); without working time (a business without employees, S-603) the page says so
  */
 const Heute = () => {
   const stoppuhr = () => aktuelleModule().projektzeit && buchtProjektzeit();
   return (
     <Seite titel={m.nav_heute()}>
-      <Show when={aktuelleModule().arbeitszeit}>
+      <Show
+        when={aktuelleModule().arbeitszeit}
+        fallback={<Leer text={m.heute_ohne_arbeitszeit()} />}
+      >
         <Stempeln />
       </Show>
       <Show when={stoppuhr()}>
         <Stoppuhr />
-      </Show>
-      <Show when={!aktuelleModule().arbeitszeit && !stoppuhr()}>
-        <Leer text={m.seite_leer()} />
       </Show>
     </Seite>
   );

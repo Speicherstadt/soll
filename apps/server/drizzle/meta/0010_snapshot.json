@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0c96ba81-6978-4be8-b01b-d4f52b2f39c3",
+  "id": "2d0b849a-9ef2-4e3b-b501-8e5f3835aecc",
   "prevId": "84ded91c-5f38-4aeb-bc91-e20c8688b0d7",
   "tables": {
     "arbeitszeitmodelle": {
@@ -408,6 +408,13 @@
         },
         "eingerichtet_am": {
           "name": "eingerichtet_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "pflicht_hinweis_am": {
+          "name": "pflicht_hinweis_am",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
@@ -1958,144 +1965,6 @@
             "projekt_id"
           ],
           "name": "projekte_betrieb_id_projekt_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "projektzeiten": {
-      "name": "projektzeiten",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "buchung_id": {
-          "name": "buchung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nutzer_id": {
-          "name": "nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "projekt_id": {
-          "name": "projekt_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "taetigkeit_id": {
-          "name": "taetigkeit_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "beginn": {
-          "name": "beginn",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ende": {
-          "name": "ende",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "tag": {
-          "name": "tag",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "notiz": {
-          "name": "notiz",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "abgerechnet_am": {
-          "name": "abgerechnet_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cent_pro_stunde": {
-          "name": "cent_pro_stunde",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "angelegt_am": {
-          "name": "angelegt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "projektzeiten_person": {
-          "name": "projektzeiten_person",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "beginn"
-          ],
-          "isUnique": false
-        },
-        "projektzeiten_projekt": {
-          "name": "projektzeiten_projekt",
-          "columns": [
-            "betrieb_id",
-            "projekt_id"
-          ],
-          "isUnique": false
-        },
-        "projektzeiten_taetigkeit": {
-          "name": "projektzeiten_taetigkeit",
-          "columns": [
-            "betrieb_id",
-            "taetigkeit_id"
-          ],
-          "isUnique": false
-        },
-        "projektzeiten_laeuft": {
-          "name": "projektzeiten_laeuft",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id"
-          ],
-          "isUnique": true,
-          "where": "\"projektzeiten\".\"ende\" is null"
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "projektzeiten_betrieb_id_buchung_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "buchung_id"
-          ],
-          "name": "projektzeiten_betrieb_id_buchung_id_pk"
         }
       },
       "uniqueConstraints": {},

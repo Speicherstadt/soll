@@ -42,9 +42,11 @@ describe("Auskunft given by the owner for someone else (third review of S-309)",
         })
       ).status,
     ).toBe(201);
+    // PINs belong to the Terminal module (S-603)
+    await w.jonas.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { terminal: true } });
     expect(
       (
-        await w.jonas.anfrage(`/api/v1/pins/${w.sandra.nutzerId}`, {
+        await w.jonas.anfrage(`/api/v1/terminal/pins/${w.sandra.nutzerId}`, {
           method: "PUT",
           body: { pin: "4711" },
         })

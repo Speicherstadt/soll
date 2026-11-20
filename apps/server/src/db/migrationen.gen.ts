@@ -41,7 +41,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `datev_einstellungen` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`berater_nr` text,\n\t`mandanten_nr` text,\n\t`lohnarten` text DEFAULT '{}' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE `datev_personalnummern` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`personalnummer` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `datev_personalnummern_einmal` ON `datev_personalnummern` (`betrieb_id`,`personalnummer`);--> statement-breakpoint\nALTER TABLE `arbeitszeitmodelle` ADD `zuschlagssaetze` text DEFAULT '{}' NOT NULL;"
   },
   {
-    "tag": "0010_stoppuhr",
+    "tag": "0010_solo",
+    "sql": "ALTER TABLE `betriebe` ADD `pflicht_hinweis_am` integer;"
+  },
+  {
+    "tag": "0011_stoppuhr",
     "sql": "CREATE TABLE `projektzeiten` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`projekt_id` text,\n\t`taetigkeit_id` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer,\n\t`tag` text NOT NULL,\n\t`notiz` text DEFAULT '' NOT NULL,\n\t`abgerechnet_am` integer,\n\t`cent_pro_stunde` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `projektzeiten_person` ON `projektzeiten` (`betrieb_id`,`nutzer_id`,`beginn`);--> statement-breakpoint\nCREATE INDEX `projektzeiten_projekt` ON `projektzeiten` (`betrieb_id`,`projekt_id`);--> statement-breakpoint\nCREATE INDEX `projektzeiten_taetigkeit` ON `projektzeiten` (`betrieb_id`,`taetigkeit_id`);--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_laeuft` ON `projektzeiten` (`betrieb_id`,`nutzer_id`) WHERE \"projektzeiten\".\"ende\" is null;"
   }
 ];

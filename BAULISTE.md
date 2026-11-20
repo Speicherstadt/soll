@@ -463,11 +463,18 @@ Alle Punkte: nach S-306.
   Endpunkt zeigt, dass kein Betrieb die Buchungen eines anderen sieht oder ändert; Playwright
   startet, wechselt und stoppt die Stoppuhr, ändert eine Buchung und sieht den Hinweis (desktop
   und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
-- [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
+- [x] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
   Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte
   Person ein, schaltet Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).
   Fertig, wenn: ein Test diesen Wechsel zeigt und ein abgeschaltetes Modul in Navigation, Routen und
-  API fehlt.
+  API fehlt. Genauer: ein Servertest geht über jede Route unter `/api/v1/<modul>/` (aus der App
+  gelesen, nicht von Hand gelistet, auch künftige) und bekommt bei abgeschaltetem Modul `403
+  modul_aus`; ein Betrieb nur mit Projektzeit (Inhaber allein) bekommt nirgends einen Befund der
+  Arbeitszeitprüfung und keine Erinnerung; nimmt die erste beschäftigte Person eine Einladung an,
+  ist Arbeitszeit an, der Inhaber sieht einen Hinweis mit dem Grund (BAG 1 ABR 22/21, § 3 Abs. 2
+  Nr. 1 ArbSchG), bis er ihn bestätigt, und Arbeitszeit lässt sich nicht mehr abschalten; ein
+  Playwright-Test (Desktop und `@phone`) zeigt Navigation und Umleitung im Solo-Betrieb und diesen
+  Wechsel.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
 - [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.

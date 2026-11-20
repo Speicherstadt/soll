@@ -65,6 +65,10 @@ dem Gerät und geht von dort zum Server, sofort, wenn das Netz da ist, sonst sp�
   die Marke „wartet“ und lassen sich erst ändern, wenn sie beim Server sind.
 - Sobald das Netz zurück ist, überträgt Soll sie von selbst, in der Reihenfolge, in der gestempelt
   wurde: beim Öffnen von Heute, wenn der Browser wieder online ist, und alle 30 Sekunden.
+- Die Zeit eines Tipps nimmt das Gerät im Moment des Tippens, auch wenn gerade noch eine ältere
+  Stempelung über ein langsames Netz unterwegs ist. Kommt die neue Stempelung deshalb erst mehr als
+  zehn Sekunden nach dem Tippen an die Reihe, geht sie wie eine Stempelung ohne Netz hinaus, mit der
+  Zeit des Geräts, damit die späte Ankunft keine Arbeitszeit verschiebt.
 - Beim Server tragen sie die Marke **„offline“**. Es zählt die Zeit des Geräts, verschoben um so
   viel, wie die Uhr des Geräts beim Senden von der des Servers abweicht; ein Handy, das zehn Minuten
   vorgeht, verschiebt also keine Arbeitszeit. Der Server speichert daneben die Zeit des Geräts und

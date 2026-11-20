@@ -64,6 +64,16 @@ const anmelden = async (abh: Abhaengigkeiten, geraet: Geraet): Promise<boolean> 
   return true;
 };
 
+/**
+ * How long after the tap the entry just stamped may still go live: later (older entries hung on a
+ * slow network) the server's clock at receipt would be late, and the device's time with the time of
+ * sending is the better one (docs/plan.md, "Offline-Stempeln")
+ */
+export const LIVE_MS = 10_000;
+
+const liveNoch = (eintrag: Eintrag, live: number | null, jetzt: number): boolean =>
+  eintrag.nummer === live && jetzt - eintrag.geraetZeitpunkt <= LIVE_MS;
+
 export type Versand = {
   /** entries the server took */
   uebertragen: number;
@@ -76,15 +86,17 @@ export const warteschlange = (abh: Abhaengigkeiten) => {
    * Takes a stamp into the queue: the next number of the device, signed with its key, stored with
    * the device's new last number in one step. Makes the device's key on the first stamp.
    */
-  const aufnehmen = (konto: string, art: Stempelart): Promise<Eintrag> =>
-    abh.sperre(async () => {
+  const aufnehmen = (konto: string, art: Stempelart): Promise<Eintrag> => {
+    // the time of the tap, before waiting for the lock: a send on a slow network may hold it
+    const geraetZeitpunkt = abh.jetzt();
+    return abh.sperre(async () => {
       const geraet = (await abh.ablage.geraet(konto)) ?? (await geraetErzeugen(abh, konto));
       const ohneSignatur = {
         konto,
         geraetId: geraet.geraetId,
         nummer: geraet.letzteNummer + 1,
         art,
-        geraetZeitpunkt: abh.jetzt(),
+        geraetZeitpunkt,
         signatur: "",
         abgelehnt: null,
       };
@@ -95,6 +107,7 @@ export const warteschlange = (abh: Abhaengigkeiten) => {
       await abh.ablage.aufnehmen({ ...geraet, letzteNummer: eintrag.nummer }, eintrag);
       return eintrag;
     });
+  };
 
   /**
    * Sends what waits for the person, oldest number first; `live` names the entry just stamped, which
@@ -109,7 +122,8 @@ export const warteschlange = (abh: Abhaengigkeiten) => {
         return { uebertragen: 0, wartend: offen.length };
       let uebertragen = 0;
       for (const [index, eintrag] of offen.entries()) {
-        const { pfad, body } = anfrageFuer(eintrag, eintrag.nummer === live, abh.jetzt());
+        const jetzt = abh.jetzt();
+        const { pfad, body } = anfrageFuer(eintrag, liveNoch(eintrag, live, jetzt), jetzt);
         const antwort = await abh.api(pfad, { body });
         const was = folge(antwort.status);
         if (was === "spaeter") return { uebertragen, wartend: offen.length - index };

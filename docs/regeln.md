@@ -150,8 +150,10 @@ Regel:
   also höchstens 48 h je Woche mit sechs Werktagen. Der Betrieb wählt den Zeitraum; ohne Wahl prüft
   Soll beide und meldet nur, wenn **beide** überschritten sind (das Gesetz lässt jeden genügen).
 - **Grenzwerte**: Summe der Arbeitszeit im Zeitraum ≤ 8 h × Zahl der Werktage im Zeitraum. Urlaubs-
-  und Krankheitstage zählen als Werktage mit 0 h (nicht als Ausgleich gutgeschrieben, vorsichtige
-  Auslegung).
+  und Krankheitstage sind neutral: Soll nimmt sie samt ihrer Zeit aus dem Zeitraum heraus, sie
+  senken den Durchschnitt nicht und sind kein Ausgleich (Art. 16 Buchst. b Unterabs. 2
+  RL 2003/88/EG; BVerwG, 09.05.2018, 8 C 13/17; Soll behandelt auch übergesetzlichen Urlaub so,
+  vorsichtige Auslegung).
 - **Ausnahmen**: anderer Ausgleichszeitraum nach § 7 Abs. 1 Nr. 1 Buchst. b ArbZG (Einstellung).
 - **Schwere**: Hinweis, sobald der laufende Zeitraum ohne Ausgleich überschritten würde; Verstoß,
   wenn der Zeitraum endet und der Durchschnitt über 8 h liegt.
@@ -161,6 +163,7 @@ Regel:
 | erlaubt | 12 Wochen mit 50 h, 12 Wochen mit 40 h (Ø 45 h) | kein Befund | § 3 Satz 2 ArbZG |
 | Grenze | 24 Wochen mit Ø 48:00 h (1152 h) | kein Befund | § 3 Satz 2 ArbZG („nicht überschritten“) |
 | Verstoß | 24 Wochen mit 1152 h und 1 Minute | Verstoß „Ausgleich nicht erreicht“ | § 3 Satz 2 ArbZG |
+| Urlaub | 22 Wochen mit 1056 h und 1 Minute, 2 Wochen Urlaub | Verstoß „Ausgleich nicht erreicht“ (Ø über 48 h in den 22 Wochen ohne Urlaub) | Art. 16 Buchst. b Unterabs. 2 RL 2003/88/EG |
 
 ### R-04 Ruhepausen
 
@@ -484,7 +487,10 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 `mitarbeiter`). Soll speichert dafür nur den Zeitraum, keinen Befund und kein Attest.
 
 - **Norm**: § 3 MuSchG (Schutzfristen: sechs Wochen vor, acht Wochen nach der Entbindung, zwölf
-  bei Früh- und Mehrlingsgeburten); § 4 Abs. 1 (über 18 Jahre höchstens 8,5 h täglich und 90 h in
+  bei Früh- und Mehrlingsgeburten und auf Antrag, wenn binnen acht Wochen eine Behinderung des
+  Kindes ärztlich festgestellt wird, Abs. 2 Satz 2 Nr. 3; nach einer Fehlgeburt ab der 13., 17. und
+  20. Schwangerschaftswoche zwei, sechs und acht Wochen, soweit sich die Frau nicht ausdrücklich
+  zur Arbeit bereit erklärt, § 3 Abs. 5 MuSchG, seit 1. Juni 2025); § 4 Abs. 1 (über 18 Jahre höchstens 8,5 h täglich und 90 h in
   der Doppelwoche, unter 18 Jahren 8 h und 80 h; nicht mehr als die vertragliche Wochenarbeitszeit im
   Monatsdurchschnitt), Abs. 2 (Ruhezeit 11 h); § 5 Abs. 1 (nicht zwischen 20 und 6 Uhr, bis 22 Uhr
   nur unter den Voraussetzungen des § 28); § 6 Abs. 1 (Sonn- und Feiertage nur mit Erklärung, mit
@@ -494,8 +500,8 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
   spricht (§ 3 Abs. 4 MuSchG); der Betrieb trägt dann das Ende der Schutzfrist am Mitarbeiter ein,
   ohne Grund und ohne Zeugnis.
 - **Schwere**: Verstoß. In der Schutzfrist nach der Entbindung ist jede Arbeitszeit ein Verstoß (außer nach § 3 Abs. 4);
-  vor der Entbindung nur, wenn keine ausdrückliche Erklärung der Frau eingetragen ist (§ 3 Abs. 1
-  Satz 1 MuSchG).
+  vor der Entbindung und nach einer Fehlgeburt nur, wenn keine ausdrückliche Erklärung der Frau
+  eingetragen ist (§ 3 Abs. 1 Satz 1, Abs. 5 Satz 1 MuSchG).
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -506,6 +512,8 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | Grenze | 12:00 – 20:00 | kein Befund | § 5 Abs. 1 Satz 1 MuSchG |
 | Verstoß | 12:00 – 20:01 ohne Genehmigung nach § 28 | Verstoß „nach 20 Uhr“ | § 5 Abs. 1 MuSchG |
 | Verstoß | Arbeit in der Woche nach der Entbindung | Verstoß „Schutzfrist“ | § 3 Abs. 2 MuSchG |
+| Fehlgeburt | Fehlgeburt in der 18. Schwangerschaftswoche, Arbeit in der 5. Woche danach ohne Erklärung | Verstoß „Schutzfrist“ | § 3 Abs. 5 Satz 1 Nr. 2 MuSchG |
+| Fehlgeburt | wie zuvor, mit ausdrücklicher Erklärung der Frau | kein Befund | § 3 Abs. 5 Satz 1 MuSchG |
 
 ## Arbeit auf Abruf
 

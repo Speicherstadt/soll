@@ -197,4 +197,22 @@ describe("docs/regeln.md against the law", () => {
     expect(regel("R-14")).not.toMatch(/Zuschläge für Nacht, Sonn- und Feiertage zählen nicht mit/);
     expect(regel("R-14")).toMatch(/5 AZR 431\/16/);
   });
+  it("R-03: leave and sick days are neutral in the average, never working days with 0 h", () => {
+    // Art. 16 Buchst. b Unterabs. 2 RL 2003/88/EG: "Die nach Artikel 7 gewährten Zeiten des bezahlten
+    // Jahresurlaubs sowie die Krankheitszeiten bleiben bei der Berechnung des Durchschnitts
+    // unberücksichtigt oder sind neutral"; BVerwG, 09.05.2018, 8 C 13/17: statutory leave days are
+    // no Ausgleichstage. Counting them as Werktage with 0 h lowers the average and hides a Verstoß.
+    expect(regel("R-03")).not.toMatch(/als Werktage mit 0 h/);
+    expect(regel("R-03")).toMatch(/Art\. 16 Buchst\. b/);
+  });
+
+  it("R-21: § 3 MuSchG has twelve weeks after a disability is found and periods after a miscarriage", () => {
+    // § 3 Abs. 2 Satz 2 Nr. 3 MuSchG (twelve weeks on request when a disability of the child is found
+    // within eight weeks) and § 3 Abs. 5 MuSchG (Fehlgeburt from the 13th, 17th, 20th week: two, six,
+    // eight weeks unless she declares herself ready to work), in force since 01.06.2025, before
+    // Regelversion 2026-1.
+    expect(regel("R-21")).toMatch(/§ 3 Abs\. 5 MuSchG/);
+    expect(regel("R-21")).toMatch(/Behinderung/);
+    expect(faelle(regel("R-21")).some((z) => /Fehlgeburt/.test(z[1] ?? ""))).toBe(true);
+  });
 });

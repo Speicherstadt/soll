@@ -73,7 +73,8 @@ Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die
 `auskunft:erteilen`, Aufruf `GET /api/v1/auskunft?nutzerId=…`). Diese Auskunft enthält nur, was
 der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
 Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
-Modelle mit Lohn, Schichten und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+Modelle mit Lohn, Schichten, Stundensätze der Person und die Glieder der Audit-Kette zu diesen
+Tabellen. Alles andere bleibt
 draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
 Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
 verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie
@@ -88,6 +89,7 @@ lit. b und c DSGVO).
 | `stempelungen` | jede Fassung jeder Stempelung mit Grund, wer und wann; nichts wird überschrieben |
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |
 | `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll und Lohn; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
+| `stundensaetze` | Stundensätze, die der Betrieb für die Person festgelegt hat (Projektzeit, S-601), nicht die Sätze für alle |
 | `auditKette` | die Glieder der Kette zu den eigenen Zeilen (wer, wann, Hash) und die Glieder, die die Person selbst geschrieben hat, nur mit Tabelle, Aktion und Zeitpunkt |
 
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und

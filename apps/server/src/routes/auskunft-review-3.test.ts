@@ -24,6 +24,7 @@ const FREIGEGEBEN = [
   "monatsabschluesse",
   "arbeitszeitmodelle",
   "schichten",
+  "stundensaetze",
   "auditKette",
 ];
 

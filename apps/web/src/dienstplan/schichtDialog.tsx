@@ -1,11 +1,14 @@
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, For, untrack } from "solid-js";
+import { schreiben } from "../abfragen/abfrage.ts";
+import type { Antwort } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Feld, TextFeld, ZahlFeld, ZeitFeld } from "./felder.tsx";
 import {
   eingabeVon,
+  PLAN_AENDERT,
   type SchichtEingabe,
   schichtAendern,
   schichtAnlegen,
@@ -137,30 +140,31 @@ export const SchichtDialog = (
     modus: SchichtModus;
     standortId: string;
     onSchliessen: () => void;
-    onGespeichert: () => void;
   },
 ) => {
   // the dialog opens for one shift or one cell; a new one opens for the next (dialoge.tsx)
   const modus = untrack(() => props.modus);
   const [offen, setOffen] = createSignal(true);
+  // the form starts from the shift or cell and then belongs to the person's typing: read once, as a
+  // field derived from the plan's data would be reset whenever the week loads again
   const [werte, setWerte] = createSignal(untrack(() => startwerte(modus, props.standortId)));
   const [fehler, setFehler] = createSignal("");
-  const fertig = async (antwort: Promise<{ ok: boolean; fehler?: string }>) => {
-    const ergebnis = await antwort;
-    if (!ergebnis.ok)
-      return setFehler((FEHLER[ergebnis.fehler ?? ""] ?? (() => m.fehler_speichern()))());
+  const senden = schreiben(() => PLAN_AENDERT);
+  /** Closes once the server took it and the week shows the change */
+  const fertig = async (auftrag: () => Promise<Antwort<unknown>>) => {
+    const ergebnis = await senden.mutate(auftrag);
+    if (!ergebnis.ok) return setFehler((FEHLER[ergebnis.fehler] ?? (() => m.fehler_speichern()))());
     setOffen(false);
-    props.onGespeichert();
   };
   const absenden = (event: SubmitEvent) => {
     event.preventDefault();
     const eingabe = { ...werte(), rolle: werte().rolle.trim() };
     // a change keeps the template the shift was planned from; only a new shift names one
-    const { vorlageId: _vorlage, ...aenderung } = eingabe;
-    void fertig(
+    const { vorlageId: _vorlage, ...geaendert } = eingabe;
+    void fertig(() =>
       modus.art === "neu"
         ? schichtAnlegen(eingabe)
-        : schichtAendern(modus.schicht.schichtId, aenderung),
+        : schichtAendern(modus.schicht.schichtId, geaendert),
     );
   };
   return (
@@ -181,7 +185,7 @@ export const SchichtDialog = (
             <Button
               variant="outline"
               class="me-auto text-danger"
-              onClick={() => void fertig(schichtEntfernen(modus.schicht.schichtId))}
+              onClick={() => void fertig(() => schichtEntfernen(modus.schicht.schichtId))}
             >
               {m.plan_entfernen()}
             </Button>

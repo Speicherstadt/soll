@@ -27,6 +27,10 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   standorte: "ausgenommen: Orte des Betriebs, keine Daten der Person",
   schichtvorlagen: "ausgenommen: Vorlagen des Betriebs, keine Daten der Person",
   bedarfe: "ausgenommen: Bedarf des Betriebs, keine Daten der Person",
+  kunden: "ausgenommen: Kunden des Betriebs, keine Daten der Person",
+  projekte: "ausgenommen: Aufträge des Betriebs, keine Daten der Person",
+  taetigkeiten: "ausgenommen: Tätigkeiten des Betriebs, keine Daten der Person",
+  stundensaetze: "stundensaetze (nur die Sätze mit der Person, nicht die für alle)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -80,6 +84,10 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   standorte: aus("keine Daten der Person (Orte des Betriebs)"),
   schichtvorlagen: aus("keine Daten der Person (Vorlagen des Betriebs)"),
   bedarfe: aus("keine Daten der Person (Bedarf des Betriebs)"),
+  kunden: aus("keine Daten der Person (Kunden des Betriebs)"),
+  projekte: aus("keine Daten der Person (Aufträge des Betriebs)"),
+  taetigkeiten: aus("keine Daten der Person (Tätigkeiten des Betriebs)"),
+  stundensaetze: frei("Sätze der Person, die der Inhaber unter Projekte festlegt und sieht"),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

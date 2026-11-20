@@ -89,6 +89,8 @@ test("the person confirms the month, the owner closes it, the Prüfwert checks o
   expect((await download).suggestedFilename()).toBe(`stundenzettel-${vormonat()}.pdf`);
   await page.getByRole("link", { name: t("monat_zur_pruefseite") }).click();
   await expect(page).toHaveURL(`/pruefen?betrieb=${betriebId}`);
+  // the URL changes before the router shows the page; the month (cached) stays on screen till then
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(t("pruefen_titel"));
   await page.getByLabel(t("pruefen_wert")).fill(pruefwert);
   await page.getByRole("button", { name: t("pruefen_knopf") }).click();
   await expect(page.getByRole("status")).toContainText(t("pruefen_ok"));
@@ -125,4 +127,22 @@ test("the owner closes without confirmation only with a reason, then the month i
   await expect(page.getByRole("button", { name: t("monat_bestaetigen") })).toHaveCount(0);
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
+});
+
+test("a failed reload after a step keeps the month on screen and names the error", async ({
+  page,
+  browser,
+}) => {
+  await weberMitMonat(page, browser);
+  await page.goto("/monat");
+  const tabelle = page.getByRole("table", { name: t("monat_tage") });
+  await expect(tabelle).toContainText("8:00");
+  // the step goes through; the month's reload after it finds no server
+  await page.route("**/api/v1/arbeitszeit/monat?**", (route) =>
+    route.request().method() === "GET" ? route.abort() : route.continue(),
+  );
+  await page.getByRole("button", { name: t("monat_bestaetigen") }).click();
+  await expect(page.getByRole("alert").filter({ hasText: t("laden_fehler") })).toBeVisible();
+  await expect(tabelle).toContainText("8:00");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Sandra Kühn");
 });

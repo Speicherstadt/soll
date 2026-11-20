@@ -1,6 +1,7 @@
 import { Button } from "@soll/ui";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, Show } from "solid-js";
+import { createSignal, Loading, Show } from "solid-js";
+import { daten } from "../abfragen/abfrage.ts";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { Auswahl } from "../monat/auswahl.tsx";
 import { GegeneintragDialog, OhneBestaetigungDialog } from "../monat/dialoge.tsx";
@@ -68,6 +69,8 @@ const Aktionen = (props: {
 const MonatSeite = () => {
   const q = monatQuelle();
   const [dialog, setDialog] = createSignal<"ohne" | "gegeneintrag" | null>(null);
+  /** the month as loaded; its first load suspends to the nearest Loading */
+  const ansicht = () => daten(q.ansicht.data);
   const abschliessen = (a: MonatAnsicht) => {
     if (!a.bestaetigung?.gueltig) return setDialog("ohne");
     void q.schritt("/api/v1/arbeitszeit/monat/abschliessen", {
@@ -78,85 +81,94 @@ const MonatSeite = () => {
   return (
     <Seite
       titel={
-        q.ansicht()
-          ? m.monat_titel_person({ monat: monatText(q.monat()), name: q.ansicht()?.name ?? "" })
-          : m.monat_titel()
+        <Loading fallback={m.monat_titel()}>
+          {ansicht()
+            ? m.monat_titel_person({ monat: monatText(q.monat()), name: ansicht()?.name ?? "" })
+            : m.monat_titel()}
+        </Loading>
       }
     >
-      <Auswahl
-        personen={q.personen()}
-        nutzerId={q.nutzerId() ?? q.ansicht()?.nutzerId}
-        monat={q.monat()}
-        onPerson={q.setNutzerId}
-        onMonat={q.setMonat}
-      />
+      <Loading>
+        <Auswahl
+          personen={daten(q.personen.data)?.personen ?? []}
+          nutzerId={q.nutzerId() ?? ansicht()?.nutzerId}
+          monat={q.monat()}
+          onPerson={q.setNutzerId}
+          onMonat={q.setMonat}
+        />
+      </Loading>
       <Fehler text={q.fehler()} />
       <Show when={q.meldung()}>
         <p role="status">{q.meldung()}</p>
       </Show>
-      <Show when={q.ansicht()}>
-        {(a) => (
-          <>
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <Stand ansicht={a()} />
-              <Aktionen
-                ansicht={a()}
-                abfrage={q.abfrage()}
-                onBestaetigen={() =>
-                  void q.schritt("/api/v1/arbeitszeit/monat/bestaetigen", { monat: a().monat })
-                }
-                onAbschliessen={() => abschliessen(a())}
-                onGegeneintrag={() => setDialog("gegeneintrag")}
-              />
-            </div>
-            <Show when={!a().vorbei}>
-              <p class="text-muted-foreground">{m.monat_laeuft()}</p>
-            </Show>
-            <Show when={offen(a()) && a().abschliessbarAb}>
-              {(ab) => (
-                <p class="text-muted-foreground">
-                  {m.monat_abschliessbar_ab({ zeit: zeitpunktText(ab()) })}
+      <Loading>
+        <Fehler text={q.ansicht.data.ok ? "" : m.laden_fehler()} />
+        <Show when={ansicht()}>
+          {(a) => (
+            <>
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <Stand ansicht={a()} />
+                <Aktionen
+                  ansicht={a()}
+                  abfrage={q.abfrage()}
+                  onBestaetigen={() =>
+                    void q.schritt("/api/v1/arbeitszeit/monat/bestaetigen", { monat: a().monat })
+                  }
+                  onAbschliessen={() => abschliessen(a())}
+                  onGegeneintrag={() => setDialog("gegeneintrag")}
+                />
+              </div>
+              <Show when={!a().vorbei}>
+                <p class="text-muted-foreground">{m.monat_laeuft()}</p>
+              </Show>
+              <Show when={offen(a()) && a().abschliessbarAb}>
+                {(ab) => (
+                  <p class="text-muted-foreground">
+                    {m.monat_abschliessbar_ab({ zeit: zeitpunktText(ab()) })}
+                  </p>
+                )}
+              </Show>
+              <Show when={a().offeneTage.length > 0}>
+                <p class="text-warning">
+                  {m.monat_offene_tage({ tage: tageText(a().offeneTage) })}
                 </p>
-              )}
-            </Show>
-            <Show when={a().offeneTage.length > 0}>
-              <p class="text-warning">{m.monat_offene_tage({ tage: tageText(a().offeneTage) })}</p>
-            </Show>
-            <Summen inhalt={a().inhalt} />
-            <TageTabelle
-              zeilen={zeilenDesMonats(
-                a().inhalt.tage,
-                a().inhalt.befunde,
-                a().geaenderteTage,
-                a().abschluss?.am ?? Date.now(),
-              )}
-            />
-            <Gegeneintraege eintraege={a().inhalt.gegeneintraege} />
-            <Pruefwert
-              name={a().name}
-              pruefwert={a().abschluss?.pruefwert ?? null}
-              betriebId={aktuellerBetrieb()?.betriebId ?? ""}
-            />
-            <Show when={dialog() === "ohne"}>
-              <OhneBestaetigungDialog
-                monat={a().monat}
-                nutzerId={a().nutzerId}
+              </Show>
+              <Summen inhalt={a().inhalt} />
+              <TageTabelle
+                zeilen={zeilenDesMonats(
+                  a().inhalt.tage,
+                  a().inhalt.befunde,
+                  a().geaenderteTage,
+                  a().abschluss?.am ?? Date.now(),
+                )}
+              />
+              <Gegeneintraege eintraege={a().inhalt.gegeneintraege} />
+              <Pruefwert
                 name={a().name}
-                onSchliessen={() => setDialog(null)}
-                onGespeichert={q.nachSchritt}
+                pruefwert={a().abschluss?.pruefwert ?? null}
+                betriebId={aktuellerBetrieb()?.betriebId ?? ""}
               />
-            </Show>
-            <Show when={dialog() === "gegeneintrag"}>
-              <GegeneintragDialog
-                monat={a().monat}
-                nutzerId={a().nutzerId}
-                onSchliessen={() => setDialog(null)}
-                onGespeichert={() => q.setMeldung(m.monat_gegeneintrag_gespeichert())}
-              />
-            </Show>
-          </>
-        )}
-      </Show>
+              <Show when={dialog() === "ohne"}>
+                <OhneBestaetigungDialog
+                  monat={a().monat}
+                  nutzerId={a().nutzerId}
+                  name={a().name}
+                  onSchliessen={() => setDialog(null)}
+                  onGespeichert={q.nachSchritt}
+                />
+              </Show>
+              <Show when={dialog() === "gegeneintrag"}>
+                <GegeneintragDialog
+                  monat={a().monat}
+                  nutzerId={a().nutzerId}
+                  onSchliessen={() => setDialog(null)}
+                  onGespeichert={() => q.setMeldung(m.monat_gegeneintrag_gespeichert())}
+                />
+              </Show>
+            </>
+          )}
+        </Show>
+      </Loading>
     </Seite>
   );
 };

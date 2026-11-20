@@ -1,6 +1,7 @@
 import type { Tag } from "@soll/arbeitszeit";
-import { createSignal, createUniqueId, For, Show } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
+import { abfrage, daten } from "../abfragen/abfrage.ts";
+import { ressourcen } from "../abfragen/schluessel.ts";
 import { feld, knopfLink } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import type { Person } from "../zeiten/typen.ts";
@@ -55,11 +56,9 @@ export const Pruefexport = () => {
   const start = startZeitraum(Date.now());
   const [anfang, setAnfang] = createSignal<Tag>(start.anfang);
   const [ende, setEnde] = createSignal<Tag>(start.ende);
-  const [personen, setPersonen] = createSignal<Person[]>([]);
+  const personenAbfrage = abfrage<{ personen: Person[] }>(ressourcen.personen);
+  const personen = () => daten(personenAbfrage.data)?.personen ?? [];
   const [wahl, setWahl] = createSignal(ALLE);
-  api<{ personen: Person[] }>("/api/v1/arbeitszeit/personen").then(
-    (antwort) => antwort.ok && setPersonen(antwort.daten.personen),
-  );
   const gueltig = () => zeitraumGueltig(anfang(), ende());
   const pfad = (format: "csv" | "pdf") =>
     pruefexportPfad({
@@ -78,19 +77,23 @@ export const Pruefexport = () => {
       <div class="flex flex-wrap items-end gap-3">
         <Datum id={`${id}-anfang`} label={m.pruefexport_von()} wert={anfang()} onWert={setAnfang} />
         <Datum id={`${id}-ende`} label={m.pruefexport_bis()} wert={ende()} onWert={setEnde} />
-        <Show when={personen().length > 0}>
-          <PersonWahl id={`${id}-person`} personen={personen()} wahl={wahl()} onWahl={setWahl} />
-        </Show>
+        <Loading>
+          <Show when={personen().length > 0}>
+            <PersonWahl id={`${id}-person`} personen={personen()} wahl={wahl()} onWahl={setWahl} />
+          </Show>
+        </Loading>
       </div>
       <Show when={gueltig()} fallback={<p role="alert">{m.pruefexport_fehler_zeitraum()}</p>}>
-        <div class="flex flex-wrap gap-2">
-          <a href={pfad("csv")} download class={knopfLink}>
-            {m.pruefexport_csv()}
-          </a>
-          <a href={pfad("pdf")} download class={knopfLink}>
-            {m.pruefexport_pdf()}
-          </a>
-        </div>
+        <Loading>
+          <div class="flex flex-wrap gap-2">
+            <a href={pfad("csv")} download class={knopfLink}>
+              {m.pruefexport_csv()}
+            </a>
+            <a href={pfad("pdf")} download class={knopfLink}>
+              {m.pruefexport_pdf()}
+            </a>
+          </div>
+        </Loading>
       </Show>
     </section>
   );

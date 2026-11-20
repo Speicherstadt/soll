@@ -1,18 +1,17 @@
 import type { z } from "zod";
 import * as dienstplan from "../routes/dienstplan.ts";
 import * as kunden from "../routes/kunden.ts";
-import * as pins from "../routes/pins.ts";
 import * as projekte from "../routes/projekte.ts";
 import * as saetze from "../routes/saetze.ts";
 import * as taetigkeiten from "../routes/taetigkeiten.ts";
 import type { Operation } from "./dokument.ts";
 
-type Kurz = Omit<Operation, "bereich">;
+export type Kurz = Omit<Operation, "bereich">;
 
-const unter = (basis: string, bereich: string, operationen: Kurz[]): Operation[] =>
+export const unter = (basis: string, bereich: string, operationen: Kurz[]): Operation[] =>
   operationen.map((op) => ({ ...op, pfad: `${basis}${op.pfad}`, bereich }));
 
-const STATUS: Kurz = {
+export const STATUS: Kurz = {
   methode: "get",
   pfad: "/status",
   zusammenfassung: "Ob das Modul eingeschaltet ist",
@@ -140,21 +139,4 @@ export const PROJEKTZEIT: readonly Operation[] = unter("/api/v1/projektzeit", "P
     koerper: saetze.neuSchema,
   },
   { methode: "delete", pfad: "/saetze/:satzId", zusammenfassung: "Einen Stundensatz entfernen" },
-]);
-
-/** The terminal: PINs */
-export const TERMINAL: readonly Operation[] = unter("/api/v1/terminal", "Terminal", [
-  STATUS,
-  {
-    methode: "put",
-    pfad: "/pins/:nutzerId",
-    zusammenfassung: "Die PIN einer Person setzen (Inhaber)",
-    koerper: pins.pinSchema,
-  },
-  {
-    methode: "post",
-    pfad: "/pins/:nutzerId/pruefen",
-    zusammenfassung: "Eine PIN am Terminal prüfen (Gerät)",
-    koerper: pins.pinSchema,
-  },
 ]);

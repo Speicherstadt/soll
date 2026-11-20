@@ -1,3 +1,5 @@
+import type { BudgetZeile } from "@soll/arbeitszeit";
+
 /** The rows of the module Projektzeit as /api/v1/projektzeit returns them (S-601) */
 export type Kunde = { kundeId: string; name: string; nummer: string; archiviertAm: number | null };
 
@@ -11,6 +13,8 @@ export type Projekt = {
   budgetCent?: number | null;
   warnungProzent: number;
   archiviertAm: number | null;
+  /** what the bookings used, a line per budget set (S-602); euros only for whoever keeps orders */
+  budget?: BudgetZeile[];
 };
 
 export type Taetigkeit = {

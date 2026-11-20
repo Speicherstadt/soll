@@ -1,12 +1,11 @@
 import { type SatzErgebnis, stundensatz, tagInBerlin } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
-import { darf } from "../../auth/rollen.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { stundensaetze } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
-import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { type Ergebnis, eindeutig, type Grund, nein, ok } from "./ergebnis.ts";
 import { kundeLesen } from "./kunden.ts";
+import { bucht } from "./personen.ts";
 import { projektLesen } from "./projekte.ts";
 import { taetigkeitLesen } from "./taetigkeiten.ts";
 
@@ -35,12 +34,6 @@ export const saetzeLesen = (db: Db, betriebId: string): Stundensatz[] =>
     .orderBy(stundensaetze.gueltigAb, stundensaetze.angelegtAm)
     .all()
     .map(alsSatz);
-
-/** Whether a member books project time (S-602), as GET /saetze/personen lists them: not a device */
-const bucht = (db: Db, betriebId: string, nutzerId: string): boolean => {
-  const mitglied = mitgliedschaftVon(db, betriebId, nutzerId);
-  return mitglied !== undefined && darf(mitglied.rolle, "projekte:lesen");
-};
 
 /** An order counts as archived while its customer is: the order brings its customer to the rate */
 const projektMitKunde = (db: Db, betriebId: string, projektId: string) => {

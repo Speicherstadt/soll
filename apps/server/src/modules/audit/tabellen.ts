@@ -1,6 +1,7 @@
 import {
   apiZugaenge,
   arbeitszeitmodelle,
+  ausweise,
   bedarfe,
   betriebe,
   datevEinstellungen,
@@ -18,6 +19,7 @@ import {
   monatsabschluesse,
   pins,
   projekte,
+  projektzeiten,
   pushAbos,
   schichten,
   schichtvorlagen,
@@ -25,6 +27,7 @@ import {
   stempelungen,
   stundensaetze,
   taetigkeiten,
+  terminals,
 } from "../../db/schema.ts";
 
 /**
@@ -47,6 +50,7 @@ export const kettenTabellen = {
   projekte: { tabelle: projekte, schluessel: ["projektId"] },
   taetigkeiten: { tabelle: taetigkeiten, schluessel: ["taetigkeitId"] },
   stundensaetze: { tabelle: stundensaetze, schluessel: ["satzId"] },
+  projektzeiten: { tabelle: projektzeiten, schluessel: ["buchungId"] },
   instanzschluessel: { tabelle: instanzschluessel, schluessel: ["name"] },
   pushAbos: { tabelle: pushAbos, schluessel: ["aboId"] },
   erinnerungen: { tabelle: erinnerungen, schluessel: ["erinnerungId"] },
@@ -55,6 +59,8 @@ export const kettenTabellen = {
   schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
   schichten: { tabelle: schichten, schluessel: ["schichtId"] },
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
+  terminals: { tabelle: terminals, schluessel: ["terminalId"] },
+  ausweise: { tabelle: ausweise, schluessel: ["nutzerId"] },
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
   datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
   apiZugaenge: { tabelle: apiZugaenge, schluessel: ["zugangId"] },

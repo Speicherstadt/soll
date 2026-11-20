@@ -9,6 +9,7 @@ export type Ressource = { schluessel: Schluessel; pfad: string };
 const AZ = "/api/v1/arbeitszeit";
 const PLAN = "/api/v1/dienstplan";
 const PZ = "/api/v1/projektzeit";
+const TERMINAL = "/api/v1/terminal";
 
 export const PFAD = {
   personen: `${AZ}/personen`,
@@ -27,6 +28,9 @@ export const PFAD = {
   saetze: `${PZ}/saetze`,
   satzPersonen: `${PZ}/saetze/personen`,
   zugaenge: "/api/v1/zugaenge",
+  terminalGeraete: `${TERMINAL}/geraete`,
+  terminalPersonen: `${TERMINAL}/personen`,
+  stoppuhr: `${PZ}/stoppuhr`,
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -64,6 +68,9 @@ export const ressourcen = {
   saetze: () => einfach(PFAD.saetze),
   satzPersonen: () => einfach(PFAD.satzPersonen),
   zugaenge: () => einfach(PFAD.zugaenge),
+  terminalGeraete: () => einfach(PFAD.terminalGeraete),
+  terminalPersonen: () => einfach(PFAD.terminalPersonen),
+  stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

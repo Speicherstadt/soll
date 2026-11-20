@@ -1,4 +1,14 @@
 export {
+  aufMinute,
+  type BuchungsSpanne,
+  buchungsMinuten,
+  buchungZuordnen,
+  type ProjektzeitHinweis,
+  projektzeitHinweis,
+  ueberschneiden,
+  type Zuordnung,
+} from "./buchung.ts";
+export {
   type Budget,
   type BudgetStufe,
   type BudgetZeile,

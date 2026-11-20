@@ -32,7 +32,9 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   arbeitszeitmodelle: eigen.arbeitszeitmodelle,
   schichten: eigen.schichten,
   stundensaetze: eigen.stundensaetze,
+  projektzeiten: eigen.projektzeiten,
   personalnummer: eigen.personalnummer,
+  ausweis: eigen.ausweis,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

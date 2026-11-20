@@ -25,7 +25,9 @@ const FREIGEGEBEN = [
   "arbeitszeitmodelle",
   "schichten",
   "stundensaetze",
+  "projektzeiten",
   "personalnummer",
+  "ausweis",
   "auditKette",
 ];
 
@@ -47,7 +49,7 @@ describe("Auskunft given by the owner for someone else (third review of S-309)",
       (
         await w.jonas.anfrage(`/api/v1/terminal/pins/${w.sandra.nutzerId}`, {
           method: "PUT",
-          body: { pin: "4711" },
+          body: { pin: "471100" },
         })
       ).status,
     ).toBe(204);

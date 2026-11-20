@@ -1,6 +1,8 @@
 import { ALLGEMEIN } from "./allgemein.ts";
 import { ARBEITSZEIT } from "./arbeitszeit.ts";
-import { DIENSTPLAN, PROJEKTZEIT, TERMINAL } from "./module.ts";
+import { BUCHUNGEN } from "./buchungen.ts";
+import { DIENSTPLAN, PROJEKTZEIT } from "./module.ts";
+import { KIOSK, TERMINAL } from "./terminal.ts";
 
 export { type Operation, openapiDokument, openapiPfad } from "./dokument.ts";
 
@@ -10,5 +12,7 @@ export const OPERATIONEN = [
   ...ARBEITSZEIT,
   ...DIENSTPLAN,
   ...PROJEKTZEIT,
+  ...BUCHUNGEN,
   ...TERMINAL,
+  ...KIOSK,
 ];

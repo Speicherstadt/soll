@@ -1,23 +1,24 @@
 ---
 description: >-
-  Kunden, Aufträge, Tätigkeiten und Stundensätze im Modul Projektzeit von Soll: die vier festen
-  internen Tätigkeiten, welcher Stundensatz gilt, Budgets mit Warnung und Archivieren statt Löschen.
+  Kunden, Aufträge, Tätigkeiten, Stundensätze und die Stoppuhr im Modul Projektzeit von Soll: die vier
+  festen internen Tätigkeiten, welcher Stundensatz gilt, Budgets mit Warnung, Buchungen mit Verweis auf
+  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit und „abgerechnet“.
 ---
 
-# Projektzeit: Kunden, Aufträge, Tätigkeiten
+# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr
 
 Unter **Projekte** legt der Betrieb an, worauf seine Leute Zeit buchen: Kunden, Aufträge und
 Tätigkeiten, dazu die Stundensätze. Der Bereich gehört zum Modul Projektzeit; ist es aus, fehlt er in
 der Navigation, und der Server lehnt jede seiner Routen ab (`403 modul_aus`). Die Daten bleiben
-dabei erhalten. Die Stoppuhr, mit der gebucht wird, kommt mit S-602.
+dabei erhalten. Gebucht wird mit der [Stoppuhr](#stoppuhr) unter **Heute**.
 
 ## Wer was sieht
 
-| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze |
-| --- | --- | --- | --- | --- |
-| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern |
-| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein |
-| Gerät (Terminal) | nein | nein | nein | nein |
+| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen |
+| --- | --- | --- | --- | --- | --- |
+| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen |
+| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene |
+| Gerät (Terminal) | nein | nein | nein | nein | nein |
 
 Wer bucht, muss Aufträge und Tätigkeiten sehen. Geld (Budget in Euro, Stundensätze) braucht nur, wer
 die Aufträge führt.
@@ -86,14 +87,73 @@ Ein Auftrag kann ein Budget in Stunden (gespeichert in ganzen Minuten), in Euro 
 in beidem haben. Ab einer Schwelle (Vorgabe 80 %, je Auftrag von 1 bis 100 %) zeigt Soll eine
 **Warnung**, ab 100 % heißt das Budget **aufgebraucht**. Verglichen wird in ganzen Zahlen
 (verbraucht × 100 ≥ Budget × Schwelle), ohne Brüche. Was verbraucht ist, zählen die Buchungen der
-Stoppuhr (S-602).
+Stoppuhr: jede gebuchte Minute auf dem Auftrag (eine laufende Buchung bis jetzt) und der Betrag der
+abrechenbaren Minuten, eine abgerechnete Buchung mit ihrem festgehaltenen Satz, die übrigen mit dem
+Satz, der an ihrem Arbeitstag gilt. Minuten ohne Satz („nicht hinterlegt“) zählen keinen Betrag.
+Die Liste der Aufträge zeigt „verbraucht von Budget“ je Budget, dazu „Warnung“ oder „aufgebraucht“;
+den Teil in Euro sehen nur Inhaber und Planer.
+
+## Stoppuhr
+
+Unter **Heute** steht die Stoppuhr, für alle, die Projektzeit buchen (alle Rollen außer Geräten); mit
+Arbeitszeit unter dem Stempelknopf, ohne (Solo) allein.
+
+- **Eine je Person.** Je Person läuft höchstens eine Stoppuhr. Der Server erzwingt das, auch bei zwei
+  Tipps zugleich: Ein eindeutiger Index über die laufenden Buchungen einer Person lässt keine zweite
+  zu.
+- **Wechsel mit einem Tipp.** Die zuletzt gebuchten Kombinationen aus Auftrag und Tätigkeit stehen als
+  Knöpfe da, die laufende gedrückt (`aria-pressed`). Ein Tipp auf eine andere beendet die laufende
+  Buchung und startet die nächste in derselben Transaktion: Die eine endet in der Minute, in der die
+  nächste beginnt, ohne Lücke und ohne Überschneidung. Darunter startet ein Formular jede andere
+  Kombination; „Ohne Auftrag (intern)“ bucht interne Zeit, etwa Werkstatt oder Lager.
+- **Ganze Minuten.** Beginn und Ende gelten auf die volle Minute (die Sekunden fallen weg), die Dauer
+  hat ganze Minuten. Eine Buchung, die in ihrer ersten Minute gestoppt oder gewechselt wird, hat keine
+  Minute und wird nicht gebucht. Die Nacht der Zeitumstellung zählt ihre echten Minuten.
+- **Verweis auf die Stempelung.** Jede Buchung gehört zu einem Arbeitstag: dem Tag der Schicht, in die
+  ihr Beginn fällt (eine Buchung nach Mitternacht in einer Nachtschicht zum Tag, an dem die Schicht
+  beginnt), außerhalb jeder Schicht zum Kalendertag ihres Beginns. Der Arbeitstag wird beim Schreiben
+  festgehalten, damit Satz und Abrechnung nicht mit einer späteren Korrektur wandern. Das Kommen der
+  Schicht nennt Soll beim Lesen nach dem Stand der Stempelungen („Schicht ab 7:00“ oder „außerhalb
+  der Schicht“).
+- **Hinweis bei mehr Projektzeit als Arbeitszeit.** Übersteigt die gebuchte Zeit eines Arbeitstags
+  die gestempelte Arbeitszeit (§ 2 Abs. 1 ArbZG, wie unter Heute gezählt), zeigt der Tag einen
+  Hinweis mit beiden Summen und der Differenz. Projektzeit ist Teil der Arbeitszeit; mehr davon heißt,
+  eine Buchung oder eine Stempelung stimmt nicht. Soll ändert nichts und sperrt nichts. Ohne Modul
+  Arbeitszeit oder für jemanden, der in Soll nicht stempelt, gibt es keinen Hinweis.
+
+| Beispiel (Sandra, 20.11.2026) | gestempelt | gebucht | Hinweis |
+| --- | --- | --- | --- |
+| Kommen 7:00, Gehen 9:00; Montage 7:00–9:00 | 2:00 | 2:00 | keiner |
+| dazu Fahrt 10:00–10:45 | 2:00 | 2:45 | 0:45 mehr |
+| Stoppuhr seit 7:00, Kommen 7:10, jetzt 8:00 | 0:50 | 1:00 | 0:10 mehr |
+| keine Stempelung, Fahrt 10:00–11:00 | 0:00 | 1:00 | 1:00 mehr |
+| ohne Modul Arbeitszeit, Fahrt 10:00–11:00 | – | 1:00 | keiner |
+
+### Buchungen ändern bis „abgerechnet“
+
+Die Person ändert, trägt nach und löscht ihre eigenen Buchungen, Inhaber und Planer die aller
+Personen. Eine Buchung von Hand ist abgeschlossen: Sie endet nach ihrem Beginn, nicht in der Zukunft
+und höchstens 24 Stunden danach (`422 spanne`). Buchungen derselben Person überschneiden sich nicht
+(`409 ueberschneidung`); aneinander anschließen dürfen sie. Eine laufende Buchung behält ihr offenes
+Ende; beendet wird sie mit Stoppen (`409 laeuft`).
+
+**Abgerechnet** markieren Inhaber und Planer, später die Übergabe an Haben (S-606). Danach ist die
+Buchung gesperrt (`409 abgerechnet`), und sie behält den Satz, mit dem sie abgerechnet wurde: den Satz,
+der an ihrem Arbeitstag gilt, für eine abrechenbare Tätigkeit, sonst keinen. Eine spätere Änderung der
+Sätze ändert keine Rechnung. Abgerechnet werden alle genannten Buchungen oder keine; eine laufende
+nicht.
+
+Ein **abgeschlossener Monat** sperrt Projektzeit nicht: Die Stempelungen sind die Aufzeichnung nach
+§ 16 Abs. 2 ArbZG und werden gesperrt, die Projektzeit ist eine Grundlage der Rechnung und bleibt bis
+„abgerechnet“ änderbar (Projektplan, „Arbeitszeit und Projektzeit“).
 
 ## Archivieren statt Löschen
 
 Was noch etwas nennt, wird archiviert statt gelöscht: einen Kunden mit Auftrag oder Satz, einen
-Auftrag oder eine Tätigkeit mit Satz lehnt der Server beim Löschen ab (`409 verwendet`). Ein
-archivierter Kunde bekommt keine neuen Aufträge, ein archivierter Auftrag oder eine archivierte
-Tätigkeit keine neuen Sätze (`409 archiviert`). Die Aufträge eines archivierten Kunden zählen dabei
+Auftrag oder eine Tätigkeit mit Satz oder Buchung lehnt der Server beim Löschen ab (`409 verwendet`).
+Ein archivierter Kunde bekommt keine neuen Aufträge, ein archivierter Auftrag oder eine archivierte
+Tätigkeit keine neuen Sätze und keine neuen Buchungen (`409 archiviert`); eine Buchung, die sie schon
+nennt, bleibt änderbar. Die Aufträge eines archivierten Kunden zählen dabei
 mit: Sie bekommen keine neuen Sätze, und ein archivierter Auftrag kommt erst nach seinem Kunden
 zurück. Sonst geht zurückholen jederzeit. Jede Änderung steht in der
 [Audit-Kette](audit-kette.md).
@@ -109,7 +169,18 @@ Alle Routen liegen unter `/api/v1/projektzeit` und verlangen eine Sitzung im Bet
 | `GET /saetze`, `POST /saetze`, `DELETE /saetze/{id}` | Inhaber, Planer | Stundensätze |
 | `GET /saetze/personen` | Inhaber, Planer | die Personen, die ein Satz nennen kann |
 | `GET /saetze/gilt?projektId=&taetigkeitId=&nutzerId=&tag=` | Inhaber, Planer | der Satz, der für eine Buchung gilt, oder `nicht_hinterlegt` |
+| `GET /stoppuhr?tag=&nutzerId=` | alle außer Geräten (eine andere Person nur Inhaber und Planer) | der Arbeitstag (ohne `tag` der der laufenden Buchung, sonst der heutige): `laufend`, `buchungen` mit `minuten` und `kommen`, `gebuchtMinuten`, `gestempeltMinuten` (`null` ohne Erfassung), `hinweis`, `zuletzt` |
+| `POST /stoppuhr/start` | alle außer Geräten | `{ projektId, taetigkeitId, notiz? }`: startet die eigene Stoppuhr, `201` mit `laufend` und der beendeten Buchung `beendet`; dieselbe Kombination noch einmal ändert nichts (`200`) |
+| `POST /stoppuhr/stopp` | alle außer Geräten | stoppt die eigene Stoppuhr; `beendet` ist `null` für eine Buchung ohne Minute, `409 laeuft_nicht` ohne laufende |
+| `POST /buchungen` | alle außer Geräten (`nutzerId` einer anderen Person nur Inhaber und Planer) | `{ projektId, taetigkeitId, beginn, ende, notiz? }` in UTC-Millisekunden auf der vollen Minute: eine Buchung von Hand |
+| `PATCH /buchungen/{id}`, `DELETE /buchungen/{id}` | die Person selbst, Inhaber und Planer | ändern (`projektId`, `taetigkeitId`, `beginn`, `ende`, `notiz`) oder löschen bis „abgerechnet“ |
+| `POST /buchungen/abrechnen` | Inhaber, Planer | `{ buchungIds }`: markiert als abgerechnet, mit `centProStunde` und `betragCent` je Buchung |
 
-Antworten: `400 ungueltig` bei falschen Angaben (auch Bruchteile von Minuten oder Cent), `404
-unbekannt`, `409` mit `verwendet`, `archiviert`, `fest` (feste Tätigkeit) oder `doppelt`, `422` mit
-`kunde_unbekannt`, `projekt_unbekannt`, `taetigkeit_unbekannt` oder `person_unbekannt`.
+`GET /projekte` nennt je Auftrag `budget`: eine Zeile je gesetztem Budget mit `verbraucht`, `rest`
+und `stufe` (`ok`, `warnung`, `aufgebraucht`), die Zeile in Cent nur für Inhaber und Planer.
+
+Antworten: `400 ungueltig` bei falschen Angaben (auch Bruchteile von Minuten oder Cent, ein Zeitpunkt
+außerhalb der vollen Minute), `404 unbekannt` (auch für die Buchung einer anderen Person ohne Recht
+dazu), `409` mit `verwendet`, `archiviert`, `fest` (feste Tätigkeit), `doppelt`, `ueberschneidung`,
+`abgerechnet`, `laeuft` oder `laeuft_nicht`, `422` mit `kunde_unbekannt`, `projekt_unbekannt`,
+`taetigkeit_unbekannt`, `person_unbekannt` oder `spanne`.

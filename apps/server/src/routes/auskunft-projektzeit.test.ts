@@ -28,4 +28,32 @@ describe("GET /api/v1/auskunft with project time", () => {
     );
     expect(inhaber.stundensaetze).toEqual(eigen.stundensaetze);
   });
+
+  it("holds the person's bookings of project time with the rate they were billed with", async () => {
+    const w = await weber();
+    await w.jonas.anfrage("/api/v1/betrieb/module", {
+      method: "PATCH",
+      body: { projektzeit: true },
+    });
+    const pz = "/api/v1/projektzeit";
+    const eigene = await w.sandra.anfrage(`${pz}/stoppuhr/start`, {
+      body: { projektId: null, taetigkeitId: "fahrt" },
+    });
+    expect(eigene.status).toBe(201);
+    expect(
+      (await w.anna.anfrage(`${pz}/stoppuhr/start`, { body: { taetigkeitId: "lager" } })).status,
+    ).toBe(201);
+
+    const eigen = await json(await w.sandra.anfrage("/api/v1/auskunft"));
+    expect(eigen.projektzeiten).toEqual([
+      expect.objectContaining({ taetigkeitId: "fahrt", ende: null, centProStunde: null }),
+    ]);
+    const kette = eigen.auditKette as { zuDeinenDaten: Json[] };
+    expect(kette.zuDeinenDaten.map((g) => g.tabelle)).toContain("projektzeiten");
+    // the owner sees and changes everyone's bookings, so his copy holds them too
+    const inhaber = await json(
+      await w.jonas.anfrage(`/api/v1/auskunft?nutzerId=${w.sandra.nutzerId}`),
+    );
+    expect(inhaber.projektzeiten).toEqual(eigen.projektzeiten);
+  });
 });

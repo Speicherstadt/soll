@@ -963,7 +963,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   die Uhrzeit am Ort, die Nacht der Umstellung im Oktober hat von 0 bis 4 Uhr fünf Stunden, die im
   März drei. Der Stundenlohn aus dem Grundlohn bleibt ein genauer Bruch; gerundet wird erst die
   Summe eines Arbeitstags (des Tags, an dem die Schicht beginnt): der gezahlte Betrag auf, der
-  steuerfreie ab, nie über die Grenze. 24.12. und 31.12. ab 14 Uhr sind keine Feiertage und tragen
+  steuerfreie ab, nie über die Grenze; lässt ein Abschnitt mit diesem Zuschlag unter seiner Grenze
+  Raum, bleibt der aufgerundete Bruchteil eines Cents steuerfrei. 24.12. und 31.12. ab 14 Uhr sind keine Feiertage und tragen
   sich nicht in den Folgetag (Abs. 3 Nr. 2: „des auf den Sonntag oder Feiertag folgenden Tages“).
 - **Schwere**: kein Befund; eine Berechnung. Die Beispiele aus R 3b LStR und H 3b LStH sind die Tests
   (S-207).
@@ -991,6 +992,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Jahreswechsel | Do 31.12.2026 22:00 – Fr 1.1.2027 6:00 | 150 %, 165 % von 0 bis 4 Uhr (40 % + 125 % Neujahr), 150 % von 4 bis 6 Uhr | § 3b Abs. 1 Nr. 3, Abs. 3 Nr. 1 EStG |
 | Grundlohn über 50 € | 80 € je Stunde, 1.5. 10:00 – 11:00, gezahlt 150 % | 75,00 € steuerfrei, 45,00 € steuerpflichtig | § 3b Abs. 2 Satz 1 EStG |
 | Rundung | 13,90 € je Stunde, Mi 22:00 – 22:07, gezahlt 25 % | 0,41 € gezahlt (aufgerundet), 0,40 € steuerfrei (abgerundet), 0,01 € steuerpflichtig | CLAUDE.md, „Never“; § 3b Abs. 1 EStG („nicht übersteigen“) |
+| Rundung unter der Grenze | 13,90 € je Stunde, So 22:00 – 22:07, gezahlt 25 % Nacht; So 10:00 – 10:07, gezahlt 25 % Sonntag | je 0,41 € gezahlt und 0,41 € steuerfrei (Grenze 75 % bzw. 50 %) | § 3b Abs. 1 EStG („nicht übersteigen“) |
 | nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 
 ## Mitbestimmung und Datenschutz

@@ -85,6 +85,11 @@ gerundet wird erst die Summe eines Arbeitstags (des Tags, an dem die Schicht beg
 Bei 13,90 € je Stunde und 25 % für sieben Minuten (40,54 Cent) sind das 0,41 € gezahlt, davon
 0,40 € steuerfrei und 0,01 € steuerpflichtig.
 
+Lässt die Grenze Raum, bleibt auch der aufgerundete Cent steuerfrei: Dieselben sieben Minuten am
+Sonntag (Grenze 25 % + 50 %) ergeben 0,41 € gezahlt und 0,41 € steuerfrei, denn der ganze Betrag
+übersteigt die Grenze nicht. Der Bruchteil eines Cents wird nur einem Abschnitt zugerechnet, in dem
+derselbe Zuschlag gezahlt wurde und die Grenze noch nicht ausgeschöpft ist.
+
 ## Was Soll nicht rechnet
 
 - **Grundlohnzusätze und Mehrarbeit**: Welche Teile des Lohns zum Grundlohn gehören (R 3b Abs. 2

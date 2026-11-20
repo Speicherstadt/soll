@@ -7,7 +7,9 @@ import {
   einheitenJeCent,
   inCent,
   KEIN_TEIL,
+  mitRaum,
   plus,
+  type Raum,
   type Teil,
   teileVon,
 } from "./betrag.ts";
@@ -92,24 +94,33 @@ const abschnitteAm = (
   return abschnitte;
 };
 
-/** The exact sums of a day per kind: the day part goes to Sunday or holiday by its kind of day */
+/**
+ * The exact sums of a day per kind, the day part going to Sunday or holiday by its kind of day, and
+ * the room each stretch leaves under its limits
+ */
 const summenJeArt = (
   abschnitte: readonly Zuschlagsabschnitt[],
   lohn: Lohnsatz,
-): Record<ZuschlagArt, Teil> => {
+): { summen: Record<ZuschlagArt, Teil>; raeume: Raum<ZuschlagArt>[] } => {
   const summen: Record<ZuschlagArt, Teil> = {
     nacht: KEIN_TEIL,
     sonntag: KEIN_TEIL,
     feiertag: KEIN_TEIL,
   };
+  const raeume: Raum<ZuschlagArt>[] = [];
   for (const a of abschnitte) {
     const teile = teileVon(a.minuten, lohn.stundenlohn, lohn.gedeckelt, a.gezahlt, a.steuerfrei);
     const tagesart = a.steuerfrei.tagesart ?? a.gezahlt.tagesart;
     const artDesTags: ZuschlagArt = tagesart === "sonntag" ? "sonntag" : "feiertag";
     summen.nacht = plus(summen.nacht, teile.nacht);
     summen[artDesTags] = plus(summen[artDesTags], teile.tag);
+    const gezahlt: ZuschlagArt[] = [
+      ...(teile.nacht.gezahlt > 0n ? (["nacht"] as const) : []),
+      ...(teile.tag.gezahlt > 0n ? [artDesTags] : []),
+    ];
+    if (gezahlt.length > 0 && teile.raum > 0n) raeume.push({ arten: gezahlt, raum: teile.raum });
   }
-  return summen;
+  return { summen, raeume };
 };
 
 const zusammen = (betraege: readonly Betrag[]): Betrag =>
@@ -129,8 +140,9 @@ const zuschlagstag = (tag: PruefTag, optionen: ZuschlagOptionen): Zuschlagstag |
   if (abschnitte === null) return null;
   const stundenlohn = grundlohnJeStunde(optionen.grundlohn, grenzen);
   const lohn = { stundenlohn, gedeckelt: gedeckelt(stundenlohn, grenzen) };
-  const summen = summenJeArt(abschnitte, lohn);
   const einheiten = einheitenJeCent(stundenlohn);
+  const { summen: genau, raeume } = summenJeArt(abschnitte, lohn);
+  const summen = mitRaum(genau, ARTEN, raeume, einheiten);
   const arten = Object.fromEntries(
     ARTEN.map((art) => [art, inCent(summen[art], einheiten)]),
   ) as Record<ZuschlagArt, Betrag>;

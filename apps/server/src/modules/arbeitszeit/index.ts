@@ -11,6 +11,7 @@ export {
 } from "./modelle.ts";
 export {
   type Aenderung,
+  hatStempelungen,
   nachtragen,
   type Quelle,
   type Stempel,

@@ -59,12 +59,21 @@ export const tagLesen = (
   if (!stand.ok) return null;
   const amTag = stempelungenAm(umfeld, jetzt, tag);
   const ids = new Set(amTag.map((stempel) => stempel.stempelId));
+  // a version no longer in force belongs to the working day it would have now: a night shift's
+  // Gehen after midnight removed shows on the day the shift starts (CLAUDE.md, "Time")
+  const gehoertZumTag = (stempel: Aenderung["vorher"]) => {
+    if (stempel === null) return false;
+    const probe = { ...stempel };
+    return (
+      tagInBerlin(stempel.zeitpunkt) === tag ||
+      stempelungenAm([...umfeld, probe], jetzt, tag).includes(probe)
+    );
+  };
   const aenderungen = aenderungenIn(db, betriebId, nutzerId, von, bis).filter(
     (aenderung) =>
       ids.has(aenderung.stempelId) ||
-      [aenderung.vorher, aenderung.nachher].some(
-        (stempel) => stempel !== null && tagInBerlin(stempel.zeitpunkt) === tag,
-      ),
+      gehoertZumTag(aenderung.vorher) ||
+      gehoertZumTag(aenderung.nachher),
   );
   return {
     tag,

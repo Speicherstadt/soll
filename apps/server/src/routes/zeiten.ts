@@ -4,6 +4,7 @@ import { z } from "zod";
 import { darf } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import {
+  hatStempelungen,
   modellAm,
   modellZuordnen,
   nachtragen,
@@ -63,7 +64,8 @@ type Person =
 
 /**
  * The person a call is about: oneself, or a member of the business who stamps, for whoever may;
- * external staff and devices do not stamp here (docs/plan.md, "Wer Stempelungen ändert")
+ * external staff and devices do not stamp here (docs/plan.md, "Wer Stempelungen ändert"). Whoever
+ * may see all times also reads the past stamps of someone who left or no longer stamps.
  */
 const person = (
   db: Db,
@@ -76,8 +78,11 @@ const person = (
   if (!darf(c.get("rolle"), benoetigt))
     return { ok: false, status: 403, fehler: "keine_berechtigung" };
   const mitglied = mitgliedschaftVon(db, c.get("betriebId"), ziel);
-  if (!mitglied || !darf(mitglied.rolle, "stempeln"))
-    return { ok: false, status: 404, fehler: "unbekannt" };
+  const stempelt = mitglied !== undefined && darf(mitglied.rolle, "stempeln");
+  // the records stay readable two years (§ 16 Abs. 2 ArbZG), also after a person left or no
+  // longer stamps; adding stamps stays for members who stamp
+  const frueher = benoetigt === "zeiten:alle" && hatStempelungen(db, c.get("betriebId"), ziel);
+  if (!stempelt && !frueher) return { ok: false, status: 404, fehler: "unbekannt" };
   return { ok: true, nutzerId: ziel };
 };
 

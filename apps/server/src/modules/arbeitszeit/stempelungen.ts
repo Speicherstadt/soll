@@ -59,6 +59,15 @@ export const stempelungenIn = (
     .all()
     .map(({ zeile }) => alsStempel(zeile));
 
+/** Whether a person has any stamp in the business, also one who left or no longer stamps */
+export const hatStempelungen = (db: Db, betriebId: string, nutzerId: string): boolean =>
+  db
+    .select({ id: stempelungen.stempelId })
+    .from(stempelungen)
+    .where(and(eq(stempelungen.betriebId, betriebId), eq(stempelungen.nutzerId, nutzerId)))
+    .limit(1)
+    .get() !== undefined;
+
 /** A stamp of the business that is in force, by its id */
 export const stempelInKraft = (db: Db, betriebId: string, stempelId: string): Zeile | undefined =>
   db

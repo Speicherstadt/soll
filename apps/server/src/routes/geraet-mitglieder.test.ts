@@ -77,7 +77,9 @@ describe("an employee or an external worker", () => {
       expect(antwort.status, pfad).toBe(403);
     }
     // the own role stays readable
-    expect((await sandra.anfrage("/api/auth/organization/get-active-member-role")).status).toBe(200);
+    expect((await sandra.anfrage("/api/auth/organization/get-active-member-role")).status).toBe(
+      200,
+    );
   });
 
   it.each(["planer", "lohnbuero", "betriebsrat"])("as %s reads the member list", async (rolle) => {

@@ -307,7 +307,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
+- [x] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
   ganze und halbe Tage.
   - **Urlaub**: Antrag mit Resturlaub und Hinweis auf eigene Schichten im Zeitraum; Freigabe oder
     Ablehnung mit Grund durch Inhaber oder Planer, Benachrichtigung beider Seiten; Zurückziehen des

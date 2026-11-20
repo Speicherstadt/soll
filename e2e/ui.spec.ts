@@ -47,6 +47,23 @@ test("Dialog: opens with the keyboard, moves focus inside, closes with Esc", asy
   await expect(knopf).toBeFocused();
 });
 
+test("Dialog: a selection dragged out onto the backdrop does not close it", async ({ page }) => {
+  await oeffnen(page);
+  await page.getByRole("button", { name: "Dialog öffnen" }).click();
+  const dialog = page.getByRole("dialog", { name: "Monat bestätigen" });
+  const text = await dialog.getByText("Der Monat wird danach gesperrt.").boundingBox();
+  if (!text) throw new Error("dialog text not laid out");
+  // press inside, release on the backdrop: the click lands on the dialog, but it began inside
+  await page.mouse.move(text.x + 5, text.y + text.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(5, 5, { steps: 5 });
+  await page.mouse.up();
+  await expect(dialog).toBeVisible();
+  // a click that begins and ends on the backdrop still closes it
+  await page.mouse.click(5, 5);
+  await expect(dialog).toBeHidden();
+});
+
 test("Popover: Enter opens, Esc closes", async ({ page }) => {
   await oeffnen(page);
   await page.getByRole("button", { name: "Details" }).focus();

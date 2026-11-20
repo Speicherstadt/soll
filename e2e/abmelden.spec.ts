@@ -36,3 +36,49 @@ test("a sign-out the server never got says so and does not show the sign-in @pho
   await page.goto("/einstellungen");
   await expect(page).toHaveURL(/\/einstellungen$/);
 });
+
+test("a sign-out the server got clears the business on the device, even if the next question fails @phone", async ({
+  page,
+}) => {
+  await betriebAnlegen(page);
+  await page.goto("/einstellungen");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("soll.betrieb"))).not.toBeNull();
+  // the sign-out reaches the server, then the connection drops before the session is asked again
+  await page.route(
+    (url) => url.pathname.startsWith("/api/") && url.pathname !== "/api/auth/sign-out",
+    (route) => route.abort("internetdisconnected"),
+  );
+  await page.getByRole("button", { name: t("abmelden") }).click();
+  await expect(page).toHaveURL(/\/anmelden$/);
+  expect(await page.evaluate(() => localStorage.getItem("soll.betrieb"))).toBeNull();
+  // the next person on this device, still offline, sees nothing of the previous business
+  await page.goto("/einstellungen");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByText("Weber Haustechnik")).toHaveCount(0);
+});
+
+test("a sign-out the server refused says so and does not pretend @phone", async ({ page }) => {
+  await betriebAnlegen(page);
+  await page.goto("/einstellungen");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.route("**/api/auth/sign-out", (route) =>
+    route.fulfill({ status: 500, contentType: "application/json", body: "{}" }),
+  );
+  await page.getByRole("button", { name: t("abmelden") }).click();
+  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page).toHaveURL(/\/einstellungen$/);
+});
+
+test("a double click on Abmelden signs out once and lands on the sign-in @phone", async ({
+  page,
+}) => {
+  await betriebAnlegen(page);
+  await page.goto("/einstellungen");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await page.getByRole("button", { name: t("abmelden") }).dblclick();
+  await expect(page).toHaveURL(/\/anmelden$/);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await page.goto("/einstellungen");
+  await expect(page).toHaveURL(/\/anmelden$/);
+});

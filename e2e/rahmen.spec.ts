@@ -1,0 +1,98 @@
+import { expect, test } from "@playwright/test";
+import { messagesOf } from "./locales.ts";
+import { SEITEN } from "./seiten.ts";
+
+const de = messagesOf("de");
+
+// The app follows the browser's language; Playwright's default is en-US
+test.use({ locale: "de" });
+const text = (key: string) => de[key] ?? key;
+
+test("the sidebar reaches every page and marks the current one", async ({ page }) => {
+  await page.goto("/");
+  const leiste = page.getByRole("navigation", { name: text("nav_bereiche") });
+  for (const seite of SEITEN.filter((s) => s.pfad !== "/mehr")) {
+    await leiste.getByRole("link", { name: text(seite.titel) }).click();
+    await expect(page).toHaveURL(seite.pfad);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(text(seite.titel));
+    await expect(leiste.getByRole("link", { name: text(seite.titel) })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  }
+});
+
+test("the tab bar reaches Heute, Plan, Abwesenheit and Mehr, and Mehr the rest @phone", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "the tab bar is for phones");
+  await page.goto("/");
+  const tabs = page.getByRole("navigation", { name: text("nav_bereiche") });
+  const ziele = [
+    { name: "nav_plan", titel: "nav_dienstplan" },
+    { name: "nav_abwesenheit", titel: "nav_abwesenheiten" },
+    { name: "nav_mehr", titel: "nav_mehr" },
+    { name: "nav_heute", titel: "nav_heute" },
+  ];
+  for (const ziel of ziele) {
+    await tabs.getByRole("link", { name: text(ziel.name) }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(text(ziel.titel));
+    await expect(tabs.getByRole("link", { name: text(ziel.name) })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  }
+  await page.goto("/mehr");
+  for (const key of ["nav_zeiten", "nav_projekte", "nav_auswertungen", "nav_einstellungen"]) {
+    await page
+      .getByRole("main")
+      .getByRole("link", { name: text(key) })
+      .click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(text(key));
+    await page.goBack();
+  }
+});
+
+test("the tab targets are at least 44 px high @phone", async ({ page, isMobile }) => {
+  test.skip(!isMobile, "the tab bar is for phones");
+  await page.goto("/");
+  for (const link of await page.getByRole("navigation").getByRole("link").all()) {
+    expect((await link.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test("dark stays dark after a reload", async ({ page }) => {
+  await page.goto("/einstellungen");
+  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("system");
+  await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
+});
+
+test("the chosen language stays after a reload", async ({ page }) => {
+  await page.goto("/einstellungen");
+  await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    messagesOf("en").nav_einstellungen ?? "",
+  );
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    messagesOf("en").nav_einstellungen ?? "",
+  );
+});
+
+test.describe("in Arabic", () => {
+  test.use({ locale: "ar" });
+
+  test("the layout mirrors: the sidebar sits on the right", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    const leiste = await page.getByRole("navigation").boundingBox();
+    const breite = page.viewportSize()?.width ?? 0;
+    expect((leiste?.x ?? 0) + (leiste?.width ?? 0)).toBeGreaterThan(breite - 2);
+  });
+});

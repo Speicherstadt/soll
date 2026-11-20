@@ -1,0 +1,14 @@
+import type { JSX } from "@solidjs/web";
+
+/** A page with its title; the main content of the app, one per route */
+export const Seite = (props: { titel: string; children: JSX.Element }) => (
+  <main class="flex min-w-0 flex-1 flex-col gap-5 px-4 pt-6 pb-24 md:px-8 md:pb-6">
+    <h1 class="font-bold text-[28px] tracking-tight md:font-semibold md:text-[22px]">
+      {props.titel}
+    </h1>
+    {props.children}
+  </main>
+);
+
+/** The content of an area that is not built yet */
+export const Leer = (props: { text: string }) => <p class="text-muted-foreground">{props.text}</p>;

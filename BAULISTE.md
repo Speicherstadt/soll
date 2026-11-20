@@ -112,7 +112,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   Dazu: je Komponente ein Playwright-Test auf einer Musterseite (nur in der Entwicklung, nicht im
   Build) in hell und dunkel, Icon-Knöpfe ohne `aria-label` scheitern schon im Typcheck, kein Text
   steht fest in einer Komponente (alles über Props), und Arabisch spiegelt Menüs und Tabs.
-- [ ] **S-302 App-Rahmen** – Navigation, hell und dunkel, Sprachwahl, Handy mit Tab-Leiste.
+- [x] **S-302 App-Rahmen** – Navigation, hell und dunkel, Sprachwahl, Handy mit Tab-Leiste.
   nach: S-301. Fertig, wenn: Playwright `desktop` und `phone` jede Seite öffnet, axe grün ist und der
   `pages`-Check jede Route kennt. Dazu: die Seitenleiste (Desktop) und die Tab-Leiste (Handy) führen
   zu jeder Seite und markieren die aktuelle mit `aria-current`, hell und dunkel und die Sprache

@@ -1,6 +1,22 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
-  "start_tagline": "سجّل وقت العمل كما يشترط القانون – على خادمك الخاص.",
-  "start_status": "قيد التطوير"
+  "nav_bereiche": "الأقسام",
+  "nav_heute": "اليوم",
+  "nav_zeiten": "الأوقات",
+  "nav_abwesenheiten": "الغيابات",
+  "nav_dienstplan": "جدول المناوبات",
+  "nav_projekte": "المشاريع",
+  "nav_auswertungen": "التقارير",
+  "nav_einstellungen": "الإعدادات",
+  "nav_plan": "الجدول",
+  "nav_abwesenheit": "الغياب",
+  "nav_mehr": "المزيد",
+  "seite_leer": "هذا القسم قادم قريبًا.",
+  "darstellung_titel": "المظهر",
+  "theme_label": "الألوان",
+  "theme_system": "مثل الجهاز",
+  "theme_hell": "فاتح",
+  "theme_dunkel": "داكن",
+  "sprache_label": "اللغة"
 }

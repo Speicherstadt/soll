@@ -23,7 +23,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const server = neuerServer();
     const { inhaber, mitarbeiterin } = await betriebMitTerminal(server);
     const geraet = await gekoppelt(server, inhaber);
-    const antwort = await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "4711" } });
+    const antwort = await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } });
     expect(antwort.status).toBe(200);
     const daten = await json(antwort);
     expect(daten.person).toEqual({ nutzerId: mitarbeiterin.nutzerId, name: "lea" });
@@ -35,7 +35,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const { inhaber, mitarbeiterin } = await betriebMitTerminal(server);
     const geraet = await gekoppelt(server, inhaber);
     const antwort = await geraet.anfrage("/api/v1/kiosk/stempeln", {
-      body: { ausweis: { pin: "4711" }, art: "kommen", geraetZeitpunkt: JETZT - 2000 },
+      body: { ausweis: { pin: "471100" }, art: "kommen", geraetZeitpunkt: JETZT - 2000 },
     });
     expect(antwort.status).toBe(201);
     const daten = await json(antwort);
@@ -83,7 +83,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     expect(fuenfter.status).toBe(423);
     expect(await json(fuenfter)).toEqual({ fehler: "gesperrt", gesperrtBis: JETZT + 60_000 });
     // locked: even the right PIN is not compared
-    expect((await versuch("4711")).status).toBe(423);
+    expect((await versuch("471100")).status).toBe(423);
     expect((await json(await geraet.anfrage("/api/v1/kiosk"))).gesperrtBis).toBe(JETZT + 60_000);
     server.stelleUhr(JETZT + 60_000);
     for (let i = 1; i <= 4; i++) await versuch("0000");
@@ -92,7 +92,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
       gesperrtBis: JETZT + 60_000 + 120_000,
     });
     server.stelleUhr(JETZT + 180_000);
-    expect((await versuch("4711")).status).toBe(200);
+    expect((await versuch("471100")).status).toBe(200);
     // a person recognised starts the count afresh
     expect(await json(await versuch("0000"))).toEqual({ fehler: "unbekannt", rest: 4 });
     const glieder = server.sqlite
@@ -106,7 +106,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const server = neuerServer();
     const { inhaber } = await betriebMitTerminal(server);
     const tom = await server.eingeladen(inhaber, "mitarbeiter", "tom");
-    const doppelt = await pinSetzen(inhaber, tom.nutzerId, "4711");
+    const doppelt = await pinSetzen(inhaber, tom.nutzerId, "471100");
     expect(doppelt.status).toBe(409);
     expect(await json(doppelt)).toEqual({ fehler: "pin_vergeben" });
     expect((await pinSetzen(inhaber, tom.nutzerId, "2468")).status).toBe(204);
@@ -119,7 +119,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
       server.sqlite.query("SELECT * FROM pins").all(),
       server.sqlite.query("SELECT inhalt FROM audit_inhalte").all(),
     ]);
-    expect(roh).not.toContain("4711");
+    expect(roh).not.toContain("471100");
   });
 
   it("recognises nobody who left the business or does not stamp", async () => {
@@ -139,7 +139,7 @@ describe("recognising a person at the terminal (S-801)", { timeout: 20_000 }, ()
     const geraet = await gekoppelt(server, inhaber);
     // the module can only go off without employees: the owner alone stamps nothing here
     server.sqlite.query("UPDATE betriebe SET modul_arbeitszeit = 0").run();
-    const antwort = await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "4711" } });
+    const antwort = await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } });
     expect(antwort.status).toBe(403);
     expect(await json(antwort)).toEqual({ fehler: "modul_aus", modul: "arbeitszeit" });
   });

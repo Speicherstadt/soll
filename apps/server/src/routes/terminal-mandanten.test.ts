@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { betriebMitTerminal, gekoppelt, json, neuerServer } from "./terminal-testhilfen.ts";
 
-/** Café Elbblick and Weber Haustechnik, each with a terminal and a person with PIN 4711 */
+/** Café Elbblick and Weber Haustechnik, each with a terminal and a person with PIN 471100 */
 const zwei = async () => {
   const server = neuerServer();
   const elbblick = await betriebMitTerminal(server);
@@ -60,10 +60,10 @@ describe("no business sees or changes another's terminals", { timeout: 20_000 },
   it("POST /api/v1/kiosk/erkennen finds the PIN in the terminal's business only", async () => {
     const { elbblick, weber, geraetElbblick, geraetWeber } = await zwei();
     const hier = await json(
-      await geraetElbblick.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "4711" } }),
+      await geraetElbblick.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } }),
     );
     const dort = await json(
-      await geraetWeber.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "4711" } }),
+      await geraetWeber.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } }),
     );
     expect(hier.person).toMatchObject({ nutzerId: elbblick.mitarbeiterin.nutzerId });
     expect(dort.person).toMatchObject({ nutzerId: weber.mitarbeiterin.nutzerId });
@@ -83,7 +83,7 @@ describe("no business sees or changes another's terminals", { timeout: 20_000 },
   it("POST /api/v1/kiosk/stempeln writes into the terminal's business only", async () => {
     const { server, weber, geraetWeber } = await zwei();
     await geraetWeber.anfrage("/api/v1/kiosk/stempeln", {
-      body: { ausweis: { pin: "4711" }, art: "kommen" },
+      body: { ausweis: { pin: "471100" }, art: "kommen" },
     });
     expect(server.sqlite.query("SELECT betrieb_id, nutzer_id FROM stempelungen").all()).toEqual([
       { betrieb_id: weber.inhaber.betriebId, nutzer_id: weber.mitarbeiterin.nutzerId },

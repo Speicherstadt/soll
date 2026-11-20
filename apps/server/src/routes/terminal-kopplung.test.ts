@@ -136,9 +136,9 @@ describe("the module Terminal switched off", () => {
     expect(await json(koppeln)).toEqual({ fehler: "modul_aus", modul: "terminal" });
     for (const antwort of [
       await geraet.anfrage("/api/v1/kiosk"),
-      await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "4711" } }),
+      await geraet.anfrage("/api/v1/kiosk/erkennen", { body: { pin: "471100" } }),
       await geraet.anfrage("/api/v1/kiosk/stempeln", {
-        body: { ausweis: { pin: "4711" }, art: "kommen" },
+        body: { ausweis: { pin: "471100" }, art: "kommen" },
       }),
       await inhaber.anfrage("/api/v1/terminal/geraete"),
       await inhaber.anfrage("/api/v1/terminal/personen"),

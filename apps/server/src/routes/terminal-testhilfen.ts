@@ -42,7 +42,7 @@ export const gekoppelt = async (server: Server, inhaber: Person, name = "Eingang
 export const pinSetzen = (inhaber: Person, nutzerId: string, pin: string) =>
   inhaber.anfrage(`/api/v1/pins/${nutzerId}`, { method: "PUT", body: { pin } });
 
-/** A business with the module Terminal on and an employee with PIN 4711 */
+/** A business with the module Terminal on and an employee with PIN 471100 */
 export const betriebMitTerminal = async (
   server: Server,
   name = "Café Elbblick",
@@ -52,7 +52,7 @@ export const betriebMitTerminal = async (
   const inhaber = await server.inhaberMitBetrieb(name, slug);
   await inhaber.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { terminal: true } });
   const mitarbeiterin = await server.eingeladen(inhaber, "mitarbeiter", person);
-  await pinSetzen(inhaber, mitarbeiterin.nutzerId, "4711");
+  await pinSetzen(inhaber, mitarbeiterin.nutzerId, "471100");
   return { inhaber, mitarbeiterin };
 };
 

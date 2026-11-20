@@ -33,7 +33,9 @@ keine Schicht und hält den Abschluss nicht auf; es steht als Befund (R-01) auf 
 Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Person ändern würde:
 
 - Stempeln, Nachtragen, Ändern und Entfernen einer Stempelung mit einem Zeitpunkt im Monat, auch das
-  Verschieben einer Stempelung aus einem offenen Monat hinein,
+  Verschieben einer Stempelung aus einem offenen Monat hinein. Ausgenommen ist das Gehen am Ersten,
+  das zur Nachtschicht des noch offenen letzten Tags davor gehört: Es zählt zu diesem Tag, nicht zum
+  abgeschlossenen Monat, und bleibt änderbar,
 - am Ersten des Folgemonats jede Änderung, die eine Nachtschicht des letzten Tags ändern würde: Eine
   Schicht gehört zu dem Tag, an dem sie beginnt. Ein Kommen am Ersten, das mehr als 9 Stunden nach
   dem Gehen eine neue Schicht beginnt, bleibt erlaubt,

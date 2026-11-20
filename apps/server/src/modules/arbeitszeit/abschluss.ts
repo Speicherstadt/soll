@@ -41,11 +41,12 @@ const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) =>
   kanonisch(aufzeichnungen(monat, stempelungen, () => null).map((tag) => tag.stempel));
 
 /**
- * Whether a change of a person's stamps touches a closed month: an instant in a closed month, or a
- * change on a day next to a closed month that alters its stamps, as a night shift's Gehen after
- * midnight belongs to the day the shift began (CLAUDE.md, "Time"): on the first of a month for the
- * month before, on the last day of a month for the month after (a shift there that the first shift
- * of the closed month would join, or the Kommen of a night shift into it). `vorher` loads the
+ * Whether a change of a person's stamps alters the records of a closed month: the months of its
+ * instants and of the days next to them are compared before and after, as a night shift's Gehen
+ * after midnight belongs to the day the shift began (CLAUDE.md, "Time"). So the Gehen on the first
+ * of a closed month of a night shift of an open last day stays correctable (it is no record of the
+ * closed month, and a counter-entry is only for closed days), while every stamp the closed month
+ * records, and a shift the first shift of a closed month would join, is locked. `vorher` loads the
  * stamps in force around the instants (only when a month is closed), `nachher` gives them as the
  * change would leave them.
  */
@@ -61,15 +62,17 @@ export const aenderungGesperrt = <S extends Stempelung>(
 ): boolean => {
   const geschlossen = abgeschlosseneMonate(db, betriebId, nutzerId);
   if (geschlossen.size === 0) return false;
-  const tage = aenderung.zeitpunkte.map(tagInBerlin);
-  if (tage.some((tag) => geschlossen.has(monatVon(tag)))) return true;
-  const nachbarn = [
-    ...new Set(tage.flatMap((tag) => [plusTage(tag, -1), plusTage(tag, 1)].map(monatVon))),
+  const betroffen = [
+    ...new Set(
+      aenderung.zeitpunkte
+        .map(tagInBerlin)
+        .flatMap((tag) => [plusTage(tag, -1), tag, plusTage(tag, 1)].map(monatVon)),
+    ),
   ].filter((monat) => geschlossen.has(monat));
-  if (nachbarn.length === 0) return false;
+  if (betroffen.length === 0) return false;
   const vorher = aenderung.vorher();
   const nachher = aenderung.nachher(vorher);
-  return nachbarn.some(
+  return betroffen.some(
     (monat) => stempelDesMonats(monat, vorher) !== stempelDesMonats(monat, nachher),
   );
 };

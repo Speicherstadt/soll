@@ -1,0 +1,17 @@
+# Only what the build needs goes into the context (Containerfile)
+**/node_modules
+**/dist
+.git
+.github
+.claude
+data
+docs
+design
+e2e
+site
+test-results
+playwright-report
+coverage
+*.log
+.env
+.env.*

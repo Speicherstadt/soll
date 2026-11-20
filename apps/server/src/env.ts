@@ -12,13 +12,19 @@ const schluessel = z
     },
   );
 
+/** What the commands next to the server need (backup, restore, health): no key */
+const betriebsSchema = z.object({
+  SOLL_PORT: z.coerce.number().int().min(1).max(65535).default(8200),
+  SOLL_DATA_DIR: z.string().min(1).default("data"),
+});
+
 /** The server's settings from the environment, checked with Zod at the boundary */
-const envSchema = z
-  .object({
-    SOLL_PORT: z.coerce.number().int().min(1).max(65535).default(8200),
+const envSchema = betriebsSchema
+  .extend({
     SOLL_HOST: z.string().min(1).default("0.0.0.0"),
     SOLL_VERSION: z.string().min(1).default("0.0.0"),
-    SOLL_DATA_DIR: z.string().min(1).default("data"),
+    // the static build of apps/web (the image sets /app/web); unset, the server serves the API only
+    SOLL_WEB_DIR: z.string().min(1).optional(),
     SOLL_SECRET_KEY: schluessel,
     // without a trailing slash: links are built as `${url}/einladung/…` and the passkey origin is the URL
     SOLL_URL: z
@@ -38,6 +44,8 @@ export type Env = {
   host: string;
   version: string;
   dataDir: string;
+  /** The static build of the web app, or null when Vite serves it (development) */
+  webDir: string | null;
   /** The decoded key; never logged */
   geheimerSchluessel: Uint8Array;
   /** Where the instance is reached, for links in invitations and for Better Auth */
@@ -54,6 +62,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
     host: parsed.SOLL_HOST,
     version: parsed.SOLL_VERSION,
     dataDir: parsed.SOLL_DATA_DIR,
+    webDir: parsed.SOLL_WEB_DIR ?? null,
     geheimerSchluessel: new Uint8Array(Buffer.from(parsed.SOLL_SECRET_KEY, "base64")),
     url: parsed.SOLL_URL,
     smtp:
@@ -61,4 +70,12 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
   };
+};
+
+export type BetriebsEnv = { port: number; dataDir: string };
+
+/** The settings of `soll backup`, `soll restore` and `soll health`, which work without the key */
+export const parseBetriebsEnv = (source: Record<string, string | undefined>): BetriebsEnv => {
+  const parsed = betriebsSchema.parse(source);
+  return { port: parsed.SOLL_PORT, dataDir: parsed.SOLL_DATA_DIR };
 };

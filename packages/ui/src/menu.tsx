@@ -1,16 +1,11 @@
-import type { JSX } from "@solidjs/web";
 import { createSignal, createUniqueId, For } from "solid-js";
 import { Button } from "./button.tsx";
-import { verankert } from "./popover.tsx";
+import { type Ausloeser, verankert } from "./popover.tsx";
 import { naechsterIndex } from "./tastatur.ts";
 
 export type MenuEintrag = { label: string; onWaehlen: () => void; gefaehrlich?: boolean };
 
-export type MenuProps = {
-  ausloeser: JSX.Element;
-  "aria-label"?: string;
-  eintraege: readonly MenuEintrag[];
-};
+export type MenuProps = Ausloeser & { eintraege: readonly MenuEintrag[] };
 
 /**
  * A menu on the Popover API: opens on its button, focus goes to the first entry, arrows, Home and End
@@ -31,7 +26,9 @@ export const Menu = (props: MenuProps) => {
   return (
     <>
       <Button
-        variant="outline"
+        {...(props.variant === "icon"
+          ? { variant: "icon" as const, "aria-label": props["aria-label"] }
+          : { variant: props.variant ?? "outline", "aria-label": props["aria-label"] })}
         ref={(el: HTMLButtonElement) => {
           knopf = el;
         }}
@@ -39,7 +36,6 @@ export const Menu = (props: MenuProps) => {
         aria-haspopup="menu"
         aria-expanded={offen() ? "true" : "false"}
         aria-controls={id}
-        aria-label={props["aria-label"]}
         style={{ "anchor-name": anker }}
       >
         {props.ausloeser}

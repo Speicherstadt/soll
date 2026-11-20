@@ -1,14 +1,16 @@
 import type { JSX } from "@solidjs/web";
 import { createUniqueId } from "solid-js";
-import { Button, type ButtonProps } from "./button.tsx";
+import { Button } from "./button.tsx";
 
-export type PopoverProps = {
-  /** The content of the button that opens it */
-  ausloeser: JSX.Element;
-  variant?: ButtonProps["variant"];
-  "aria-label"?: string;
-  children: JSX.Element;
-};
+/**
+ * The button that opens a floating element: with text, or an icon that must carry a name, as for
+ * Button (DESIGN.md, "Komponenten")
+ */
+export type Ausloeser =
+  | { ausloeser: JSX.Element; variant?: "outline" | "ghost"; "aria-label"?: string }
+  | { ausloeser: JSX.Element; variant: "icon"; "aria-label": string };
+
+export type PopoverProps = Ausloeser & { children: JSX.Element };
 
 /** Where a floating element sits below its anchor; logical, so it mirrors in right-to-left text */
 export const verankert = (anker: string): JSX.CSSProperties => ({
@@ -28,9 +30,10 @@ export const Popover = (props: PopoverProps) => {
   return (
     <>
       <Button
-        variant={props.variant === "icon" ? "outline" : (props.variant ?? "outline")}
+        {...(props.variant === "icon"
+          ? { variant: "icon" as const, "aria-label": props["aria-label"] }
+          : { variant: props.variant ?? "outline", "aria-label": props["aria-label"] })}
         popovertarget={id}
-        aria-label={props["aria-label"]}
         style={{ "anchor-name": anker }}
       >
         {props.ausloeser}

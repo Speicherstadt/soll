@@ -268,8 +268,10 @@ const krankheitFuer = (
 ): AbwesenheitZeile | AbwesenheitFehler => {
   const zeile = abwesenheitLesen(db, kontext.betriebId, abwesenheitId);
   if (!zeile) return "unbekannt";
-  if (!gesundheit(zeile)) return "ungueltig";
+  // the right first: a colleague holds the id from the team calendar, and „ungueltig“ for leave
+  // against „keine_berechtigung“ for sickness would tell which it is (Art. 9 DSGVO)
   if (zeile.nutzerId !== kontext.akteur && !rechte.gesundheit) return "keine_berechtigung";
+  if (!gesundheit(zeile)) return "ungueltig";
   return zeile.status === "genehmigt" ? zeile : "status";
 };
 

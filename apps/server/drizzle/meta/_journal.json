@@ -64,6 +64,13 @@
       "when": 1795197783321,
       "tag": "0008_projektzeit",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1795206717680,
+      "tag": "0009_stoppuhr",
+      "breakpoints": true
     }
   ]
 }

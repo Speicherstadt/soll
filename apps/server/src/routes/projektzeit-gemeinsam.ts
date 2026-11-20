@@ -45,6 +45,11 @@ const STATUS: Record<Grund, 404 | 409 | 422> = {
   projekt_unbekannt: 422,
   taetigkeit_unbekannt: 422,
   person_unbekannt: 422,
+  laeuft: 409,
+  laeuft_nicht: 409,
+  ueberschneidung: 409,
+  abgerechnet: 409,
+  spanne: 422,
 };
 
 /** The answer to a write: the row, 204 for a removal, or the reason with its status */

@@ -8,7 +8,13 @@ export type Grund =
   | "kunde_unbekannt"
   | "projekt_unbekannt"
   | "taetigkeit_unbekannt"
-  | "person_unbekannt";
+  | "person_unbekannt"
+  // S-602: the stopwatch and the bookings
+  | "laeuft"
+  | "laeuft_nicht"
+  | "ueberschneidung"
+  | "abgerechnet"
+  | "spanne";
 
 export type Ergebnis<T> = { ok: true; wert: T } | { ok: false; grund: Grund };
 

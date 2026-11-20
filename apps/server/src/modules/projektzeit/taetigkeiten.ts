@@ -1,7 +1,7 @@
 import { FESTE_TAETIGKEITEN, istFesteTaetigkeit } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
-import { stundensaetze, taetigkeiten } from "../../db/schema.ts";
+import { projektzeiten, stundensaetze, taetigkeiten } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import {
   archivWert,
@@ -144,7 +144,20 @@ export const taetigkeitAendern = (
   );
 };
 
-/** Removes an own activity no rate names; a fixed one stays (`fest`), a used one is archived */
+/** Whether a booking names the activity (S-602) */
+const gebucht = (db: Db, betriebId: string, taetigkeitId: string): boolean =>
+  db
+    .select({ id: projektzeiten.buchungId })
+    .from(projektzeiten)
+    .where(
+      and(eq(projektzeiten.betriebId, betriebId), eq(projektzeiten.taetigkeitId, taetigkeitId)),
+    )
+    .get() !== undefined;
+
+/**
+ * Removes an own activity no rate and no booking names; a fixed one stays (`fest`), a used one is
+ * archived
+ */
 export const taetigkeitEntfernen = (
   db: Db,
   schreibDb: SchreibDb,
@@ -164,7 +177,7 @@ export const taetigkeitEntfernen = (
       ),
     )
     .get();
-  if (satz) return nein("verwendet");
+  if (satz || gebucht(db, kontext.betriebId, taetigkeitId)) return nein("verwendet");
   schreiben(schreibDb, kontext, (s) => s.loeschen("taetigkeiten", { taetigkeitId }));
   return ok(null);
 };

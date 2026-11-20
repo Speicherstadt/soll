@@ -4,6 +4,7 @@ import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
+import { buchungRouten } from "./routes/buchungen.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
@@ -18,6 +19,7 @@ import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
 import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
+import { stoppuhrRouten } from "./routes/stoppuhr.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
 
@@ -99,6 +101,8 @@ export const createApp = ({
           "/projekte": projektRouten(db, schreibDb, now),
           "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
           "/saetze": satzRouten(db, schreibDb, now),
+          "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
+          "/buchungen": buchungRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
       }),

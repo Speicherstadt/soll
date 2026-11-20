@@ -1,3 +1,4 @@
+import { isNull } from "drizzle-orm";
 import {
   index,
   integer,
@@ -109,5 +110,38 @@ export const stundensaetze = sqliteTable(
   (t) => [
     primaryKey({ columns: [t.betriebId, t.satzId] }),
     uniqueIndex("stundensaetze_schluessel").on(t.betriebId, t.schluessel),
+  ],
+);
+
+/**
+ * A booking of project time (S-602): a person's span on an order (none for internal time) and an
+ * activity, begin and end on whole minutes in UTC milliseconds, `ende` null while the stopwatch runs
+ * (one per person, the partial unique index). `tag` is the working day the booking falls in, fixed
+ * when it is written, so its rate and its bill do not move with a later correction of the stamps.
+ * `abgerechnet_am` locks it; `cent_pro_stunde` keeps the rate it was billed with (null: nicht
+ * hinterlegt), so removing a rate later changes no bill.
+ */
+export const projektzeiten = sqliteTable(
+  "projektzeiten",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    buchungId: text("buchung_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    projektId: text("projekt_id"),
+    taetigkeitId: text("taetigkeit_id").notNull(),
+    beginn: integer("beginn").notNull(),
+    ende: integer("ende"),
+    tag: text("tag").notNull(),
+    notiz: text("notiz").notNull().default(""),
+    abgerechnetAm: integer("abgerechnet_am"),
+    centProStunde: integer("cent_pro_stunde"),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.buchungId] }),
+    index("projektzeiten_person").on(t.betriebId, t.nutzerId, t.beginn),
+    index("projektzeiten_projekt").on(t.betriebId, t.projektId),
+    index("projektzeiten_taetigkeit").on(t.betriebId, t.taetigkeitId),
+    uniqueIndex("projektzeiten_laeuft").on(t.betriebId, t.nutzerId).where(isNull(t.ende)),
   ],
 );

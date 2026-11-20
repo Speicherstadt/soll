@@ -97,7 +97,7 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 Reine Funktionen in `packages/arbeitszeit`, jede mit den Fällen aus `docs/regeln.md`; jeder Befund
 nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
-- [ ] **S-201 Arbeitstag aus Stempelungen** – Paare, Pausen, Schicht über Mitternacht,
+- [x] **S-201 Arbeitstag aus Stempelungen** – Paare, Pausen, Schicht über Mitternacht,
   Zeitumstellung.
   Fertig, wenn: 22:00 bis 6:00 über den 25.10.2026 9 h und über den 28.03.2027 7 h ergibt und der
   Arbeitstag der Starttag ist.

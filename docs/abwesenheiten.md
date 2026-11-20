@@ -40,6 +40,10 @@ der App mit S-402.
 
 Ein Antrag für Tage, an denen schon ein Antrag oder eine Abwesenheit steht, wird abgelehnt
 („Für diese Tage gibt es schon eine Abwesenheit“). Die einzige Ausnahme ist Krankheit im Urlaub.
+Eine Krankheit mit offenem Ende zählt dabei bis heute: Sie verhindert keinen später geplanten freien
+Tag, und ein genehmigter freier Tag später verhindert die Krankmeldung nicht. Bis das Ende feststeht,
+zählt an einem solchen Tag der freie Tag; ein Ende darüber hinaus nimmt Soll erst an, wenn der
+Betrieb den freien Tag storniert hat.
 
 Gibt es einen Dienstplan, nennt der Antrag die eigenen Schichten im Zeitraum, und wer freigibt, sieht
 sie auch. Der Dienstplan kommt mit S-501; bis dahin gibt es keine Schichten.

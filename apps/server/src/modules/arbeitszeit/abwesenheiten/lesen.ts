@@ -3,6 +3,7 @@ import {
   type Abwesenheitszeitraum,
   type Tag,
   tageDesZeitraums,
+  ueberschneidungErlaubt,
 } from "@soll/arbeitszeit";
 import { and, asc, eq, gte, inArray, isNull, lte, or } from "drizzle-orm";
 import type { Db } from "../../../db/oeffnen.ts";
@@ -73,13 +74,26 @@ export const zaehlt = (zeile: Pick<AbwesenheitZeile, "status">): boolean =>
 
 /**
  * The days of the rows that count, as `tagesSoll` takes them; an open sickness counts up to
- * `offenBis` (today, or the last day of a month that is over)
+ * `offenBis` (today, or the last day of a month that is over), but not on a day another absence
+ * counts that it may not share (a day off approved before): until its end is known, it gives way
+ * (docs/plan.md, "Überschneidungen")
  */
 export const tageDerAbwesenheiten = (
   zeilen: readonly AbwesenheitZeile[],
   offenBis: Tag,
-): Abwesenheit[] =>
-  zeilen.filter(zaehlt).flatMap((z) => tageDesZeitraums(alsZeitraum(z), offenBis));
+): Abwesenheit[] => {
+  const zaehlend = zeilen.filter(zaehlt);
+  const fest = zaehlend
+    .filter((z) => z.bis !== null)
+    .flatMap((z) => tageDesZeitraums(alsZeitraum(z)));
+  const offen = zaehlend
+    .filter((z) => z.bis === null)
+    .flatMap((z) => tageDesZeitraums(alsZeitraum(z), offenBis))
+    .filter(
+      (tag) => !fest.some((a) => a.tag === tag.tag && !ueberschneidungErlaubt(a.art, tag.art)),
+    );
+  return [...fest, ...offen];
+};
 
 /** The approved absences of a person on the days from `von` to `bis` */
 export const abwesenheitstage = (

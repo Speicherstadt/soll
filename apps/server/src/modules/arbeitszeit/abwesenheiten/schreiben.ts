@@ -55,23 +55,35 @@ export type Krankmeldung = {
 
 const fehler = (grund: AbwesenheitFehler): AbwesenheitErgebnis => ({ ok: false, grund });
 
-/** Whether a new span collides with a request or absence in force of the person (§ 9 BUrlG aside) */
+/**
+ * Whether a new span collides with a request or absence in force of the person (§ 9 BUrlG aside).
+ * An open end reaches to today only: a sickness whose end is not known does not block a day off
+ * planned for later, nor that a day off is planned while one is sick (docs/plan.md,
+ * "Überschneidungen"); until its end is known it gives way to it (`tageDerAbwesenheiten`).
+ */
 const ueberschneidet = (
   db: Db,
   betriebId: string,
   neu: { nutzerId: string; art: Abwesenheitsart; von: Tag; bis: Tag | null; abwesenheitId: string },
-): boolean =>
-  abwesenheitenIn(db, betriebId, {
+  heute: Tag,
+): boolean => {
+  const bekannt = <T extends { von: Tag; bis: Tag | null }>(z: T) => ({
+    ...z,
+    bis: z.bis ?? (heute < z.von ? z.von : heute),
+  });
+  const span = bekannt(neu);
+  return abwesenheitenIn(db, betriebId, {
     nutzerId: neu.nutzerId,
-    von: neu.von,
-    bis: neu.bis ?? "9999-12-31",
+    von: span.von,
+    bis: span.bis,
     status: AKTIV,
   }).some(
     (alt) =>
       alt.abwesenheitId !== neu.abwesenheitId &&
-      ueberschneiden(alt, neu) &&
+      ueberschneiden(bekannt(alt), span) &&
       !ueberschneidungErlaubt(alt.art, neu.art),
   );
+};
 
 const neueZeile = (
   kontext: Kontext,
@@ -98,8 +110,8 @@ const einfuegen = (
   zeile: AbwesenheitZeile,
   auchAntrag: boolean,
 ): AbwesenheitErgebnis => {
-  if (ueberschneidet(db, kontext.betriebId, zeile)) return fehler("ueberschneidung");
   const heute = tagInBerlin(kontext.jetzt);
+  if (ueberschneidet(db, kontext.betriebId, zeile, heute)) return fehler("ueberschneidung");
   if (
     abwesenheitGesperrt(db, kontext.betriebId, zeile.nutzerId, {
       vorher: null,
@@ -290,6 +302,8 @@ export const krankheitBeenden = (
   const zeile = krankheitFuer(db, kontext, abwesenheitId, rechte);
   if (typeof zeile === "string") return fehler(zeile);
   if (bis < zeile.von || bis > plusTage(zeile.von, LAENGSTENS_TAGE - 1)) return fehler("ungueltig");
-  if (ueberschneidet(db, kontext.betriebId, { ...zeile, bis })) return fehler("ueberschneidung");
+  const heute = tagInBerlin(kontext.jetzt);
+  if (ueberschneidet(db, kontext.betriebId, { ...zeile, bis }, heute))
+    return fehler("ueberschneidung");
   return aendern(db, schreibDb, kontext, zeile, { bis });
 };

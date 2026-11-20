@@ -384,8 +384,8 @@ Regel:
 | Verstoß | 597,69 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 1 Abs. 1 MiLoG |
 | nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 
-Die Höhe des Mindestlohns und die Minijob-Grenze stehen nicht hier, sondern als Jahreswerte mit
-Quelle in `packages/arbeitszeit` (S-104).
+Die Höhe des Mindestlohns und die Minijob-Grenze stehen nicht hier, sondern als
+[Jahreswerte](jahreswerte.md) mit Quelle in `packages/arbeitszeit`.
 
 ## Jugendliche
 

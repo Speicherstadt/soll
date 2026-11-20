@@ -26,7 +26,7 @@ export const Input = (props: InputProps) => {
         aria-describedby={beschreibung()}
         aria-invalid={props.fehler ? "true" : undefined}
         class={cn(
-          "h-9 rounded-md border border-border bg-background px-3 outline-none focus-visible:outline-2 focus-visible:outline-foreground",
+          "h-9 rounded-md border border-border bg-background px-3 outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground",
           props.fehler && "border-danger",
         )}
         {...rest}

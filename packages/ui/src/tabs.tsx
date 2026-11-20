@@ -53,7 +53,7 @@ export const Tabs = (props: TabsProps) => {
               aria-controls={`${id}-${tab.id}-panel`}
               tabindex={aktiv() === tab.id ? "0" : "-1"}
               class={[
-                "h-7 rounded-sm px-3 font-medium outline-none focus-visible:outline-2 focus-visible:outline-foreground",
+                "h-7 rounded-sm px-3 font-medium outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground",
                 {
                   "bg-background shadow-sm": aktiv() === tab.id,
                   "text-muted-foreground": aktiv() !== tab.id,

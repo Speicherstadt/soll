@@ -11,7 +11,7 @@ export default defineConfig({
     paraglideVitePlugin({
       project: "../../project.inlang",
       outdir: "./src/paraglide",
-      strategy: ["localStorage", "preferredLanguage", "baseLocale"],
+      strategy: ["localStorage", "cookie", "preferredLanguage", "baseLocale"],
     }),
     tanstackRouter({ target: "solid", autoCodeSplitting: true }),
     solid(),

@@ -76,7 +76,7 @@ export const Menu = (props: MenuProps) => {
               role="menuitem"
               tabindex="-1"
               class={[
-                "flex h-8 w-full items-center rounded-sm px-2 text-start outline-none hover:bg-accent focus-visible:bg-accent",
+                "flex h-8 w-full items-center rounded-sm px-2 text-start outline-hidden hover:bg-accent focus-visible:bg-accent",
                 { "text-danger": eintrag.gefaehrlich === true },
               ]}
               onClick={() => {

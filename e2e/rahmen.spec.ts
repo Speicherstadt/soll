@@ -112,3 +112,20 @@ test.describe("in Arabic", () => {
     expect((leiste?.x ?? 0) + (leiste?.width ?? 0)).toBeGreaterThan(breite - 2);
   });
 });
+
+test("the chosen language stays when the browser blocks local storage", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", {
+      get() {
+        throw new DOMException("blocked", "SecurityError");
+      },
+    });
+  });
+  await page.goto("/einstellungen");
+  await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.reload();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    messagesOf("en").nav_einstellungen ?? "",
+  );
+});

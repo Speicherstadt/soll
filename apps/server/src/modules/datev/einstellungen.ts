@@ -2,6 +2,7 @@ import type { DatevEinstellungen, Lohnarten } from "@soll/export";
 import { eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { datevEinstellungen, datevPersonalnummern } from "../../db/schema.ts";
+import { hatAbschluss } from "../arbeitszeit/index.ts";
 import { type Kontext, type Schreiber, schreiben } from "../audit/index.ts";
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 
@@ -77,8 +78,9 @@ const nummernSchreiben = (
 };
 
 /**
- * Sets the mapping of the business. A personnel number goes only to a member of the business and
- * only once: two people with one number would be paid as one.
+ * Sets the mapping of the business. A personnel number goes only to a member of the business, or to
+ * someone who left with a closed month still to pay, and only once: two people with one number
+ * would be paid as one.
  */
 export const einstellungenSetzen = (
   db: Db,
@@ -89,9 +91,12 @@ export const einstellungenSetzen = (
   const { betriebId } = kontext;
   const vorher = einstellungenLesen(db, betriebId);
   for (const nutzerId of Object.keys(neu.personalnummern))
-    if (!mitgliedschaftVon(db, betriebId, nutzerId)) return { ok: false, grund: "unbekannt" };
+    if (!mitgliedschaftVon(db, betriebId, nutzerId) && !hatAbschluss(db, betriebId, nutzerId))
+      return { ok: false, grund: "unbekannt" };
   const danach = nachher(vorher.personalnummern, neu.personalnummern);
-  if (new Set(danach.values()).size !== danach.size) return { ok: false, grund: "doppelt" };
+  // payroll reads the number as a number: 7 and 07 are one person to it
+  if (new Set([...danach.values()].map(Number)).size !== danach.size)
+    return { ok: false, grund: "doppelt" };
   const werte = {
     beraterNr: neu.beraterNr,
     mandantenNr: neu.mandantenNr,

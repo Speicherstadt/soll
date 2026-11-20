@@ -62,5 +62,13 @@ describe("a person who left before the month was closed", () => {
     expect((await json(antwort)).fehlend).toContainEqual(
       expect.objectContaining({ art: "monat_offen", nutzerId: w.anna.nutzerId }),
     );
+    // the owner closes her month without her confirmation, giving a reason; then the file has her
+    const geschlossen = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-10", nutzerId: w.anna.nutzerId, grund: "ausgeschieden" },
+    });
+    expect(geschlossen.status).toBe(201);
+    const datei = await w.lohn.anfrage(exportPfad("2026-10", "lodas"));
+    expect(datei.status).toBe(200);
+    expect(await dateiText(datei)).toContain("1;01.10.2026;102;1000;1;4,00;");
   });
 });

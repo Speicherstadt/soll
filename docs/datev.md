@@ -29,7 +29,9 @@ zählt im Monat, in dem er gebucht wird, und erscheint in dessen Datei. Ein zwei
 Monats gibt dieselbe Datei.
 
 Solange eine Person mit Arbeitszeitmodell den Monat nicht abgeschlossen hat, gibt es keine Datei:
-Ihre Zahlen könnten sich noch ändern, und eine Datei ohne sie wäre unvollständig.
+Ihre Zahlen könnten sich noch ändern, und eine Datei ohne sie wäre unvollständig. Das gilt auch für
+jemanden, der den Betrieb inzwischen verlassen, im Monat aber gestempelt hat; Inhaber schließen
+seinen Monat mit einem Grund ab.
 
 ## Was in der Datei steht
 
@@ -71,8 +73,11 @@ Unter **Einstellungen → DATEV-Lohnexport**, für Inhaber und Lohnbüro:
 | --- | --- | --- |
 | Beraternummer | 4 bis 7 Ziffern | Kopf der LODAS-Datei |
 | Mandantennummer | 1 bis 5 Ziffern | Kopf der LODAS-Datei |
-| Personalnummer je Person | 1 bis 5 Ziffern, im Betrieb nur einmal | jede Zeile |
+| Personalnummer je Person | 1 bis 5 Ziffern, im Betrieb nur einmal (als Zahl: `7` und `07` sind dieselbe) | jede Zeile |
 | Lohnart je Posten | bis 4 Ziffern | jede Zeile |
+
+Eine Personalnummer bekommt jedes Mitglied, das im Betrieb arbeitet, und jeder, der ihn mit einem
+abgeschlossenen Monat verlassen hat: Auch dessen Monat geht noch an die Lohnabrechnung.
 
 Welche Lohnart welcher Posten bekommt, legt der Betrieb mit dem Lohnbüro fest; Soll schlägt keine
 Nummern vor, denn sie hängen von den Lohnarten des Mandanten ab. Die Lohnarten der Zuschläge legt

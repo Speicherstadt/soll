@@ -1,8 +1,13 @@
-import { letzterTag, type Monat } from "@soll/arbeitszeit";
+import { beginnInBerlin, ersterTag, letzterTag, type Monat, plusMonate } from "@soll/arbeitszeit";
 import type { LohnmonatEingabe } from "@soll/export";
-import { and, eq, lte } from "drizzle-orm";
+import { and, eq, gte, lt, lte } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
-import { mitgliedschaften, modellzuordnungen, monatsabschluesse } from "../../db/schema.ts";
+import {
+  mitgliedschaften,
+  modellzuordnungen,
+  monatsabschluesse,
+  stempelungen,
+} from "../../db/schema.ts";
 import { standortVon } from "./monat.ts";
 import type { Monatsinhalt } from "./monatsinhalt.ts";
 import { lohnmodelle } from "./zuordnungen.ts";
@@ -27,22 +32,82 @@ const abgeschlossene = (db: Db, betriebId: string, monat: Monat) =>
     .all()
     .map(({ nutzerId, inhalt }) => ({ nutzerId, inhalt: JSON.parse(inhalt) as Monatsinhalt }));
 
-/** Members with a model by the month's end: their month is payroll's business */
+/** Persons with a model by the month's end, members or not */
 const mitModell = (db: Db, betriebId: string, monat: Monat): string[] =>
   db
     .selectDistinct({ nutzerId: modellzuordnungen.nutzerId })
     .from(modellzuordnungen)
-    .innerJoin(
-      mitgliedschaften,
-      and(
-        eq(mitgliedschaften.betriebId, modellzuordnungen.betriebId),
-        eq(mitgliedschaften.nutzerId, modellzuordnungen.nutzerId),
-      ),
-    )
     .where(
       and(
         eq(modellzuordnungen.betriebId, betriebId),
         lte(modellzuordnungen.gueltigAb, letzterTag(monat)),
+      ),
+    )
+    .all()
+    .map(({ nutzerId }) => nutzerId);
+
+const mitglieder = (db: Db, betriebId: string): Set<string> =>
+  new Set(
+    db
+      .select({ nutzerId: mitgliedschaften.nutzerId })
+      .from(mitgliedschaften)
+      .where(eq(mitgliedschaften.betriebId, betriebId))
+      .all()
+      .map(({ nutzerId }) => nutzerId),
+  );
+
+/** Persons who stamped in the month: someone who left since worked in it all the same */
+const mitStempeln = (db: Db, betriebId: string, monat: Monat): Set<string> =>
+  new Set(
+    db
+      .selectDistinct({ nutzerId: stempelungen.nutzerId })
+      .from(stempelungen)
+      .where(
+        and(
+          eq(stempelungen.betriebId, betriebId),
+          eq(stempelungen.entfernt, false),
+          gte(stempelungen.zeitpunkt, beginnInBerlin(ersterTag(monat))),
+          lt(stempelungen.zeitpunkt, beginnInBerlin(ersterTag(plusMonate(monat, 1)))),
+        ),
+      )
+      .all()
+      .map(({ nutzerId }) => nutzerId),
+  );
+
+/**
+ * Persons with a model by the month's end whose month is payroll's business: the members, and
+ * whoever left since but stamped in it, so a file never leaves out someone who worked (docs/plan.md,
+ * "Was der DATEV-Export liest")
+ */
+const beschaeftigt = (db: Db, betriebId: string, monat: Monat): string[] => {
+  const dabei = mitglieder(db, betriebId);
+  const gestempelt = mitStempeln(db, betriebId, monat);
+  return mitModell(db, betriebId, monat).filter((id) => dabei.has(id) || gestempelt.has(id));
+};
+
+/** Whether a month of the person was ever closed in the business, also after they left */
+export const hatAbschluss = (db: Db, betriebId: string, nutzerId: string): boolean =>
+  db
+    .select({ nutzerId: monatsabschluesse.nutzerId })
+    .from(monatsabschluesse)
+    .where(
+      and(
+        eq(monatsabschluesse.betriebId, betriebId),
+        eq(monatsabschluesse.nutzerId, nutzerId),
+        eq(monatsabschluesse.schritt, "abgeschlossen"),
+      ),
+    )
+    .get() !== undefined;
+
+/** The persons with a closed month in the business, members or not */
+export const mitAbschluss = (db: Db, betriebId: string): string[] =>
+  db
+    .selectDistinct({ nutzerId: monatsabschluesse.nutzerId })
+    .from(monatsabschluesse)
+    .where(
+      and(
+        eq(monatsabschluesse.betriebId, betriebId),
+        eq(monatsabschluesse.schritt, "abgeschlossen"),
       ),
     )
     .all()
@@ -69,6 +134,6 @@ export const lohndaten = (
     }),
   );
   const geschlossen = new Set(monate.map((m) => m.nutzerId));
-  const offen = mitModell(db, betriebId, monat).filter((id) => !geschlossen.has(id));
+  const offen = beschaeftigt(db, betriebId, monat).filter((id) => !geschlossen.has(id));
   return { monate, offen: offen.sort() };
 };

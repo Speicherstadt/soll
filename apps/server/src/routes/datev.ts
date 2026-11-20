@@ -4,6 +4,7 @@ import { type Context, Hono } from "hono";
 import { z } from "zod";
 import { istBeschaeftigt, rollenVon } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
+import { mitAbschluss } from "../modules/arbeitszeit/index.ts";
 import { datevDatei, einstellungenLesen, einstellungenSetzen } from "../modules/datev/index.ts";
 import { mitgliederMitNamen, namenVon } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
@@ -36,19 +37,26 @@ const exportSchema = z
   .object({ monat: z.string().refine(istMonat), ziel: z.enum(["lodas", "lug"]) })
   .strict();
 
-/** Who may be on the payroll: the owner and who works for the business, no device or external */
+/**
+ * Who may be on the payroll: the owner and who works for the business, no device or external, and
+ * whoever left with a closed month, which payroll still needs their number for
+ */
 const personenVon = (
   db: Db,
   betriebId: string,
   personalnummern: Readonly<Record<string, string>>,
-) =>
-  mitgliederMitNamen(db, betriebId)
-    .filter((m) => istBeschaeftigt(m.rolle) || rollenVon(m.rolle).includes("inhaber"))
-    .map((m) => ({
-      nutzerId: m.nutzerId,
-      name: m.name,
-      personalnummer: personalnummern[m.nutzerId] ?? null,
-    }));
+) => {
+  const mitglieder = mitgliederMitNamen(db, betriebId);
+  const dabei = new Set(mitglieder.map((m) => m.nutzerId));
+  const gegangen = mitAbschluss(db, betriebId).filter((id) => !dabei.has(id));
+  const namen = namenVon(db, gegangen);
+  return [
+    ...mitglieder
+      .filter((m) => istBeschaeftigt(m.rolle) || rollenVon(m.rolle).includes("inhaber"))
+      .map((m) => ({ nutzerId: m.nutzerId, name: m.name })),
+    ...gegangen.map((nutzerId) => ({ nutzerId, name: namen.get(nutzerId) ?? "" })),
+  ].map((p) => ({ ...p, personalnummer: personalnummern[p.nutzerId] ?? null }));
+};
 
 const ansicht = (db: Db, betriebId: string) => {
   const einstellungen = einstellungenLesen(db, betriebId);

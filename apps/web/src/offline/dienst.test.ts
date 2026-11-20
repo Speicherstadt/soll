@@ -19,6 +19,8 @@ const aufbau = (antworten: (aufruf: Aufruf) => number = () => 200) => {
   let uhr = um("07:58");
   let ids = 0;
   let kette: Promise<unknown> = Promise.resolve();
+  // while set, every call of the API waits for it (a slow network)
+  let halt: Promise<void> | null = null;
   const abh: Abhaengigkeiten = {
     ablage,
     subtle: crypto.subtle,
@@ -36,6 +38,7 @@ const aufbau = (antworten: (aufruf: Aufruf) => number = () => 200) => {
         body: init.body as Record<string, unknown>,
       };
       aufrufe.push(aufruf);
+      if (halt) await halt;
       const status = antworten(aufruf);
       return (
         status >= 200 && status < 300
@@ -50,6 +53,17 @@ const aufbau = (antworten: (aufruf: Aufruf) => number = () => 200) => {
     aufrufe,
     stelleUhr: (ms: number) => {
       uhr = ms;
+    },
+    /** holds every call of the API until the function returned is called */
+    anhalten: () => {
+      let weiter = () => {};
+      halt = new Promise((fertig) => {
+        weiter = () => {
+          halt = null;
+          fertig();
+        };
+      });
+      return weiter;
     },
   };
 };
@@ -216,5 +230,37 @@ describe("sending the queue (S-305)", () => {
     expect(await schlange.uebertragen(TOM)).toEqual({ uebertragen: 0, wartend: 0 });
     expect(aufrufe).toEqual([]);
     expect(await schlange.eintraege("elbblick/lea")).toHaveLength(1);
+  });
+
+  it("keeps the time of the tap while the queue is still busy sending", async () => {
+    const { schlange, stelleUhr, anhalten } = aufbau();
+    await schlange.aufnehmen(TOM, "kommen");
+    const weiter = anhalten();
+    const senden = schlange.uebertragen(TOM);
+    stelleUhr(um("12:00"));
+    const tippen = schlange.aufnehmen(TOM, "pause_beginn");
+    // the network answers minutes later
+    await Promise.resolve();
+    stelleUhr(um("12:05"));
+    weiter();
+    await senden;
+    expect(await tippen).toMatchObject({ nummer: 2, geraetZeitpunkt: um("12:00") });
+  });
+
+  it("sends a stamp whose turn comes long after the tap as an offline entry, not live", async () => {
+    const { schlange, aufrufe, stelleUhr, anhalten } = aufbau();
+    await schlange.aufnehmen(TOM, "kommen");
+    stelleUhr(um("12:00"));
+    const zwei = await schlange.aufnehmen(TOM, "pause_beginn");
+    const weiter = anhalten();
+    const senden = schlange.uebertragen(TOM, zwei.nummer);
+    // the first entry hangs on a slow network for five minutes
+    await new Promise((fertig) => setTimeout(fertig, 0));
+    stelleUhr(um("12:05"));
+    weiter();
+    await senden;
+    const letzter = aufrufe.at(-1);
+    expect(letzter?.pfad).toBe("/api/v1/arbeitszeit/stempelungen/offline");
+    expect(letzter?.body).toMatchObject({ geraetZeitpunkt: um("12:00"), gesendetAm: um("12:05") });
   });
 });

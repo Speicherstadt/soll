@@ -8,6 +8,12 @@ describe("naechsterIndex", () => {
     expect(naechsterIndex("ArrowUp", 0, 3, "vertikal")).toBe(2);
   });
 
+  it("starts at the first or the last item when none is marked yet", () => {
+    // ARIA Authoring Practices, combobox: Up Arrow moves to the last suggestion
+    expect(naechsterIndex("ArrowDown", -1, 3, "vertikal")).toBe(0);
+    expect(naechsterIndex("ArrowUp", -1, 3, "vertikal")).toBe(2);
+  });
+
   it("jumps to the first and last item", () => {
     expect(naechsterIndex("Home", 2, 3, "horizontal")).toBe(0);
     expect(naechsterIndex("End", 0, 3, "horizontal")).toBe(2);

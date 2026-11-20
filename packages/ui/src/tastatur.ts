@@ -16,7 +16,8 @@ export const naechsterIndex = (
   const vor = richtung === "vertikal" ? "ArrowDown" : rtl ? "ArrowLeft" : "ArrowRight";
   const zurueck = richtung === "vertikal" ? "ArrowUp" : rtl ? "ArrowRight" : "ArrowLeft";
   if (taste === vor) return (index + 1 + anzahl) % anzahl;
-  if (taste === zurueck) return (index - 1 + anzahl) % anzahl;
+  // with nothing marked yet (-1), back starts at the last item, not one before it
+  if (taste === zurueck) return index < 0 ? anzahl - 1 : (index - 1 + anzahl) % anzahl;
   if (taste === "Home") return 0;
   if (taste === "End") return anzahl - 1;
   return undefined;

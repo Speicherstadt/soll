@@ -138,6 +138,16 @@ test("Combobox: typing filters, arrows mark, Enter chooses, Esc closes", async (
   await expect(feld).toHaveAttribute("aria-expanded", "false");
 });
 
+test("Combobox: Up Arrow with nothing marked marks the last option", async ({ page }) => {
+  await oeffnen(page);
+  await page.getByRole("combobox", { name: "Person" }).focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(page.getByRole("option", { name: "Sandra" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+});
+
 test("Combobox: axe finds nothing while the list shows no match", async ({ page }) => {
   await oeffnen(page);
   await page.getByRole("combobox", { name: "Person" }).fill("xyz");

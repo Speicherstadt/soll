@@ -74,7 +74,9 @@ des Browsers:
   statt still ein neues Paar zu erzeugen, das alle angemeldeten Geräte abschneiden würde. Als
   Kontakt (`sub`) nennt Soll dem Push-Dienst eine `mailto:`- oder `https:`-Adresse, wie RFC 8292
   sie verlangt; Apple und Mozilla lehnen andere ab: die Adresse aus `SOLL_MAIL_VON`, sonst
-  `SOLL_URL`, wenn sie mit `https://` beginnt, sonst den Platzhalter `mailto:push@soll.invalid`.
+  der Ursprung von `SOLL_URL` (ohne Pfad, Benutzer und Passwort), wenn sie mit `https://`
+  beginnt, sonst den Platzhalter `mailto:push@soll.invalid`. Eine Domain mit Umlauten steht im
+  `mailto:` in ihrer ASCII-Form (`xn--…`).
   Wer möchte, dass ein Push-Dienst ihn bei Problemen erreicht, richtet Mail ein.
 - **Inhalt** (RFC 8291, `aes128gcm` nach RFC 8188): Titel, Text und Ziel der Benachrichtigung sind
   für das Gerät verschlüsselt; der Push-Dienst liest sie nicht. Die Tests prüfen die Verschlüsselung

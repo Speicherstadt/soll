@@ -6,6 +6,7 @@ import {
   randomBytes,
   sign,
 } from "node:crypto";
+import { domainToASCII } from "node:url";
 
 /*
  * Web Push without a library: the message to a push service (RFC 8030), its content encrypted for
@@ -118,14 +119,28 @@ const privaterSchluessel = (paar: VapidPaar) => {
 export const KONTAKT_ERSATZ = "mailto:push@soll.invalid";
 
 /**
+ * An address as a mailto: URI (RFC 6068, Section 2): URIs are ASCII (RFC 3986), so the local part is
+ * percent-encoded and the domain written as its A-label; null for what is no address
+ */
+const mailtoVon = (adresse: string): string | null => {
+  const [lokal, domain, ...rest] = adresse.split("@");
+  if (!lokal || !domain || rest.length > 0 || /[<>\s]/.test(adresse)) return null;
+  const ascii = domainToASCII(domain);
+  return ascii ? `mailto:${encodeURIComponent(lokal)}@${ascii}` : null;
+};
+
+/**
  * The VAPID contact (`sub`): a mailto: or https: URI (RFC 8292, Section 2.1), as Apple's and
- * Mozilla's push services refuse other forms. The sender of the instance's mail, else its URL if
- * that is https, else a fixed placeholder; never an http: URI.
+ * Mozilla's push services refuse other forms. The sender of the instance's mail, else the origin of
+ * its URL if that is https (without user and password, which are not for the push services), else
+ * a fixed placeholder; never an http: URI.
  */
 export const vapidKontakt = (url: string, mailVon: string | undefined): string => {
   const adresse = mailVon?.match(/<([^<>\s]+@[^<>\s]+)>/)?.[1] ?? mailVon?.trim();
-  if (adresse && /^[^<>\s@]+@[^<>\s@]+$/.test(adresse)) return `mailto:${adresse}`;
-  return url.startsWith("https://") ? url : KONTAKT_ERSATZ;
+  const mailto = adresse ? mailtoVon(adresse) : null;
+  if (mailto) return mailto;
+  const instanz = URL.parse(url);
+  return instanz?.protocol === "https:" ? instanz.origin : KONTAKT_ERSATZ;
 };
 
 /** `Authorization: vapid t=<JWT>, k=<public key>` (RFC 8292, Sections 2 and 3) */

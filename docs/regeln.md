@@ -606,6 +606,8 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 - **Verkürzt** ist ein anderer Werktag derselben Woche (Montag bis Samstag, kein Feiertag am
   Standort), an dem die Person arbeitet, aber weniger als 8:00. Ein freier Tag ist keine verkürzte
   Arbeitszeit (vorsichtige Auslegung von „an einzelnen Werktagen die Arbeitszeit … verkürzt“).
+  8:30 gelten nur an einem Werktag („an den übrigen Werktagen“), an einem Sonn- oder Feiertag
+  bleibt es bei 8:00.
 - **Feiertage**: Die Arbeitszeit, die an einem Werktag wegen eines gesetzlichen Feiertags ausfällt,
   zählt zur Woche (§ 4 Abs. 4 Satz 2 JArbSchG). Solange das Soll des Tages nicht bekannt ist (S-208),
   rechnet Soll 8:00 für jeden Feiertag von Montag bis Freitag ohne Arbeit, am Samstag nur mit einer
@@ -623,6 +625,7 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 | Feiertag | Hamburg, Woche mit Pfingstmontag 25.5.2026, Di–Do je 8:30, Fr 7:00 (32:30) | Verstoß „über 40 h in der Woche“: 8:00 für den Feiertag angerechnet (40:30) | § 4 Abs. 4 Satz 2 JArbSchG |
 | Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:31 | Verstoß „über 8:30“ nur für Mo | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2 BGB |
 | 29. Februar | geboren 29.2.2008: Sa 28.2.2026 und So 1.3.2026 je 8:31 | Verstoß „über 8:30“ nur für den 28.2. (18 ab dem 1.3.) | § 2 Abs. 2 JArbSchG; § 187 Abs. 2 Satz 2, § 188 Abs. 2 und 3 BGB |
+| Sonntag | Café, Mo 16.11.2026 6:00, So 22.11.2026 8:15 | Verstoß „über 8 h“ für So | § 8 Abs. 2a JArbSchG („an den übrigen Werktagen“) |
 
 ### R-16 Ruhepausen
 
@@ -787,6 +790,7 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | unter 18 | 17 Jahre, Arbeitszeit 8:01 | Verstoß „über 8 h“ | § 4 Abs. 1 Satz 2 MuSchG |
 | Geburtstag | geboren 16.6.2008: Mo 15.6.2026 und Di 16.6.2026 (18. Geburtstag) je 8:01 | Verstoß „über 8 h“ nur für Mo | § 4 Abs. 1 Satz 2 MuSchG; § 187 Abs. 2 Satz 2 BGB |
 | Doppelwoche | 2.–8.11.2026 und 16.–22.11.2026 je 45:00, dazwischen 9.–15.11. 45:01 | Verstoß für die Doppelwochen ab 2.11. und ab 9.11. | § 4 Abs. 1 Satz 1 und 3 MuSchG; Grundbegriff „Doppelwoche“ |
+| 18. Geburtstag | geboren 4.11.2008: Mi 4.11. bis So 15.11.2026 je 7:00 (84:00) | Verstoß „über 80 h in der Doppelwoche“ ab 2.11. (am Mo und Di noch 17) | § 4 Abs. 1 Satz 2 und 3 MuSchG |
 | Monat | vertraglich 20:00 je Woche, November 2026 (30 Tage) mit 85:42 | kein Befund (20:00 × 30 ÷ 7 = 85:42 und 6/7 min); mit 85:43 Verstoß „über der vertraglichen Arbeitszeit“ | § 4 Abs. 1 Satz 4 MuSchG |
 | Ruhezeit | Mo 19:30 – Di 6:29 (10:59) | Verstoß „Ruhezeit 10:59“; Mo 19:00 – Di 6:00 (11:00) kein Befund | § 4 Abs. 2 MuSchG |
 | Genehmigung | Genehmigung nach § 28, 12:00 – 22:00 | kein Befund; 12:00 – 22:01 Verstoß „nach 22 Uhr“ | § 5 Abs. 1 Satz 2, § 28 MuSchG |

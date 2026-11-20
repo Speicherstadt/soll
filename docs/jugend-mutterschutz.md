@@ -24,7 +24,7 @@ Sonntag (§ 4 Abs. 4 JArbSchG).
 
 | Regel | Grenze | Befund |
 | --- | --- | --- |
-| Arbeitszeit (§ 8) | 8:00 am Tag, 8:30, wenn an einem anderen Werktag der Woche weniger als 8:00 gearbeitet wird; 40:00 in der Woche | „über 8 h“, „über 8:30“, „über 40 h in der Woche“ |
+| Arbeitszeit (§ 8) | 8:00 am Tag, 8:30 an einem Werktag, wenn an einem anderen Werktag der Woche weniger als 8:00 gearbeitet wird; 40:00 in der Woche | „über 8 h“, „über 8:30“, „über 40 h in der Woche“ |
 | Ruhepausen (§ 11) | 30 min über 4:30, 60 min über 6:00, je Pause mindestens 15 min; höchstens 4:30 am Stück; jede Pause frühestens 1:00 nach Beginn und spätestens 1:00 vor Ende der Schicht | „Pause fehlt“, „über 4:30 ohne Pause“, „Pause zu früh“, „Pause zu spät“ |
 | Schichtzeit (§ 12) | 10:00 vom ersten Beginn bis zum letzten Ende des Tages, 11:00 in Gaststätten, Landwirtschaft und Tierhaltung und auf Bau- und Montagestellen, 8:00 im Bergbau unter Tage | „Schichtzeit über 10 h“ |
 | Freizeit (§ 13) | 12:00 zwischen zwei Arbeitstagen | „Freizeit 11:59“ |
@@ -71,7 +71,8 @@ Daten nur, wo eine Regel sie braucht. Was nicht eingetragen ist, gilt als nicht 
 | Schutzfristen (§ 3) | keine Arbeit in einer eingetragenen Schutzfrist; vor der Entbindung und nach einer Fehlgeburt nur mit ausdrücklicher Erklärung | „Schutzfrist“ |
 
 - **Doppelwoche** sind zwei aufeinanderfolgende Kalenderwochen samt Sonntagen. Soll prüft jede Woche
-  mit der vorigen und mit der folgenden, damit keine Einteilung eine Überschreitung verdeckt.
+  mit der vorigen und mit der folgenden, damit keine Einteilung eine Überschreitung verdeckt. Ist
+  die Frau an einem Tag der Doppelwoche noch unter 18, gelten 80:00.
 - **Monatsdurchschnitt**: Je Tag des Monats im Zeitraum zählt ein Siebtel der vertraglichen
   Wochenarbeitszeit aus dem Arbeitszeitmodell; Soll rechnet in ganzen Minuten ohne Rundung
   (Arbeitszeit × 7 ≤ Summe der Wochenarbeitszeiten). Bei 20 Stunden in der Woche sind im November

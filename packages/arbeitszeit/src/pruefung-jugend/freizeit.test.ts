@@ -65,4 +65,25 @@ describe("R-18: tägliche Freizeit", () => {
     const danach = { ...LEON, geburtsdatum: "2008-11-16" };
     expect(freizeit(tage(moDi("19:01", "07:00")), danach).befunde).toEqual([]);
   });
+
+  it("am selben Tag: Mo 0:00 – 4:00, Mo 14:00 – 19:00 (10:00) – „Freizeit 10:00“", () => {
+    // two shifts 10 hours apart are two working days by the 9 hours of S-201, measured as in R-05
+    const stempel = [
+      ...schicht("2026-11-16T00:00+01:00", "2026-11-16T04:00+01:00"),
+      ...schicht("2026-11-16T14:00+01:00", "2026-11-16T19:00+01:00"),
+    ];
+    expect(freizeit(tage(stempel), LEON).befunde).toEqual([
+      expect.objectContaining({ fehlt: 120, ruhe: expect.objectContaining({ minuten: 600 }) }),
+    ]);
+  });
+
+  it("am selben Tag: names Mo once, as R-05 does", () => {
+    const stempel = [
+      ...schicht("2026-11-16T00:00+01:00", "2026-11-16T04:00+01:00"),
+      ...schicht("2026-11-16T14:00+01:00", "2026-11-16T19:00+01:00"),
+    ];
+    expect(freizeit(tage(stempel), LEON).befunde.map((befund) => befund.tage)).toEqual([
+      ["2026-11-16"],
+    ]);
+  });
 });

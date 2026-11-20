@@ -3,7 +3,13 @@ import type { Befund } from "../befund.ts";
 import type { Tag } from "../kalender/tag.ts";
 import { ruhenAus } from "../pruefung/ruhezeit.ts";
 import { jugendGrenzenAm } from "./grenzen.ts";
-import { type JugendOptionen, jugendlichAm, type Pruefergebnis, type PruefTag } from "./typen.ts";
+import {
+  type JugendOptionen,
+  jugendlichAm,
+  type Pruefergebnis,
+  type PruefTag,
+  sortiert,
+} from "./typen.ts";
 
 /** R-18, § 13 JArbSchG: the free time between two working days falls `fehlt` minutes short */
 export type FreizeitBefund = Befund<"freizeit_zu_kurz"> & {
@@ -40,7 +46,7 @@ export const freizeit = (
       norm: "§ 13 JArbSchG",
       schwere: "verstoss",
       art: "freizeit_zu_kurz",
-      tage: [ruhe.von, ruhe.bis],
+      tage: sortiert([ruhe.von, ruhe.bis]),
       ruhe: { beginn: ruhe.beginn, ende: ruhe.ende, minuten: ruhe.minuten },
       mindestens: grenzen.freizeit,
       fehlt: grenzen.freizeit - ruhe.minuten,

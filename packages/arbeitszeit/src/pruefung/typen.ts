@@ -1,4 +1,4 @@
-import type { Schicht } from "../arbeitstag/schichten.ts";
+import type { Schicht, Stueck } from "../arbeitstag/schichten.ts";
 import type { Befund } from "../befund.ts";
 import type { Tag } from "../kalender/tag.ts";
 import { type ArbzgGrenzen, arbzgGrenzenAm } from "./grenzen.ts";
@@ -6,11 +6,14 @@ import { type ArbzgGrenzen, arbzgGrenzenAm } from "./grenzen.ts";
 /**
  * What the rules of §§ 3 to 5 ArbZG read from a shift. A shift built from stamps (S-201) has this
  * shape; a planned shift (S-502) is built in the same shape, so one check serves both.
+ * `einsaetze` are the blocks that are call-outs in Rufbereitschaft (R-12, S-206): working time like
+ * any block, but the end of one begins a rest and its start ends none (`ruhezeit`). Without them
+ * every block is ordinary work.
  */
 export type PruefSchicht = Pick<
   Schicht,
   "tag" | "beginn" | "ende" | "pausen" | "bloecke" | "arbeitsMinuten"
->;
+> & { einsaetze?: readonly Stueck[] };
 
 /** A working day: its Berlin calendar day and the shifts that begin on it, in order */
 export type PruefTag = { tag: Tag; schichten: readonly PruefSchicht[] };

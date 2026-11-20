@@ -92,13 +92,23 @@ const vollstaendigSeit = (tag: Arbeitstag, kontext: Kontext): number | null => {
   return stehend.length === 0 ? null : Math.max(...stehend.map((s) => s.erfasst));
 };
 
+/**
+ * The day a version belonged to while it stood: a replaced one by the days just before it was
+ * replaced, so the deleted part of a night shift after midnight stays with the day it began
+ */
+const tagDerVersion = (version: ErfassteStempelung, kontext: Kontext): Tag => {
+  const ersetzt = version.ersetzt ?? Infinity;
+  const damals = ersetzt <= kontext.jetzt ? tageAm(kontext.stempelungen, ersetzt - 1) : null;
+  return tagDer(version.zeitpunkt, damals === null ? kontext.tage : [...damals.values()]);
+};
+
 /** Whether a version of a stamp of the day was recorded or replaced from `frist` on */
 const geaendertAb = (tag: Tag, frist: number, kontext: Kontext): boolean =>
   kontext.stempelungen.some(
     (s) =>
-      tagDer(s.zeitpunkt, kontext.tage) === tag &&
       ((s.erfasst >= frist && s.erfasst <= kontext.jetzt) ||
-        (s.ersetzt != null && s.ersetzt >= frist && s.ersetzt <= kontext.jetzt)),
+        (s.ersetzt != null && s.ersetzt >= frist && s.ersetzt <= kontext.jetzt)) &&
+      tagDerVersion(s, kontext) === tag,
   );
 
 type Urteil = { befund: AufzeichnungBefund | null; nachgetragen: boolean };

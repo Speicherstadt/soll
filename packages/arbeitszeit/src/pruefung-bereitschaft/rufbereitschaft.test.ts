@@ -49,7 +49,12 @@ describe("R-12: Rufbereitschaft", () => {
       rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 8 }],
     };
     const [mo] = mitBereitschaft([], eingabe);
-    expect(mo).toMatchObject({ arbeitsMinuten: 720, bereitschaftsMinuten: 720 });
+    // working time for every limit, but no Bereitschaftsdienst for § 7 Abs. 1 Nr. 1 Buchst. a
+    expect(mo).toMatchObject({
+      arbeitsMinuten: 720,
+      bereitschaftsMinuten: 720,
+      bereitschaftsdienstMinuten: 0,
+    });
     expect(pruefe([], eingabe).befunde).toContainEqual(
       expect.objectContaining({ regel: "R-02", art: "ueber_10h", minuten: 720, ueber: 120 }),
     );
@@ -77,7 +82,11 @@ describe("R-12: Rufbereitschaft", () => {
         rufdienste: [{ ...spanne(uhr(MO, "18:00"), uhr(DI, "6:00")), reaktionMinuten: 8 }],
       };
       const [mo] = mitBereitschaft([], eingabe);
-      expect(mo).toMatchObject({ arbeitsMinuten: 780, bereitschaftsMinuten: 780 });
+      expect(mo).toMatchObject({
+        arbeitsMinuten: 780,
+        bereitschaftsMinuten: 780,
+        bereitschaftsdienstMinuten: 60,
+      });
       expect(tageslimit(pruefe([], eingabe, TARIF))).toEqual([
         ["R-11", "ueber_10h_tarif", ["2026-11-16"]],
       ]);

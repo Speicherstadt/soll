@@ -33,6 +33,7 @@ const alsPruefTag = (tag: Arbeitstag) => ({
     bloecke,
     arbeitsMinuten,
     bereitschaft: [],
+    bereitschaftsdienst: [],
     einsaetze: [],
   })),
 });

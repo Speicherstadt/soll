@@ -37,7 +37,10 @@ lesen ihn wie jede andere Arbeit:
 Nr. 1 Buchst. a ArbZG kann mehr als 10 Stunden erlauben, wenn regelmäßig und in erheblichem Umfang
 Bereitschaftsdienst in die Arbeitszeit fällt. Ist das am Betrieb mit Fundstelle eingestellt, wird ein
 Tag über 10 Stunden mit Bereitschaftsdienst statt eines Verstoßes ein Hinweis „über 10 h nur mit
-Tarif“ mit der Fundstelle; ein Tag ohne Bereitschaftsdienst bleibt ein Verstoß. Über 12 Stunden muss
+Tarif“ mit der Fundstelle; ein Tag ohne Bereitschaftsdienst bleibt ein Verstoß. Eine
+Rufbereitschaft, die ganz als Arbeitszeit zählt (Reaktionszeit unter 30 Minuten oder keine
+eingestellt), ist kein Bereitschaftsdienst: Das Gesetz nennt nur Arbeitsbereitschaft und
+Bereitschaftsdienst, darum bleibt ein Tag über 10 Stunden mit ihr allein ein Verstoß. Über 12 Stunden muss
 danach eine Ruhezeit von mindestens 11 Stunden folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne den
 Ausgleich von Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG), sonst ist es ein Verstoß „Ruhezeit nach
 über 12 h“.
@@ -80,7 +83,9 @@ sein, dass sie über ihre Zeit kaum verfügen kann, ist die ganze Rufbereitschaf
 Urteil nennt keine Zahl (Matzak hatte 8 Minuten); Soll wertet eine Reaktionszeit unter 30 Minuten so,
 eine vorsichtige Grenze von Soll. Die Reaktionszeit ist eine Einstellung am Rufdienst. Fehlt sie,
 wertet Soll die Rufbereitschaft ebenfalls ganz als Arbeitszeit, weil eine kurze nicht auszuschließen
-ist. Wer häufig gerufen wird, kann den Dienst als Bereitschaftsdienst eintragen.
+ist. Wer häufig gerufen wird, kann den Dienst als Bereitschaftsdienst eintragen. Die ganze
+Rufbereitschaft zählt dann für jeden Grenzwert, öffnet aber nicht die tarifliche Ausnahme über
+10 Stunden nach § 7 Abs. 1 Nr. 1 Buchst. a ArbZG (siehe oben).
 
 ## Einstellungen und Vorgaben
 
@@ -107,8 +112,10 @@ In `packages/arbeitszeit` (`src/pruefung-bereitschaft/`):
   `reaktionMinuten`. Beginne zählen ab der angefangenen Minute, Enden bis zur nächsten vollen.
   `tage` sind Arbeitstage aus [Stempelungen](arbeitstag.md) oder geplante Schichten (S-505) in der
   Form `PruefTag`; auch Tage von `bereitschaftstage` selbst gehen wieder hinein.
-- Jede Schicht trägt `bereitschaft` (die Stücke Bereitschaftsdienst) und `einsaetze` (die Blöcke, die
-  nur Einsatz sind), jeder Tag `arbeitsMinuten`, `bereitschaftsMinuten` und `einsatzMinuten`. Die
+- Jede Schicht trägt `bereitschaft` (die Stücke Bereitschaftsdienst und Rufbereitschaft, die ganz
+  zählt), `bereitschaftsdienst` (davon nur Bereitschaftsdienst und Arbeitsbereitschaft, die einzigen,
+  die § 7 Abs. 1 Nr. 1 Buchst. a öffnen) und `einsaetze` (die Blöcke, die nur Einsatz sind), jeder
+  Tag `arbeitsMinuten`, `bereitschaftsMinuten`, `bereitschaftsdienstMinuten` und `einsatzMinuten`. Die
   Tage gehen unverändert in jede andere Prüfung der Phase 2, etwa `nachtSonntagBefunde`.
 - `optionen` sind die von `arbzgBefunde` und `tarif?: { fundstelle }`.
 - `ruhezeit` (R-05) liest `einsaetze` an einer Schicht: Das Ende eines Einsatzes beginnt eine

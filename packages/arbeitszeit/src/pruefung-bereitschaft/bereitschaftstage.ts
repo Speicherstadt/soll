@@ -35,7 +35,8 @@ export const zaehltVoll = (dienst: Rufdienst): boolean => {
 /**
  * The working days of one person with Bereitschaft (S-206), in the shape every rule of Phase 2 reads
  * (`PruefTag`), in calendar order. Bereitschaftsdienst and Rufbereitschaft that counts fully are
- * working time (R-11, R-12, Matzak); already stamped work is not counted twice. A call-out is working
+ * working time (R-11, R-12, Matzak), but only Bereitschaftsdienst is marked for § 7 Abs. 1 Nr. 1
+ * Buchst. a ArbZG; already stamped work is not counted twice. A call-out is working
  * time on the day its shift begins; what lies within less than 15 minutes of other work is part of
  * that work, otherwise it is a block of its own that ends no rest and begins a new one (R-12).
  * Rufbereitschaft without a call-out adds nothing. Days of S-206 may come in again.
@@ -50,12 +51,14 @@ export const bereitschaftstage = (
   )
     return { ok: false, grund: "ungueltig" };
   const bestand = bestandAus(tage);
-  const dazu = [...bereitschaftsdienste, ...rufdienste.filter(zaehltVoll)].map(aufMinuten);
+  const dienste = bereitschaftsdienste.map(aufMinuten);
+  const dazu = [...dienste, ...rufdienste.filter(zaehltVoll).map(aufMinuten)];
   return {
     ok: true,
     wert: tageAus({
       ...bestand,
       bereitschaft: [...bestand.bereitschaft, ...dazu],
+      bereitschaftsdienst: [...bestand.bereitschaftsdienst, ...dienste],
       einsaetze: [...bestand.einsaetze, ...einsaetze.map(aufMinuten)],
     }),
   };

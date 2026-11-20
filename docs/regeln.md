@@ -461,7 +461,9 @@ Regel:
   und was schon gestempelt ist, zählt nicht doppelt.
 - **Ausnahmen**: Tarifvertrag oder Betriebsvereinbarung nach § 7 Abs. 1 Nr. 1 Buchst. a ArbZG
   (Einstellung des Betriebs mit Fundstelle): mehr als 10 h an einem Tag, in den Bereitschaftsdienst
-  fällt. Ein Tag ohne Bereitschaftsdienst bleibt beim Grenzwert von R-02. Über 12 h muss danach eine
+  fällt. Ein Tag ohne Bereitschaftsdienst bleibt beim Grenzwert von R-02, auch mit einer
+  Rufbereitschaft, die ganz zählt (R-12): Die Norm nennt nur Arbeitsbereitschaft und
+  Bereitschaftsdienst. Über 12 h muss danach eine
   Ruhezeit von mindestens 11 h folgen, ohne Verkürzung nach § 5 Abs. 2 und ohne Ausgleich von
   Einsätzen nach § 5 Abs. 3 (§ 7 Abs. 9 ArbZG). Ohne Einstellung gilt der Grenzwert von R-02.
 - **Schwere**: kein eigener Befund ohne Einstellung; die Zeit geht in die anderen Regeln ein.
@@ -495,7 +497,8 @@ ohne sie gilt der Fall „Pause“.
   Reaktionszeit am Dienst kürzer als 30 min (Einstellung am Rufdienst), wertet Soll die ganze
   Rufbereitschaft als Arbeitszeit (Matzak: wenige Minuten; die 30 min sind eine vorsichtige Grenze
   von Soll und als solche gekennzeichnet). Ohne eingestellte Reaktionszeit wertet Soll sie ebenso
-  (vorsichtige Vorgabe: eine kurze ist nicht auszuschließen).
+  (vorsichtige Vorgabe: eine kurze ist nicht auszuschließen). Sie zählt dann für jeden Grenzwert,
+  ist aber kein Bereitschaftsdienst für § 7 Abs. 1 Nr. 1 Buchst. a ArbZG (R-11).
 - **Einsatz und Arbeitstag**: Ein Einsatz zählt zum Arbeitstag der Schicht, zu der er nach dem
   Grundbegriff „Schicht“ gehört, also zu einer Schicht, die höchstens 9 h vorher endet, sonst zum Tag,
   an dem er beginnt. Ein Einsatz verbindet nie zwei Stücke anderer Arbeit zu einer Schicht: Die
@@ -522,6 +525,8 @@ ohne sie gilt der Fall „Pause“.
 | Matzak | Rufbereitschaft mit Reaktionszeit 8 min, 18:00 – 6:00 | 12:00 Arbeitszeit, R-02 meldet Verstoß | EuGH C-518/15, Rn. 66 |
 | Matzak, Grenze | Rufbereitschaft mit Reaktionszeit 30 min, 18:00 – 6:00, ohne Einsatz | 0:00 Arbeitszeit, kein Befund | Grenzwert dieser Regel (vorsichtige Grenze von Soll) |
 | ohne Reaktionszeit | Rufbereitschaft 18:00 – 6:00, Reaktionszeit nicht eingestellt | 12:00 Arbeitszeit wie bei Matzak | EuGH C-518/15; vorsichtige Vorgabe dieser Regel |
+| Matzak mit Tarif | Rufbereitschaft 18:00 – 6:00 mit Reaktionszeit 8 min oder ohne, Einstellung nach § 7 Abs. 1 Nr. 1 Buchst. a | Verstoß nach R-02, kein Hinweis nach R-11 | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG („Arbeitsbereitschaft oder Bereitschaftsdienst“) |
+| Matzak mit Tarif und Bereitschaftsdienst | Bereitschaftsdienst 17:00 – 18:00, dann Rufbereitschaft 18:00 – 6:00 mit Reaktionszeit 8 min, Einstellung nach § 7 | Hinweis „über 10 h nur mit Tarif“ | § 7 Abs. 1 Nr. 1 Buchst. a ArbZG |
 | Einsatz in der Nacht | Mo Schicht 12:00 – 18:00, Einsatz Di 3:00 – 4:00, Di Schicht 8:00 (4:00 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ nur für Di; die Ruhezeit vor dem Einsatz (9:00) zählt nicht | § 5 Abs. 1 ArbZG |
 | zwei Einsätze | Einsätze Mo 22:00 – 23:00 und Di 2:00 – 3:00, Di Schicht 14:00 (11:00 Ruhe nach dem zweiten) | 2:00 Arbeitszeit am Mo, kein Befund | § 5 Abs. 1 ArbZG |
 | zwei Einsätze, Verstoß | Einsätze Mo 22:00 – 23:00 und Di 3:00 – 4:00, Di Schicht 14:00 (10:00 Ruhe nach dem zweiten) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo und Di | § 5 Abs. 1 ArbZG |

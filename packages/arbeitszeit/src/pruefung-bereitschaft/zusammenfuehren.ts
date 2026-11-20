@@ -23,13 +23,21 @@ import type { BereitschaftsSchicht, BereitschaftsTag, Spanne } from "./typen.ts"
  */
 
 /** A shift as it comes in: of S-201, planned, or already of S-206 */
-type Eingangsschicht = PruefSchicht & { bereitschaft?: readonly Stueck[] };
+type Eingangsschicht = PruefSchicht & {
+  bereitschaft?: readonly Stueck[];
+  bereitschaftsdienst?: readonly Stueck[];
+};
 type Eingangstag = { tag: Tag; schichten: readonly Eingangsschicht[] };
 
-/** What the days hold: work, Bereitschaft within it, call-outs, open shifts and how breaks were taken */
+/**
+ * What the days hold: work, Bereitschaft within it (and the part of it that is Bereitschaftsdienst
+ * or Arbeitsbereitschaft; Bereitschaft without that mark is none, the careful reading), call-outs,
+ * open shifts and how breaks were taken
+ */
 export type Bestand = {
   arbeit: Spanne[];
   bereitschaft: Spanne[];
+  bereitschaftsdienst: Spanne[];
   einsaetze: Spanne[];
   offen: BereitschaftsSchicht[];
   pausenArten: ReadonlyMap<string, Pause["art"]>;
@@ -61,6 +69,7 @@ const offeneSchicht = (schicht: Eingangsschicht): BereitschaftsSchicht => ({
   bloecke: schicht.bloecke,
   arbeitsMinuten: schicht.arbeitsMinuten,
   bereitschaft: schicht.bereitschaft ?? [],
+  bereitschaftsdienst: schicht.bereitschaftsdienst ?? [],
   einsaetze: schicht.einsaetze ?? [],
 });
 
@@ -73,6 +82,7 @@ export const bestandAus = (tage: readonly Eingangstag[]): Bestand => {
   return {
     arbeit: teile.filter((teil) => !teil.einsatz).map((teil) => teil.strecke),
     bereitschaft: geschlossen.flatMap((schicht) => [...(schicht.bereitschaft ?? [])]),
+    bereitschaftsdienst: geschlossen.flatMap((schicht) => [...(schicht.bereitschaftsdienst ?? [])]),
     einsaetze: teile.filter((teil) => teil.einsatz).map((teil) => teil.strecke),
     offen: schichten.filter((schicht) => schicht.ende === null).map(offeneSchicht),
     pausenArten: new Map(
@@ -82,16 +92,19 @@ export const bestandAus = (tage: readonly Eingangstag[]): Bestand => {
 };
 
 /**
- * A rebuilt shift with its marks: the Bereitschaft inside it, and the blocks that hold no other work
- * (call-outs); a break keeps the way it was taken (stamped or a gap)
+ * A rebuilt shift with its marks: the Bereitschaft inside it, the Bereitschaftsdienst among it, and
+ * the blocks that hold no other work (call-outs); a break keeps the way it was taken (stamped or a
+ * gap)
  */
 const markiert = (
   schicht: Schicht,
   werk: readonly Spanne[],
-  bereitschaft: readonly Spanne[],
+  { bereitschaft, bereitschaftsdienst }: Pick<Bestand, "bereitschaft" | "bereitschaftsdienst">,
   pausenArten: ReadonlyMap<string, Pause["art"]>,
 ): BereitschaftsSchicht => {
   const ende = schicht.ende as number;
+  const darin = (teile: readonly Spanne[]) =>
+    teile.filter((teil) => teil.beginn >= schicht.beginn && teil.ende <= ende).map(alsStueck);
   return {
     tag: schicht.tag,
     beginn: schicht.beginn,
@@ -102,9 +115,8 @@ const markiert = (
     })),
     bloecke: schicht.bloecke,
     arbeitsMinuten: schicht.arbeitsMinuten,
-    bereitschaft: bereitschaft
-      .filter((teil) => teil.beginn >= schicht.beginn && teil.ende <= ende)
-      .map(alsStueck),
+    bereitschaft: darin(bereitschaft),
+    bereitschaftsdienst: darin(bereitschaftsdienst),
     einsaetze: schicht.bloecke.filter((block) => !werk.some((teil) => ueberschneiden(teil, block))),
   };
 };
@@ -150,6 +162,7 @@ const schichtgruppen = (teile: readonly Teil[]): number[][] => {
 /** The closed shifts of the stretches, cut as S-201 cuts stamped work */
 const schichtenAus = (bestand: Bestand): BereitschaftsSchicht[] => {
   const bereitschaft = vereinigt(bestand.bereitschaft);
+  const bereitschaftsdienst = vereinigt(bestand.bereitschaftsdienst);
   const werk = vereinigt([...bestand.arbeit, ...bereitschaft]);
   const einsaetze = ohne(bestand.einsaetze, werk);
   const teil =
@@ -172,7 +185,7 @@ const schichtenAus = (bestand: Bestand): BereitschaftsSchicht[] => {
       false,
       naechste,
     );
-    return markiert(schicht, werk, bereitschaft, bestand.pausenArten);
+    return markiert(schicht, werk, { bereitschaft, bereitschaftsdienst }, bestand.pausenArten);
   });
 };
 
@@ -183,6 +196,7 @@ const tagAus = (tag: Tag, schichten: BereitschaftsSchicht[]): BereitschaftsTag =
     schichten,
     arbeitsMinuten: zu.reduce((summe, schicht) => summe + schicht.arbeitsMinuten, 0),
     bereitschaftsMinuten: minutenVon(zu.flatMap((schicht) => schicht.bereitschaft)),
+    bereitschaftsdienstMinuten: minutenVon(zu.flatMap((schicht) => schicht.bereitschaftsdienst)),
     einsatzMinuten: minutenVon(zu.flatMap((schicht) => schicht.einsaetze)),
   };
 };

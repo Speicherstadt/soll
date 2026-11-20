@@ -33,6 +33,7 @@ describe("R-11: Bereitschaftsdienst", () => {
       tag: "2026-11-16",
       arbeitsMinuten: 480,
       bereitschaftsMinuten: 120,
+      bereitschaftsdienstMinuten: 120,
     });
     expect(pruefe(stempel, eingabe)).toEqual({ befunde: [], nichtHinterlegt: [] });
   });

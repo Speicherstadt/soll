@@ -30,8 +30,13 @@ export type TarifRuhezeitBefund = Befund<"ruhezeit_nach_ueber_12h"> & {
   fundstelle: string;
 };
 
+/**
+ * The days the agreement covers: those with Bereitschaftsdienst or Arbeitsbereitschaft, the only
+ * kinds § 7 Abs. 1 Nr. 1 Buchst. a ArbZG names; a Rufbereitschaft that counts fully is working time
+ * but opens no exception (docs/plan.md, Entscheidungen)
+ */
 const mitBereitschaft = (tage: readonly BereitschaftsTag[]): Map<Tag, BereitschaftsTag> =>
-  new Map(tage.filter((tag) => tag.bereitschaftsMinuten > 0).map((tag) => [tag.tag, tag]));
+  new Map(tage.filter((tag) => tag.bereitschaftsdienstMinuten > 0).map((tag) => [tag.tag, tag]));
 
 /**
  * R-02 under the agreement: more than 10 hours on a day with Bereitschaftsdienst is a Hinweis of

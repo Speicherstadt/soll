@@ -27,23 +27,28 @@ export type BereitschaftEingabe = {
 /**
  * A shift in the shape of §§ 3 to 5 ArbZG (`PruefSchicht`) with what S-206 marks in it:
  * `bereitschaft`, the stretches of Bereitschaftsdienst (and of Rufbereitschaft counted fully), which
- * are working time like any other (EuGH C-151/02, Jaeger); `einsaetze`, the blocks that are only
- * call-outs, whose end begins a rest and whose start ends none (R-12).
+ * are working time like any other (EuGH C-151/02, Jaeger); `bereitschaftsdienst`, the part of them
+ * that is Bereitschaftsdienst or Arbeitsbereitschaft, the only kinds § 7 Abs. 1 Nr. 1 Buchst. a ArbZG
+ * names; `einsaetze`, the blocks that are only call-outs, whose end begins a rest and whose start
+ * ends none (R-12).
  */
 export type BereitschaftsSchicht = PruefSchicht & {
   bereitschaft: readonly Stueck[];
+  bereitschaftsdienst: readonly Stueck[];
   einsaetze: readonly Stueck[];
 };
 
 /**
  * A working day (`PruefTag`) with Bereitschaft: every rule of Phase 2 reads it as it reads a day of
  * S-201. The minutes are those of the closed shifts: all working time, the part of it that is
- * Bereitschaftsdienst, and the part that is call-outs.
+ * Bereitschaft (with Rufbereitschaft counted fully), the part of that which is Bereitschaftsdienst
+ * or Arbeitsbereitschaft, and the part that is call-outs.
  */
 export type BereitschaftsTag = {
   tag: Tag;
   schichten: readonly BereitschaftsSchicht[];
   arbeitsMinuten: number;
   bereitschaftsMinuten: number;
+  bereitschaftsdienstMinuten: number;
   einsatzMinuten: number;
 };

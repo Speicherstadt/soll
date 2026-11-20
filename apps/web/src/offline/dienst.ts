@@ -125,7 +125,7 @@ export const warteschlange = (abh: Abhaengigkeiten) => {
         const jetzt = abh.jetzt();
         const { pfad, body } = anfrageFuer(eintrag, liveNoch(eintrag, live, jetzt), jetzt);
         const antwort = await abh.api(pfad, { body });
-        const was = folge(antwort.status);
+        const was = folge(antwort.status, antwort.ok ? "" : antwort.fehler);
         if (was === "spaeter") return { uebertragen, wartend: offen.length - index };
         if (was === "uebertragen") await abh.ablage.eintragEntfernen(eintrag);
         else

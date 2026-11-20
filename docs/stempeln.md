@@ -92,7 +92,10 @@ Teil meldet das Gerät beim Server an. Der Server prüft bei jeder Stempelung Si
 Person:
 
 - eine geänderte Zeit, Art oder Nummer passt nicht mehr zur Signatur und wird abgelehnt;
-- ein Gerät einer anderen Person oder eines anderen Betriebs gilt als unbekannt;
+- ein Gerät einer anderen Person oder eines anderen Betriebs gilt als unbekannt; sendet ein noch
+  offener Tab die wartenden Stempelungen der vorigen Person, während auf dem geteilten Browser
+  schon jemand anderes angemeldet ist, bleiben sie deshalb wartend und gehen hinaus, sobald sie sich
+  dort wieder anmeldet;
 - dieselbe Stempelung zweimal (etwa weil die Antwort unterwegs verloren ging) ergibt eine
   Stempelung; eine andere Stempelung unter einer schon vergebenen Nummer lehnt der Server ab;
 - auch eine Stempelung mit Netz trägt Nummer und Signatur, damit die Nummern eines Geräts lückenlos

@@ -142,6 +142,7 @@ mit Gültigkeit; der Gesetzeswächter (S-906) meldet, wenn sich ein Gesetzestext
 | Aufzeichnung über 8 h, 2 Jahre aufbewahren | § 16 Abs. 2 ArbZG |
 | Bereitschaftsdienst und Rufbereitschaft | §§ 2, 5, 7 ArbZG; EuGH C-151/02, C-518/15 |
 | Minijobs und Branchen: Erfassung binnen 7 Tagen, Mindestlohn | §§ 1, 17 MiLoG; § 2a SchwarzArbG |
+| Minijob-Grenze, gelegentliches Überschreiten | § 8 Abs. 1, 1a, 1b SGB IV |
 | Jugendliche | §§ 8, 11 bis 14 JArbSchG |
 | Mutterschutz | §§ 4 bis 6 MuSchG |
 | Arbeit auf Abruf: Schicht 4 Tage vorher | § 12 Abs. 3 TzBfG |

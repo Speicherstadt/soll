@@ -1,5 +1,6 @@
 import {
   arbeitszeitmodelle,
+  bedarfe,
   betriebe,
   einladungen,
   erinnerungen,
@@ -13,6 +14,8 @@ import {
   monatsabschluesse,
   pins,
   pushAbos,
+  schichten,
+  schichtvorlagen,
   standorte,
   stempelungen,
 } from "../../db/schema.ts";
@@ -38,6 +41,9 @@ export const kettenTabellen = {
   erinnerungen: { tabelle: erinnerungen, schluessel: ["erinnerungId"] },
   erinnerungseinstellungen: { tabelle: erinnerungseinstellungen, schluessel: ["nutzerId"] },
   erinnerungsregeln: { tabelle: erinnerungsregeln, schluessel: ["betriebId"] },
+  schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
+  schichten: { tabelle: schichten, schluessel: ["schichtId"] },
+  bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

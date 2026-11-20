@@ -128,3 +128,21 @@ test("the owner closes without confirmation only with a reason, then the month i
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
 });
+
+test("a failed reload after a step keeps the month on screen and names the error", async ({
+  page,
+  browser,
+}) => {
+  await weberMitMonat(page, browser);
+  await page.goto("/monat");
+  const tabelle = page.getByRole("table", { name: t("monat_tage") });
+  await expect(tabelle).toContainText("8:00");
+  // the step goes through; the month's reload after it finds no server
+  await page.route("**/api/v1/arbeitszeit/monat?**", (route) =>
+    route.request().method() === "GET" ? route.abort() : route.continue(),
+  );
+  await page.getByRole("button", { name: t("monat_bestaetigen") }).click();
+  await expect(page.getByRole("alert").filter({ hasText: t("laden_fehler") })).toBeVisible();
+  await expect(tabelle).toContainText("8:00");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Sandra Kühn");
+});

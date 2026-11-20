@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/*.md", "!overrides", "!design/mockup", "!**/routeTree.gen.ts"]
+    "includes": ["**", "!**/*.md", "!overrides", "!design/mockup", "!**/*.gen.ts"]
   },
   "formatter": {
     "indentStyle": "space",

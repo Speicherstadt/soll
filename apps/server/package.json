@@ -9,7 +9,11 @@
     "build": "bun build --compile --minify --sourcemap src/main.ts --outfile dist/soll"
   },
   "dependencies": {
+    "drizzle-orm": "0.45.4",
     "hono": "4.13.19",
     "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.11"
   }
 }

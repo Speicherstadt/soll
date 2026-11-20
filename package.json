@@ -17,6 +17,7 @@
     "test": "bun --bun vitest run",
     "build": "bun scripts/build-all.ts",
     "e2e": "playwright test --trace off",
+    "db:generate": "bun run --cwd apps/server drizzle-kit generate && bun scripts/migrationen.ts",
     "check": "bun run typecheck && bun run lint && bun run test && bun run build",
     "dev:server": "SOLL_PORT=18200 bun run --cwd apps/server dev",
     "dev:web": "bun run --cwd apps/web dev"

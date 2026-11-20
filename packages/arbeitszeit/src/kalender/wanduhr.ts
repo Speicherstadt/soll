@@ -30,7 +30,7 @@ export const minuteInBerlin = (ms: number): number => {
  * the second one corrects it afterwards, with a reason. The candidates are midnight plus the minutes
  * shifted by up to three hours either way, which covers every offset Berlin ever kept.
  */
-export const zeitpunktInBerlin = (tag: Tag, minute: number): number | null => {
+export const eingabeInBerlin = (tag: Tag, minute: number): number | null => {
   if (!istTag(tag) || !Number.isInteger(minute) || minute < 0 || minute >= MINUTEN_PRO_TAG)
     return null;
   const mitternacht = beginnInBerlin(tag);

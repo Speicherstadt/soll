@@ -1,10 +1,10 @@
 import {
+  eingabeInBerlin,
   minuteInBerlin,
   STEMPELARTEN,
   type Stempelart,
   type Tag,
   tagInBerlin,
-  zeitpunktInBerlin,
 } from "@soll/arbeitszeit";
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
@@ -86,7 +86,7 @@ export const KorrekturDialog = (props: {
         ? props.korrektur.stempel.zeitpunkt
         : minute === null
           ? null
-          : zeitpunktInBerlin(String(daten.get("datum") ?? ""), minute);
+          : eingabeInBerlin(String(daten.get("datum") ?? ""), minute);
     if (zeitpunkt === null) return setFehler(m.korrektur_fehler_zeit());
     const art = (daten.get("art") as Stempelart | null) ?? stempel()?.art ?? "kommen";
     setArbeitet(true);

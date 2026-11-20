@@ -68,3 +68,23 @@ export const beginnInBerlin = (tag: Tag): number => {
   if (beginne.length === 0) throw new Error(`no midnight in Berlin for ${tag}`);
   return Math.min(...beginne);
 };
+
+const MINUTE = 60_000;
+
+/**
+ * The instant of a Berlin wall-clock time: `minuten` after 0:00 on the clock of `tag` (0 to 1440,
+ * 1440 is the next midnight). In the hour that comes twice in October it is the first; a time the
+ * clocks skip in March (2:30) is counted in real minutes from midnight (3:30 CEST). The Nachtzeit of
+ * § 2 Abs. 3 ArbZG and a moved Sunday rest (§ 9 Abs. 2 ArbZG) are wall-clock times.
+ */
+export const zeitpunktInBerlin = (tag: Tag, minuten: number): number => {
+  if (minuten >= 24 * 60) return beginnInBerlin(plusTage(tag, 1)) + (minuten - 24 * 60) * MINUTE;
+  const schaetzung = beginnInBerlin(tag) + minuten * MINUTE;
+  const passend = [-STUNDE, 0, STUNDE]
+    .map((verschiebung) => schaetzung + verschiebung)
+    .filter((kandidat) => {
+      const uhr = ortszeit(kandidat);
+      return tagInBerlin(kandidat) === tag && uhr.sekunden === minuten * 60;
+    });
+  return passend.length === 0 ? schaetzung : Math.min(...passend);
+};

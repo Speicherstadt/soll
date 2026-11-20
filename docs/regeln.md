@@ -301,11 +301,26 @@ Regel:
 - **Regel**: Nachtarbeit ist eine Schicht mit mehr als 2:00 zwischen 23 und 6 Uhr (Bäckerei 22 bis
   5 Uhr). Nachtarbeitnehmer ist, wer Nachtarbeit in Wechselschicht leistet (Merkmal am Mitarbeiter)
   oder an mindestens 48 Tagen im Kalenderjahr; Soll zählt die Tage mit.
-- **Grenzwerte**: wie R-02, aber Ausgleich in einem Kalendermonat oder vier Wochen.
+- **Messung**: Die Nachtzeit ist Uhrzeit in `Europe/Berlin`, gezählt werden echte Minuten der Arbeit
+  einer Schicht in ihr (Unterbrechungen unter 15 min eingerechnet, Ruhepausen nicht), auch über die
+  Zeitumstellung. Nachtarbeit ist je Schicht; ein Nachtarbeitstag ist der Arbeitstag (Starttag) einer
+  solchen Schicht.
+- **Nachtarbeitnehmer**: mit dem Merkmal „Wechselschicht“ am Mitarbeiter (ohne Merkmal: nein) von
+  Anfang an; sonst ab dem 48. Nachtarbeitstag des Kalenderjahrs bis zu seinem Ende und das ganze
+  folgende Jahr (wer im Vorjahr 48 Nächte hatte, wird sie wieder haben; das Gesetz fragt nach dem
+  laufenden Jahr, vorsichtige Auslegung). Ein Hinweis am 40. Nachtarbeitstag („bald
+  Nachtarbeitnehmer“) und einer am 48. („Nachtarbeitnehmer“), je einmal im Jahr.
+- **Grenzwerte**: wie R-02, aber Ausgleich in einem Kalendermonat oder vier Wochen. Die vier Wochen
+  (28 Tage) folgen lückenlos aufeinander ab einem Beginn am Betrieb (ohne Einstellung der
+  1. Januar 2026), der Kalendermonat ist der Monat selbst. Werktage, Sonn- und Feiertagsarbeit und
+  Urlaubs- und Krankheitstage zählen wie in R-03; ohne Wahl des Betriebs zählt ein überschrittener
+  Zeitraum nur, wenn auch einer der anderen Art überschritten ist (wie R-03).
 - **Ausnahmen**: § 7 Abs. 1 Nr. 4 ArbZG (Einstellung); Zeiträume ohne Nachtarbeit für Nachtarbeitnehmer
-  nach § 2 Abs. 5 Nr. 2 prüft Soll mit § 3 Satz 2 (§ 6 Abs. 2 Satz 3 ArbZG).
+  nach § 2 Abs. 5 Nr. 2 prüft Soll mit § 3 Satz 2 (§ 6 Abs. 2 Satz 3 ArbZG): R-06 prüft nur Zeiträume
+  mit einem Nachtarbeitstag als Nachtarbeitnehmer, bei Wechselschicht jeden.
 - **Schwere**: Hinweis über 8 h und ab dem 40. Nachtarbeitstag im Jahr („bald Nachtarbeitnehmer“);
-  Verstoß über 10 h oder ohne Ausgleich am Ende des Monats oder der vier Wochen.
+  Verstoß über 10 h oder ohne Ausgleich am Ende des Monats oder der vier Wochen. Solange der Zeitraum
+  läuft und schon über dem Durchschnitt liegt, ein Hinweis „Ausgleich offen“ (wie R-03).
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -314,6 +329,16 @@ Regel:
 | Grenze | 48. Nachtarbeitstag im Kalenderjahr | ab jetzt Nachtarbeitnehmer | § 2 Abs. 5 Nr. 2 ArbZG |
 | Verstoß | Nachtarbeitnehmer, 4 Wochen mit Ø 8:30 je Werktag | Verstoß „Ausgleich nicht erreicht“ | § 6 Abs. 2 Satz 2 ArbZG |
 | Bäckerei | 4:00 – 7:00 in einer Bäckerei (1:00 Nachtzeit 22–5) | keine Nachtarbeit | § 2 Abs. 3 ArbZG |
+| Grenze | Nachtarbeitnehmer, 4 Wochen mit Ø 8:00 je Werktag | kein Befund | § 6 Abs. 2 Satz 2 ArbZG („nicht überschritten“) |
+| Hinweis | Nachtarbeitnehmer, ein Tag mit 8:01 | Hinweis „über 8 h, Ausgleich in einem Monat oder vier Wochen“ | § 6 Abs. 2 Satz 2 ArbZG |
+| Verstoß | Nachtarbeitnehmer, ein Tag mit 10:01 | Verstoß „über 10 h“ | § 6 Abs. 2 Satz 2 ArbZG („bis zu zehn Stunden“) |
+| Hinweis | 40. Nachtarbeitstag im Kalenderjahr | Hinweis „bald Nachtarbeitnehmer“ | Schwere dieser Regel |
+| ohne Wahl | Nachtarbeitnehmer, 29.1. bis 25.2.2026 mit Ø 8:30, Januar und Februar unter 8:00 je Werktag | kein Befund zum Ausgleich | § 6 Abs. 2 Satz 2 ArbZG („oder“) |
+| Satz 3 | Nachtarbeitnehmer nach 48 Tagen, März nur Tagschichten von 9:00, April eine Nachtschicht von 9:00 | kein Befund im März (R-02 und R-03 prüfen ihn), Hinweis für den Tag im April | § 6 Abs. 2 Satz 3 ArbZG |
+| Vorjahr | 48 Nachtarbeitstage 2026, Nachtarbeit am 4.1.2027 | Nachtarbeitnehmer am 4.1.2027 | § 2 Abs. 5 Nr. 2 ArbZG; Regel dieser Seite |
+| Herbst | Sa 24.10.2026 22:00 – So 6:00 | 8:00 Nachtzeit (echte Zeit), Nachtarbeit | § 2 Abs. 3 ArbZG; SoZV (Ende der Sommerzeit) |
+| Frühjahr | Sa 27.03.2027 22:00 – So 6:00 | 6:00 Nachtzeit (echte Zeit), Nachtarbeit | § 2 Abs. 3 ArbZG; SoZV (Beginn der Sommerzeit) |
+| Silvester | Do 31.12.2026 22:00 – Fr 1.1.2027 6:00 | 7:00 Nachtzeit, Nachtarbeitstag 31.12.2026 | Grundbegriff „Arbeitstag“ |
 
 ### R-07 Sonn- und Feiertagsruhe
 
@@ -324,7 +349,15 @@ Regel:
   Pflege) oder eine Bewilligung der Aufsichtsbehörde (§ 13 ArbZG) eingetragen ist.
 - **Grenzwerte**: 0:00 bis 24:00 des Sonn- oder Feiertags; eine Schicht über Mitternacht zählt mit
   dem Teil, der in den Tag fällt. Mehrschichtbetriebe: Verschiebung um bis zu 6 h nach § 9 Abs. 2
-  (Einstellung).
+  (Einstellung): Beginn und Ende rücken um die eingetragene Uhrzeit vor oder zurück, die Ruhe dauert
+  aber mindestens die 24 echten Stunden ab ihrem Beginn (am 29.3.2026 also bis So 19:00, am
+  25.10.2026 bis So 18:00, 25 Stunden); eine Verschiebung über
+  6 h oder nicht in ganzen Minuten gilt nicht, dann bleibt es bei 0 bis 24 Uhr. Gemessen wird in
+  echten Minuten (der 25.10.2026 hat 25 Stunden), nur an geschlossenen Schichten (R-01).
+- **Einstellungen**: eine Ausnahme nach § 10 Abs. 1 Nr. 1 bis 16 (eine andere Nummer erlaubt nichts),
+  § 10 Abs. 3 für Bäckereien (bis 3:00 je Sonn- und Feiertag) oder eine Bewilligung nach § 13 mit
+  Fundstelle, für die Tage, die sie nennt, oder ohne Tage für jeden. Ohne Einstellung gilt § 9.
+  Der 24. und der 31.12. sind keine gesetzlichen Feiertage.
 - **Ausnahmen**: § 10 Abs. 1 Nr. 1 bis 16, Abs. 3 (Bäckereien bis 3 h) ArbZG.
 - **Schwere**: Verstoß ohne Ausnahme; mit Ausnahme kein Befund, aber R-08 und R-09.
 
@@ -334,20 +367,35 @@ Regel:
 | Grenze | SHK-Betrieb ohne Ausnahme, Sa 18:00 – 23:59 | kein Befund | § 9 Abs. 1 ArbZG („0 bis 24 Uhr“) |
 | Verstoß | SHK-Betrieb ohne Ausnahme, Sa 22:00 – So 0:01 | Verstoß für 1 min am Sonntag | § 9 Abs. 1 ArbZG |
 | Verstoß | SHK in Bayern, 6.1.2026 (Heilige Drei Könige), 8:00 – 12:00 | Verstoß „Feiertag“ | § 9 Abs. 1 ArbZG; Art. 1 BayFTG |
+| Heiligabend | SHK in Hamburg, Do 24.12.2026, 8:00 – 16:00 | kein Befund (kein gesetzlicher Feiertag) | § 9 Abs. 1 ArbZG; § 1 FeiertagsG Hamburg |
+| Weihnachten | SHK in Hamburg, Do 24.12.2026 22:00 – Fr 25.12. 6:00 | Verstoß „Feiertag“ für 6:00 am 25.12. | § 9 Abs. 1 ArbZG; § 1 FeiertagsG Hamburg |
+| Silvester | SHK in Hamburg, Do 31.12.2026 20:00 – Fr 1.1.2027 2:00 | Verstoß „Feiertag“ für 2:00 am 1.1. | § 9 Abs. 1 ArbZG; § 1 FeiertagsG Hamburg |
+| Herbst | SHK ohne Ausnahme, Sa 24.10.2026 22:00 – So 6:00 | Verstoß für 7:00 am Sonntag (echte Zeit) | § 9 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
+| Mehrschicht | Ruhe 6 h vorverlegt, Sa 14:00 – 22:00 | Verstoß für 4:00 am Sonntag; So 18:00 – 23:00 kein Befund | § 9 Abs. 2 ArbZG |
+| Mehrschicht | Ruhe 6 h vorverlegt, So 29.3.2026 18:00 – 19:00 (Sommerzeit) | Verstoß für 1:00 am 29.3.; 19:00 – 20:00 kein Befund | § 9 Abs. 2 ArbZG („die auf den Beginn der Ruhezeit folgenden 24 Stunden“) |
+| Mehrschicht | Ruhe 6 h vorverlegt, So 25.10.2026 17:00 – 18:00 (Winterzeit) | Verstoß für 1:00 am 25.10.; 18:00 – 19:00 kein Befund | § 9 Abs. 2 ArbZG („Beginn oder Ende … um bis zu sechs Stunden“) |
+| Mehrschicht | SHK in Bayern, Ruhe 6 h vorverlegt, So 31.10.2027 (Winterzeit, Mo Allerheiligen) 17:00 – 18:00 | Verstoß für 1:00 am 31.10. | § 9 Abs. 2 ArbZG; Art. 1 BayFTG |
+| Mehrschicht | Verschiebung um 7 h eingetragen, Sa 14:00 – 22:00 | kein Befund (es gilt 0 bis 24 Uhr) | § 9 Abs. 2 ArbZG („um bis zu sechs Stunden“) |
+| Bäckerei | Bäckerei mit § 10 Abs. 3, So 5:00 – 8:00 (3:00) | kein Befund; mit 3:01 Verstoß „über 3 h“ | § 10 Abs. 3 ArbZG |
+| Bewilligung | Bewilligung nach § 13 für So 15.11.2026, Arbeit am 15. und am 22.11. | Verstoß nur für den 22.11. | § 13 ArbZG |
 
 ### R-08 Beschäftigungsfreie Sonntage
 
 - **Norm**: § 11 Abs. 1 ArbZG: „Mindestens 15 Sonntage im Jahr müssen beschäftigungsfrei bleiben.“
 - **Grenzwerte**: Je Kalenderjahr höchstens (Zahl der Sonntage − 15) Sonntage mit Arbeitszeit;
   2026 hat 52 Sonntage, also höchstens 37.
+- **Gezählt** wird jeder Sonntag, in dessen Ruhe nach R-07 Arbeit fällt, auch das Ende einer
+  Nachtschicht vom Samstag. Ein Jahr hat 52 oder 53 Sonntage (2023 und 2028 haben 53).
 - **Schwere**: Hinweis, sobald nur noch so viele Sonntage übrig sind, wie frei bleiben müssen;
-  Verstoß beim ersten Sonntag darüber.
+  Verstoß beim ersten Sonntag darüber. Der Hinweis kommt am Sonntag, mit dem die Höchstzahl erreicht
+  ist, ein Verstoß an jedem Sonntag darüber.
 
 | Fall | Kalenderjahr 2026 | Erwartet | Quelle |
 | --- | --- | --- | --- |
 | erlaubt | 30 Sonntage mit Arbeit | kein Befund | § 11 Abs. 1 ArbZG |
 | Grenze | 37 Sonntage mit Arbeit, 15 frei | Hinweis „kein weiterer Sonntag mehr“ | § 11 Abs. 1 ArbZG |
 | Verstoß | 38 Sonntage mit Arbeit | Verstoß | § 11 Abs. 1 ArbZG |
+| Nachtschicht | 36 Sonntage mit Arbeit, dazu Sa 26.12.2026 22:00 – So 6:00 | Hinweis für den 27.12.2026 | § 11 Abs. 1 ArbZG; § 9 Abs. 1 ArbZG („0 bis 24 Uhr“) |
 
 ### R-09 Ersatzruhetag
 
@@ -355,7 +403,12 @@ Regel:
   einschließenden Zeitraums von zwei Wochen“, für einen Feiertag an einem Werktag innerhalb von acht
   Wochen; § 11 Abs. 4 ArbZG (in Verbindung mit einer Ruhezeit).
 - **Regel**: Ein Ersatzruhetag ist ein Werktag ohne Arbeitszeit von 0 bis 24 Uhr. Soll ordnet jedem
-  Sonntag den frühesten freien Werktag im Zeitraum zu, der noch keinem anderen zugeordnet ist.
+  Sonntag den frühesten freien Werktag im Zeitraum zu, der noch keinem anderen zugeordnet ist. Es
+  wählen zuerst die Sonn- und Feiertage, deren Zeitraum zuerst endet; so bleiben so wenige wie möglich
+  ohne Ersatzruhetag (ein Feiertag mit acht Wochen nimmt einem Sonntag nicht seinen einzigen Tag).
+- **Frei** ist ein Werktag erst, wenn er vorbei ist; ein Werktag, in den eine Nachtschicht reicht,
+  ist nicht frei, ebenso der Tag einer offenen Schicht. Ein Feiertag an einem Sonntag folgt der Regel
+  für Sonntage. Beschäftigt ist, wer in der Ruhe nach R-07 arbeitet.
 - **Grenzwerte**: Sonntag: ein Zeitraum von 14 Tagen, der den Sonntag einschließt; er kann vor oder
   nach dem Sonntag liegen, der Ersatzruhetag also bis zu 13 Tage davor oder danach (Montag der
   Vorwoche bis Samstag der übernächsten Woche). Feiertag: 8 Wochen entsprechend, bis zu 55 Tage
@@ -368,6 +421,11 @@ Regel:
 | Grenze | Arbeit So, einziger freier Werktag am 13. Tag danach (Sa der übernächsten Woche) | kein Befund | § 11 Abs. 3 Satz 1 ArbZG („den Beschäftigungstag einschließenden Zeitraums von zwei Wochen“) |
 | Verstoß | Arbeit So, 13 Tage davor und danach kein freier Werktag, der nächste am 15. Tag danach (Mo) | Verstoß „Ersatzruhetag fehlt“ | § 11 Abs. 3 Satz 1 ArbZG |
 | Feiertag | Arbeit Mo 25.5.2026 (Pfingstmontag), freier Werktag nach 7 Wochen | kein Befund | § 11 Abs. 3 Satz 2 ArbZG |
+| Feiertag | Arbeit Mo 25.5.2026, 55 Tage davor und danach kein freier Werktag | Verstoß „Ersatzruhetag fehlt“ | § 11 Abs. 3 Satz 2 ArbZG |
+| Hinweis | Arbeit So 8.11. und So 15.11.2026 und an jedem Werktag bis Di 17.11., heute Mi 18.11. | Hinweis „Ersatzruhetag bis 21.11.“ und „bis 28.11.“ | Schwere dieser Regel |
+| je Sonntag | Arbeit So 8.11. und So 15.11.2026, einziger freier Werktag Mi 11.11. | Verstoß für den 15.11. | § 11 Abs. 3 Satz 1 ArbZG |
+| Vorrang | Arbeit Mo 25.5. und So 31.5.2026, frei nur Di 2.6. und Mo 13.7. | kein Befund (2.6. für den Sonntag, 13.7. für den Feiertag) | § 11 Abs. 3 ArbZG; Regel dieser Seite |
+| Nachtschicht | Arbeit So 15.11.2026 17:00 – Mo 1:00, Mo sonst frei, alle anderen Werktage gearbeitet | Verstoß „Ersatzruhetag fehlt“ | § 11 Abs. 3 ArbZG („Ersatzruhetag“: 0 bis 24 Uhr) |
 
 ### R-10 Aufzeichnung und Aufbewahrung
 

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { betriebAnlegen } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
 import { SEITEN } from "./seiten.ts";
 
@@ -7,6 +8,11 @@ const de = messagesOf("de");
 // The app follows the browser's language; Playwright's default is en-US
 test.use({ locale: "de" });
 const text = (key: string) => de[key] ?? key;
+
+// A signed-in owner of a business with every module, so every area is there
+test.beforeEach(async ({ page }) => {
+  await betriebAnlegen(page);
+});
 
 test("the sidebar reaches every page and marks the current one", async ({ page }) => {
   await page.goto("/");

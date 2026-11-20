@@ -1,3 +1,4 @@
+import type { Module } from "@soll/arbeitszeit";
 import type { IconNode } from "@soll/ui";
 import {
   Briefcase,
@@ -10,6 +11,7 @@ import {
   TreePalm,
 } from "lucide";
 import { m } from "../paraglide/messages.js";
+import { sichtbar, tabPfade } from "./module.ts";
 
 export type Bereich = {
   pfad:
@@ -26,7 +28,7 @@ export type Bereich = {
 };
 
 /** The areas of the sidebar at the desktop, in the order of DESIGN.md ("Aufbau") */
-export const BEREICHE: readonly Bereich[] = [
+const BEREICHE: readonly Bereich[] = [
   { pfad: "/", name: () => m.nav_heute(), icon: Clock },
   { pfad: "/zeiten", name: () => m.nav_zeiten(), icon: Timer },
   { pfad: "/abwesenheiten", name: () => m.nav_abwesenheiten(), icon: TreePalm },
@@ -36,15 +38,28 @@ export const BEREICHE: readonly Bereich[] = [
   { pfad: "/einstellungen", name: () => m.nav_einstellungen(), icon: Settings },
 ];
 
-/** The tab bar on phones: Heute, Plan, Abwesenheit, Mehr (DESIGN.md, "Aufbau") */
-export const TABS: readonly Bereich[] = [
+/** The areas a tab on a phone may take, with their short names (DESIGN.md, "Aufbau") */
+const TABS: readonly Bereich[] = [
   { pfad: "/", name: () => m.nav_heute(), icon: Clock },
   { pfad: "/dienstplan", name: () => m.nav_plan(), icon: CalendarDays },
   { pfad: "/abwesenheiten", name: () => m.nav_abwesenheit(), icon: TreePalm },
+  { pfad: "/projekte", name: () => m.nav_projekte(), icon: Briefcase },
+  { pfad: "/zeiten", name: () => m.nav_zeiten(), icon: Timer },
   { pfad: "/mehr", name: () => m.nav_mehr(), icon: Ellipsis },
 ];
 
-/** What "Mehr" lists on a phone: every area the tab bar does not show */
-export const MEHR: readonly Bereich[] = BEREICHE.filter(
-  (bereich) => !TABS.some((tab) => tab.pfad === bereich.pfad),
-);
+/** The sidebar: the areas of the modules the business uses */
+export const bereicheFuer = (module: Module): Bereich[] =>
+  BEREICHE.filter((bereich) => sichtbar(module, bereich.pfad));
+
+/** The tab bar: Heute, two areas of the modules, Mehr */
+export const tabsFuer = (module: Module): Bereich[] => {
+  const pfade = tabPfade(module);
+  return TABS.filter((tab) => pfade.includes(tab.pfad));
+};
+
+/** What "Mehr" lists on a phone: every area of the modules the tab bar does not show */
+export const mehrFuer = (module: Module): Bereich[] => {
+  const pfade = tabPfade(module);
+  return bereicheFuer(module).filter((bereich) => !pfade.includes(bereich.pfad));
+};

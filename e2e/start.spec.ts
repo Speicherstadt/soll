@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { betriebAnlegen } from "./betrieb.ts";
 import { locales, messagesOf } from "./locales.ts";
 
 for (const locale of locales) {
@@ -6,6 +7,7 @@ for (const locale of locales) {
     test.use({ locale });
 
     test(`renders in ${locale} @phone @terminal`, async ({ page }) => {
+      await betriebAnlegen(page);
       await page.goto("/");
       const messages = messagesOf(locale);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.nav_heute ?? "");

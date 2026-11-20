@@ -37,5 +37,6 @@ Zeitumstellung.
 ## Neue Werte eintragen
 
 Ein neuer Wert ist ein neuer Eintrag mit `von`, `bis` und Quelle (Verordnung oder Gesetz mit
-Fundstelle); alte Einträge bleiben unverändert. Der Gesetzeswächter (S-906) meldet, wenn für das
+Fundstelle); alte Einträge bleiben unverändert. Einzige Ausnahme: Löst eine neue Regelversion
+die offene alte ab, bekommt die alte als `bis` den Tag vor dem Beginn der neuen. Der Gesetzeswächter (S-906) meldet, wenn für das
 nächste Jahr ein Wert fehlt.

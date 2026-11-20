@@ -4,6 +4,7 @@
  */
 
 export * from "./arbeitstag/index.ts";
+export * from "./auslastung/index.ts";
 export type { Befund, Schwere } from "./befund.ts";
 export * from "./dienstplan/index.ts";
 export * from "./feiertage/index.ts";

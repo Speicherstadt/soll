@@ -3,22 +3,41 @@ import { type Antwort, api } from "../api.ts";
 import type { Ressource, Schluessel } from "./schluessel.ts";
 
 /**
+ * The API's answer as a query keeps it: a failed load again (a refusal, no network) keeps the data
+ * last loaded for the same key as `letzte`, so the page goes on showing it beside the error notice
+ */
+export type Abgefragt<T> =
+  | { ok: true; status: number; daten: T }
+  | { ok: false; status: number; fehler: string; letzte?: T };
+
+/** The data of an answer, the data last loaded after a failed load again, or nothing */
+export const daten = <T>(antwort: Abgefragt<T>): T | undefined =>
+  antwort.ok ? antwort.daten : antwort.letzte;
+
+/** A new answer for a key, keeping what the answer before it had loaded when this one failed */
+export const behalten = <T>(neu: Antwort<T>, vorher: Abgefragt<T> | undefined): Abgefragt<T> => {
+  if (neu.ok) return neu;
+  const letzte = vorher === undefined ? undefined : daten(vorher);
+  return letzte === undefined ? neu : { ...neu, letzte };
+};
+
+/**
  * A resource as a query (docs/entwicklung.md, "Daten laden"). Its data is the API's answer, errors as
- * values: read it under `<Loading>` (the first load suspends there), then branch on `ok`. Without a
- * resource (nothing chosen yet) nothing is asked; such a read waits, so it belongs behind a `Show`.
+ * values: read it under `<Loading>` (the first load suspends there), then branch on `ok`; `daten`
+ * keeps the data last loaded through a failed load again. Without a resource (nothing chosen yet)
+ * nothing is asked; such a read waits, so it belongs behind a `Show`.
  */
 export const abfrage = <T>(ressource: () => Ressource | null) =>
   useQuery(() => {
     const r = ressource();
     return {
       queryKey: r?.schluessel ?? ["-"],
-      queryFn: r ? () => api<T>(r.pfad) : skipToken,
+      queryFn: r
+        ? async ({ client, queryKey }: { client: QueryClient; queryKey: readonly unknown[] }) =>
+            behalten(await api<T>(r.pfad), client.getQueryData<Abgefragt<T>>(queryKey))
+        : skipToken,
     };
   });
-
-/** The data of an answer, or nothing for a refusal or no network */
-export const daten = <T>(antwort: Antwort<T>): T | undefined =>
-  antwort.ok ? antwort.daten : undefined;
 
 type Optionen<V, T> = {
   /** invalidate after a refusal too (the server may have changed something all the same) */
@@ -71,9 +90,9 @@ export const listeAendern = <E>(
   feld: string,
   aendern: (liste: E[]) => E[],
 ): void => {
-  client.setQueryData<Antwort<Record<string, E[]>>>(ressource.schluessel, (alt) => ({
+  client.setQueryData<Abgefragt<Record<string, E[]>>>(ressource.schluessel, (alt) => ({
     ok: true,
     status: 200,
-    daten: { [feld]: aendern(alt?.ok ? (alt.daten[feld] ?? []) : []) },
+    daten: { [feld]: aendern((alt === undefined ? undefined : daten(alt)?.[feld]) ?? []) },
   }));
 };

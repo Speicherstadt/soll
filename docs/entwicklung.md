@@ -84,6 +84,8 @@ Ladern aus Effekt und Signal:
   als Wert (`ok`, `daten` oder `fehler`): Eine Ablehnung oder fehlendes Netz zeigt dieselben Texte wie
   zuvor und erreicht nie eine Fehlergrenze. Gelesen wird unter `<Loading>`; das erste Laden zeigt den
   Platzhalter der Grenze, ein späteres Neuladen behält den alten Stand, bis der neue da ist.
+  Schlägt ein späteres Neuladen fehl, bleibt der zuletzt geladene Stand zu sehen (`daten()` liest
+  ihn als `letzte`), und die Seite nennt den Fehler daneben.
 - `aenderung()` und `schreiben()` schreiben über eine Mutation und machen danach die Schlüssel
   ungültig, die sich ändern. Das Neuladen läuft in der Aktion der Mutation, das Ende des Schreibens
   und die neuen Daten erscheinen zusammen; `isPending` der Mutation sperrt den Knopf solange.

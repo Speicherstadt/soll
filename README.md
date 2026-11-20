@@ -47,7 +47,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |
 | 🔔 Erinnerungen | Ausstempeln vergessen, Pause fällig, Monat bestätigen; per Web Push aufs Handy oder per Mail, je Art abschaltbar; Soll stempelt nie selbst aus |
 | 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung |
-| 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen, Export für Zoll und Arbeitsschutz |
+| 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen; Prüfexport für Zoll und Arbeitsschutz als CSV und PDF mit Erfassungszeit, Änderungen mit Grund, Befunden und Prüfwert je Monat; Auskunft nach Art. 15 DSGVO als Datei für jede Person |
 | 🛠️ Projekte | Kunden und Aufträge mit Budget in Stunden und Euro und Warnung, feste interne Tätigkeiten (Fahrt, Werkstatt, Lager, Schulung), Stundensätze nach Kunde, Auftrag, Tätigkeit und Person; Stoppuhr unter Heute mit Wechsel per Tipp, Verweis auf die Stempelung und Hinweis bei mehr Projektzeit als Arbeitszeit, änderbar bis „abgerechnet“; Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) folgen |
 | 🔁 Umzug | Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister, Toggl, Clockify und Excel |
 | 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |

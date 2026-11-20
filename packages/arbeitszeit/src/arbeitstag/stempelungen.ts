@@ -192,13 +192,22 @@ const schritt = (lauf: Lauf, stempel: Stempelung): Lauf => ({
 
 const RANG: Record<Stempelart, number> = { gehen: 0, pause_beginn: 1, pause_ende: 2, kommen: 3 };
 
+/** A stamp resent with its kind and instant is the same stamp: it is read once */
+const einmal = (stempelungen: readonly Stempelung[]): Stempelung[] =>
+  stempelungen.filter(
+    (stempel, index, alle) =>
+      alle.findIndex(
+        (anderer) => anderer.art === stempel.art && anderer.zeitpunkt === stempel.zeitpunkt,
+      ) === index,
+  );
+
 /**
  * Runs the stamps in time order. Stamps of the same instant are taken in the order the current
  * state expects (Gehen, then Kommen when one pair ends as the next begins), so the result does not
- * depend on the order they arrive in.
+ * depend on the order they arrive in, nor on a stamp sent twice.
  */
 export const durchlaufe = (stempelungen: readonly Stempelung[]): Lauf => {
-  let rest = [...stempelungen].sort(
+  let rest = einmal(stempelungen).sort(
     (a, b) => a.zeitpunkt - b.zeitpunkt || RANG[a.art] - RANG[b.art],
   );
   let lauf = START;

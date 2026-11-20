@@ -58,6 +58,15 @@ describe("R-33: Überstundenkonto aus den Abschlüssen", () => {
     expect(konto(abschluesse).luecken).toEqual(["2026-10", "2026-12"]);
   });
 
+  it("names the months from the start balance to the first closing that are not closed", () => {
+    // the start balance is the balance at the start of 2026-08; August and September are missing
+    const ergebnis = konto(
+      [abschluss("2026-10", "176:00", "177:00")],
+      [{ monat: "2026-08", art: "startsaldo", minuten: hm("10:00") }],
+    );
+    expect(ergebnis.luecken).toEqual(["2026-08", "2026-09"]);
+  });
+
   it("crosses the turn of the year", () => {
     const ergebnis = konto([
       abschluss("2026-12", "160:00", "170:00"),

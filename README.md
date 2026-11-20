@@ -45,6 +45,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | ⚖️ Prüfung | Arbeitszeitgesetz, Mindestlohn, Jugendarbeitsschutz, Mutterschutz, Bereitschaft; mit Norm im Hinweis |
 | 📅 Dienstplan | Schichten planen und prüfen, veröffentlichen, tauschen, im eigenen Kalender sehen |
 | 🌴 Abwesenheiten | Urlaub beantragen und freigeben, Krankheit, Überstunden- und Urlaubskonto |
+| 🔔 Erinnerungen | Ausstempeln vergessen, Pause fällig, Monat bestätigen; per Web Push aufs Handy oder per Mail, je Art abschaltbar; Soll stempelt nie selbst aus |
 | 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung |
 | 🧾 Lohn und Prüfung | Export für DATEV mit Zuschlägen, Export für Zoll und Arbeitsschutz |
 | 🛠️ Projekte | Aufträge, Stoppuhr, Auslastung, Stundennachweis, Übergabe an [Haben](https://haben.app/) |

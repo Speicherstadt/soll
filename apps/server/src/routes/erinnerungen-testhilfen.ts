@@ -1,5 +1,5 @@
 /** Café Elbblick with a push service and an SMTP server stood in, for the tests of S-307 */
-import { erinnerungsLauf } from "../modules/erinnerungen/index.ts";
+import { erinnerungsLauf, type LaufDeps } from "../modules/erinnerungen/index.ts";
 import { pushDienstErsatz, testAbo } from "../modules/erinnerungen/push-test.ts";
 import { smtpMailer } from "../modules/mail/index.ts";
 import { smtpTestServer } from "../modules/mail/smtp-test.ts";
@@ -36,20 +36,18 @@ export const cafe = async () => {
     const antwort = await wer.anfrage("/api/v1/arbeitszeit/stempelungen", { body: { art } });
     if (antwort.status !== 201) throw new Error(`stempeln ${antwort.status}`);
   };
+  const deps: LaufDeps = {
+    db: server.db,
+    schreibDb: server.schreibDb,
+    geheimerSchluessel: server.geheimerSchluessel,
+    vapid: server.vapid,
+    url: TEST_URL,
+    push: dienst.senden,
+    mail: smtpMailer(smtp.url, "Soll <soll@elbblick.test>"),
+  };
   const lauf = (jetzt: number) => {
     server.stelleUhr(jetzt);
-    return erinnerungsLauf(
-      {
-        db: server.db,
-        schreibDb: server.schreibDb,
-        geheimerSchluessel: server.geheimerSchluessel,
-        vapid: server.vapid,
-        url: TEST_URL,
-        push: dienst.senden,
-        mail: smtpMailer(smtp.url, "Soll <soll@elbblick.test>"),
-      },
-      jetzt,
-    );
+    return erinnerungsLauf(deps, jetzt);
   };
-  return { server, smtp, mia, tom, dienst, antworten, abonnieren, stempeln, lauf };
+  return { server, smtp, mia, tom, dienst, antworten, abonnieren, stempeln, lauf, deps };
 };

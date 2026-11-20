@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { erinnerungsSchleife } from "../modules/erinnerungen/index.ts";
 import { TEST_URL } from "../test-server.ts";
 import { cafe, PFAD, TAG, um } from "./erinnerungen-testhilfen.ts";
 
@@ -188,5 +189,26 @@ describe("delivery", () => {
     await c.stempeln(c.mia, "kommen", um(TAG, "07:00"));
     c.server.sqlite.run("UPDATE betriebe SET modul_arbeitszeit = 0");
     expect(await c.lauf(um(TAG, "17:00"))).toEqual([]);
+  });
+});
+
+describe("the loop in the server", () => {
+  it("runs every interval, sends each reminder once and logs only how many went which way", async () => {
+    const c = await cafe();
+    await c.abonnieren(c.tom, "tom");
+    await c.stempeln(c.tom, "kommen", um(TAG, "07:00"));
+    const zeilen: string[] = [];
+    const stoppen = erinnerungsSchleife(
+      c.deps,
+      () => um(TAG, "17:30"),
+      (z) => zeilen.push(z),
+      5,
+    );
+    await expect.poll(() => c.dienst.zugestellt.length).toBe(1);
+    await new Promise((fertig) => setTimeout(fertig, 50));
+    stoppen();
+    expect(c.dienst.zugestellt).toHaveLength(1);
+    expect(zeilen).toEqual([JSON.stringify({ msg: "erinnerungen", kanal: "push", anzahl: 1 })]);
+    expect(zeilen.join()).not.toContain(c.tom.nutzerId);
   });
 });

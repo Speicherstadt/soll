@@ -482,6 +482,38 @@ describe("shifts and working days", () => {
     expect([mo?.arbeitsMinuten, di?.arbeitsMinuten]).toEqual([1440, 240]);
   });
 
+  /*
+   * Fourth review of PR #11: a break shorter than a minute merged the stretch before it into the
+   * open stretch after it, so the work up to the break, stamped at both ends, was no longer
+   * counted: 0 minutes where a break of 30 min keeps 4 h (CLAUDE.md: never to the employee's
+   * disadvantage; docs/arbeitstag.md: "die Arbeit bis zur Pause zählt").
+   */
+  it("keeps the work before a break under a minute when the stretch after it is open", () => {
+    const laeuft = einTag(
+      [
+        kommen("2026-11-16T08:00+01:00"),
+        pause("2026-11-16T12:00:10+01:00"),
+        weiter("2026-11-16T12:00:40+01:00"),
+      ],
+      um("2026-11-16T13:00+01:00"),
+    );
+    expect([laeuft.arbeitsMinuten, laeuft.pausenMinuten]).toEqual([241, 0]);
+    expect(laeuft.schichten[0]?.pausen).toEqual([]);
+    expect(laeuft.schichten[0]?.offen?.art).toBe("gehen");
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00:30+01:00"),
+      pause("2026-11-17T08:00:10+01:00"),
+      weiter("2026-11-17T08:00:20+01:00"),
+      kommen("2026-11-17T08:00:40+01:00"),
+      gehen("2026-11-17T12:00+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, mo && arten(mo), di?.arbeitsMinuten]).toEqual([
+      1440,
+      ["gehen_fehlt"],
+      240,
+    ]);
+  });
+
   it("lists the days in order, each with its shifts", () => {
     const alle = tage([
       kommen("2026-11-17T08:00+01:00"),

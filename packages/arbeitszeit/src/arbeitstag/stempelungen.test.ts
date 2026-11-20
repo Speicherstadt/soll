@@ -76,6 +76,31 @@ describe("unordered, repeated and unpaired stamps", () => {
     expect(tag.vollstaendig).toBe(false);
   });
 
+  /*
+   * Fourth review of PR #11: a Kommen ends a break as a Pause-Ende does, so a Pause-Ende after it
+   * repeats the end of the break. In the other order (Pause-Ende, then Kommen) it was "doppelt";
+   * here it was "Pause-Beginn fehlt" next to the Pause stamped, and the complete day blocked the
+   * month.
+   */
+  it("reads a Pause-Ende after the Kommen that ended the break as doppelt, as in the other order", () => {
+    const tag = (zweites: Stempelung, drittes: Stempelung) =>
+      einTag([
+        kommen("2026-11-16T08:00+01:00"),
+        pause("2026-11-16T12:00+01:00"),
+        zweites,
+        drittes,
+        gehen("2026-11-16T16:30+01:00"),
+      ]);
+    const erst = tag(kommen("2026-11-16T12:30+01:00"), weiter("2026-11-16T12:31+01:00"));
+    const umgekehrt = tag(weiter("2026-11-16T12:30+01:00"), kommen("2026-11-16T12:31+01:00"));
+    expect([arten(umgekehrt), umgekehrt.vollstaendig, umgekehrt.arbeitsMinuten]).toEqual([
+      ["doppelt"],
+      true,
+      480,
+    ]);
+    expect([arten(erst), erst.vollstaendig, erst.arbeitsMinuten]).toEqual([["doppelt"], true, 480]);
+  });
+
   it("reports a Gehen during a break as a missing end of break and counts up to the break", () => {
     const tag = einTag([
       kommen("2026-11-16T22:00+01:00"),

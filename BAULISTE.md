@@ -331,8 +331,23 @@ Alle Punkte: nach S-306.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-501 Planung** – Schichtvorlagen, Wochenansicht, Ziehen und Ablegen, Bedarf je Rolle und
+- [x] **S-501 Planung** – Schichtvorlagen, Wochenansicht, Ziehen und Ablegen, Bedarf je Rolle und
   Standort.
+  Fertig, wenn: ein Planer eine Woche je Standort aus Vorlagen plant, Schichten per Ziehen und
+  Ablegen und ebenso mit der Tastatur verschiebt und sieht, wo der Bedarf je Rolle nicht gedeckt ist
+  (Playwright). Dazu: Wochenraster (Montag bis Sonntag, Kalenderwoche), Zeiten einer Schicht aus Tag
+  und Uhrzeit und Deckung des Bedarfs als reine Funktionen in `packages/arbeitszeit` mit Vitest,
+  auch für die Wochen der Zeitumstellung (eine Nachtschicht 22:00 bis 6:00 hat dort 7 oder 9
+  Stunden) und für Schichten über Mitternacht, die zum Tag ihres Beginns gehören; eine Uhrzeit, die
+  es wegen der Zeitumstellung nicht gibt, lehnt der Server ab. Neue Tabellen für Vorlagen, Schichten
+  und Bedarf mit `betrieb_id` in der Audit-Kette über eine neue Migration; Vorlagen anlegen, ändern
+  und entfernen; eine Schicht nennt Standort, Rolle, Person oder „offen“ und Pause in ganzen Minuten
+  und ist bis zur Veröffentlichung (S-503) ein Entwurf, den nur Inhaber und Planer sehen und ändern:
+  Mitarbeiter sehen nichts Unveröffentlichtes (Test); keine Auswertung je Person (BetrVG § 87). Eine
+  Person, ein Standort oder eine Vorlage eines anderen Betriebs wird abgelehnt; ein Endpunkt des
+  abgeschalteten Moduls Dienstplan wird abgelehnt; ein Test je Endpunkt, dass kein Betrieb Daten
+  eines anderen sieht oder ändert. Playwright in `desktop` und `phone` (am Handy ein Tag zur Zeit),
+  axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku `docs/dienstplan.md`.
 - [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
   TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
   Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.

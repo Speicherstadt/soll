@@ -29,6 +29,8 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "plan:lesen",
+  "plan:planen",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -49,6 +51,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    "plan:lesen",
+    "plan:planen",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
@@ -60,12 +64,23 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "zeiten:korrigieren",
+    // the draft of the plan is for owner and planner until it is published (S-501, S-503)
+    "plan:lesen",
+    "plan:planen",
   ],
-  // everyone who works for the business stamps, and sees and corrects their own times (S-304)
-  mitarbeiter: ["betrieb:lesen", "stempeln"],
+  // everyone who works for the business stamps, and sees and corrects their own times (S-304);
+  // the plan they read once it is published (S-503)
+  mitarbeiter: ["betrieb:lesen", "stempeln", "plan:lesen"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
-  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen", "stempeln", "zeiten:alle"],
-  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln"],
+  lohnbuero: [
+    "betrieb:lesen",
+    "mitglieder:lesen",
+    "modelle:lesen",
+    "stempeln",
+    "zeiten:alle",
+    "plan:lesen",
+  ],
+  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "plan:lesen"],
   extern: ["betrieb:lesen"],
   // the terminal checks PINs and nothing else (S-801)
   geraet: ["pin:pruefen"],

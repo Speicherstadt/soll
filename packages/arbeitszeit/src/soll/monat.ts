@@ -47,6 +47,10 @@ const eingabenGueltig = (monat: Monat, eingaben: MonatsEingaben): boolean =>
   istMonat(monat) &&
   modelleGueltig(eingaben.modelle) &&
   istTag(eingaben.beschaeftigung.eintritt) &&
+  (eingaben.beschaeftigung.austritt == null || istTag(eingaben.beschaeftigung.austritt)) &&
+  (eingaben.beschaeftigung.ruhend ?? []).every(
+    (spanne) => istTag(spanne.von) && (spanne.bis === null || istTag(spanne.bis)),
+  ) &&
   (eingaben.abwesenheiten ?? []).every((a) => istTag(a.tag) && ARTEN.has(a.art));
 
 const summe = (tage: readonly TagesSoll[], wert: (tag: TagesSoll) => number): number =>

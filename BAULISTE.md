@@ -31,20 +31,20 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 
 ## Phase 1 – Fundament
 
-- [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`, `packages/export`,
-  `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
-  `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri; Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright
-  mit Projekten `desktop`, `phone` und `terminal`;
-  `checks.json` um `i18n` und `pages` erweitern; `@firsttris/checks` in `package.json`, wo es sich
-  installieren lässt (bis dahin installiert die CI es selbst).
+- [ ] **S-101 Repo-Gerüst** – Workspaces `packages/arbeitszeit`, `packages/import`,
+  `packages/export`, `packages/ui`, `apps/server` (Bun, Hono, Zod, `/health`, Logs ohne Geheimnisse,
+  `bun build --compile`), `apps/web` (Solid 2, Vite, statische SPA/PWA); wie Kennwort ohne Tauri;
+  Paraglide mit `de`, `en`, `tr`, `pl`, `uk`, `ar`; Playwright mit Projekten `desktop`, `phone` und
+  `terminal`; `checks.json` um `i18n` und `pages` erweitern; `@firsttris/checks` in `package.json`,
+  wo es sich installieren lässt (bis dahin installiert die CI es selbst).
   Fertig, wenn: `bun run check` auf einem frischen Klon grün ist, CI alle Workspaces prüft und eine
   Startseite in jeder Sprache rendert, Arabisch mit `dir="rtl"` (Playwright).
 - [ ] **S-102 Datenbank und Audit-Kette** – Drizzle mit SQLite (WAL), Migrationen eingecheckt und im
   Binary eingebettet. Jede Schreiboperation hängt in derselben Transaktion ein Kettenglied an
   (Akteur, Zeitpunkt, Tabelle, Zeile, Hash des Inhalts, Hash des Vorgängers); der Inhalt liegt
   getrennt vom Kettenglied, damit er nach der Frist ausgesondert werden kann. Prüfung der Kette und
-  Prüfwert „Nr. 1234 · <SHA-256>“ nach `pruefwert.ts` aus gobd-kern in `firsttris/haben`
-  (kopiert, Quelle im Kommentar).
+  Prüfwert „Nr. 1234 · <SHA-256>“ nach `pruefwert.ts` aus gobd-kern in `firsttris/haben` (kopiert,
+  Quelle im Kommentar).
   Fertig, wenn: eine geänderte Zeile und ein geändertes Kettenglied bei der Prüfung auffallen, ein
   entfernter Inhalt die Prüfung nicht bricht und ein Test über alle Schreibfunktionen zeigt, dass
   keine an der Kette vorbei schreibt.
@@ -61,12 +61,12 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
   Feiertage nach Landesrecht, Feiertag je Standort.
   nach: S-101. Fertig, wenn: 2026 bis 2035 gegen amtliche Listen besteht (Fixtures mit Quelle).
 - [ ] **S-106 Betriebe, Anmeldung, Rollen** – Better Auth mit Organization-Plugin (ein Betrieb je
-  Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail,
-  PIN mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
+  Organisation, mehrere je Instanz), Passkeys, Einladung per Link oder QR-Code auch ohne E-Mail, PIN
+  mit Sperre nach fünf Fehlversuchen; Rollen Inhaber, Planer, Mitarbeiter, Lohnbüro, Betriebsrat,
   Extern, Gerät. Module je Betrieb: Arbeitszeit (mit Abwesenheiten), Dienstplan, Projektzeit,
   Terminal; der Server lehnt jeden Aufruf eines abgeschalteten Moduls ab; Arbeitszeit lässt sich
-  nicht abschalten, solange der Betrieb Beschäftigte hat; Abschalten löscht keine Daten.
-  Die Tabellen von Better Auth bleiben außerhalb der Audit-Kette; Mitgliedschaft und Rolle schreiben
+  nicht abschalten, solange der Betrieb Beschäftigte hat; Abschalten löscht keine Daten. Die
+  Tabellen von Better Auth bleiben außerhalb der Audit-Kette; Mitgliedschaft und Rolle schreiben
   Hooks von Better Auth in die Kette. `SOLL_SECRET_KEY` wird beim Start geprüft.
   nach: S-102. Fertig, wenn: ein Test je Endpunkt zeigt, dass kein Betrieb Daten eines anderen sieht,
   die PIN-Sperre greift, eine Einladung ohne E-Mail-Adresse zum Konto führt, ein Rollenwechsel in der
@@ -78,7 +78,8 @@ Session hakt nur in ihrer Phase ab und rebased vor jedem Merge auf `origin/main`
 Reine Funktionen in `packages/arbeitszeit`, jede mit den Fällen aus `docs/regeln.md`; jeder Befund
 nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
-- [ ] **S-201 Arbeitstag aus Stempelungen** – Paare, Pausen, Schicht über Mitternacht, Zeitumstellung.
+- [ ] **S-201 Arbeitstag aus Stempelungen** – Paare, Pausen, Schicht über Mitternacht,
+  Zeitumstellung.
   Fertig, wenn: 22:00 bis 6:00 über den 25.10.2026 9 h und über den 28.03.2027 7 h ergibt und der
   Arbeitstag der Starttag ist.
 - [ ] **S-202 Höchstarbeitszeit, Pausen, Ruhezeit** – §§ 3, 4, 5 ArbZG, Ausgleichszeitraum 6 Monate
@@ -154,8 +155,7 @@ Alle Punkte: nach S-306.
     „Bescheinigung liegt vor“ mit „als eAU“ oder „auf Papier im Büro“ und Erinnerung an den
     Betrieb, die eAU über sein Lohnprogramm abzurufen, sobald sie fällig ist; kein Hochladen von
     Bescheinigungen (Datensparsamkeit, siehe Projektplan); Zähler der Kinderkrankentage
-    (§ 45 SGB V); eine eingeplante Schicht wird als offen
-    gemeldet.
+    (§ 45 SGB V); eine eingeplante Schicht wird als offen gemeldet.
   - **Datenschutz**: „krank“ ist ein Gesundheitsdatum (Art. 9 DSGVO); im Teamkalender und im
     Dienstplan steht nur „abwesend“.
   Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung und Krankmeldung zeigt und Tests „krank im
@@ -173,8 +173,8 @@ Alle Punkte: nach S-306.
 - [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
   TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
   Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.
-- [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token
-  (RFC 5545).
+- [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
+  5545).
 - [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
@@ -188,8 +188,8 @@ Alle Punkte: nach S-306.
 - [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
 - [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
-  Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte Person ein, schaltet
-  Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).
+  Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte
+  Person ein, schaltet Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).
   Fertig, wenn: ein Test diesen Wechsel zeigt und ein abgeschaltetes Modul in Navigation, Routen und
   API fehlt.
 - [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
@@ -199,8 +199,8 @@ Alle Punkte: nach S-306.
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
-- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle, OpenAPI-Beschreibung,
-  MCP-Server.
+- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
+  OpenAPI-Beschreibung, MCP-Server.
 
 ## Phase 7 – Umzug aus anderen Tools
 
@@ -209,11 +209,11 @@ eine reine Funktion in `packages/import`; Datei oder API, Vorschau, Übernahme. 
 S-701 und unabhängig voneinander.
 
 - [ ] **S-701 Import-Grundlage** – Ablauf: Tool wählen, Anleitung zum Export, Datei hochladen oder
-  API-Zugang eingeben, Zuordnung von Personen, Spalten, Projekten und Abwesenheitsarten, Vorschau mit
-  Befunden der Prüfregeln, Probelauf, Übernahme. Die Originaldatei wird unter ihrem SHA-256
+  API-Zugang eingeben, Zuordnung von Personen, Spalten, Projekten und Abwesenheitsarten, Vorschau
+  mit Befunden der Prüfregeln, Probelauf, Übernahme. Die Originaldatei wird unter ihrem SHA-256
   aufbewahrt; jeder Eintrag trägt „übernommen aus …“ und die Kennung im alten Tool (`externalId`),
-  ein zweiter Import legt nichts doppelt an. Übernommene, abgeschlossene Monate werden als übernommen
-  gesperrt.
+  ein zweiter Import legt nichts doppelt an. Übernommene, abgeschlossene Monate werden als
+  übernommen gesperrt.
   nach: S-306, S-401, S-501, S-601. Fertig, wenn: Fuzzing mit fast-check keine Datei findet, die den
   Parser abstürzen oder hängen lässt, ein Fehler die Zeile nennt und ein wiederholter Import nichts
   verdoppelt.
@@ -252,7 +252,8 @@ Alle Punkte: nach S-305.
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
 - [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
-  `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle nennen).
+  `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle
+  nennen).
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
 - [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
@@ -264,7 +265,8 @@ Alle Punkte: nach S-305.
   wenn sich etwas ändert.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
   README aktuell.
-- [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy, Terminal.
+- [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
+  Terminal.
 - [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
 

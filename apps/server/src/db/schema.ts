@@ -30,6 +30,9 @@ export const betriebe = sqliteTable("betriebe", {
   land: text("land"),
   // When the owner finished the setup; until then the app leads the owner there (S-303)
   eingerichtetAm: integer("eingerichtet_am"),
+  // When Soll switched working time on because the first employed person joined; the owner sees the
+  // reason until confirming it, then it is empty again (S-603)
+  pflichtHinweisAm: integer("pflicht_hinweis_am"),
 });
 
 /**

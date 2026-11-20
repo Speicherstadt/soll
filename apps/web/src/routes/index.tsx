@@ -5,10 +5,13 @@ import { Leer, Seite } from "../rahmen/seite.tsx";
 import { aktuelleModule } from "../sitzung/sitzung.ts";
 import { Stempeln } from "../zeiten/stempeln.tsx";
 
-/** Heute: the stamp button and the running day; without working time there is nothing to stamp */
+/**
+ * Heute: the stamp button and the running day; without working time (a business without employees,
+ * S-603) there is nothing to stamp, and the page says where the hours go instead
+ */
 const Heute = () => (
   <Seite titel={m.nav_heute()}>
-    <Show when={aktuelleModule().arbeitszeit} fallback={<Leer text={m.seite_leer()} />}>
+    <Show when={aktuelleModule().arbeitszeit} fallback={<Leer text={m.heute_ohne_arbeitszeit()} />}>
       <Stempeln />
     </Show>
   </Seite>

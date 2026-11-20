@@ -39,5 +39,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0009_datev",
     "sql": "CREATE TABLE `datev_einstellungen` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`berater_nr` text,\n\t`mandanten_nr` text,\n\t`lohnarten` text DEFAULT '{}' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n--> statement-breakpoint\nCREATE TABLE `datev_personalnummern` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`personalnummer` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `datev_personalnummern_einmal` ON `datev_personalnummern` (`betrieb_id`,`personalnummer`);--> statement-breakpoint\nALTER TABLE `arbeitszeitmodelle` ADD `zuschlagssaetze` text DEFAULT '{}' NOT NULL;"
+  },
+  {
+    "tag": "0010_solo",
+    "sql": "ALTER TABLE `betriebe` ADD `pflicht_hinweis_am` integer;"
   }
 ];

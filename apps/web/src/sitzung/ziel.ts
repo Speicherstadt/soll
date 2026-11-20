@@ -11,6 +11,11 @@ export type Betrieb = {
   eingerichtet: boolean;
   rolle: string;
   module: Module;
+  /**
+   * For the owner: Soll switched working time on because the first employed person joined (S-603);
+   * missing in a business stored on the device by an older version
+   */
+  hinweis?: { art: "arbeitszeit_eingeschaltet"; am: number } | null;
 };
 
 /** What the app knows of the person in front of it */

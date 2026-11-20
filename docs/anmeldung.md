@@ -51,6 +51,8 @@ Für das Terminal setzt der Inhaber jeder Person eine PIN aus 4 bis 8 Ziffern; g
 als Hash (Argon2id). Nach **fünf falschen Versuchen in Folge** ist sie gesperrt, bis der Inhaber eine
 neue setzt; eine richtige PIN dazwischen setzt den Zähler zurück. Jeder Fehlversuch steht in der
 Audit-Kette. Wer den Betrieb verlassen hat, wird am Terminal mit seiner PIN nicht mehr erkannt.
+PINs gehören zum Modul Terminal: Ist es aus, lehnt der Server Setzen und Prüfen ab; gesetzte PINs
+bleiben und gelten wieder, sobald es an ist.
 
 ## Module
 
@@ -66,7 +68,14 @@ später unter Einstellungen. Die Navigation zeigt nur die Bereiche der eingescha
 Oberfläche; seine Daten bleiben erhalten und sind beim Einschalten wieder da. Arbeitszeit lässt sich
 nicht abschalten, solange der Betrieb Beschäftigte hat, denn dann gilt die Pflicht zur Erfassung
 (BAG, 13.09.2022, 1 ABR 22/21). Kommt eine beschäftigte Person hinzu, durch Einladung oder
-Rollenwechsel, schaltet Soll die Arbeitszeit wieder ein.
+Rollenwechsel, schaltet Soll die Arbeitszeit wieder ein und sagt dem Inhaber warum; mehr dazu unter
+[Betrieb ohne Beschäftigte](einrichtung.md#betrieb-ohne-beschaftigte).
+
+Abgelehnt wird jede Adresse unter `/api/v1/<modul>/` (`arbeitszeit`, `dienstplan`, `projektzeit`,
+`terminal`) mit `403` und `{"fehler": "modul_aus", "modul": "…"}`. Ein Test liest alle Routen aus
+dem Server selbst und prüft jede, auch eine später hinzugekommene. Für jeden Betrieb offen bleiben
+nur der Betrieb mit seinen Modulen, die Einrichtung, Standorte, Einladungen, die Auskunft nach
+Art. 15 DSGVO und die [Prüfseite](monatsabschluss.md).
 
 ## Start des Servers
 

@@ -37,6 +37,10 @@ const schicht = async (jonas: Page, nutzerId?: string) => {
 const axe = async (page: Page) => {
   for (const theme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: theme });
+    // colors fade on buttons (transition-colors): axe reads them once the fade has ended
+    await page.evaluate(() =>
+      Promise.all(document.getAnimations().map((animation) => animation.finished)),
+    );
     expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
   }
 };

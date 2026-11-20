@@ -1,4 +1,4 @@
-import { plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
+import { istTag, plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
 import { FEIERTAGSGESETZ, REGIONEN, type Standort } from "./laender.ts";
 import { ostersonntag } from "./ostern.ts";
 import { FEIERTAGE, type FeiertagsRegel, FRUEHESTES_JAHR, type Termin } from "./regeln.ts";
@@ -55,6 +55,7 @@ export type FeiertagErgebnis =
 
 /** The holiday on a day at a place, null on a working day, or "nicht hinterlegt" before the data */
 export const feiertagAm = (tag: Tag, standort: Standort): FeiertagErgebnis => {
+  if (!istTag(tag)) return { ok: false, grund: "kein_tag" };
   const ergebnis = feiertage(Number(tag.slice(0, 4)), standort);
   if (!ergebnis.ok) return ergebnis;
   return {

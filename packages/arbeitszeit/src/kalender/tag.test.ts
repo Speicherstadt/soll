@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { plusTage, tagAus, wochentag } from "./tag.ts";
+import { istTag, plusTage, tagAus, wochentag } from "./tag.ts";
 
 describe("Tag", () => {
   it("writes a day with leading zeros", () => {
@@ -20,5 +20,15 @@ describe("Tag", () => {
   it("knows the weekday", () => {
     expect(wochentag("2026-11-20")).toBe(5);
     expect(wochentag("2026-04-05")).toBe(0);
+  });
+});
+
+describe("istTag", () => {
+  it("takes real days only", () => {
+    expect(istTag("2028-02-29")).toBe(true);
+    expect(istTag("2026-02-29")).toBe(false);
+    expect(istTag("2026-13-40")).toBe(false);
+    expect(istTag("2026-1-5")).toBe(false);
+    expect(istTag("heute")).toBe(false);
   });
 });

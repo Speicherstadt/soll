@@ -27,4 +27,11 @@ export const plusTage = (tag: Tag, tage: number): Tag => {
 /** 0 Sunday to 6 Saturday */
 export const wochentag = (tag: Tag): number => new Date(alsMs(tag)).getUTCDay();
 
+/** True for a real calendar day written as `YYYY-MM-DD` (not 2026-02-30, not 2026-13-01) */
+export const istTag = (text: string): boolean => {
+  const teile = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+  if (!teile) return false;
+  return tagAus(Number(teile[1]), Number(teile[2]), Number(teile[3])) === text;
+};
+
 export const jahrVon = (tag: Tag): number => Number(tag.slice(0, 4));

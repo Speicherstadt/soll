@@ -97,6 +97,13 @@ describe("feiertage", () => {
     });
   });
 
+  it("refuses a day that does not exist", () => {
+    expect(feiertagAmErgebnis("2026-13-40", { land: "HH" })).toEqual({
+      ok: false,
+      grund: "kein_tag",
+    });
+  });
+
   it("knows a day without holiday", () => {
     expect(feiertagAm("2026-11-20", { land: "HH" })).toBeNull();
   });

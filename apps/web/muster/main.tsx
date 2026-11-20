@@ -145,7 +145,7 @@ const Muster = () => {
           <Table beschriftung="Zeiten">
             <Thead>
               <Tr>
-                <Th>Tag</Th>
+                <Th aria-sort="ascending">Tag</Th>
                 <Th>Dauer</Th>
               </Tr>
             </Thead>

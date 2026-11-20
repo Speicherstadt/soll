@@ -423,7 +423,7 @@ JArbSchG); in den Testdaten Leon, Azubi bei Weber Haustechnik, 17.
 ### R-17 Schichtzeit
 
 - **Norm**: § 12 JArbSchG: Schichtzeit (Arbeitszeit mit Pausen, § 4 Abs. 2) höchstens 10 h; im
-  Gaststättengewerbe, in Landwirtschaft und Tierhaltung, auf Bau- und Montagestellen 11 h.
+  Bergbau unter Tage 8 h; im Gaststättengewerbe, in Landwirtschaft und Tierhaltung, auf Bau- und Montagestellen 11 h.
 - **Schwere**: Verstoß.
 
 | Fall | Lage | Erwartet | Quelle |
@@ -522,7 +522,8 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 - **Norm**: § 12 Abs. 3 Satz 2 TzBfG: Pflicht zur Arbeit nur, wenn die Lage „jeweils mindestens vier
   Tage im Voraus“ mitgeteilt wird; § 12 Abs. 1 Satz 4: ohne vereinbarte tägliche Dauer mindestens
   drei aufeinanderfolgende Stunden; § 12 Abs. 1 Satz 3: ohne vereinbarte Wochenarbeitszeit gelten
-  20 Stunden.
+  20 Stunden; § 12 Abs. 3 Satz 1: der Betrieb legt den Zeitrahmen (Referenzstunden und -tage) fest, in dem
+  abgerufen werden kann; Arbeit außerhalb verpflichtet ebenfalls nicht.
 - **Regel**: Für Mitarbeiter mit Arbeit auf Abruf (Merkmal am Arbeitszeitmodell) prüft der
   Dienstplan beim Veröffentlichen den Abstand zwischen Mitteilung und Schichtbeginn. Der Tag der
   Mitteilung zählt nicht mit (§ 187 Abs. 1 BGB): Mitteilung am Mo, frühester Schichttag Sa.
@@ -639,7 +640,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 
 - **Norm**: § 45 Abs. 2 SGB V: je Kind 10 Arbeitstage, alleinerziehend 20, höchstens 25 bzw. 50;
   Abs. 2a für das Jahr 2026: je Kind 15, alleinerziehend 30, höchstens 35 bzw. 70; Kind unter 12
-  Jahren.
+  Jahren oder behindert und auf Hilfe angewiesen, dann ohne Altersgrenze (Abs. 1 Satz 1).
 - **Regel**: Soll zählt die Tage „Kind krank“ je Kind und Jahr; die Höchstwerte sind Jahreswerte
   (S-104). Fehlen sie für ein Jahr, „nicht hinterlegt“.
 - **Schwere**: Hinweis bei Erreichen des Anspruchs (der Betrieb muss nicht ablehnen, das Krankengeld

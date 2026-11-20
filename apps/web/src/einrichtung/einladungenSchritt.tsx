@@ -1,3 +1,4 @@
+import { MAX_PERSONEN } from "@soll/import";
 import { Button, Icon } from "@soll/ui";
 import { Copy } from "lucide";
 import { createSignal, For, Show } from "solid-js";
@@ -70,15 +71,27 @@ export const EinladungenSchritt = (props: {
     // a second click while the first is on its way would invite everyone twice
     if (arbeitet()) return;
     setArbeitet(true);
-    const antwort = await api<{ einladungen: Einladung[] }>("/api/v1/einladungen/liste", {
-      body: { personen: props.personen },
-    });
+    // the server takes MAX_PERSONEN at once (routes/einladungen.ts): a longer list goes in parts, and
+    // whoever a part invited leaves the list with their links, even if a later part fails
+    // local copies: Solid 2 shows a set value only after the next flush, not within this loop
+    let offen = props.personen;
+    let erstellt = props.einladungen;
+    while (offen.length > 0) {
+      const teil = offen.slice(0, MAX_PERSONEN);
+      const antwort = await api<{ einladungen: Einladung[] }>("/api/v1/einladungen/liste", {
+        body: { personen: teil },
+      });
+      if (!antwort.ok) {
+        setArbeitet(false);
+        return setFehler(m.fehler_speichern());
+      }
+      erstellt = [...erstellt, ...antwort.daten.einladungen];
+      offen = offen.slice(teil.length);
+      props.setzeEinladungen(erstellt);
+      props.setzePersonen(offen);
+    }
     setArbeitet(false);
-    if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
-    props.setzeEinladungen([...props.einladungen, ...antwort.daten.einladungen]);
-    // invited now: the list is empty again, so nobody gets two links
-    props.setzePersonen([]);
   };
   return (
     <>

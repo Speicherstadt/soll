@@ -423,6 +423,28 @@ describe("shifts and working days", () => {
     );
   });
 
+  /*
+   * Third review of PR #11: an end 24 h after Kommen still ends the shift, and a Kommen at the same
+   * instant begins the next. With seconds, the end was cut up to the next minute and the start down,
+   * so the minute between counted in both shifts. Two shifts never overlap; the minute stays with
+   * the next shift, which begins as stamped, so no working time is lost.
+   */
+  it("24 h: Gehen and Kommen at 8:00:30, 24 h after Kommen – the minute counts once", () => {
+    const [mo, di] = tage([
+      kommen("2026-11-16T08:00:30+01:00"),
+      gehen("2026-11-17T08:00:30+01:00"),
+      kommen("2026-11-17T08:00:30+01:00"),
+      gehen("2026-11-17T12:00+01:00"),
+    ]);
+    const erste = mo?.schichten[0];
+    const zweite = di?.schichten[0];
+    expect([erste?.ende, zweite?.beginn]).toEqual([
+      um("2026-11-17T08:00+01:00"),
+      um("2026-11-17T08:00+01:00"),
+    ]);
+    expect([mo?.arbeitsMinuten, di?.arbeitsMinuten]).toEqual([1440, 240]);
+  });
+
   it("lists the days in order, each with its shifts", () => {
     const alle = tage([
       kommen("2026-11-17T08:00+01:00"),

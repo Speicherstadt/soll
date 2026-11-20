@@ -15,12 +15,12 @@ export type BuchungZeile = typeof projektzeiten.$inferSelect;
 
 /**
  * A booking as the API shows it (S-602): its whole minutes (a running one up to now) and `kommen`,
- * the Kommen of the shift it falls in as the stamps stand now, or null. The rate it was billed with
+ * the Kommen of the shift it falls in as the stamps stand now (its id and instant), or null. The rate it was billed with
  * is money and stays out (docs/plan.md, "Wer Stundensätze sieht").
  */
 export type Buchung = Omit<BuchungZeile, "betriebId" | "centProStunde" | "angelegtAm"> & {
   minuten: number;
-  kommen: string | null;
+  kommen: { stempelId: string; zeitpunkt: number } | null;
 };
 
 /** The stamps in force around a working day: from two days before to two days after */
@@ -41,11 +41,14 @@ export const alsBuchung = (
   { betriebId: _b, centProStunde: _c, angelegtAm: _a, ...zeile }: BuchungZeile,
   umfeld: readonly Stempel[],
   jetzt: number,
-): Buchung => ({
-  ...zeile,
-  minuten: buchungsMinuten(zeile.beginn, zeile.ende, jetzt),
-  kommen: buchungZuordnen(umfeld, jetzt, zeile.beginn).kommen?.stempelId ?? null,
-});
+): Buchung => {
+  const kommen = buchungZuordnen(umfeld, jetzt, zeile.beginn).kommen;
+  return {
+    ...zeile,
+    minuten: buchungsMinuten(zeile.beginn, zeile.ende, jetzt),
+    kommen: kommen ? { stempelId: kommen.stempelId, zeitpunkt: kommen.zeitpunkt } : null,
+  };
+};
 
 /** One booking with its reference to the stamps, for the answer to a write */
 export const buchungAnsicht = (db: Db, zeile: BuchungZeile, jetzt: number): Buchung =>

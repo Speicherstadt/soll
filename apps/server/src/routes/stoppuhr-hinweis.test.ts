@@ -20,7 +20,10 @@ describe("the stopwatch and the stamps (S-602)", () => {
     expect(nachher.kommen).toBeNull();
     const tag = await stand(sandra, "tag=2026-11-20");
     expect(tag.buchungen).toEqual([
-      expect.objectContaining({ kommen: kommen.stempelId, ende: um("15:00") }),
+      expect.objectContaining({
+        kommen: { stempelId: kommen.stempelId, zeitpunkt: um("07:00") },
+        ende: um("15:00"),
+      }),
       expect.objectContaining({ kommen: null, minuten: 15 }),
     ]);
   });
@@ -31,7 +34,10 @@ describe("the stopwatch and the stamps (S-602)", () => {
     const kommen = await stempeln(sandra, "kommen");
     server.stelleUhr(um("01:30"));
     const start = await json(await starten(sandra, { projektId: null, taetigkeitId: "werkstatt" }));
-    expect(start.laufend).toMatchObject({ tag: "2026-11-19", kommen: kommen.stempelId });
+    expect(start.laufend).toMatchObject({
+      tag: "2026-11-19",
+      kommen: { stempelId: kommen.stempelId, zeitpunkt: um("22:00", "2026-11-19") },
+    });
     server.stelleUhr(um("02:30"));
     const tag = await stand(sandra);
     expect(tag.tag).toBe("2026-11-19");

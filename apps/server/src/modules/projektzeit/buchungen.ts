@@ -86,11 +86,12 @@ const aenderungPruefen = (
         ? null
         : "spanne"
       : spannePruefen(beginn, ende, kontext.jetzt);
-  const bezugNeu = aenderung.projektId !== undefined || aenderung.taetigkeitId !== undefined;
   const bezug = {
     projektId: aenderung.projektId === undefined ? zeile.projektId : aenderung.projektId,
     taetigkeitId: aenderung.taetigkeitId ?? zeile.taetigkeitId,
   };
+  // what a booking already names may be archived since; only a new order or activity is checked
+  const bezugNeu = bezug.projektId !== zeile.projektId || bezug.taetigkeitId !== zeile.taetigkeitId;
   return (
     spanne ??
     (bezugNeu ? bezugPruefen(db, kontext.betriebId, bezug) : null) ??

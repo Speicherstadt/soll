@@ -223,3 +223,18 @@ describe("abgerechnet locks a booking (S-602)", () => {
     ]);
   });
 });
+
+describe("review of what a booking names", () => {
+  it("keeps an archived order a booking names when only the note changes", async () => {
+    const { weber, sandra, buchung, projekt, montage } = await montageVon();
+    await weber.anfrage(`${PZ}/projekte/${projekt.projektId}`, {
+      method: "PATCH",
+      body: { archiviert: true },
+    });
+    const notiz = await sandra.anfrage(`${PZ}/buchungen/${buchung.buchungId}`, {
+      method: "PATCH",
+      body: { projektId: projekt.projektId, taetigkeitId: montage.taetigkeitId, notiz: "Rest" },
+    });
+    expect(notiz.status).toBe(200);
+  });
+});

@@ -20,6 +20,7 @@ wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE
 | `packages/export` | DATEV, CSV, PDF |
 | `packages/ui` | Komponenten und Farben nach DESIGN.md, `cn()` und `variants()`; Musterseite unter `/muster.html` im Entwicklungsserver |
 | `apps/server` | Hono-Server mit `/health`; wird mit `bun build --compile` zu einer Datei |
+| `deploy/` | Docker Compose, Podman Quadlet und die Vorlage der Einstellungen ([Installation](installation.md)) |
 | `apps/web` | Solid-2-App als statische SPA/PWA mit Service Worker, Routen mit TanStack Router |
 | `e2e/` | Playwright mit den Projekten `desktop`, `phone` und `terminal` |
 | `messages/` | Texte der App in `de`, `en`, `tr`, `pl`, `uk` und `ar` (Paraglide) |
@@ -106,10 +107,17 @@ Der Server liest seine Einstellungen aus der Umgebung:
 | `SOLL_HOST` | `0.0.0.0` | Adresse |
 | `SOLL_VERSION` | `0.0.0` | Version, die `/health` meldet |
 | `SOLL_DATA_DIR` | `data` | Datenverzeichnis mit der Datenbank `soll.db` |
+| `SOLL_WEB_DIR` | – | Build der App (`apps/web/dist`); gesetzt liefert der Server die App neben der API aus, sonst nur die API (in der Entwicklung liefert Vite die App) |
 | `SOLL_SECRET_KEY` | – (Pflicht) | 32 Bytes in Base64; ohne startet der Server nicht. Er verschlüsselt den VAPID-Schlüssel für Web Push, den die Instanz beim ersten Start erzeugt, und die Abos der Geräte: Ein anderer Schlüssel für eine bestehende Datenbank verhindert den Start ([Erinnerungen](erinnerungen.md)) |
 | `SOLL_URL` | `http://localhost:8200` | Adresse der Instanz, für Einladungslinks und die Prüfseite auf dem Stundenzettel |
 | `SOLL_SMTP_URL` | – | SMTP für Mail, etwa `smtps://soll:geheim@mail.example.de:465`; nur zusammen mit `SOLL_MAIL_VON` |
 | `SOLL_MAIL_VON` | – | Absender der Mails, etwa `Soll <soll@example.de>`; seine Adresse ist auch der Kontakt für die Push-Dienste ([Erinnerungen](erinnerungen.md)) |
+
+Neben dem Server kennt das Binary drei Befehle für den Betrieb, die ohne `SOLL_SECRET_KEY`
+auskommen: `soll backup [ziel]`, `soll restore <quelle>` und `soll health`
+([Installation](installation.md)). Das Container-Image entsteht aus `Containerfile`;
+`scripts/image-test.sh <image>` prüft es wie die CI (leeres Volume, `/health`, Sicherung und
+Wiederherstellung).
 
 Jede Anfrage schreibt eine Zeile JSON ins Log, mit Methode, Pfad, Status und Dauer. Die Query der
 Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header und Inhalte nie.

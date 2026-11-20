@@ -520,7 +520,7 @@ Alle Punkte: nach S-305.
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
 - [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
-- [ ] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
+- [x] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
   Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und
   `/health` antwortet; veröffentlicht wird es erst mit den Zugangsdaten (Schritte für Menschen).
@@ -566,7 +566,11 @@ Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie 
 Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 
 - [ ] GitHub Pages mit Domain soll.work, DNS
-- [ ] Zugangsdaten für Docker Hub als Secrets im Repo, dann das erste Release
+- [ ] Zugangsdaten für Docker Hub als Secrets im Repo, dann das erste Release: Repository
+  `tristanteu/soll` auf Docker Hub anlegen, ein Access Token als Secret `DOCKER_PAT` (ein anderes
+  Image über die Variablen `DOCKERHUB_IMAGE` und `DOCKERHUB_USER`), dann die Version in
+  `package.json` setzen und Tag `v0.1.0` pushen (`.github/workflows/release.yml`,
+  [Installation](https://soll.work/installation.html))
 - [ ] Marke „Soll“ bei DPMA und EUIPO prüfen (Klassen 9 und 42)
 - [ ] Übersetzungen Türkisch, Polnisch, Ukrainisch und Arabisch von Muttersprachlern prüfen lassen
 - [ ] Regelwerk von einer Fachanwältin oder einem Fachanwalt für Arbeitsrecht gegenlesen lassen

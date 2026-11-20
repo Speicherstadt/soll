@@ -21,13 +21,23 @@ const regionenVon = (land: string) =>
   (Object.keys(REGIONEN) as Region[]).filter((region) => REGIONEN[region] === land);
 
 /** A new site: name, address, Land (the business's by default) and the regions of that Land */
-const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => void }) => {
+const NeuerStandort = (props: {
+  land: string;
+  angelegt: (standort: Standort) => void;
+  arbeitet: boolean;
+  setzeArbeitet: (arbeitet: boolean) => void;
+}) => {
   const landId = createUniqueId();
   const [land, setLand] = createSignal(props.land);
   const [fehler, setFehler] = createSignal("");
   let landFeld: HTMLSelectElement | undefined;
+  // a second click while the first is on its way would add the site twice
+  let laeuft = false;
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
+    if (laeuft) return;
+    laeuft = true;
+    props.setzeArbeitet(true);
     const form = event.currentTarget as HTMLFormElement;
     const daten = new FormData(form);
     const antwort = await api<Standort>("/api/v1/standorte", {
@@ -38,6 +48,8 @@ const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => 
         regionen: daten.getAll("regionen").map(String),
       },
     });
+    laeuft = false;
+    props.setzeArbeitet(false);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
     form.reset();
@@ -90,7 +102,7 @@ const NeuerStandort = (props: { land: string; angelegt: (standort: Standort) => 
         </fieldset>
       </Show>
       <Fehler text={fehler()} />
-      <Button type="submit" variant="outline" class="self-start">
+      <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
         {m.standort_hinzufuegen()}
       </Button>
     </form>
@@ -107,6 +119,7 @@ export const StandorteSchritt = (props: {
 }) => {
   const [standorte, setStandorte] = createSignal<Standort[]>([]);
   const [fehler, setFehler] = createSignal("");
+  const [arbeitet, setArbeitet] = createSignal(false);
   api<{ standorte: Standort[] }>("/api/v1/standorte").then(
     (a) => a.ok && setStandorte(a.daten.standorte),
   );
@@ -147,13 +160,21 @@ export const StandorteSchritt = (props: {
       </Show>
       <NeuerStandort
         land={props.land}
+        arbeitet={arbeitet()}
+        setzeArbeitet={setArbeitet}
         angelegt={(neu) => {
           setFehler("");
           setStandorte((liste) => [...liste, neu]);
         }}
       />
       <Fehler text={fehler()} />
-      <Fuss nummer={props.nummer} anzahl={props.anzahl} zurueck={props.zurueck} weiter={weiter} />
+      <Fuss
+        nummer={props.nummer}
+        anzahl={props.anzahl}
+        zurueck={props.zurueck}
+        weiter={weiter}
+        arbeitet={arbeitet()}
+      />
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { fragenAusModulen, moduleAusFragen } from "@soll/arbeitszeit";
 import { createFileRoute, useNavigate } from "@tanstack/solid-router";
-import { createSignal, Match, Switch, untrack } from "solid-js";
+import { createSignal, Match, onSettled, Switch, untrack } from "solid-js";
 import { api } from "../api.ts";
 import { type Antworten, BetriebSchritt } from "../einrichtung/betriebSchritt.tsx";
 import { type Einladung, EinladungenSchritt } from "../einrichtung/einladungenSchritt.tsx";
@@ -37,6 +37,14 @@ const Einrichtung = () => {
   // the links are shown once only, so they outlive the step: back and on again, they are still there
   const [einladungen, setEinladungen] = createSignal<Einladung[]>([]);
   const [fehler, setFehler] = createSignal("");
+  // the list and the links live only in this page: a reload or a closed tab asks first
+  const warnen = (event: BeforeUnloadEvent) => {
+    if (personen().length > 0 || einladungen().length > 0) event.preventDefault();
+  };
+  onSettled(() => {
+    window.addEventListener("beforeunload", warnen);
+    return () => window.removeEventListener("beforeunload", warnen);
+  });
   const zurueck = () => setIndex((i) => Math.max(0, i - 1));
   const weiter = async () => {
     if (index() < schritte().length - 1) return setIndex((i) => i + 1);

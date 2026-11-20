@@ -38,7 +38,12 @@ const lohnText = (modell: Modell) =>
       });
 
 /** A template: the owner changes only what differs (hours a week, the wage) and takes it */
-const VorlageKarte = (props: { vorlage: Vorlage; angelegt: (modell: Modell) => void }) => {
+const VorlageKarte = (props: {
+  vorlage: Vorlage;
+  angelegt: (modell: Modell) => void;
+  arbeitet: boolean;
+  setzeArbeitet: (arbeitet: boolean) => boolean;
+}) => {
   const [fehler, setFehler] = createSignal("");
   const name = () => VORLAGE_NAMEN[props.vorlage.id]();
   const absenden = async (event: SubmitEvent) => {
@@ -50,6 +55,8 @@ const VorlageKarte = (props: { vorlage: Vorlage; angelegt: (modell: Modell) => v
     const lohnCent = lohnText === "" ? null : centAus(lohnText);
     if (minuten === null) return setFehler(m.fehler_stunden());
     if (lohnCent === null && lohnText !== "") return setFehler(m.fehler_betrag());
+    // a second click while the first is on its way would create the model twice
+    if (!props.setzeArbeitet(true)) return;
     const antwort = await api<Modell>("/api/v1/arbeitszeit/modelle", {
       body: {
         name: name(),
@@ -59,6 +66,7 @@ const VorlageKarte = (props: { vorlage: Vorlage; angelegt: (modell: Modell) => v
         minijob: props.vorlage.minijob,
       },
     });
+    props.setzeArbeitet(false);
     if (!antwort.ok) return setFehler(m.fehler_speichern());
     setFehler("");
     props.angelegt(antwort.daten);
@@ -92,7 +100,7 @@ const VorlageKarte = (props: { vorlage: Vorlage; angelegt: (modell: Modell) => v
         />
       </div>
       <Fehler text={fehler()} />
-      <Button type="submit" variant="outline" class="self-start">
+      <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
         {m.modell_uebernehmen({ name: name() })}
       </Button>
     </form>
@@ -108,6 +116,15 @@ export const ModelleSchritt = (props: {
 }) => {
   const [modelle, setModelle] = createSignal<Modell[]>([]);
   const [fehler, setFehler] = createSignal("");
+  const [arbeitet, setArbeitet] = createSignal(false);
+  // set at once, not after Solid's next flush: the guard of every card reads it
+  let laeuft = false;
+  const setzeArbeitet = (neu: boolean) => {
+    if (neu && laeuft) return false;
+    laeuft = neu;
+    setArbeitet(neu);
+    return true;
+  };
   api<{ modelle: Modell[] }>("/api/v1/arbeitszeit/modelle").then(
     (a) => a.ok && setModelle(a.daten.modelle),
   );
@@ -150,6 +167,8 @@ export const ModelleSchritt = (props: {
           {(vorlage) => (
             <VorlageKarte
               vorlage={vorlage}
+              arbeitet={arbeitet()}
+              setzeArbeitet={setzeArbeitet}
               angelegt={(neu) => {
                 setFehler("");
                 setModelle((liste) => [...liste, neu]);
@@ -159,7 +178,13 @@ export const ModelleSchritt = (props: {
         </For>
       </div>
       <Fehler text={fehler()} />
-      <Fuss nummer={props.nummer} anzahl={props.anzahl} zurueck={props.zurueck} weiter={weiter} />
+      <Fuss
+        nummer={props.nummer}
+        anzahl={props.anzahl}
+        zurueck={props.zurueck}
+        weiter={weiter}
+        arbeitet={arbeitet()}
+      />
     </>
   );
 };

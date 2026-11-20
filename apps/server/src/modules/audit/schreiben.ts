@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { and, desc, eq, type SQL } from "drizzle-orm";
+import { and, eq, type SQL } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import type { Db } from "../../db/oeffnen.ts";
 import { auditGlieder, auditInhalte, auditKoepfe } from "../../db/schema.ts";
@@ -49,12 +49,12 @@ const anhaengen = (
     inhalt: unknown;
   },
 ): void => {
+  // The predecessor is the head, not the last remaining link: a link cut off at the end shows only
+  // against the head, and a write that moved the head on from the links would hide the cut
   const letztes = tx
-    .select({ seq: auditGlieder.seq, hash: auditGlieder.hash })
-    .from(auditGlieder)
-    .where(eq(auditGlieder.betriebId, kontext.betriebId))
-    .orderBy(desc(auditGlieder.seq))
-    .limit(1)
+    .select({ seq: auditKoepfe.seq, hash: auditKoepfe.hash })
+    .from(auditKoepfe)
+    .where(eq(auditKoepfe.betriebId, kontext.betriebId))
     .get();
   const inhalt = kanonisch(glied.inhalt);
   const kern = {

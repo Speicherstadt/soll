@@ -34,7 +34,8 @@ seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.).
 
 - ein geändertes, entferntes oder eingeschobenes Kettenglied,
 - einen geänderten Inhalt (ein entfernter Inhalt ist erlaubt),
-- ein abgeschnittenes Ende der Kette,
+- ein abgeschnittenes Ende der Kette, auch wenn danach weiter geschrieben wurde: das nächste Glied
+  baut auf dem gespeicherten Kopf der Kette auf, nicht auf dem letzten verbliebenen Glied,
 - eine Zeile, die an der Kette vorbei geändert, eingefügt oder gelöscht wurde.
 
 ## Prüfwert

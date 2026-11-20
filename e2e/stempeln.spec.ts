@@ -92,7 +92,9 @@ test("stamps once when the button is pressed again before the day has reloaded",
   await knopf(page, "stempeln_kommen").click();
   await angenommen;
   // pressed again while the old state still shows: no second Kommen
-  await knopf(page, "stempeln_kommen").click({ timeout: 500 }).catch(() => undefined);
+  await knopf(page, "stempeln_kommen")
+    .click({ timeout: 500 })
+    .catch(() => undefined);
   await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
   expect(stempel).toHaveLength(1);
 });

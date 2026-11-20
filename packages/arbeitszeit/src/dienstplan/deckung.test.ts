@@ -61,6 +61,15 @@ describe("bedarfsDeckung", () => {
     expect(deckung[0]).toMatchObject({ geplant: 1, offen: 1, fehlt: 1 });
   });
 
+  it("counts a person planned twice at the same time once", () => {
+    const deckung = bedarfsDeckung(
+      tage,
+      [bedarf(1, "18:00", "22:00", 2)],
+      [schicht("2026-11-23", "14:00", "22:00"), schicht("2026-11-23", "18:00", "22:00")],
+    );
+    expect(deckung[0]).toMatchObject({ geplant: 1, fehlt: 1 });
+  });
+
   it("covers a need over midnight with a night shift of the day before", () => {
     const deckung = bedarfsDeckung(
       tage,

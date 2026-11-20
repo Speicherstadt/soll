@@ -33,8 +33,15 @@ describe("minutenAus", () => {
     expect(minutenAus(" 0:45 ")).toBe(45);
   });
 
-  it("refuses decimals, minutes over 59 and more than a week", () => {
-    for (const text of ["7,5", "7.5", "7:60", "169", "", "x"])
+  it("reads decimal hours as contracts write them (38,5 h in TVöD), when they are whole minutes", () => {
+    expect(minutenAus("38,5")).toBe(2310);
+    expect(minutenAus("38.5")).toBe(2310);
+    expect(minutenAus("7,75")).toBe(465);
+    expect(minutenAus("39,1")).toBe(2346);
+  });
+
+  it("refuses decimals that are no whole minutes, minutes over 59 and more than a week", () => {
+    for (const text of ["7,33", "7,333", "7:60", "169", "168,5", "", "x", ",5"])
       expect(minutenAus(text), text).toBeNull();
   });
 });

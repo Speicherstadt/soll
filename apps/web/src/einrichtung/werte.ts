@@ -17,12 +17,29 @@ export const centAus = (text: string): number | null => {
   return euro * 100 + cent;
 };
 
-/** Minutes of a duration written as hours ("40") or hours and minutes ("19:30"), up to a week */
+const WOCHE = 7 * 24 * 60;
+
+/** Minutes of decimal hours ("38,5"), only when the hundredths are whole minutes (,1 is 6, ,33 none) */
+const dezimalMinuten = (stunden: string, nachkomma: string): number | null => {
+  const hundertstel = Number(nachkomma.padEnd(2, "0"));
+  if ((hundertstel * 60) % 100 !== 0) return null;
+  return Number(stunden) * 60 + (hundertstel * 60) / 100;
+};
+
+/**
+ * Minutes of a duration written as hours ("40"), hours and minutes ("19:30") or decimal hours as
+ * contracts write them ("38,5"), up to a week
+ */
 export const minutenAus = (text: string): number | null => {
-  const teile = /^(\d{1,3})(?::([0-5]\d))?$/.exec(text.trim());
-  if (!teile) return null;
-  const minuten = Number(teile[1]) * 60 + Number(teile[2] ?? "0");
-  return minuten <= 7 * 24 * 60 ? minuten : null;
+  const rein = text.trim();
+  const dezimal = /^(\d{1,3})[,.](\d{1,2})$/.exec(rein);
+  const teile = /^(\d{1,3})(?::([0-5]\d))?$/.exec(rein);
+  const minuten = dezimal
+    ? dezimalMinuten(dezimal[1] ?? "0", dezimal[2] ?? "")
+    : teile
+      ? Number(teile[1]) * 60 + Number(teile[2] ?? "0")
+      : null;
+  return minuten !== null && minuten <= WOCHE ? minuten : null;
 };
 
 /** Weekly minutes spread over the chosen days, Monday to Sunday; the remainder goes to the first days */

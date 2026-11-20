@@ -55,7 +55,7 @@ Drei Vorlagen, aus denen du übernimmst, was passt:
 | Teilzeit | 20 je Woche, Montag bis Freitag gleich verteilt | Stundenlohn |
 | Minijob | nach Plan | Stundenlohn |
 
-Die Wochenstunden gibst du als `40` oder `19:30` ein; Soll verteilt sie in ganzen Minuten auf die
+Die Wochenstunden gibst du als `40`, `38,5` oder `19:30` ein (Dezimalstunden nur, wenn sie ganze Minuten ergeben); Soll verteilt sie in ganzen Minuten auf die
 Tage, ein Rest geht an die ersten Tage. Den Lohn gibst du in Euro an (`3.200,00`, `13,90`); er kann
 leer bleiben und heißt dann „nicht hinterlegt“. Soll braucht ihn später für den Mindestlohn, die
 Minijob-Grenze und den steuerfreien Teil der Zuschläge. Die Minijob-Grenze selbst ist ein Jahreswert

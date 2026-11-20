@@ -351,6 +351,26 @@ Alle Punkte: nach S-306.
 - [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
   TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
   Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.
+  Dazu: eine reine Funktion in `packages/arbeitszeit` baut aus den geplanten Schichten einer Person
+  `PruefTag`s (Tage vor heute aus den Stempelungen, ab heute aus dem Plan; geplante Schichten mit
+  weniger als 9 h Abstand sind eine Schicht wie in S-201; eine Pause ab 15 min liegt in der Mitte der
+  Arbeitszeit, eine kürzere ist Arbeitszeit) und gibt mit den vorhandenen Regelfunktionen, ohne
+  zweite Umsetzung einer Regel, die Befunde je Schicht mit Regel, Norm und Schwere zurück, geprüft,
+  als wäre der Plan gearbeitet (Vitest auch über Mitternacht und beide Zeitumstellungen); § 12 TzBfG
+  (R-22) als reine Funktion mit den Fällen aus `docs/regeln.md`, Mitteilung ist die
+  Veröffentlichung, im Entwurf der heutige Tag; angewendet werden R-02 bis R-09, R-14 bis R-22 und
+  R-32, nicht R-01, R-10 und R-13 (sie betreffen Stempelungen), R-11 und R-12 (Bereitschaft im Plan
+  kommt mit S-505) und die Berechnungen R-29 und R-33; jede angewendete Regel hat einen
+  Playwright-Fall im Plan (desktop, einer auch am Handy); ein Befund warnt am Block (Icon, Text,
+  Norm) und in der Liste „Hinweise zum Plan“ unter dem Plan und verhindert das Speichern nicht;
+  Befunde sieht nur, wer plant; die Angaben, die eine Regel braucht (Geburtsdatum, Wechselschicht,
+  Arbeit auf Abruf, Zeitraum des Mutterschutzes), trägt nur der Inhaber ein, gespeichert wird nur
+  das, in der Audit-Kette; die Einstellungen des Betriebs zur Prüfung (Branche nach § 5 Abs. 2 ArbZG,
+  Ausnahme nach § 10 Abs. 1 ArbZG, Ausgleichszeitraum mit Beginn) haben eine Vorgabe, die nie
+  weniger streng ist als das Gesetz; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines
+  anderen sieht oder ändert, und dass das abgeschaltete Modul abgelehnt wird; axe grün in hell und
+  dunkel; Texte in allen sechs Sprachen, Normen auf Deutsch; Doku in `docs/dienstplan.md` und
+  `docs/regeln.md`.
 - [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
   5545).
 - [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.

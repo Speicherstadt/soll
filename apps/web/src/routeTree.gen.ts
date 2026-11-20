@@ -17,7 +17,9 @@ import { Route as DienstplanRouteImport } from './routes/dienstplan'
 import { Route as EinrichtungRouteImport } from './routes/einrichtung'
 import { Route as EinstellungenRouteImport } from './routes/einstellungen'
 import { Route as MehrRouteImport } from './routes/mehr'
+import { Route as MonatRouteImport } from './routes/monat'
 import { Route as ProjekteRouteImport } from './routes/projekte'
+import { Route as PruefenRouteImport } from './routes/pruefen'
 import { Route as RegistrierenRouteImport } from './routes/registrieren'
 import { Route as ZeitenRouteImport } from './routes/zeiten'
 import { Route as EinladungTokenRouteImport } from './routes/einladung.$token'
@@ -62,9 +64,19 @@ const MehrRoute = MehrRouteImport.update({
   path: '/mehr',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MonatRoute = MonatRouteImport.update({
+  id: '/monat',
+  path: '/monat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjekteRoute = ProjekteRouteImport.update({
   id: '/projekte',
   path: '/projekte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PruefenRoute = PruefenRouteImport.update({
+  id: '/pruefen',
+  path: '/pruefen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistrierenRoute = RegistrierenRouteImport.update({
@@ -92,7 +104,9 @@ export interface FileRoutesByFullPath {
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
+  '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
+  '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
@@ -106,7 +120,9 @@ export interface FileRoutesByTo {
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
+  '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
+  '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
@@ -121,7 +137,9 @@ export interface FileRoutesById {
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
   '/mehr': typeof MehrRoute
+  '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
+  '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
@@ -137,7 +155,9 @@ export interface FileRouteTypes {
     | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
+    | '/monat'
     | '/projekte'
+    | '/pruefen'
     | '/registrieren'
     | '/zeiten'
     | '/einladung/$token'
@@ -151,7 +171,9 @@ export interface FileRouteTypes {
     | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
+    | '/monat'
     | '/projekte'
+    | '/pruefen'
     | '/registrieren'
     | '/zeiten'
     | '/einladung/$token'
@@ -165,7 +187,9 @@ export interface FileRouteTypes {
     | '/einrichtung'
     | '/einstellungen'
     | '/mehr'
+    | '/monat'
     | '/projekte'
+    | '/pruefen'
     | '/registrieren'
     | '/zeiten'
     | '/einladung/$token'
@@ -180,7 +204,9 @@ export interface RootRouteChildren {
   EinrichtungRoute: typeof EinrichtungRoute
   EinstellungenRoute: typeof EinstellungenRoute
   MehrRoute: typeof MehrRoute
+  MonatRoute: typeof MonatRoute
   ProjekteRoute: typeof ProjekteRoute
+  PruefenRoute: typeof PruefenRoute
   RegistrierenRoute: typeof RegistrierenRoute
   ZeitenRoute: typeof ZeitenRoute
   EinladungTokenRoute: typeof EinladungTokenRoute
@@ -244,11 +270,25 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof MehrRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/monat': {
+      id: '/monat'
+      path: '/monat'
+      fullPath: '/monat'
+      preLoaderRoute: typeof MonatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/projekte': {
       id: '/projekte'
       path: '/projekte'
       fullPath: '/projekte'
       preLoaderRoute: typeof ProjekteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pruefen': {
+      id: '/pruefen'
+      path: '/pruefen'
+      fullPath: '/pruefen'
+      preLoaderRoute: typeof PruefenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registrieren': {
@@ -284,7 +324,9 @@ const rootRouteChildren: RootRouteChildren = {
   EinrichtungRoute: EinrichtungRoute,
   EinstellungenRoute: EinstellungenRoute,
   MehrRoute: MehrRoute,
+  MonatRoute: MonatRoute,
   ProjekteRoute: ProjekteRoute,
+  PruefenRoute: PruefenRoute,
   RegistrierenRoute: RegistrierenRoute,
   ZeitenRoute: ZeitenRoute,
   EinladungTokenRoute: EinladungTokenRoute,

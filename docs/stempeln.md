@@ -50,8 +50,8 @@ Gezählt wird, als ginge die Person jetzt: die angefangene Minute zählt mit, ni
 Ist eine Grenze schon überschritten, steht der Befund selbst darunter, etwa „Pause fehlt noch
 30 min · Verstoß · § 4 Satz 1 ArbZG“. Die Prüfung ist dieselbe wie für den ganzen Tag
 ([Prüfung nach §§ 3 bis 5 ArbZG](pruefung.md)): Höchstarbeitszeit, Ruhepausen und Ruhezeit. Den
-Ausgleichszeitraum über sechs Monate prüft Soll mit dem Monatsabschluss, weil er alle Tage des
-Zeitraums und die Feiertage am Standort braucht.
+Ausgleichszeitraum über sechs Monate prüft Soll mit dem [Monatsabschluss](monatsabschluss.md), weil
+er alle Tage des Zeitraums und die Feiertage am Standort braucht.
 
 ## Nachtragen und Ändern
 
@@ -65,7 +65,7 @@ einen **Grund**, ohne Grund speichert Soll nichts.
 - Eine Stempelung kann nicht in der Zukunft liegen. Für die Stunde, die im Oktober zweimal kommt,
   nimmt Soll die erste (Sommerzeit); eine Uhrzeit, die es im März nicht gibt, lehnt es ab.
 - Geändert wird bis zum **Monatsabschluss**. Danach ist der Monat gesperrt, eine Korrektur geht nur
-  noch als Gegeneintrag.
+  noch als Gegeneintrag ([Monatsabschluss und Prüfwert](monatsabschluss.md)).
 
 ### Jede Änderung bleibt sichtbar
 
@@ -103,6 +103,7 @@ aus ist:
 Die Tabelle `stempelungen` hat `betrieb_id`, die Person, Art, Zeitpunkt (Server) und Zeitpunkt des
 Geräts, Quelle, `ersetzt` (die Zeile, die diese ersetzt), `entfernt`, Grund, wer und wann. In Kraft
 ist eine Zeile, die keine andere ersetzt und die nichts entfernt. Vor jeder Änderung fragt der
-Server `monatAbgeschlossen()`, das bis zum Monatsabschluss (S-306) „offen“ sagt. Den laufenden Tag
+Server `aenderungGesperrt()`, ob sie einen abgeschlossenen Monat der Person ändern würde
+([Monatsabschluss](monatsabschluss.md)). Den laufenden Tag
 rechnet `tagesstand()` aus `packages/arbeitszeit`, auf dem Server und in der App mit derselben
 Funktion; die App zählt mit der Uhr des Servers weiter.

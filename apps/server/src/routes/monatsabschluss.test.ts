@@ -58,7 +58,9 @@ describe("confirming and closing a month", () => {
       await jonas.anfrage(`/api/v1/arbeitszeit/monat?monat=2026-10&nutzerId=${sandra.nutzerId}`),
     );
     expect((eigen.abschluss as Json).pruefwert).toBe(pruefwert);
-    expect(inhaber).toEqual(eigen);
+    expect(eigen.eigen).toBe(true);
+    expect(inhaber.eigen).toBe(false);
+    expect({ ...inhaber, eigen: true }).toEqual(eigen);
     expect(eigen.name).toBe("sandra");
   });
 

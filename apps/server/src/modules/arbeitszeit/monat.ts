@@ -1,15 +1,18 @@
 import {
   type Arbeitstag,
   arbeitstage,
+  ausgleichszeitraum,
   type Befund,
   type Beschaeftigung,
   beginnInBerlin,
   ersterTag,
+  feiertage,
   hoechstarbeitszeit,
   letzterTag,
   type Monat,
   monatsstand,
   monatVon,
+  plusMonate,
   plusTage,
   ruhepausen,
   ruhezeit,
@@ -97,14 +100,36 @@ const beschaeftigungVon = (db: Db, betriebId: string, nutzerId: string): Beschae
   return eintritt === undefined ? null : { eintritt };
 };
 
-/** R-01 from the stamps and R-02, R-04, R-05 of the ArbZG, as the day view checks them (S-304) */
-const befundeDesMonats = (tage: readonly Arbeitstag[], monat: Monat, jetzt: number): Befund[] =>
+/** The holidays at the place in the year of the month and the one before, for R-03 */
+const feiertageUm = (standort: Standort | null, monat: Monat): Set<Tag> => {
+  if (standort === null) return new Set();
+  const jahr = Number(monat.slice(0, 4));
+  return new Set(
+    [jahr - 1, jahr].flatMap((j) => {
+      const ergebnis = feiertage(j, standort);
+      return ergebnis.ok ? ergebnis.feiertage.map((feiertag) => feiertag.tag) : [];
+    }),
+  );
+};
+
+/**
+ * R-01 from the stamps, R-02, R-04 and R-05 as the day view checks them (S-304), and R-03 over the
+ * periods that reach into the month (docs/stempeln.md: the Ausgleichszeitraum comes with closing);
+ * absences are no data yet (S-401), so no day is neutral
+ */
+const befundeDesMonats = (
+  tage: readonly Arbeitstag[],
+  monat: Monat,
+  jetzt: number,
+  feiertageAmOrt: ReadonlySet<Tag>,
+): Befund[] =>
   [
     ...tage.flatMap((tag) => tag.befunde),
     ...hoechstarbeitszeit(tage).befunde,
+    ...ausgleichszeitraum(tage, { jetzt, feiertage: feiertageAmOrt, neutral: new Set() }).befunde,
     ...ruhepausen(tage).befunde,
     ...ruhezeit(tage, { jetzt }).befunde,
-  ].filter((befund) => befund.tage.some((tag) => tag !== null && monatVon(tag) === monat));
+  ].filter((befund) => befund.tage.some((tag) => monatVon(tag) === monat));
 
 /** Soll and Ist; null with the days that lack a model or the holidays ("nicht hinterlegt") */
 const summenDesMonats = (
@@ -184,7 +209,14 @@ export const monatJetzt = (
   monat: Monat,
   jetzt: number,
 ): { inhalt: Monatsinhalt; offeneTage: Tag[] } => {
-  const stempel = stempelDesMonats(db, betriebId, nutzerId, monat);
+  // six months back: a period of R-03 that reaches into the month began at most that long before
+  const stempel = stempelungenIn(
+    db,
+    betriebId,
+    nutzerId,
+    beginnInBerlin(plusTage(ersterTag(plusMonate(monat, -6)), -2)),
+    beginnInBerlin(plusTage(letzterTag(monat), 3)),
+  );
   const ergebnis = arbeitstage(stempel, jetzt);
   const alle = ergebnis.ok ? ergebnis.wert : [];
   const tage = aufzeichnungen(monat, stempel, (tag) => sollAm(db, betriebId, nutzerId, tag));
@@ -204,7 +236,7 @@ export const monatJetzt = (
       tage,
       summen,
       nichtHinterlegt,
-      befunde: befundeDesMonats(alle, monat, jetzt),
+      befunde: befundeDesMonats(alle, monat, jetzt, feiertageUm(standortVon(db, betriebId), monat)),
       gegeneintraege: gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat }),
     }),
     offeneTage: imMonat.filter((tag) => tag.ende === null).map((tag) => tag.tag),

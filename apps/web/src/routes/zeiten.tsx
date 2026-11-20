@@ -1,10 +1,10 @@
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
 import { Button, Icon } from "@soll/ui";
-import { createFileRoute } from "@tanstack/solid-router";
+import { createFileRoute, Link } from "@tanstack/solid-router";
 import { ChevronLeft, ChevronRight } from "lucide";
 import { createEffect, createSignal, createUniqueId, For, Show } from "solid-js";
 import { api } from "../api.ts";
-import { feld } from "../einrichtung/stil.ts";
+import { feld, knopfLink } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
@@ -90,6 +90,9 @@ const Zeiten = () => {
             </Button>
           </div>
         </div>
+        <Link to="/monat" class={knopfLink}>
+          {m.monat_titel()}
+        </Link>
         <Show when={hatRolle("inhaber") && quelle.ansicht()}>
           {(ansicht) => (
             <ModellWahl

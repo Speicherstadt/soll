@@ -78,7 +78,8 @@ const geaenderteTage = (db: Db, betriebId: string, nutzerId: string, m: Monat) =
     .sort();
 
 /** A month as the app shows it, with the names of who confirmed, closed and corrected */
-const ansicht = (db: Db, betriebId: string, nutzerId: string, status: MonatStatus) => {
+const ansicht = (db: Db, c: Context<Anfrage>, nutzerId: string, status: MonatStatus) => {
+  const betriebId = c.get("betriebId");
   const ids = [nutzerId, status.bestaetigung?.von, status.abschluss?.von].filter(
     (wert): wert is string => wert !== undefined,
   );
@@ -86,6 +87,8 @@ const ansicht = (db: Db, betriebId: string, nutzerId: string, status: MonatStatu
   return {
     ...status,
     nutzerId,
+    /** whether the month is the caller's own: only they confirm it */
+    eigen: nutzerId === c.get("nutzerId"),
     name: namen.get(nutzerId) ?? "",
     bestaetigung: status.bestaetigung && {
       ...status.bestaetigung,
@@ -131,7 +134,7 @@ const schrittAntwort = (
   ergebnis: SchrittErgebnis,
 ) =>
   ergebnis.ok
-    ? c.json(ansicht(db, c.get("betriebId"), nutzerId, ergebnis.status), 201)
+    ? c.json(ansicht(db, c, nutzerId, ergebnis.status), 201)
     : c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
 
 export type MailStatus = "gesendet" | "fehler" | "keine_adresse" | "nicht_eingerichtet";
@@ -193,7 +196,7 @@ export const monatRouten = (
     .get("/", (c) => {
       const gelesen = lesbar(c);
       if (!gelesen.ok) return c.json({ fehler: gelesen.fehler }, gelesen.status);
-      return c.json(ansicht(db, c.get("betriebId"), gelesen.nutzerId, gelesen.status));
+      return c.json(ansicht(db, c, gelesen.nutzerId, gelesen.status));
     })
     .get("/stundenzettel", async (c) => {
       const gelesen = lesbar(c);
@@ -225,10 +228,7 @@ export const monatRouten = (
       if (!ergebnis.ok) return c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
       const zettel = zettelVon(db, c, wer.nutzerId, ergebnis.status, optionen.url, kontext.jetzt);
       const mail = await zettelSenden(db, optionen.mail, wer.nutzerId, zettel);
-      return c.json(
-        { ...ansicht(db, c.get("betriebId"), wer.nutzerId, ergebnis.status), mail },
-        201,
-      );
+      return c.json({ ...ansicht(db, c, wer.nutzerId, ergebnis.status), mail }, 201);
     })
     .post("/gegeneintrag", recht("zeiten:korrigieren"), async (c) => {
       const eingabe = await koerper(c, gegeneintragSchema);

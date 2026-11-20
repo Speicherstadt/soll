@@ -13,7 +13,7 @@ import { kundenRouten } from "./routes/kunden.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
-import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
+import { pinRouten } from "./routes/pins.ts";
 import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
 import { satzRouten } from "./routes/saetze.ts";
@@ -79,8 +79,6 @@ export const createApp = ({
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
-    .route("/pins", pinRouten(db, schreibDb, now))
-    .route("/terminal/pins", pinPruefRouten(db, schreibDb, now))
     .route(
       "/",
       modulRouten(db, {
@@ -101,6 +99,7 @@ export const createApp = ({
           "/saetze": satzRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
+        terminal: { "/pins": pinRouten(db, schreibDb, now) },
       }),
     );
   app.route("/api/v1", v1);

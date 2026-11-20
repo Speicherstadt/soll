@@ -336,5 +336,16 @@
   "pruefen_abweichung_abschluss": "عُدّل الإقفال نفسه.",
   "pruefen_unlesbar": "هذه ليست قيمة تحقق. شكلها: Nr. 1234 · ثم 64 حرفًا من 0 إلى 9 ومن a إلى f.",
   "pruefen_unbekannt": "المنشأة لا تعرف قيمة التحقق هذه. تحقّق من معرّف المنشأة.",
-  "pruefen_gegeneintraege": "قيود تصحيحية بعد الإقفال (تصحيحات وليست تغييرات):"
+  "pruefen_gegeneintraege": "قيود تصحيحية بعد الإقفال (تصحيحات وليست تغييرات):",
+  "offline_ohne_netz": "لا يوجد اتصال. تبقى تسجيلاتك على هذا الجهاز وتُرسل فور عودة الشبكة.",
+  "offline_wartend": "لم تُرسل بعد: {anzahl}",
+  "offline_wartend_text": "يرسلها Soll تلقائيًا فور عودة الشبكة.",
+  "offline_abgelehnt_titel": "لم تُقبل",
+  "offline_abgelehnt": "{art} الساعة {uhrzeit}، رقم {nummer}: لم يقبل الخادم هذا التسجيل. أضفه مع السبب إذا لزم الأمر.",
+  "stempel_wartet": "قيد الانتظار",
+  "stempel_offline": "دون اتصال",
+  "luecke_titel": "فجوة في تسجيلات أحد الأجهزة",
+  "luecke_eine": "الجهاز {geraet}: الرقم {von} مفقود",
+  "luecke_mehrere": "الجهاز {geraet}: الأرقام من {von} إلى {bis} مفقودة",
+  "luecke_text": "فُقد تسجيل في الطريق أو حُذف على الجهاز. افحصوا اليوم وأضيفوه مع السبب إذا لزم الأمر."
 }

@@ -40,6 +40,13 @@ export {
   type Module,
   moduleAusFragen,
 } from "./module/module.ts";
+export {
+  type Luecke,
+  nummernLuecken,
+  type Offlineeintrag,
+  offlineZeitpunkt,
+  stempelNachricht,
+} from "./offline/offline.ts";
 export * from "./pruefung/index.ts";
 export * from "./pruefung-bereitschaft/index.ts";
 export * from "./pruefung-jugend/index.ts";

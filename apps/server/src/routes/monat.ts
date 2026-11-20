@@ -26,7 +26,8 @@ import { betriebLesen } from "../modules/betrieb/index.ts";
 import { type Mailer, zustellbar } from "../modules/mail/index.ts";
 import { adresseVon, namenVon } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
-import { koerper, kontextVon, liestEigene, person } from "./zeiten.ts";
+import { koerper, kontextVon } from "./stempel-antwort.ts";
+import { liestEigene, person } from "./zeiten.ts";
 
 const monat = z.string().refine(istMonat);
 const id = z.string().min(1).max(100);

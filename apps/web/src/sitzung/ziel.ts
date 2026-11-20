@@ -4,6 +4,8 @@ import { sichtbar } from "../rahmen/module.ts";
 /** The business of the session as GET /api/v1/betrieb returns it */
 export type Betrieb = {
   betriebId: string;
+  /** the person signed in */
+  nutzerId: string;
   name: string;
   land: string | null;
   eingerichtet: boolean;

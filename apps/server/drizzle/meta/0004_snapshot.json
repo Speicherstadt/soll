@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e4481652-aa8b-4f26-90ea-cc87310700d1",
+  "id": "fe55278a-f866-4938-b84e-1dedc1a42359",
   "prevId": "d63e0924-8164-433a-a7a8-eafee2205563",
   "tables": {
     "arbeitszeitmodelle": {
@@ -413,8 +413,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "korrekturen": {
-      "name": "korrekturen",
+    "geraete": {
+      "name": "geraete",
       "columns": {
         "betrieb_id": {
           "name": "betrieb_id",
@@ -423,8 +423,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "korrektur_id": {
-          "name": "korrektur_id",
+        "geraet_id": {
+          "name": "geraet_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -437,68 +437,30 @@
           "notNull": true,
           "autoincrement": false
         },
-        "tag": {
-          "name": "tag",
+        "schluessel": {
+          "name": "schluessel",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "minuten": {
-          "name": "minuten",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "gebucht_in": {
-          "name": "gebucht_in",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_von": {
-          "name": "erstellt_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_am": {
-          "name": "erstellt_am",
+        "angelegt_am": {
+          "name": "angelegt_am",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {
-        "korrekturen_person": {
-          "name": "korrekturen_person",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "tag"
-          ],
-          "isUnique": false
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "korrekturen_betrieb_id_korrektur_id_pk": {
+        "geraete_betrieb_id_geraet_id_pk": {
           "columns": [
             "betrieb_id",
-            "korrektur_id"
+            "geraet_id"
           ],
-          "name": "korrekturen_betrieb_id_korrektur_id_pk"
+          "name": "geraete_betrieb_id_geraet_id_pk"
         }
       },
       "uniqueConstraints": {},
@@ -599,120 +561,6 @@
             "gueltig_ab"
           ],
           "name": "modellzuordnungen_betrieb_id_nutzer_id_gueltig_ab_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "monatsabschluesse": {
-      "name": "monatsabschluesse",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "abschluss_id": {
-          "name": "abschluss_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nutzer_id": {
-          "name": "nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "monat": {
-          "name": "monat",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "schritt": {
-          "name": "schritt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt": {
-          "name": "inhalt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt_hash": {
-          "name": "inhalt_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sperrt": {
-          "name": "sperrt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "erstellt_von": {
-          "name": "erstellt_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_am": {
-          "name": "erstellt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "monatsabschluesse_person": {
-          "name": "monatsabschluesse_person",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "monat"
-          ],
-          "isUnique": false
-        },
-        "monatsabschluesse_einmal": {
-          "name": "monatsabschluesse_einmal",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "sperrt"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "monatsabschluesse_betrieb_id_abschluss_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "abschluss_id"
-          ],
-          "name": "monatsabschluesse_betrieb_id_abschluss_id_pk"
         }
       },
       "uniqueConstraints": {},
@@ -929,6 +777,35 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "geraet_id": {
+          "name": "geraet_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "signatur": {
+          "name": "signatur",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "offline": {
+          "name": "offline",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
         }
       },
       "indexes": {
@@ -946,6 +823,15 @@
           "columns": [
             "betrieb_id",
             "ersetzt"
+          ],
+          "isUnique": true
+        },
+        "stempelungen_geraet_nummer": {
+          "name": "stempelungen_geraet_nummer",
+          "columns": [
+            "betrieb_id",
+            "geraet_id",
+            "nummer"
           ],
           "isUnique": true
         }

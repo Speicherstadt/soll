@@ -336,5 +336,16 @@
   "pruefen_abweichung_abschluss": "Der Abschluss selbst wurde geändert.",
   "pruefen_unlesbar": "Das ist kein Prüfwert. Er sieht so aus: Nr. 1234 · und 64 Zeichen aus 0 bis 9 und a bis f.",
   "pruefen_unbekannt": "Diesen Prüfwert kennt der Betrieb nicht. Prüfe die Kennung des Betriebs.",
-  "pruefen_gegeneintraege": "Gegeneinträge nach dem Abschluss (Korrekturen, keine Änderung):"
+  "pruefen_gegeneintraege": "Gegeneinträge nach dem Abschluss (Korrekturen, keine Änderung):",
+  "offline_ohne_netz": "Keine Verbindung. Deine Stempelungen bleiben auf diesem Gerät und gehen raus, sobald das Netz zurück ist.",
+  "offline_wartend": "Noch nicht übertragen: {anzahl}",
+  "offline_wartend_text": "Soll überträgt sie von selbst, sobald das Netz zurück ist.",
+  "offline_abgelehnt_titel": "Nicht angenommen",
+  "offline_abgelehnt": "{art} um {uhrzeit}, Nr. {nummer}: der Server hat die Stempelung nicht angenommen. Trag sie bei Bedarf mit Grund nach.",
+  "stempel_wartet": "wartet",
+  "stempel_offline": "offline",
+  "luecke_titel": "Lücke in den Stempelungen eines Geräts",
+  "luecke_eine": "Gerät {geraet}: Nr. {von} fehlt",
+  "luecke_mehrere": "Gerät {geraet}: Nr. {von} bis {bis} fehlen",
+  "luecke_text": "Eine Stempelung ist auf dem Weg verloren gegangen oder wurde auf dem Gerät gelöscht. Prüft den Tag und tragt sie bei Bedarf mit Grund nach."
 }

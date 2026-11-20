@@ -2,6 +2,7 @@ import {
   arbeitszeitmodelle,
   betriebe,
   einladungen,
+  geraete,
   korrekturen,
   mitgliedschaften,
   modellzuordnungen,
@@ -24,6 +25,7 @@ export const kettenTabellen = {
   arbeitszeitmodelle: { tabelle: arbeitszeitmodelle, schluessel: ["modellId"] },
   modellzuordnungen: { tabelle: modellzuordnungen, schluessel: ["nutzerId", "gueltigAb"] },
   stempelungen: { tabelle: stempelungen, schluessel: ["stempelId"] },
+  geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
 } as const;

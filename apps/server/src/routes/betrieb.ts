@@ -22,6 +22,8 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
       if (!betrieb) return c.json({ fehler: "kein_betrieb" }, 404);
       return c.json({
         betriebId: betrieb.betriebId,
+        // the person signed in: what the device keeps offline belongs to one person (S-305)
+        nutzerId: c.get("nutzerId"),
         name: betrieb.name,
         land: betrieb.land,
         eingerichtet: betrieb.eingerichtetAm !== null,

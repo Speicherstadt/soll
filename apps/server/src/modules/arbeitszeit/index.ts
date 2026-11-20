@@ -5,6 +5,15 @@
 export { monatAbgeschlossen } from "./abschluss.ts";
 export { type GegeneintragErgebnis, gegeneintragAnlegen } from "./gegeneintraege.ts";
 export {
+  type AnmeldeErgebnis,
+  type GeraeteLuecke,
+  geraetAnmelden,
+  lueckenVon,
+  type OeffentlicherSchluessel,
+  type SignaturErgebnis,
+  signaturPruefen,
+} from "./geraete.ts";
+export {
   type EntfernenErgebnis,
   type Modell,
   modellAnlegen,
@@ -27,7 +36,9 @@ export {
   aenderungenIn,
   hatStempelungen,
   nachtragen,
+  offlineStempeln,
   type Quelle,
+  type Signiert,
   type Stempel,
   type StempelErgebnis,
   stempelAendern,

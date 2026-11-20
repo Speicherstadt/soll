@@ -1,15 +1,14 @@
-import type { Stempelart } from "@soll/arbeitszeit";
 import { Button, Icon } from "@soll/ui";
 import { LogIn, LogOut, Pause, Play, Plus } from "lucide";
-import { createSignal, onSettled, Show } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, Show } from "solid-js";
+import { AbgelehntListe, LueckenKarte, WartendKarte } from "../offline/hinweise.tsx";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { type Aktion, aktionenFuer } from "./aktionen.ts";
 import { AusblickKarte, BefundListe } from "./befunde.tsx";
+import { heuteStempeln } from "./heute.ts";
 import { type Korrektur, KorrekturDialog } from "./korrektur.tsx";
 import { LaufenderTag } from "./laufenderTag.tsx";
-import { tagQuelle } from "./quelle.ts";
 import { AenderungListe, StempelListe } from "./stempelListe.tsx";
 import { tagText } from "./text.ts";
 
@@ -24,32 +23,13 @@ const ICONS = { kommen: LogIn, gehen: LogOut, pause_starten: Pause, pause_beende
 
 /**
  * Heute with working time (design/mockup/Main.dc.html): the running day, the next finding, the big
- * button for the next step and Gehen beside it, the stamps of the day with their corrections
+ * button for the next step and Gehen beside it, the stamps of the day with their corrections; what
+ * waits in the device's offline queue, what the server refused, and gaps in a device's numbers
  */
 export const Stempeln = () => {
-  const quelle = tagQuelle();
-  const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
+  const { quelle, schlange, fehler, arbeitet, stempeln } = heuteStempeln();
   const [korrektur, setKorrektur] = createSignal<Korrektur | null>(null);
-  onSettled(() => {
-    void quelle.laden();
-  });
   const aktionen = () => aktionenFuer(quelle.stand()?.zustand ?? "aus");
-  // the buttons stay disabled until the new state is loaded: the old one would offer the same step
-  const stempeln = async (art: Stempelart) => {
-    if (arbeitet()) return;
-    setArbeitet(true);
-    try {
-      const antwort = await api("/api/v1/arbeitszeit/stempelungen", {
-        body: { art, geraetZeitpunkt: Date.now() },
-      });
-      if (!antwort.ok) return setFehler(m.stempeln_fehler());
-      setFehler("");
-      await quelle.laden();
-    } finally {
-      setArbeitet(false);
-    }
-  };
   return (
     <Show
       when={quelle.ansicht()}
@@ -58,6 +38,11 @@ export const Stempeln = () => {
       {(ansicht) => (
         <div class="flex max-w-md flex-col gap-4">
           <p class="-mt-4 text-[15px] text-muted-foreground">{tagText(ansicht().tag)}</p>
+          <WartendKarte
+            anzahl={schlange.wartende().length}
+            ohneNetz={quelle.ohneNetz() || schlange.ohneNetz()}
+          />
+          <LueckenKarte luecken={ansicht().luecken} />
           <Show when={quelle.stand()}>
             {(stand) => (
               <>
@@ -101,6 +86,7 @@ export const Stempeln = () => {
             )}
           </Show>
           <Fehler text={fehler()} />
+          <AbgelehntListe eintraege={schlange.abgelehnte()} />
           <StempelListe
             stempelungen={ansicht().stempelungen}
             darfKorrigieren

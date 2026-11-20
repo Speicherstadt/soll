@@ -247,10 +247,24 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   (Pause nach § 4, 8 und 10 Stunden nach § 3, Ruhezeit nach § 5, nicht hinterlegt vor der ersten
   Regelversion); Soll stempelt nie selbst aus und rundet nie zulasten der Person; Texte in allen
   sechs Sprachen, Arabisch von rechts nach links; axe grün in hell und dunkel.
-- [ ] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
+- [x] **S-305 Offline-Stempeln** – Warteschlange in IndexedDB mit fortlaufender Nummer, signiert mit
   einem nicht exportierbaren Schlüssel (WebCrypto); Server- und Gerätezeit.
   Fertig, wenn: offline gestempelt, wieder online übertragen und markiert wird und eine Lücke in der
-  Nummer auffällt.
+  Nummer auffällt. Dazu: jede Stempelung der App bekommt auf dem Gerät eine fortlaufende Nummer je
+  Gerät und Person und eine Signatur mit einem ECDSA-P-256-Schlüssel, den WebCrypto nicht exportierbar
+  erzeugt und in IndexedDB ablegt; das Gerät meldet seinen öffentlichen Schlüssel beim Server an
+  (eine neue Tabelle mit `betrieb_id` in der Audit-Kette über eine neue Migration), der Server prüft
+  Signatur, Gerät und Person je Eintrag und lehnt eine falsche Signatur, ein fremdes Gerät und eine
+  schon vergebene Nummer mit anderem Inhalt ab; derselbe Eintrag zweimal übertragen ergibt eine
+  Stempelung (idempotent), ein später nachgereichter Eintrag mit kleinerer Nummer wird angenommen und
+  schließt die Lücke; eine Lücke in den Nummern eines Geräts sieht die Person auf Heute und der
+  Inhaber in den Zeiten der Person; eine offline erfasste Stempelung speichert die Zeit des Geräts und
+  den Empfang beim Server und ist als offline markiert; Heute zeigt, was noch wartet, rechnet den
+  Zustand mit den wartenden Einträgen weiter und öffnet ohne Netz mit dem zuletzt geladenen Tag; Soll
+  stempelt dabei nie selbst aus; die Warteschlange und die Lückenprüfung als reine Funktionen mit
+  Vitest, IndexedDB und WebCrypto in Unit-Tests durch einen Ersatz im Speicher; ein Test je neuem
+  Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert; Playwright in `desktop` und
+  `phone` mit `context.setOffline`; Texte in allen sechs Sprachen.
 - [x] **S-306 Monatsabschluss** – Bestätigung durch Mitarbeiter und Betrieb, danach gesperrt;
   Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF mit dem Prüfwert der Kette, den
   jede Person per Mail und zum Herunterladen bekommt; Prüfseite, auf der eine Person ihren Prüfwert

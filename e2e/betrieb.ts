@@ -113,3 +113,23 @@ export const einladungAnnehmen = async (
   await senden(person, "POST", "/api/auth/organization/set-active", { organizationId: betriebId });
   return nutzerId as string;
 };
+
+/** Weber Haustechnik with Sandra, a fitter, who has a model of 8 hours on every day */
+export const weberMitSandra = async (sandra: Page, browser: Browser, info: TestInfo) => {
+  const jonas = await zweiterBrowser(browser, info);
+  await betriebAnlegen(jonas);
+  const nutzerId = await einladungAnnehmen(jonas, sandra, "Sandra Kühn");
+  const modell = await senden(jonas, "POST", "/api/v1/arbeitszeit/modelle", {
+    name: "Vollzeit",
+    sollMinuten: [480, 480, 480, 480, 480, 480, 480],
+    lohnArt: "monat",
+    lohnCent: null,
+    minijob: false,
+    gueltigAb: "2026-01-01",
+  });
+  await senden(jonas, "PUT", `/api/v1/arbeitszeit/personen/${nutzerId}/modell`, {
+    modellId: modell.modellId,
+    gueltigAb: "2026-01-01",
+  });
+  return { jonas, nutzerId };
+};

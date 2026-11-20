@@ -336,5 +336,16 @@
   "pruefen_abweichung_abschluss": "Zmieniono sam wpis zamknięcia.",
   "pruefen_unlesbar": "To nie jest wartość kontrolna. Wygląda tak: Nr. 1234 · i 64 znaki z 0–9 oraz a–f.",
   "pruefen_unbekannt": "Firma nie zna tej wartości kontrolnej. Sprawdź identyfikator firmy.",
-  "pruefen_gegeneintraege": "Wpisy korygujące po zamknięciu (korekty, nie zmiany):"
+  "pruefen_gegeneintraege": "Wpisy korygujące po zamknięciu (korekty, nie zmiany):",
+  "offline_ohne_netz": "Brak połączenia. Twoje odbicia zostają na tym urządzeniu i zostaną wysłane, gdy sieć wróci.",
+  "offline_wartend": "Jeszcze niewysłane: {anzahl}",
+  "offline_wartend_text": "Soll wyśle je samo, gdy tylko sieć wróci.",
+  "offline_abgelehnt_titel": "Nie przyjęto",
+  "offline_abgelehnt": "{art} o {uhrzeit}, nr {nummer}: serwer nie przyjął tego odbicia. W razie potrzeby dodaj je z powodem.",
+  "stempel_wartet": "czeka",
+  "stempel_offline": "offline",
+  "luecke_titel": "Luka w odbiciach urządzenia",
+  "luecke_eine": "Urządzenie {geraet}: brak nr {von}",
+  "luecke_mehrere": "Urządzenie {geraet}: brak nr od {von} do {bis}",
+  "luecke_text": "Odbicie zaginęło po drodze lub zostało usunięte na urządzeniu. Sprawdźcie dzień i w razie potrzeby dodajcie je z powodem."
 }

@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
-import { betriebAnlegen, einladungAnnehmen, senden, zweiterBrowser } from "./betrieb.ts";
+import { weberMitSandra } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
 
 test.use({ locale: "de" });
@@ -11,26 +11,6 @@ const t = (key: string, werte: Record<string, string> = {}) =>
     de[key] ?? key,
   );
 
-/** Weber Haustechnik with Sandra, a fitter, who has a model of 8 hours on every day */
-const weberMitSandra = async (sandra: Page, browser: Parameters<typeof zweiterBrowser>[0]) => {
-  const jonas = await zweiterBrowser(browser, test.info());
-  await betriebAnlegen(jonas);
-  const nutzerId = await einladungAnnehmen(jonas, sandra, "Sandra Kühn");
-  const modell = await senden(jonas, "POST", "/api/v1/arbeitszeit/modelle", {
-    name: "Vollzeit",
-    sollMinuten: [480, 480, 480, 480, 480, 480, 480],
-    lohnArt: "monat",
-    lohnCent: null,
-    minijob: false,
-    gueltigAb: "2026-01-01",
-  });
-  await senden(jonas, "PUT", `/api/v1/arbeitszeit/personen/${nutzerId}/modell`, {
-    modellId: modell.modellId,
-    gueltigAb: "2026-01-01",
-  });
-  return { jonas, nutzerId };
-};
-
 const knopf = (page: Page, key: string) => page.getByRole("button", { name: t(key), exact: true });
 const laufend = (page: Page) => page.getByRole("region", { name: t("tag_laufend") });
 
@@ -38,7 +18,7 @@ test("stamps a day on Heute with the minutes and the next finding @phone", async
   page,
   browser,
 }) => {
-  await weberMitSandra(page, browser);
+  await weberMitSandra(page, browser, test.info());
   await page.goto("/");
   await expect(laufend(page)).toContainText(t("stempeln_zustand_aus"));
   await expect(laufend(page)).toContainText("8:00");
@@ -71,7 +51,7 @@ test("stamps once when the button is pressed again before the day has reloaded",
   page,
   browser,
 }) => {
-  await weberMitSandra(page, browser);
+  await weberMitSandra(page, browser, test.info());
   await page.goto("/");
   await expect(knopf(page, "stempeln_kommen")).toBeVisible();
   // a slow network: the day comes back only well after the stamp was taken
@@ -103,7 +83,7 @@ test("shows the employee a correction by the owner: who, what, when and why @pho
   page,
   browser,
 }) => {
-  const { jonas } = await weberMitSandra(page, browser);
+  const { jonas } = await weberMitSandra(page, browser, test.info());
   await jonas.goto("/zeiten");
   await jonas.getByLabel(t("zeiten_person")).selectOption({ label: "Sandra Kühn" });
   await jonas.getByRole("button", { name: t("zeiten_vortag") }).click();
@@ -149,7 +129,7 @@ test("lets a person add a forgotten stamp of their own with a reason @phone", as
   page,
   browser,
 }) => {
-  await weberMitSandra(page, browser);
+  await weberMitSandra(page, browser, test.info());
   await page.goto("/");
   await knopf(page, "stempeln_kommen").click();
   await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
@@ -171,7 +151,7 @@ for (const theme of ["light", "dark"] as const) {
     browser,
   }) => {
     await page.emulateMedia({ colorScheme: theme });
-    await weberMitSandra(page, browser);
+    await weberMitSandra(page, browser, test.info());
     await page.goto("/");
     await knopf(page, "stempeln_kommen").click();
     await expect(page.getByTestId("zustand")).toHaveText(/^Eingestempelt seit/);
@@ -187,7 +167,7 @@ test.describe("in Arabic", () => {
   const ar = messagesOf("ar");
 
   test("stamps from right to left, with the norm in German @phone", async ({ page, browser }) => {
-    await weberMitSandra(page, browser);
+    await weberMitSandra(page, browser, test.info());
     await page.goto("/");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await page.getByRole("button", { name: ar.stempeln_kommen ?? "", exact: true }).click();

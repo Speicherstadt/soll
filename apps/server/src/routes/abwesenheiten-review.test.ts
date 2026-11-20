@@ -298,4 +298,27 @@ describe("S-401 review, round 3: the fixes of round 2", () => {
       gutschriftMinuten: 9 * 480,
     });
   });
+
+  it("keeps a closed month's content when a sickness in it gets its end, a half day off within", async () => {
+    const w = await weberMitAbwesenheiten();
+    w.server.stelleUhr(um("2026-10-19T08:00:00+02:00"));
+    await genehmigt(w, w.sandra, {
+      art: "sonderurlaub",
+      von: "2026-10-26",
+      bis: "2026-10-26",
+      ersterHalb: true,
+    });
+    w.server.stelleUhr(um("2026-10-20T08:00:00+02:00"));
+    const id = await angelegt(krank(w.sandra));
+    w.server.stelleUhr(um("2026-11-03T09:00:00+01:00"));
+    expect((await bestaetigen(w.sandra)).status).toBe(201);
+    const abschluss = await abschliessen(w.jonas, w.sandra.nutzerId);
+    const pruefwert = ((await json(abschluss)).abschluss as Json).pruefwert as string;
+    // an end inside the closed October would change its days: refused, a counter-entry corrects it
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-10-23" })).status).toBe(409);
+    expect((await schritt(w.sandra, id, "beenden", { bis: "2026-11-04" })).status).toBe(200);
+    expect((await pruefen(w.server, w.jonas.betriebId, pruefwert)).ergebnis).toBe(
+      "uebereinstimmend",
+    );
+  });
 });

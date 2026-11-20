@@ -128,7 +128,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   und die Verschiebung nach § 9 Abs. 2 sind Parameter, deren Vorgabe nie weniger streng ist als das
   Gesetz; Feiertage kommen aus S-105 nach dem Standort; ein Tag ohne Regelversion oder Feiertage wird
   „nicht hinterlegt“ statt geprüft.
-- [ ] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
+- [x] **S-204 Mindestlohn und Minijob** – § 17 MiLoG (7 Tage), Mindestlohn je Monat, Minijob-Grenze.
   Fertig, wenn: jeder Fall von R-13, R-14 und R-32 in `docs/regeln.md` wörtlich als Test besteht,
   auch über den 1. Januar und die Zeitumstellung. Dazu: § 17 MiLoG liest Stempelungen mit dem
   Zeitpunkt der Erfassung und der Ersetzung (S-304) und prüft jeden Tag, wie er zum Ablauf des

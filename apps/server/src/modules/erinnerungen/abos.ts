@@ -101,7 +101,10 @@ export const aboVerfallen = (schreibDb: SchreibDb, kontext: Kontext, aboId: stri
   schreiben(schreibDb, kontext, (s) => s.loeschen("pushAbos", { aboId }));
 };
 
-/** The devices of a person, decrypted; one that no longer decrypts is left out */
+/**
+ * The devices of a person, decrypted; one that no longer decrypts is left out, and so is one outside
+ * the browsers' push services, however it was stored: the server posts to what this returns
+ */
 export const abosVon = (
   db: Db,
   geheimerSchluessel: Uint8Array,
@@ -115,7 +118,9 @@ export const abosVon = (
     .all()
     .flatMap((zeile) => {
       const klar = entschluesseln(geheimerSchluessel, ZWECK, zeile.abo);
-      return klar.ok
-        ? [{ aboId: zeile.aboId, abo: JSON.parse(klar.wert) as Abo, sprache: zeile.sprache }]
+      if (!klar.ok) return [];
+      const abo = JSON.parse(klar.wert) as Abo;
+      return pushDienstErlaubt(abo.endpoint)
+        ? [{ aboId: zeile.aboId, abo, sprache: zeile.sprache }]
         : [];
     });

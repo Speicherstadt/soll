@@ -3,6 +3,7 @@ import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
+import { pinSchluesselAus } from "./modules/terminal/index.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { buchungRouten } from "./routes/buchungen.ts";
@@ -11,6 +12,7 @@ import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
+import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { kundenRouten } from "./routes/kunden.ts";
 import { modellRouten } from "./routes/modelle.ts";
@@ -25,7 +27,9 @@ import { standortRouten } from "./routes/standorte.ts";
 import { stoppuhrRouten } from "./routes/stoppuhr.ts";
 import { stundennachweisRouten } from "./routes/stundennachweise.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
+import { terminalRouten } from "./routes/terminals.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
+import { webAuslieferung } from "./web.ts";
 
 export type AppDeps = {
   /** Where log lines go; stdout in production, a list in tests */
@@ -40,9 +44,14 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
-  /** The key of the encrypted columns (SOLL_SECRET_KEY) and the public VAPID key (S-307) */
+  /**
+   * The key of the encrypted columns (SOLL_SECRET_KEY; the key of the PIN lookup is derived from it,
+   * S-801) and the public VAPID key (S-307)
+   */
   geheimerSchluessel: Uint8Array;
   vapidOeffentlich: string;
+  /** The static build of apps/web (SOLL_WEB_DIR); absent, the server serves the API only */
+  webVerzeichnis?: string | null;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -57,7 +66,9 @@ export const createApp = ({
   mail,
   geheimerSchluessel,
   vapidOeffentlich,
+  webVerzeichnis = null,
 }: AppDeps) => {
+  const pinSchluessel = pinSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -78,6 +89,8 @@ export const createApp = ({
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
   app.route("/api/v1/pruefen", pruefRouten(db));
+  // the tablet with its device token, not a session (S-801)
+  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, pinSchluessel));
 
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db))
@@ -111,10 +124,15 @@ export const createApp = ({
           "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
-        terminal: { "/pins": pinRouten(db, schreibDb, now) },
+        terminal: {
+          "/pins": pinRouten(db, schreibDb, now, pinSchluessel),
+          "/": terminalRouten(db, schreibDb, now),
+        },
       }),
     );
   app.route("/api/v1", v1);
+  // Last, so every route of the API wins; unknown API paths stay 404 (src/web.ts)
+  if (webVerzeichnis) app.get("*", webAuslieferung(webVerzeichnis));
 
   return app;
 };

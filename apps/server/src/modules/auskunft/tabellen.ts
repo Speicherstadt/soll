@@ -39,6 +39,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   datev_einstellungen:
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
+  terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
+  ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -102,6 +104,10 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   datev_einstellungen: aus("keine Daten der Person (Einstellungen des Betriebs für DATEV)"),
   datev_personalnummern: frei(
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
+  ),
+  terminals: aus("keine Daten der Person (Tablets des Betriebs)"),
+  ausweise: frei(
+    "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",
   ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),

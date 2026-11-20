@@ -60,9 +60,11 @@ markdown_extensions:
       custom_checkbox: true
 nav:
   - Soll: index.md
+  - Installation: installation.md
   - Einrichtung: einrichtung.md
   - Anmeldung, Rollen und Module: anmeldung.md
   - Stempeln: stempeln.md
+  - Terminal: terminal.md
   - Monatsabschluss und Prüfwert: monatsabschluss.md
   - Prüfexport und Auskunft: pruefexport.md
   - Projektzeit: projektzeit.md

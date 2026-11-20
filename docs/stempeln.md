@@ -9,7 +9,8 @@ description: >-
 # Stempeln
 
 Unter **Heute** stempelt jede Person, die für den Betrieb arbeitet, ihre Arbeitszeit: am Handy, am
-Tablet oder im Browser. Externe und Geräte stempeln hier nicht; das Terminal kommt später.
+Tablet oder im Browser. Externe und Geräte stempeln hier nicht; am Eingang stempelt man am
+[Terminal](terminal.md) mit PIN oder QR-Code.
 
 ## Der Knopf
 

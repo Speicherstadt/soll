@@ -92,7 +92,7 @@ export const stempelInKraft = (db: Db, betriebId: string, stempelId: string): Ze
     )
     .get()?.zeile;
 
-type Optional = "entfernt" | "geraetId" | "nummer" | "signatur" | "offline";
+type Optional = "entfernt" | "geraetId" | "nummer" | "signatur" | "offline" | "terminalId";
 type Neu = Omit<Zeile, "betriebId" | "stempelId" | "erstelltVon" | "erstelltAm" | Optional> &
   Partial<Pick<Zeile, Optional>>;
 
@@ -196,6 +196,8 @@ export const stempeln = (
     geraetZeitpunkt: number | null;
     quelle: Quelle;
     signiert?: Signiert | undefined;
+    /** the terminal the person stamped at (S-801) */
+    terminalId?: string | undefined;
   },
 ): StempelErgebnis => {
   const vorher = schonDa(db, kontext.betriebId, angaben.signiert, angaben);
@@ -215,6 +217,7 @@ export const stempeln = (
     ersetzt: null,
     grund: null,
     ...angaben.signiert,
+    ...(angaben.terminalId ? { terminalId: angaben.terminalId } : {}),
   });
   return { ok: true, stempel: alsStempel(zeile) };
 };

@@ -85,7 +85,7 @@ describe("no business sees another's data", () => {
       (
         await weber.anfrage(`/api/v1/terminal/pins/${elbblick.nutzerId}`, {
           method: "PUT",
-          body: { pin: "1234" },
+          body: { pin: "123400" },
         })
       ).status,
     ).toBe(404);
@@ -97,11 +97,11 @@ describe("no business sees another's data", () => {
       await p.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { terminal: true } });
     await elbblick.anfrage(`/api/v1/terminal/pins/${elbblick.nutzerId}`, {
       method: "PUT",
-      body: { pin: "1234" },
+      body: { pin: "123400" },
     });
     const terminal = await eingeladen(server, weber, "geraet", "terminal_weber");
     const versuch = await terminal.anfrage(`/api/v1/terminal/pins/${elbblick.nutzerId}/pruefen`, {
-      body: { pin: "1234" },
+      body: { pin: "123400" },
     });
     expect(versuch.status).toBe(404);
   });
@@ -258,22 +258,22 @@ describe("the PIN", { timeout: 20_000 }, () => {
       (
         await weber.anfrage(`/api/v1/terminal/pins/${max.nutzerId}`, {
           method: "PUT",
-          body: { pin: "4711" },
+          body: { pin: "471100" },
         })
       ).status,
     ).toBe(204);
     const pruefen = (pin: string) =>
       terminal.anfrage(`/api/v1/terminal/pins/${max.nutzerId}/pruefen`, { body: { pin } });
-    expect((await pruefen("4711")).status).toBe(200);
+    expect((await pruefen("471100")).status).toBe(200);
     for (let versuch = 1; versuch <= 4; versuch++)
       expect((await pruefen("0000")).status, `try ${versuch}`).toBe(401);
     expect(await json(await pruefen("0000"))).toEqual({ ergebnis: "gesperrt" });
-    expect((await pruefen("4711")).status).toBe(423);
+    expect((await pruefen("471100")).status).toBe(423);
     await weber.anfrage(`/api/v1/terminal/pins/${max.nutzerId}`, {
       method: "PUT",
-      body: { pin: "2468" },
+      body: { pin: "246800" },
     });
-    expect((await pruefen("2468")).status).toBe(200);
+    expect((await pruefen("246800")).status).toBe(200);
     expect(kettePruefen(server.db, weber.betriebId)).toEqual([]);
   });
 
@@ -285,12 +285,12 @@ describe("the PIN", { timeout: 20_000 }, () => {
     const terminal = await eingeladen(server, weber, "geraet", "terminal");
     await weber.anfrage(`/api/v1/terminal/pins/${max.nutzerId}`, {
       method: "PUT",
-      body: { pin: "4711" },
+      body: { pin: "471100" },
     });
     const pruefen = (pin: string) =>
       terminal.anfrage(`/api/v1/terminal/pins/${max.nutzerId}/pruefen`, { body: { pin } });
     for (let versuch = 1; versuch <= 4; versuch++) await pruefen("0000");
-    expect((await pruefen("4711")).status).toBe(200);
+    expect((await pruefen("471100")).status).toBe(200);
     expect((await pruefen("0000")).status).toBe(401);
   });
 });
@@ -338,13 +338,13 @@ describe("modules", () => {
     const terminal = await eingeladen(server, weber, "geraet", "terminal");
     await weber.anfrage(`/api/v1/terminal/pins/${max.nutzerId}`, {
       method: "PUT",
-      body: { pin: "4711" },
+      body: { pin: "471100" },
     });
     await weber.anfrage("/api/v1/betrieb/module", { method: "PATCH", body: { terminal: false } });
     expect(
       (
         await terminal.anfrage(`/api/v1/terminal/pins/${max.nutzerId}/pruefen`, {
-          body: { pin: "4711" },
+          body: { pin: "471100" },
         })
       ).status,
     ).toBe(403);
@@ -352,7 +352,7 @@ describe("modules", () => {
     expect(
       (
         await terminal.anfrage(`/api/v1/terminal/pins/${max.nutzerId}/pruefen`, {
-          body: { pin: "4711" },
+          body: { pin: "471100" },
         })
       ).status,
     ).toBe(200);

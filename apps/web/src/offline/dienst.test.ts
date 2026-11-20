@@ -9,11 +9,21 @@ const TOM = "elbblick/tom";
 
 type Aufruf = { pfad: string; method: string; body: Record<string, unknown> };
 
+/** A status, or a status with the error the server names */
+type Antwortcode = number | [number, string];
+
+/** The session of GET /api/v1/betrieb in the stand-in: Tom at Café Elbblick unless a test says else */
+const sitzungVon = (konto: string) => {
+  const [betriebId, nutzerId] = konto.split("/");
+  return { betriebId, nutzerId, name: "Café Elbblick", rolle: "mitarbeiter" };
+};
+
 /**
  * The queue with a map for IndexedDB, the runtime's WebCrypto and a stand-in for the API that answers
- * with the statuses given (200 for everything else); a lock that runs one task after the other
+ * with the statuses given (200 for everything else; GET /api/v1/betrieb names the session `sitzung`);
+ * a lock that runs one task after the other
  */
-const aufbau = (antworten: (aufruf: Aufruf) => number = () => 200) => {
+const aufbau = (antworten: (aufruf: Aufruf) => Antwortcode = () => 200, sitzung = TOM) => {
   const ablage = ablageImSpeicher();
   const aufrufe: Aufruf[] = [];
   let uhr = um("07:58");
@@ -37,13 +47,17 @@ const aufbau = (antworten: (aufruf: Aufruf) => number = () => 200) => {
         method: init.method ?? "POST",
         body: init.body as Record<string, unknown>,
       };
+      // asking who is signed in changes nothing on the server: not counted among the calls
+      if (aufruf.method === "GET" && pfad === "/api/v1/betrieb")
+        return { ok: true, status: 200, daten: sitzungVon(sitzung) } as Antwort<unknown>;
       aufrufe.push(aufruf);
       if (halt) await halt;
-      const status = antworten(aufruf);
+      const code = antworten(aufruf);
+      const [status, fehler] = typeof code === "number" ? [code, undefined] : code;
       return (
         status >= 200 && status < 300
           ? { ok: true, status, daten: {} }
-          : { ok: false, status, fehler: status === 0 ? "netz" : "doppelt" }
+          : { ok: false, status, fehler: fehler ?? (status === 0 ? "netz" : "doppelt") }
       ) as Antwort<unknown>;
     },
   };
@@ -262,5 +276,37 @@ describe("sending the queue (S-305)", () => {
     const letzter = aufrufe.at(-1);
     expect(letzter?.pfad).toBe("/api/v1/arbeitszeit/stempelungen/offline");
     expect(letzter?.body).toMatchObject({ geraetZeitpunkt: um("12:00"), gesendetAm: um("12:05") });
+  });
+
+  it("registers the device again when the server lost it (a database restored from a backup), and sends what waits", async () => {
+    // the server knows the device until its database goes back to a backup taken before it
+    let bekannt = true;
+    const { schlange, aufrufe } = aufbau((aufruf) => {
+      if (aufruf.method === "PUT") {
+        bekannt = true;
+        return 201;
+      }
+      return bekannt ? 201 : [404, "geraet_unbekannt"];
+    });
+    await schlange.aufnehmen(TOM, "kommen");
+    expect(await schlange.uebertragen(TOM, 1)).toEqual({ uebertragen: 1, wartend: 0 });
+
+    bekannt = false;
+    aufrufe.length = 0;
+    await schlange.aufnehmen(TOM, "pause_beginn");
+    const drei = await schlange.aufnehmen(TOM, "pause_ende");
+    expect(await schlange.uebertragen(TOM, drei.nummer)).toEqual({ uebertragen: 2, wartend: 0 });
+    expect(aufrufe.filter((a) => a.method === "PUT")).toHaveLength(1);
+    expect(await schlange.eintraege(TOM)).toEqual([]);
+  });
+
+  it("never registers a person's device under another person's session (a tab left open on a shared browser)", async () => {
+    // Sandra's first stamps waited offline; meanwhile Max signed in, and her old tab tries again
+    const SANDRA = "weber/sandra";
+    const { schlange, aufrufe } = aufbau(() => 201, "weber/max");
+    await schlange.aufnehmen(SANDRA, "kommen");
+    expect(await schlange.uebertragen(SANDRA)).toEqual({ uebertragen: 0, wartend: 1 });
+    expect(aufrufe).toEqual([]);
+    expect(await schlange.eintraege(SANDRA)).toMatchObject([{ nummer: 1, abgelehnt: null }]);
   });
 });

@@ -56,6 +56,15 @@ describe("darf", () => {
     expect(darf("geraet", "projekte:lesen")).toBe(false);
   });
 
+  it("lets owner and planner plan, and everyone who works for the business read the plan", () => {
+    for (const rolle of ["inhaber", "planer"]) expect(darf(rolle, "plan:planen"), rolle).toBe(true);
+    for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "plan:planen"), rolle).toBe(false);
+    for (const rolle of ["inhaber", "planer", "mitarbeiter", "lohnbuero", "betriebsrat"])
+      expect(darf(rolle, "plan:lesen"), rolle).toBe(true);
+    for (const rolle of ["extern", "geraet"]) expect(darf(rolle, "plan:lesen"), rolle).toBe(false);
+  });
+
   it("refuses unknown roles", () => {
     expect(darf("owner", "betrieb:lesen")).toBe(false);
   });

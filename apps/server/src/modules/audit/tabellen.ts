@@ -1,5 +1,6 @@
 import {
   arbeitszeitmodelle,
+  bedarfe,
   betriebe,
   einladungen,
   geraete,
@@ -10,6 +11,8 @@ import {
   monatsabschluesse,
   pins,
   projekte,
+  schichten,
+  schichtvorlagen,
   standorte,
   stempelungen,
   stundensaetze,
@@ -36,6 +39,9 @@ export const kettenTabellen = {
   projekte: { tabelle: projekte, schluessel: ["projektId"] },
   taetigkeiten: { tabelle: taetigkeiten, schluessel: ["taetigkeitId"] },
   stundensaetze: { tabelle: stundensaetze, schluessel: ["satzId"] },
+  schichtvorlagen: { tabelle: schichtvorlagen, schluessel: ["vorlageId"] },
+  schichten: { tabelle: schichten, schluessel: ["schichtId"] },
+  bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

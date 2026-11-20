@@ -81,7 +81,13 @@ stehen in derselben Art als eine Karte.
 
 **Dienstplan**: Wochenraster, Personen als Zeilen, Tage als Spalten; Schichten als Blöcke mit
 Uhrzeit und Rolle; ein Befund erscheint am Block als Icon mit Text im Tooltip und in einer Liste
-unter dem Plan.
+unter dem Plan. Darunter steht der Bedarf der Woche je Rolle mit „gedeckt“ oder „fehlt n“. Über dem Raster
+liegen die Vorlagen zum Ziehen; jeder Block hat einen Griff, der ihn mit der Tastatur aufnimmt
+(Enter, Pfeile, Enter, Esc), und jede Zelle ein „+“, das erst bei Hover oder Fokus erscheint. Am
+Handy ein Tag zur Zeit: die sieben Tage als Knöpfe, darunter die Schichten des Tages als Liste.
+Bewusst anders als im Mockup: der Wochenend-Kopf und die Bezeichnung im Block stehen auf
+`--muted` beziehungsweise in `--foreground`, weil `--muted-foreground` auf `--accent` keine 4,5:1
+erreicht; „Veröffentlichen“ fehlt, bis S-503 es bringt.
 
 **Monatsabschluss**: Kopf mit dem Stand (bestätigt, abgeschlossen), „Stundenzettel (PDF)“ und der
 Hauptaktion, für die Person „Monat bestätigen“, für den Inhaber „Monat abschließen“; darunter die

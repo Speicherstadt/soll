@@ -48,9 +48,9 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | --- | --- | --- | --- |
 | R-01 | Beginn, Ende und Dauer jedes Arbeitstags erfasst | BAG 1 ABR 22/21; § 3 Abs. 2 Nr. 1 ArbSchG; EuGH C-55/18 | Hinweis |
 | R-02 | Höchstarbeitszeit am Tag | § 3 ArbZG | Hinweis / Verstoß |
-| R-03 | Ausgleichszeitraum 6 Monate oder 24 Wochen | § 3 Satz 2 ArbZG | Verstoß |
+| R-03 | Ausgleichszeitraum 6 Monate oder 24 Wochen | § 3 Satz 2 ArbZG | Hinweis / Verstoß |
 | R-04 | Ruhepausen | § 4 ArbZG | Verstoß |
-| R-05 | Ruhezeit 11 h | § 5 ArbZG | Verstoß |
+| R-05 | Ruhezeit 11 h | § 5 ArbZG | Hinweis / Verstoß |
 | R-06 | Arbeitszeit der Nachtarbeitnehmer | §§ 2, 6 Abs. 2 ArbZG | Hinweis / Verstoß |
 | R-07 | Sonn- und Feiertagsruhe | §§ 9, 10 ArbZG | Verstoß |
 | R-08 | 15 beschäftigungsfreie Sonntage | § 11 Abs. 1 ArbZG | Hinweis / Verstoß |

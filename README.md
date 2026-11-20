@@ -73,6 +73,22 @@ nachvollziehbar aufbewahrt.
 ### Brauche ich eine Stempeluhr?
 Nein. Ein Android-Tablet an der Wand reicht; gestempelt wird mit PIN, QR-Code oder NFC-Karte.
 
+## Installation
+
+Soll läuft als ein Container mit SQLite, ohne Datenbankserver, für amd64 und arm64:
+
+```sh
+curl -fsSLO https://raw.githubusercontent.com/Speicherstadt/soll/main/deploy/compose.yaml
+curl -fsSL -o soll.env https://raw.githubusercontent.com/Speicherstadt/soll/main/deploy/soll.env.example
+# in soll.env: SOLL_SECRET_KEY (openssl rand -base64 32) und SOLL_URL eintragen
+docker compose up -d
+docker compose exec soll soll backup   # Sicherung im laufenden Betrieb
+```
+
+Podman Quadlet, Sicherung und Wiederherstellung, Update und alle Einstellungen stehen unter
+[Installation](https://soll.work/installation.html). Das Image erscheint mit dem ersten Release; bis
+dahin `docker build -f Containerfile -t soll .`
+
 ## Entwicklung
 
 Bun, Hono, Drizzle und SQLite auf dem Server; Solid und Tailwind im Client. Hinweise für

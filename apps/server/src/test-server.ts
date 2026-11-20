@@ -6,7 +6,12 @@ import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
 
-type Optionen = { log?: (line: string) => void; uhr?: () => number; mail?: Mailer | null };
+type Optionen = {
+  log?: (line: string) => void;
+  uhr?: () => number;
+  mail?: Mailer | null;
+  webVerzeichnis?: string | null;
+};
 
 /** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
 const testApp = (optionen: Optionen, jetzt: () => number) => {
@@ -31,6 +36,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     mail: optionen.mail ?? null,
     geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
+    webVerzeichnis: optionen.webVerzeichnis ?? null,
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

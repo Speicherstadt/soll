@@ -46,6 +46,16 @@ describe("darf", () => {
       expect(darf(rolle, "zeiten:alle"), rolle).toBe(false);
   });
 
+  it("lets owner and planner keep customers, orders and rates, and everyone but a device read orders", () => {
+    for (const rolle of ["inhaber", "planer"])
+      expect(darf(rolle, "projekte:verwalten"), rolle).toBe(true);
+    for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "projekte:verwalten"), rolle).toBe(false);
+    for (const rolle of ["inhaber", "planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern"])
+      expect(darf(rolle, "projekte:lesen"), rolle).toBe(true);
+    expect(darf("geraet", "projekte:lesen")).toBe(false);
+  });
+
   it("refuses unknown roles", () => {
     expect(darf("owner", "betrieb:lesen")).toBe(false);
   });

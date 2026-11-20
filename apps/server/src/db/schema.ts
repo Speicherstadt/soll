@@ -289,3 +289,5 @@ export const auditKoepfe = sqliteTable("audit_koepfe", {
   seq: integer("seq").notNull(),
   hash: text("hash").notNull(),
 });
+
+export { kunden, projekte, stundensaetze, taetigkeiten } from "./schema-projektzeit.ts";

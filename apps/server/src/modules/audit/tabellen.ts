@@ -4,12 +4,16 @@ import {
   einladungen,
   geraete,
   korrekturen,
+  kunden,
   mitgliedschaften,
   modellzuordnungen,
   monatsabschluesse,
   pins,
+  projekte,
   standorte,
   stempelungen,
+  stundensaetze,
+  taetigkeiten,
 } from "../../db/schema.ts";
 
 /**
@@ -28,6 +32,10 @@ export const kettenTabellen = {
   geraete: { tabelle: geraete, schluessel: ["geraetId"] },
   monatsabschluesse: { tabelle: monatsabschluesse, schluessel: ["abschlussId"] },
   korrekturen: { tabelle: korrekturen, schluessel: ["korrekturId"] },
+  kunden: { tabelle: kunden, schluessel: ["kundeId"] },
+  projekte: { tabelle: projekte, schluessel: ["projektId"] },
+  taetigkeiten: { tabelle: taetigkeiten, schluessel: ["taetigkeitId"] },
+  stundensaetze: { tabelle: stundensaetze, schluessel: ["satzId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

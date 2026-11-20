@@ -29,6 +29,8 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "projekte:lesen",
+  "projekte:verwalten",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -49,6 +51,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    // customers, orders, activities and hourly rates (S-601)
+    "projekte:lesen",
+    "projekte:verwalten",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)
@@ -60,13 +65,24 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "zeiten:korrigieren",
+    // the office keeps customers, orders and rates (docs/plan.md, "Wer Stundensätze sieht")
+    "projekte:lesen",
+    "projekte:verwalten",
   ],
-  // everyone who works for the business stamps, and sees and corrects their own times (S-304)
-  mitarbeiter: ["betrieb:lesen", "stempeln"],
+  // everyone who works for the business stamps, and sees and corrects their own times (S-304);
+  // whoever books project time reads the orders and activities, without rates and money (S-601)
+  mitarbeiter: ["betrieb:lesen", "stempeln", "projekte:lesen"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
-  lohnbuero: ["betrieb:lesen", "mitglieder:lesen", "modelle:lesen", "stempeln", "zeiten:alle"],
-  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln"],
-  extern: ["betrieb:lesen"],
+  lohnbuero: [
+    "betrieb:lesen",
+    "mitglieder:lesen",
+    "modelle:lesen",
+    "stempeln",
+    "zeiten:alle",
+    "projekte:lesen",
+  ],
+  betriebsrat: ["betrieb:lesen", "mitglieder:lesen", "stempeln", "projekte:lesen"],
+  extern: ["betrieb:lesen", "projekte:lesen"],
   // the terminal checks PINs and nothing else (S-801)
   geraet: ["pin:pruefen"],
 };

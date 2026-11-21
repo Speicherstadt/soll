@@ -42,18 +42,18 @@ export const NachweisWahlFelder = (props: {
           </For>
         </select>
       </Feld>
-      <Feld id={`${id}-von`} label={m.nachweis_von()}>
+      <Feld id={`${id}-start`} label={m.nachweis_von()}>
         <input
-          id={`${id}-von`}
+          id={`${id}-start`}
           type="date"
           class={feld}
           value={props.werte.von}
           onChange={(event) => props.onAendern({ von: event.currentTarget.value })}
         />
       </Feld>
-      <Feld id={`${id}-bis`} label={m.nachweis_bis()}>
+      <Feld id={`${id}-ende`} label={m.nachweis_bis()}>
         <input
-          id={`${id}-bis`}
+          id={`${id}-ende`}
           type="date"
           class={feld}
           value={props.werte.bis}

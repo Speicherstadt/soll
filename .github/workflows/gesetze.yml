@@ -1,0 +1,48 @@
+name: Gesetzeswächter
+
+# Watches the norms Soll relies on (scripts/gesetze/normen.json: SHA-256 of the normalised text on
+# gesetze-im-internet.de) and the yearly values in packages/arbeitszeit (BAULISTE.md S-906). Opens or
+# updates one issue with the label "gesetzeswaechter" listing every finding; no finding, no issue. A
+# source that does not answer is only a warning. After firsttris/haben, .github/workflows/jahreswerte.yml.
+# What to do with a finding: docs/gesetzeswaechter.md.
+on:
+  schedule:
+    # Mondays early (UTC), outside the busy hours of the runners
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: gesetze
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      # --schreiben puts the hashes of this run into the working copy for the artifact below; nothing
+      # is committed
+      - run: bun run gesetze --issue --schreiben --bericht bericht.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: always() && hashFiles('bericht.md') != ''
+        run: cat bericht.md >> "$GITHUB_STEP_SUMMARY"
+      # The watch list with the hashes of this run: to take over a first state or a checked change,
+      # copy it to scripts/gesetze/normen.json in a pull request
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gesetze-stand
+          path: |
+            scripts/gesetze/normen.json
+            bericht.md
+          if-no-files-found: ignore

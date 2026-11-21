@@ -609,7 +609,7 @@ Alle Punkte: nach S-305.
   `DOCKER_PAT` gesetzt ist; ohne veröffentlicht er nichts und sagt das in der Zusammenfassung.
   `docs/installation.md` (Docker Compose, Podman Quadlet, Binary, Umgebung, Sicherung und
   Wiederherstellung, Update), README mit Abschnitt Installation.
-- [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
+- [x] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
   Fertig, wenn: `scripts/gesetze/normen.json` jede beobachtete Norm mit ihrer Adresse auf
   gesetze-im-internet.de und dem SHA-256 ihres normalisierten Textes führt (Überschrift, Text und

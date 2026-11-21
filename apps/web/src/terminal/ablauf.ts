@@ -8,6 +8,7 @@ import {
   speicher,
 } from "./geraet.ts";
 import { entkoppelt, type Meldung, meldungAus } from "./meldung.ts";
+import type { NfcKarte } from "./nfc.ts";
 import type { Ausweis, Erkannt, Gestempelt, KioskStand, Kopplung } from "./typen.ts";
 
 /** How long a recognised person may choose before the kiosk goes back to the clock */
@@ -20,6 +21,9 @@ const TAKT_MS = 250;
  * lift the lock or revoke the tablet (docs/plan.md, "Sperre am Terminal")
  */
 export const GESPERRT_FRAGEN_MS = 15_000;
+
+/** Web NFC at the kiosk: none in this browser, listening, or waiting for a tap to allow it */
+export type Nfc = "aus" | "an" | "erlauben";
 
 export type Ansicht =
   | { art: "koppeln" }
@@ -40,7 +44,13 @@ const kioskZustand = () => {
   const [meldung, setMeldung] = createSignal<Meldung | null>(null);
   const [jetzt, setJetzt] = createSignal(Date.now());
   const [beschaeftigt, setBeschaeftigt] = createSignal(false);
-  const zurueck = () => setAnsicht(kopplung() ? { art: "bereit" } : { art: "koppeln" });
+  /** A plain card held to the tablet, waiting for its person's PIN (S-802) */
+  const [karte, setKarte] = createSignal<{ uid: string; bis: number } | null>(null);
+  const [nfc, setNfc] = createSignal<Nfc>("aus");
+  const zurueck = () => {
+    setKarte(null);
+    setAnsicht(kopplung() ? { art: "bereit" } : { art: "koppeln" });
+  };
   const vergessen = () => {
     kopplungVergessen(ablage);
     setKopplung(null);
@@ -71,6 +81,10 @@ const kioskZustand = () => {
     setJetzt,
     beschaeftigt,
     setBeschaeftigt,
+    karte,
+    setKarte,
+    nfc,
+    setNfc,
     zurueck,
     gekoppelt,
     abgelehnt,
@@ -114,8 +128,31 @@ const kioskAufrufe = (z: Zustand) => {
       const antwort = await kioskAnfrage<Erkannt>(token, "/erkennen", ausweis);
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setMeldung(null);
-      z.setAnsicht({ art: "erkannt", daten: antwort.daten, ausweis, bis: Date.now() + ERKANNT_MS });
+      // a SUN message counts once: the next tap stamps with the server's receipt (S-802)
+      const weiter = antwort.daten.beleg ? { beleg: antwort.daten.beleg } : ausweis;
+      z.setAnsicht({
+        art: "erkannt",
+        daten: antwort.daten,
+        ausweis: weiter,
+        bis: Date.now() + ERKANNT_MS,
+      });
     });
+  /** A PIN typed: with a plain card waiting, the two go together */
+  const pin = (eingabe: string) => {
+    const gehalten = z.karte();
+    z.setKarte(null);
+    return erkennen(gehalten ? { karte: gehalten.uid, pin: eingabe } : { pin: eingabe });
+  };
+  /**
+   * A card held to the tablet while it shows the clock: an NTAG 424 DNA is recognised by its SUN
+   * message alone, a plain card waits for the PIN of its person (S-802)
+   */
+  const karteGelesen = (karte: NfcKarte) => {
+    if (z.ansicht().art !== "bereit" || z.beschaeftigt() || z.meldung()?.art === "gesperrt") return;
+    if (karte.sun) return erkennen({ sun: karte.sun });
+    z.setMeldung(null);
+    z.setKarte({ uid: karte.uid, bis: Date.now() + ERKANNT_MS });
+  };
   const stempeln = (art: string) =>
     einmal(async (token) => {
       const aktuell = z.ansicht();
@@ -128,12 +165,12 @@ const kioskAufrufe = (z: Zustand) => {
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setAnsicht({ art: "gestempelt", daten: antwort.daten, bis: Date.now() + GESTEMPELT_MS });
     });
-  return { laden, koppeln, erkennen, stempeln };
+  return { laden, koppeln, erkennen, pin, karteGelesen, stempeln };
 };
 
 /**
- * The kiosk's states and calls (S-801): pairing, the clock with the number pad, reading a QR code,
- * a person recognised, a stamp confirmed. It goes back to the clock by itself, never stamps by
+ * The kiosk's states and calls (S-801, S-802): pairing, the clock with the number pad, reading a QR
+ * code or an NFC card, a person recognised, a stamp confirmed. It goes back to the clock by itself, never stamps by
  * itself, and forgets the PIN or QR code it held as soon as it is back (CLAUDE.md).
  */
 export const kioskAblauf = () => {
@@ -147,6 +184,7 @@ export const kioskAblauf = () => {
       z.setJetzt(nun);
       const aktuell = z.ansicht();
       if ("bis" in aktuell && aktuell.bis <= nun) z.zurueck();
+      if ((z.karte()?.bis ?? nun) < nun) z.setKarte(null);
       const offen = z.meldung();
       if (offen?.art === "gesperrt" && offen.bis <= nun) z.setMeldung(null);
       else if (offen?.art === "gesperrt" && nun - gefragt >= GESPERRT_FRAGEN_MS) {
@@ -163,6 +201,9 @@ export const kioskAblauf = () => {
     meldung: z.meldung,
     jetzt: z.jetzt,
     beschaeftigt: z.beschaeftigt,
+    karte: z.karte,
+    nfc: z.nfc,
+    setNfc: z.setNfc,
     zurueck: z.zurueck,
     scannen: () => z.setAnsicht({ art: "scannen" }),
     ...aufrufe,

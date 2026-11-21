@@ -28,6 +28,7 @@ const FREIGEGEBEN = [
   "projektzeiten",
   "personalnummer",
   "ausweis",
+  "karten",
   "auditKette",
 ];
 

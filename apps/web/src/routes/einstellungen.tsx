@@ -6,6 +6,7 @@ import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
+import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
 import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
 import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
 import { m } from "../paraglide/messages.js";
@@ -29,7 +30,7 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
-  // the terminal is the owner's: pairing tablets, PINs and QR codes (S-801)
+  // the terminal is the owner's: pairing tablets, PINs, QR codes (S-801) and NFC cards (S-802)
   const terminal = () => {
     const betrieb = aktuellerBetrieb();
     if (!betrieb?.module.terminal) return false;
@@ -42,6 +43,7 @@ const Einstellungen = () => {
       <Show when={terminal()}>
         <TerminalGeraete />
         <TerminalPersonen />
+        <TerminalKarten />
       </Show>
       <DatevZuordnung />
       <Zugaenge />

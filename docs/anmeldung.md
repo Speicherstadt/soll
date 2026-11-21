@@ -18,7 +18,7 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln und QR-Codes ausstellen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln, QR-Codes ausstellen und NFC-Karten eintragen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, den Dienstplan planen |
 | Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, den Dienstplan planen |
 | Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, den veröffentlichten Dienstplan sehen |
 | Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, den veröffentlichten Dienstplan sehen |

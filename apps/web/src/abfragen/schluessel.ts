@@ -30,6 +30,7 @@ export const PFAD = {
   zugaenge: "/api/v1/zugaenge",
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
+  terminalKarten: `${TERMINAL}/karten`,
   stoppuhr: `${PZ}/stoppuhr`,
   nachweise: `${PZ}/stundennachweise`,
   nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
@@ -75,6 +76,7 @@ export const ressourcen = {
   zugaenge: () => einfach(PFAD.zugaenge),
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
+  terminalKarten: () => einfach(PFAD.terminalKarten),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
   nachweise: () => einfach(PFAD.nachweise),
   nachweisVorschau: (parameter: {

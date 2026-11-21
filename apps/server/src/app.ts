@@ -3,7 +3,7 @@ import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
-import { pinSchluesselAus } from "./modules/terminal/index.ts";
+import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
 import { auslastungRouten } from "./routes/auslastung.ts";
@@ -14,6 +14,7 @@ import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
+import { kartenRouten } from "./routes/karten.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { kundenRouten } from "./routes/kunden.ts";
@@ -73,7 +74,7 @@ export const createApp = ({
   vapidOeffentlich,
   webVerzeichnis = null,
 }: AppDeps) => {
-  const pinSchluessel = pinSchluesselAus(geheimerSchluessel);
+  const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -103,7 +104,7 @@ export const createApp = ({
     mcpRouten({ db, zugang, version, url, fetch: (anfrage, env) => app.fetch(anfrage, env) }),
   );
   // the tablet with its device token, not a session (S-801)
-  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, pinSchluessel));
+  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, terminalSchluessel));
 
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db, zugang))
@@ -140,7 +141,8 @@ export const createApp = ({
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
         terminal: {
-          "/pins": pinRouten(db, schreibDb, now, pinSchluessel),
+          "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
+          "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),
           "/": terminalRouten(db, schreibDb, now),
         },
       }),

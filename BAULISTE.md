@@ -604,10 +604,28 @@ Alle Punkte: nach S-305.
   bei der Kopplung; jede Stempelung trägt die Quelle „terminal“ und das Gerät; ein abgeschaltetes
   Modul Terminal wird abgelehnt; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen
   sieht oder ändert; keine Fotos, Fingerabdrücke oder Standorte; Texte in allen sechs Sprachen.
-- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
+- [x] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
   SUN-Nachricht.
   Fertig, wenn: Playwright mit einem Ersatz für `NDEFReader` Karte mit PIN, Karte ohne PIN und eine
   gefälschte SUN-Nachricht prüft.
+  Dazu: der Inhaber trägt unter Einstellungen je Person Karten ein, als einfache Karte mit ihrer UID
+  oder als NTAG 424 DNA mit UID, SDMMetaReadKey und SDMFileReadKey; die Schlüssel stehen nur
+  verschlüsselt in der Datenbank, die UID nur als Kennung mit geheimem Schlüssel (wie die PIN), und
+  eine UID gibt es im Betrieb einmal; eine einfache Karte erkennt die Person nur zusammen mit deren
+  PIN, denn eine UID lässt sich kopieren, und eine Karte allein lehnt der Server ab; eine NTAG 424 DNA
+  erkennt die Person allein, wenn die SUN-Nachricht stimmt: PICCData mit dem SDMMetaReadKey
+  entschlüsselt, der CMAC mit dem aus dem SDMFileReadKey abgeleiteten Sitzungsschlüssel geprüft, ein
+  Lesezähler, der nicht größer ist als der zuletzt gesehene, abgelehnt (Wiederholung); AES-CMAC mit
+  `node:crypto`, geprüft mit den Beispielwerten aus AN12196 und RFC 4493; jede unbekannte Karte,
+  falsche PIN zur Karte und gefälschte oder wiederholte SUN-Nachricht zählt zur Sperre des Terminals
+  und steht in der Audit-Kette; der Inhaber entzieht eine Karte, ihre Schlüssel werden gelöscht, der
+  Zähler bleibt; Web NFC nur, wo der Browser `NDEFReader` hat (Chrome auf Android), sonst bleibt das
+  Terminal bei PIN und QR-Code; Playwright `@terminal` mit einem Ersatz für `NDEFReader`: eine Karte
+  mit PIN stempelt, eine Karte ohne PIN wird abgelehnt, eine gefälschte und eine wiederholte
+  SUN-Nachricht werden abgelehnt, eine echte erkennt die Person; ein Test je neuem Endpunkt, dass kein
+  Betrieb Karten eines anderen sieht oder ändert; die Auskunft nennt die Karten der Person ohne UID
+  und Schlüssel; ein abgeschaltetes Modul Terminal wird abgelehnt; axe in hell und dunkel; Texte in
+  allen sechs Sprachen.
 - [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
 
 ## Phase 9 – Härtung und Betrieb

@@ -67,6 +67,7 @@ const zeilenVon = (
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
     apiZugaenge: zugaenge.map(({ zugangId }) => ({ zugangId })),
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
+    karten: terminal.karten.map(({ karteId }) => ({ karteId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */

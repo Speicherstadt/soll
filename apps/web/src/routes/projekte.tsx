@@ -10,6 +10,7 @@ import { Taetigkeiten } from "../projekte/taetigkeiten.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { Stundennachweise } from "../stundennachweis/nachweise.tsx";
 
 /** Owner and planner keep customers, orders, activities and rates (rollen.ts on the server) */
 const verwaltet = () =>
@@ -19,7 +20,7 @@ const verwaltet = () =>
 
 /**
  * Projekte: orders and activities for everyone who books project time; customers and hourly rates
- * for owner and planner (S-601)
+ * for owner and planner (S-601); the Stundennachweis for everyone who books (S-605)
  */
 const Projekte = () => {
   // the role as the session had it when the page opened: the root route loads it before any page
@@ -41,6 +42,11 @@ const Projekte = () => {
     ...(quelle.verwalten
       ? [{ id: "saetze", label: m.projekte_tab_saetze(), inhalt: () => <Saetze quelle={quelle} /> }]
       : []),
+    {
+      id: "nachweise",
+      label: m.projekte_tab_nachweise(),
+      inhalt: () => <Stundennachweise projekte={quelle} />,
+    },
   ];
   return (
     <Seite titel={m.nav_projekte()}>

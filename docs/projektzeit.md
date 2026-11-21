@@ -2,10 +2,11 @@
 description: >-
   Kunden, Aufträge, Tätigkeiten, Stundensätze und die Stoppuhr im Modul Projektzeit von Soll: die vier
   festen internen Tätigkeiten, welcher Stundensatz gilt, Budgets mit Warnung, Buchungen mit Verweis auf
-  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“ und die Auslastung.
+  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“, die Auslastung
+  und der Stundennachweis, den der Kunde auf dem Handy unterschreibt.
 ---
 
-# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Auslastung
+# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Auslastung, Stundennachweis
 
 Unter **Projekte** legt der Betrieb an, worauf seine Leute Zeit buchen: Kunden, Aufträge und
 Tätigkeiten, dazu die Stundensätze. Der Bereich gehört zum Modul Projektzeit; ist es aus, fehlt er in
@@ -14,11 +15,11 @@ dabei erhalten. Gebucht wird mit der [Stoppuhr](#stoppuhr) unter **Heute**.
 
 ## Wer was sieht
 
-| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung |
-| --- | --- | --- | --- | --- | --- | --- |
-| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | Team; je Person, wenn eingeschaltet (schalten: nur Inhaber) |
-| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene, wenn eingeschaltet |
-| Gerät (Terminal) | nein | nein | nein | nein | nein | nein |
+| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung | Stundennachweise |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | Team; je Person, wenn eingeschaltet (schalten: nur Inhaber) | alle |
+| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene, wenn eingeschaltet | eigene |
+| Gerät (Terminal) | nein | nein | nein | nein | nein | nein | nein |
 
 Wer bucht, muss Aufträge und Tätigkeiten sehen. Geld (Budget in Euro, Stundensätze) braucht nur, wer
 die Aufträge führt.
@@ -147,6 +148,40 @@ Ein **abgeschlossener Monat** sperrt Projektzeit nicht: Die Stempelungen sind di
 § 16 Abs. 2 ArbZG und werden gesperrt, die Projektzeit ist eine Grundlage der Rechnung und bleibt bis
 „abgerechnet“ änderbar (Projektplan, „Arbeitszeit und Projektzeit“).
 
+## Stundennachweis
+
+Unter **Projekte → Nachweise** entsteht der Stundennachweis (Regiebericht): Der Monteur wählt den
+Auftrag und die Tage, zeigt dem Kunden auf dem Handy die Buchungen und lässt ihn unterschreiben.
+
+- **Was drinsteht.** Die beendeten Buchungen auf dem Auftrag, deren Arbeitstag in der Spanne liegt
+  (höchstens ein Jahr) und die noch in keinem unterschriebenen Nachweis stehen: je Zeile Tag, Person,
+  Beginn und Ende, Tätigkeit, ganze Minuten und Notiz, dazu die Summe und eine freie **Bemerkung**
+  für Material und Hinweise. Geld steht nicht darin: Stundensätze sehen nur Inhaber und Planer, und
+  die Rechnung schreibt die Buchhaltung. Eine laufende Buchung zählt erst, wenn sie gestoppt ist.
+- **Wessen Buchungen.** Mitarbeiter machen Nachweise aus ihren eigenen Buchungen, Inhaber und Planer
+  aus denen aller Personen oder einer.
+- **Die Unterschrift.** Der Kunde trägt seinen Namen ein und zeichnet mit dem Finger, einem Stift
+  oder der Maus in das Feld. Soll speichert nur die Form, als Linienzug ganzer Zahlen auf einer
+  Fläche von 600 × 200, gleich wie groß der Bildschirm ist; Zeit, Druck und Tempo der Striche nicht.
+  Die Zeit der Unterschrift nimmt der Server.
+- **Eingefroren.** Einen Nachweis gibt es nur unterschrieben. Er hält seinen Inhalt fest, wie der
+  Kunde ihn gesehen hat (auch Namen von Personen und Tätigkeiten), und sperrt seine Buchungen: Ändern
+  und Löschen lehnt der Server ab (`409 unterschrieben`), abrechnen geht weiter. Eine Buchung steht in
+  höchstens einem Nachweis, auch wenn zwei Handys zugleich unterschreiben lassen. Hat sich zwischen
+  Vorschau und Unterschrift eine Buchung geändert, ist eine dazugekommen oder weggefallen, lehnt der
+  Server die Unterschrift ab (`409 abweichung`); der Kunde sieht die neue Liste und unterschreibt
+  noch einmal.
+- **Nummer und Prüfsumme.** Nachweise sind je Betrieb fortlaufend nummeriert. Das PDF trägt die
+  Unterschrift als Zeichnung und den SHA-256 seines Inhalts; derselbe Inhalt ergibt dieselbe Datei.
+  Der Hash steht auch im Glied der [Audit-Kette](audit-kette.md), das den Nachweis schreibt: Ändert
+  später jemand den gespeicherten Nachweis, passt er nicht mehr zu dem PDF, das der Kunde hat.
+- **An den Kunden.** Das PDF lädt man herunter oder teilt es vom Handy aus (Mail, Messenger), ohne
+  öffentlichen Link. Die Übergabe an [Haben](https://haben.app/) hängt es später an die Leistungen
+  (S-606).
+
+Den Nachweis gibt es auf Deutsch wie den Stundenzettel; ein Buchstabe außerhalb der Standardschrift
+wird ohne Akzent oder als „?“ geschrieben.
+
 ## Archivieren statt Löschen
 
 Was noch etwas nennt, wird archiviert statt gelöscht: einen Kunden mit Auftrag oder Satz, einen
@@ -222,6 +257,10 @@ Alle Routen liegen unter `/api/v1/projektzeit` und verlangen eine Sitzung im Bet
 | `POST /buchungen` | alle außer Geräten (`nutzerId` einer anderen Person nur Inhaber und Planer) | `{ projektId, taetigkeitId, beginn, ende, notiz? }` in UTC-Millisekunden auf der vollen Minute: eine Buchung von Hand |
 | `PATCH /buchungen/{id}`, `DELETE /buchungen/{id}` | die Person selbst, Inhaber und Planer | ändern (`projektId`, `taetigkeitId`, `beginn`, `ende`, `notiz`) oder löschen bis „abgerechnet“ |
 | `POST /buchungen/abrechnen` | Inhaber, Planer | `{ buchungIds }`: markiert als abgerechnet, mit `centProStunde` und `betragCent` je Buchung |
+| `GET /stundennachweise/vorschau?projektId=&von=&bis=&nutzerId=` | alle außer Geräten (`nutzerId` einer anderen Person und alle Personen nur Inhaber und Planer) | was der Kunde unterschreibt: `kunde`, `auftrag`, `zeilen`, `summeMinuten` und `stand`, der SHA-256 der Zeilen |
+| `POST /stundennachweise` | wie die Vorschau | `{ projektId, von, bis, nutzerId?, stand, bemerkung?, unterzeichner, unterschrift }`, `unterschrift` als Liste von Strichen aus Punkten `[x, y]` (ganze Zahlen, 0 bis 600 und 0 bis 200): `201` mit dem Nachweis, `inhalt` und `inhaltHash` |
+| `GET /stundennachweise`, `GET /stundennachweise/{id}` | alle außer Geräten (Mitarbeiter ihre eigenen) | die Nachweise ohne Inhalt, neueste zuerst; einer mit Inhalt |
+| `GET /stundennachweise/{id}/pdf` | wie oben | das PDF, `stundennachweis-<Nummer>.pdf` |
 | `GET /auslastung?monat=JJJJ-MM` | Inhaber, Planer | das Team eines abgelaufenen Monats: `team` mit `art: "team"`, `personen` und den Werten, oder `art: "zu_klein"` mit `personen` und `mindestens`; `422 monat_laeuft` für einen laufenden Monat; dazu `jePersonSeit` |
 | `GET /auslastung/personen?monat=JJJJ-MM` | Inhaber, Planer, nur eingeschaltet | `personen` mit `nutzerId`, `name` und den Werten; sonst `403 auswertung_aus` |
 | `GET /auslastung/ich?monat=JJJJ-MM` | alle außer Geräten, nur eingeschaltet | `eigene`: die Werte der Person selbst; sonst `403 auswertung_aus` |
@@ -237,5 +276,6 @@ nennt allen Mitgliedern `auswertungJePersonSeit` (`null`: aus oder Modul Projekt
 Antworten: `400 ungueltig` bei falschen Angaben (auch Bruchteile von Minuten oder Cent, ein Zeitpunkt
 außerhalb der vollen Minute), `404 unbekannt` (auch für die Buchung einer anderen Person ohne Recht
 dazu), `409` mit `verwendet`, `archiviert`, `fest` (feste Tätigkeit), `doppelt`, `ueberschneidung`,
-`abgerechnet`, `laeuft` oder `laeuft_nicht`, `422` mit `kunde_unbekannt`, `projekt_unbekannt`,
-`taetigkeit_unbekannt`, `person_unbekannt` oder `spanne`.
+`abgerechnet`, `laeuft`, `laeuft_nicht`, `unterschrieben` oder `abweichung`, `422` mit
+`kunde_unbekannt`, `projekt_unbekannt`, `taetigkeit_unbekannt`, `person_unbekannt`, `spanne` oder
+`leer` (nichts zu unterschreiben).

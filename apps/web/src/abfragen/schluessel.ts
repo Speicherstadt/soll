@@ -31,6 +31,8 @@ export const PFAD = {
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
   stoppuhr: `${PZ}/stoppuhr`,
+  nachweise: `${PZ}/stundennachweise`,
+  nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
   auslastung: `${PZ}/auslastung`,
   auslastungPersonen: `${PZ}/auslastung/personen`,
   auslastungIch: `${PZ}/auslastung/ich`,
@@ -74,6 +76,13 @@ export const ressourcen = {
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
+  nachweise: () => einfach(PFAD.nachweise),
+  nachweisVorschau: (parameter: {
+    projektId: string;
+    von: string;
+    bis: string;
+    nutzerId?: string | undefined;
+  }) => mitParametern(PFAD.nachweisVorschau, parameter),
   auslastung: (monat: string) => mitParametern(PFAD.auslastung, { monat }),
   auslastungPersonen: (monat: string) => mitParametern(PFAD.auslastungPersonen, { monat }),
   auslastungIch: (monat: string) => mitParametern(PFAD.auslastungIch, { monat }),

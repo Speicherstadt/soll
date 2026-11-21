@@ -59,5 +59,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0014_auslastung",
     "sql": "ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;"
+  },
+  {
+    "tag": "0015_stundennachweis",
+    "sql": "CREATE TABLE `stundennachweis_buchungen` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `stundennachweis_buchungen_nachweis` ON `stundennachweis_buchungen` (`betrieb_id`,`nachweis_id`);--> statement-breakpoint\nCREATE TABLE `stundennachweise` (\n\t`betrieb_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`projekt_id` text NOT NULL,\n\t`nutzer_id` text,\n\t`von` text NOT NULL,\n\t`bis` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`unterschrieben_am` integer NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nachweis_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `stundennachweise_nummer` ON `stundennachweise` (`betrieb_id`,`nummer`);--> statement-breakpoint\nCREATE INDEX `stundennachweise_projekt` ON `stundennachweise` (`betrieb_id`,`projekt_id`);"
   }
 ];

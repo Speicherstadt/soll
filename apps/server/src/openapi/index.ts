@@ -1,6 +1,6 @@
 import { ALLGEMEIN } from "./allgemein.ts";
 import { ARBEITSZEIT } from "./arbeitszeit.ts";
-import { AUSLASTUNG, BUCHUNGEN } from "./buchungen.ts";
+import { AUSLASTUNG, BUCHUNGEN, STUNDENNACHWEISE } from "./buchungen.ts";
 import { DIENSTPLAN, PROJEKTZEIT } from "./module.ts";
 import { KIOSK, TERMINAL } from "./terminal.ts";
 
@@ -14,6 +14,7 @@ export const OPERATIONEN = [
   ...PROJEKTZEIT,
   ...BUCHUNGEN,
   ...AUSLASTUNG,
+  ...STUNDENNACHWEISE,
   ...TERMINAL,
   ...KIOSK,
 ];

@@ -47,6 +47,7 @@ const zeilenVon = (
   lohn: Lohnteil,
   terminal: Terminalteil,
   einladungen: { einladungId: string }[],
+  zugaenge: { zugangId: string }[],
 ) =>
   ({
     pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
@@ -64,6 +65,7 @@ const zeilenVon = (
     stundensaetze: projekt.stundensaetze.map(({ satzId }) => ({ satzId })),
     projektzeiten: projekt.projektzeiten.map(({ buchungId }) => ({ buchungId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
+    apiZugaenge: zugaenge.map(({ zugangId }) => ({ zugangId })),
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
     karten: terminal.karten.map(({ karteId }) => ({ karteId })),
   }) satisfies EigeneZeilen;
@@ -91,7 +93,16 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     db,
     betriebId,
     nutzerId,
-    zeilenVon(nutzerId, arbeit, erinnerung, projekt, lohn, terminal, konto.einladungen),
+    zeilenVon(
+      nutzerId,
+      arbeit,
+      erinnerung,
+      projekt,
+      lohn,
+      terminal,
+      konto.einladungen,
+      konto.zugaenge,
+    ),
     name,
     iso,
   );

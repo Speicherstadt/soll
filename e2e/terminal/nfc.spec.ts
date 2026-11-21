@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { thema, uebergaengeFertig } from "../thema.ts";
 import { axe, koppeln, pinSetzen, pinTippen, t, weberMitTerminal } from "./kiosk.ts";
 import {
   GEFAELSCHT_URL,
@@ -115,17 +116,18 @@ test("a tablet whose browser wants a tap for NFC offers a button for it @termina
 
 for (const theme of ["light", "dark"] as const) {
   test(`axe finds nothing on the cards in ${theme} @terminal`, async ({ page: jonas, browser }) => {
-    await jonas.emulateMedia({ colorScheme: theme });
+    await thema(jonas, theme);
     await weberMitTerminal(jonas, browser, test.info());
     await karteEintragen(jonas, { name: "Sandra Kühn", uid: UID_KARTE });
     await axe(jonas);
     await jonas.getByRole("button", { name: t("terminal_karte_eintragen") }).click();
     await jonas.getByRole("dialog").getByLabel(t("terminal_karte_art")).selectOption("ntag424");
+    await uebergaengeFertig(jonas);
     await axe(jonas);
     await jonas.keyboard.press("Escape");
     await expect(jonas.getByRole("dialog")).toBeHidden();
     const tablet = await nfcTabletOeffnen(browser, test.info());
-    await tablet.emulateMedia({ colorScheme: theme });
+    await thema(tablet, theme);
     await koppeln(jonas, tablet);
     await karteAuflegen(tablet, UID_KARTE);
     await expect(tablet.getByText(t("kiosk_karte_pin"))).toBeVisible();

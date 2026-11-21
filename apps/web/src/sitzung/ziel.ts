@@ -16,6 +16,11 @@ export type Betrieb = {
    * missing in a business stored on the device by an older version
    */
   hinweis?: { art: "arbeitszeit_eingeschaltet"; am: number } | null;
+  /**
+   * Since when the business shows the utilisation per person (S-604), for every member; null: off;
+   * missing in a business stored on the device by an older version
+   */
+  auswertungJePersonSeit?: number | null;
 };
 
 /** What the app knows of the person in front of it */

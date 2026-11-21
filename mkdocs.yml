@@ -71,6 +71,7 @@ nav:
   - Erinnerungen: erinnerungen.md
   - DATEV-Lohnexport: datev.md
   - Dienstplan: dienstplan.md
+  - REST-API und MCP-Server: api.md
   - Regelwerk: regeln.md
   - Arbeitstag aus Stempelungen: arbeitstag.md
   - Prüfung nach §§ 3 bis 5 ArbZG: pruefung.md

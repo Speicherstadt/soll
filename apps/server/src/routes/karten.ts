@@ -30,7 +30,7 @@ const aesSchluessel = z
   .refine((wert) => !/^0+$/.test(wert))
   .transform((wert) => wert.toUpperCase());
 
-const karteSchema = z.discriminatedUnion("art", [
+export const karteSchema = z.discriminatedUnion("art", [
   z.object({ nutzerId: z.string().min(1), art: z.literal("uid"), uid }).strict(),
   z
     .object({

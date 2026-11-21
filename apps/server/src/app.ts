@@ -4,6 +4,7 @@ import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { pinSchluesselAus } from "./modules/terminal/index.ts";
+import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
 import { auslastungRouten } from "./routes/auslastung.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
@@ -16,9 +17,11 @@ import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { kundenRouten } from "./routes/kunden.ts";
+import { mcpRouten } from "./routes/mcp.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
+import { openapiRouten } from "./routes/openapi.ts";
 import { pinRouten } from "./routes/pins.ts";
 import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
@@ -29,6 +32,7 @@ import { stoppuhrRouten } from "./routes/stoppuhr.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { terminalRouten } from "./routes/terminals.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
+import { zugangRouten } from "./routes/zugaenge.ts";
 import { webAuslieferung } from "./web.ts";
 
 export type AppDeps = {
@@ -89,16 +93,25 @@ export const createApp = ({
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
   app.route("/api/v1/pruefen", pruefRouten(db));
+  app.route("/api/v1/openapi.json", openapiRouten({ version, url }));
+
+  // one limit per token for the REST API and the MCP server together (S-607)
+  const zugang = { schreibDb, jetzt: now, grenze: ratenGrenze() };
+  app.route(
+    "/mcp",
+    mcpRouten({ db, zugang, version, url, fetch: (anfrage, env) => app.fetch(anfrage, env) }),
+  );
   // the tablet with its device token, not a session (S-801)
   app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, pinSchluessel));
 
   const v1 = new Hono<Anfrage>()
-    .use(angemeldet(auth, db))
+    .use(angemeldet(auth, db, zugang))
     .route("/betrieb", betriebRouten(db, schreibDb, now))
     .route("/auskunft", auskunftRouten(db, now))
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
+    .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route(
       "/",
       modulRouten(db, {

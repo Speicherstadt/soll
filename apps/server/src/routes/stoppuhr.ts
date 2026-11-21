@@ -18,12 +18,12 @@ export const bezug = {
   taetigkeitId: z.string().min(1),
 };
 
-const startSchema = z
+export const startSchema = z
   .object({ ...bezug, notiz: notiz.optional() })
   .partial({ projektId: true })
   .strict();
 
-const tagSchema = z
+export const tagSchema = z
   .object({ tag: z.string().refine(istTag).optional(), nutzerId: z.string().min(1).optional() })
   .strict();
 

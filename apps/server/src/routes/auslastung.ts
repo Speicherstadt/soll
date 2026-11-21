@@ -12,8 +12,8 @@ import { auslastungImMonat, auslastungVon } from "../modules/projektzeit/index.t
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon, ungueltig } from "./projektzeit-gemeinsam.ts";
 
-const monatSchema = z.object({ monat: z.string().refine(istMonat) }).strict();
-const einstellungSchema = z.object({ jePerson: z.boolean() }).strict();
+export const monatSchema = z.object({ monat: z.string().refine(istMonat) }).strict();
+export const einstellungSchema = z.object({ jePerson: z.boolean() }).strict();
 
 /** Since when the caller's business shows the utilisation per person; null: off */
 const seitVon = (db: Db, c: Context<Anfrage>): number | null => {

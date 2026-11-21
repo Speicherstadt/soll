@@ -32,18 +32,18 @@ const endpoint = z
   .max(2048)
   .refine(pushDienstErlaubt);
 
-const aboSchema = z
+export const aboSchema = z
   .object({
     endpoint,
     keys: z.object({ p256dh: base64url, auth: base64url }).strict(),
     sprache: z.enum(SPRACHEN),
   })
   .strict();
-const abmeldenSchema = z.object({ endpoint: z.string().min(1).max(2048) }).strict();
-const wuenscheSchema = z
+export const abmeldenSchema = z.object({ endpoint: z.string().min(1).max(2048) }).strict();
+export const wuenscheSchema = z
   .object({ ausstempeln: z.boolean(), pause: z.boolean(), monat: z.boolean(), mail: z.boolean() })
   .strict();
-const regelnSchema = z
+export const regelnSchema = z
   .object({
     // from one hour to the 16 hours after which a Gehen is overdue anyway (R-01)
     gehenMinuten: z.number().int().min(60).max(960),

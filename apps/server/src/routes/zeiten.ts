@@ -26,16 +26,16 @@ const id = z.string().min(1).max(100);
 
 // No `nutzerId` and no instant: a person stamps only for themselves, and the server's clock counts;
 // a device that signs its stamps sends its number and signature along (S-305)
-const stempelSchema = z
+export const stempelSchema = z
   .object({ art, geraetZeitpunkt: zeitpunkt.optional(), geraet: signiertSchema.optional() })
   .strict();
-const nachtragSchema = z.object({ nutzerId: id.optional(), art, zeitpunkt, grund }).strict();
-const aenderungSchema = z.object({ art, zeitpunkt, grund }).strict();
-const entfernenSchema = z.object({ grund }).strict();
-const zuordnungSchema = z
+export const nachtragSchema = z.object({ nutzerId: id.optional(), art, zeitpunkt, grund }).strict();
+export const aenderungSchema = z.object({ art, zeitpunkt, grund }).strict();
+export const entfernenSchema = z.object({ grund }).strict();
+export const zuordnungSchema = z
   .object({ modellId: id, gueltigAb: z.string().refine(istTag).optional() })
   .strict();
-const tagSchema = z
+export const tagSchema = z
   .object({ datum: z.string().refine(istTag).optional(), nutzerId: id.optional() })
   .strict();
 
@@ -122,7 +122,8 @@ const stempelRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
         stempeln(db, schreibDb, kontextVon(c, jetzt), {
           art,
           geraetZeitpunkt: geraetZeitpunkt ?? null,
-          quelle: "app",
+          // a program with a personal access token, not the person in the app (S-607)
+          quelle: c.get("zugangId") === null ? "app" : "api",
           signiert: geraet,
         }),
       );

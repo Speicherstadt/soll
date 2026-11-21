@@ -48,7 +48,7 @@ const pauseKuerzer = (vorlage: {
   return vorlage.pauseMinuten < laenge;
 };
 
-const vorlageSchema = z
+export const vorlageSchema = z
   .object({
     name: z.string().trim().min(1).max(60),
     beginnMinute: minute,
@@ -61,7 +61,7 @@ const vorlageSchema = z
   .refine(spanne)
   .refine(pauseKuerzer);
 
-const bedarfSchema = z
+export const bedarfSchema = z
   .object({
     standortId: id,
     rolle: rolle.min(1),
@@ -82,7 +82,7 @@ const schichtFelder = {
   rolle,
   nutzerId: id.nullable(),
 };
-const schichtSchema = z
+export const schichtSchema = z
   .object({
     ...schichtFelder,
     pauseMinuten: minute.default(0),
@@ -91,11 +91,11 @@ const schichtSchema = z
   })
   .strict()
   .refine(spanne);
-const aenderungSchema = z.object(schichtFelder).partial().strict();
-const wocheSchema = z
+export const aenderungSchema = z.object(schichtFelder).partial().strict();
+export const wocheSchema = z
   .object({ standortId: id, tag: z.string().refine(istTag).optional() })
   .strict();
-const standortFrage = z.object({ standortId: id }).strict();
+export const standortFrage = z.object({ standortId: id }).strict();
 
 const STATUS = {
   unbekannt: 404,

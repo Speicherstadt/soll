@@ -68,7 +68,9 @@ test("the first employee switches working time on and the owner reads why @phone
   await page.goto("/einstellungen");
   const arbeitszeit = page.getByRole("checkbox", { name: t("modul_arbeitszeit") });
   await expect(arbeitszeit).toBeChecked();
-  await arbeitszeit.uncheck();
+  // the server refuses and the box springs back as soon as its answer is in, which can be before
+  // uncheck() looks at the box again; so click, then wait for the refusal and the box
+  await arbeitszeit.click();
   await expect(page.getByRole("alert")).toHaveText(t("fehler_arbeitszeit_pflicht"));
   await expect(arbeitszeit).toBeChecked();
 });

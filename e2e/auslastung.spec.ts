@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen, einladungAnnehmen, senden, zweiterBrowser } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { thema } from "./thema.ts";
 
 test.use({ locale: "de", timezoneId: "Europe/Berlin" });
 const de = messagesOf("de");
@@ -36,11 +37,7 @@ const schicht = async (jonas: Page, nutzerId?: string) => {
 
 const axe = async (page: Page) => {
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
-    // colors fade on buttons (transition-colors): axe reads them once the fade has ended
-    await page.evaluate(() =>
-      Promise.all(document.getAnimations().map((animation) => animation.finished)),
-    );
+    await thema(page, theme);
     expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
   }
 };

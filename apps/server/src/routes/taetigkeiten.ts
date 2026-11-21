@@ -20,12 +20,12 @@ import {
   ungueltig,
 } from "./projektzeit-gemeinsam.ts";
 
-const neuSchema = z
+export const neuSchema = z
   .object({ name, abrechenbar: z.boolean().optional(), ...extern })
   .strict()
   .refine(beideOderKeins);
 
-const aenderungSchema = z
+export const aenderungSchema = z
   .object({ name, abrechenbar: z.boolean(), archiviert })
   .partial()
   .strict()

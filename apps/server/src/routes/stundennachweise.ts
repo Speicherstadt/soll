@@ -30,7 +30,7 @@ const spanneGilt = (werte: { von: string; bis: string }) => {
   return tage >= 0 && tage < LAENGSTE_SPANNE;
 };
 
-const vorschauSchema = z.object(auswahl).strict().refine(spanneGilt);
+export const vorschauSchema = z.object(auswahl).strict().refine(spanneGilt);
 
 /** Points as whole numbers only: [x, y], nothing more (no time, no pressure) */
 const punkt = z.tuple([
@@ -38,7 +38,7 @@ const punkt = z.tuple([
   z.number().int().min(0).max(FLAECHE.hoehe),
 ]);
 
-const unterschriftSchema = z
+export const unterschriftSchema = z
   .object({
     ...auswahl,
     stand: z.string().regex(/^[0-9a-f]{64}$/),

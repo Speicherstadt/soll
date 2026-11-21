@@ -475,8 +475,26 @@ Alle Punkte: nach S-306.
   Nr. 1 ArbSchG), bis er ihn bestätigt, und Arbeitszeit lässt sich nicht mehr abschalten; ein
   Playwright-Test (Desktop und `@phone`) zeigt Navigation und Umleitung im Solo-Betrieb und diesen
   Wechsel.
-- [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
+- [x] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
+  Fertig, wenn: reine Funktionen in `packages/arbeitszeit` die Auslastung eines Monats in ganzen
+  Minuten rechnen (anwesend als gestempelte Arbeitszeit nach § 2 Abs. 1 ArbZG wie `tagesstand()`
+  sie zählt, gebucht nach abrechenbar und intern, anwesend ohne Buchung, Anteil abrechenbar in
+  ganzen Prozent ohne Brüche), mit Vitest auch für eine Nachtschicht über Mitternacht, die zum Tag
+  ihres Beginns gehört, und die Nächte der Zeitumstellung; was „Team“ heißt und die Mindestgröße
+  einer Gruppe im Projektplan entschieden sind (mit Grund, § 87 Abs. 1 Nr. 6 BetrVG und Art. 5
+  Abs. 1 lit. c DSGVO) und der Server eine kleinere Gruppe ohne Zahlen beantwortet (Test); Inhaber
+  und Planer die Auslastung je Team sehen, andere Rollen nicht (403); die Auswertung je Person aus
+  ist, bis der Inhaber sie einschaltet, die Einstellung über die Audit-Kette mit Akteur und
+  Zeitpunkt geschrieben wird (Test) und eine neue Migration sie am Betrieb speichert; der Server
+  Zahlen je Person ablehnt, solange sie aus ist (`403 auswertung_aus`, Test), auch die eigenen;
+  ist sie an, sehen Inhaber und Planer die Zahlen je Person und jede Person ihre eigenen, und alle
+  Beschäftigten sehen in der App „Auswertung je Person ist eingeschaltet seit …“ mit der Norm;
+  der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt,
+  dass kein Betrieb die Auslastung eines anderen sieht oder dessen Einstellung ändert; Playwright
+  zeigt die Auslastung je Team, das Einschalten und den Hinweis bei einer Mitarbeiterin (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/projektzeit.md`.
 - [x] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
   Fertig, wenn: ein Stundennachweis für einen Auftrag und eine Spanne von Arbeitstagen aus den
   beendeten Buchungen entsteht, die noch in keinem unterschriebenen Nachweis stehen (je Zeile Tag,
@@ -505,8 +523,31 @@ Alle Punkte: nach S-306.
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
-- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
+- [x] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
   OpenAPI-Beschreibung, MCP-Server.
+  Fertig, wenn: jede Person eines Betriebs (nicht das Gerät des Terminals) unter Einstellungen
+  persönliche Zugänge anlegt, mit Namen und wahlweise einem Ablauf (30, 90 oder 365 Tage oder
+  keiner); das Token zeigt die App einmal, gespeichert sind nur sein SHA-256 und ein kurzer Anfang
+  zum Wiedererkennen; die Liste zeigt Name, Anfang, angelegt, Ablauf und den Tag der letzten Nutzung,
+  jeder Zugang lässt sich widerrufen; Anlegen, Widerrufen und die letzte Nutzung (höchstens ein Glied
+  je Zugang und Tag) stehen in der Audit-Kette über eine neue Migration. Ein Token gilt als
+  `Authorization: Bearer` an jeder Route unter `/api/v1` neben der Sitzung und trägt genau die
+  Rechte der Rolle seiner Person in seinem Betrieb, nie mehr: eine geänderte Rolle gilt beim
+  nächsten Aufruf, wer den Betrieb verlässt, dessen Zugänge sind ab sofort tot und leben auch nach
+  einem Wiedereintritt nicht auf; widerrufen oder abgelaufen heißt 401; Zugänge verwaltet nur die
+  Sitzung, nie ein Token; was über ein Token gestempelt wird, trägt die Quelle `api`; je Token
+  höchstens 120 Aufrufe in der Minute, darüber 429 mit `Retry-After`. Eine OpenAPI-3.1-Beschreibung
+  liegt öffentlich unter `/api/v1/openapi.json`, erzeugt aus den Zod-Schemas der Routen, und ein
+  Test liest die Routen aus der App und verlangt für jede eine Beschreibung und umgekehrt. Ein
+  MCP-Server unter `/mcp` (Streamable HTTP, zustandslos, Fassungen 2026-07-28 mit `server/discover`
+  und 2025-03-26 bis 2025-11-25 mit `initialize`) bietet Werkzeuge zum Lesen (Betrieb, Tag, Monat,
+  Kunden, Aufträge, Tätigkeiten, Standorte, Woche im Dienstplan) und zum Stempeln, die über dieselbe
+  API mit demselben Token gehen, also mit denselben Rechten und Modulschaltern; er prüft `Origin`,
+  Kopfzeilen und Fassung nach der Spezifikation. Ein Test je Endpunkt zeigt, dass kein Betrieb die
+  Zugänge eines anderen sieht oder widerruft, und ein Test, dass ein Token nie die Daten eines
+  anderen Betriebs erreicht, auch nicht bei einer Person in zwei Betrieben; Playwright legt einen
+  Zugang an, nutzt und widerruft ihn (desktop und `@phone`), axe grün in hell und dunkel; Texte in
+  allen sechs Sprachen; Doku `docs/api.md`.
 
 ## Phase 7 – Umzug aus anderen Tools
 

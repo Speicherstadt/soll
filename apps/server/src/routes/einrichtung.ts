@@ -5,7 +5,7 @@ import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import { betriebEinrichten, einrichtungAbschliessen } from "../modules/betrieb/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const betriebSchema = z
+export const betriebSchema = z
   .object({
     name: z.string().trim().min(1).max(100),
     land: z.enum(LAENDER),

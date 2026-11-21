@@ -21,7 +21,7 @@ const nummer = z.number().int().min(1).max(2_147_483_647);
 /** The device, its number and its signature of a stamp (S-305) */
 export const signiertSchema = z.object({ geraetId, nummer, signatur }).strict();
 
-const anmeldeSchema = z
+export const anmeldeSchema = z
   .object({
     schluessel: z
       .object({ kty: z.literal("EC"), crv: z.literal("P-256"), x: koordinate, y: koordinate })
@@ -30,7 +30,7 @@ const anmeldeSchema = z
   })
   .strict();
 
-const offlineSchema = z
+export const offlineSchema = z
   .object({ art, geraetZeitpunkt: zeitpunkt, gesendetAm: zeitpunkt, geraet: signiertSchema })
   .strict();
 

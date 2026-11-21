@@ -6,8 +6,10 @@ import { defineConfig } from "vite";
 import { serviceWorker } from "./build/service-worker.ts";
 
 // The API of the Hono server, reached through Vite under the app's own origin, so the session cookie
-// and Better Auth's origin check see one site (dev: 18200, e2e: 28200; CLAUDE.md, "Working rules")
-const api = { "/api": `http://127.0.0.1:${process.env.SOLL_API_PORT ?? "18200"}` };
+// and Better Auth's origin check see one site (dev: 18200, e2e: 28200; CLAUDE.md, "Working rules");
+// the MCP server beside it (S-607)
+const server = `http://127.0.0.1:${process.env.SOLL_API_PORT ?? "18200"}`;
+const api = { "/api": server, "/mcp": server };
 
 // The app is a static SPA/PWA; the Hono server serves the API (CLAUDE.md, "Code style")
 export default defineConfig({

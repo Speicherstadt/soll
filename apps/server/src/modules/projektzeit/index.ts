@@ -1,4 +1,5 @@
 export { type Abgerechnet, buchungenAbrechnen } from "./abrechnen.ts";
+export { auslastungImMonat, auslastungVon } from "./auslastung.ts";
 export {
   type BuchungAenderung,
   buchungAendern,

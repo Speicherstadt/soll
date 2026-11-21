@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6f94ad70-f8de-46ab-a9a1-c3c9b1712b92",
+  "id": "05eab2f8-4b57-4dc2-a282-48b60340e890",
   "prevId": "02dd1775-afce-4863-97f1-f0b31e190bd5",
   "tables": {
     "arbeitszeitmodelle": {
@@ -2312,8 +2312,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "stundennachweis_buchungen": {
-      "name": "stundennachweis_buchungen",
+    "api_zugaenge": {
+      "name": "api_zugaenge",
       "columns": {
         "betrieb_id": {
           "name": "betrieb_id",
@@ -2322,70 +2322,8 @@
           "notNull": true,
           "autoincrement": false
         },
-        "buchung_id": {
-          "name": "buchung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nachweis_id": {
-          "name": "nachweis_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "stundennachweis_buchungen_nachweis": {
-          "name": "stundennachweis_buchungen_nachweis",
-          "columns": [
-            "betrieb_id",
-            "nachweis_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "stundennachweis_buchungen_betrieb_id_buchung_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "buchung_id"
-          ],
-          "name": "stundennachweis_buchungen_betrieb_id_buchung_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "stundennachweise": {
-      "name": "stundennachweise",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nachweis_id": {
-          "name": "nachweis_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nummer": {
-          "name": "nummer",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "projekt_id": {
-          "name": "projekt_id",
+        "zugang_id": {
+          "name": "zugang_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -2395,78 +2333,77 @@
           "name": "nutzer_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
-        "von": {
-          "name": "von",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "bis": {
-          "name": "bis",
+        "praefix": {
+          "name": "praefix",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "inhalt": {
-          "name": "inhalt",
+        "token_hash": {
+          "name": "token_hash",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "inhalt_hash": {
-          "name": "inhalt_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "unterschrieben_am": {
-          "name": "unterschrieben_am",
+        "angelegt_am": {
+          "name": "angelegt_am",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "erstellt_von": {
-          "name": "erstellt_von",
+        "gueltig_bis": {
+          "name": "gueltig_bis",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "zuletzt_genutzt": {
+          "name": "zuletzt_genutzt",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {
-        "stundennachweise_nummer": {
-          "name": "stundennachweise_nummer",
+        "api_zugaenge_token_hash_unique": {
+          "name": "api_zugaenge_token_hash_unique",
           "columns": [
-            "betrieb_id",
-            "nummer"
+            "token_hash"
           ],
           "isUnique": true
         },
-        "stundennachweise_projekt": {
-          "name": "stundennachweise_projekt",
+        "api_zugaenge_person": {
+          "name": "api_zugaenge_person",
           "columns": [
             "betrieb_id",
-            "projekt_id"
+            "nutzer_id"
           ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {
-        "stundennachweise_betrieb_id_nachweis_id_pk": {
+        "api_zugaenge_betrieb_id_zugang_id_pk": {
           "columns": [
             "betrieb_id",
-            "nachweis_id"
+            "zugang_id"
           ],
-          "name": "stundennachweise_betrieb_id_nachweis_id_pk"
+          "name": "api_zugaenge_betrieb_id_zugang_id_pk"
         }
       },
       "uniqueConstraints": {},

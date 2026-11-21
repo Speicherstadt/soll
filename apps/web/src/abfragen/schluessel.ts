@@ -27,11 +27,15 @@ export const PFAD = {
   taetigkeiten: `${PZ}/taetigkeiten`,
   saetze: `${PZ}/saetze`,
   satzPersonen: `${PZ}/saetze/personen`,
+  zugaenge: "/api/v1/zugaenge",
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
   stoppuhr: `${PZ}/stoppuhr`,
   nachweise: `${PZ}/stundennachweise`,
   nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
+  auslastung: `${PZ}/auslastung`,
+  auslastungPersonen: `${PZ}/auslastung/personen`,
+  auslastungIch: `${PZ}/auslastung/ich`,
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -68,6 +72,7 @@ export const ressourcen = {
   taetigkeiten: () => einfach(PFAD.taetigkeiten),
   saetze: () => einfach(PFAD.saetze),
   satzPersonen: () => einfach(PFAD.satzPersonen),
+  zugaenge: () => einfach(PFAD.zugaenge),
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
@@ -78,6 +83,9 @@ export const ressourcen = {
     bis: string;
     nutzerId?: string | undefined;
   }) => mitParametern(PFAD.nachweisVorschau, parameter),
+  auslastung: (monat: string) => mitParametern(PFAD.auslastung, { monat }),
+  auslastungPersonen: (monat: string) => mitParametern(PFAD.auslastungPersonen, { monat }),
+  auslastungIch: (monat: string) => mitParametern(PFAD.auslastungIch, { monat }),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

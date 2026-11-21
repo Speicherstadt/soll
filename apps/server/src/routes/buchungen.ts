@@ -19,7 +19,7 @@ const minute = z
   .min(0)
   .refine((ms) => ms % 60_000 === 0);
 
-const neuSchema = z
+export const neuSchema = z
   .object({
     nutzerId: z.string().min(1).optional(),
     ...bezug,
@@ -29,13 +29,13 @@ const neuSchema = z
   })
   .strict();
 
-const aenderungSchema = z
+export const aenderungSchema = z
   .object({ ...bezug, beginn: minute, ende: minute, notiz })
   .partial()
   .strict()
   .refine(nichtLeer);
 
-const abrechnenSchema = z
+export const abrechnenSchema = z
   .object({ buchungIds: z.array(z.string().min(1)).min(1).max(1_000) })
   .strict();
 

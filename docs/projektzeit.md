@@ -2,11 +2,11 @@
 description: >-
   Kunden, Aufträge, Tätigkeiten, Stundensätze und die Stoppuhr im Modul Projektzeit von Soll: die vier
   festen internen Tätigkeiten, welcher Stundensatz gilt, Budgets mit Warnung, Buchungen mit Verweis auf
-  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“ und der
-  Stundennachweis, den der Kunde auf dem Handy unterschreibt.
+  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“, die Auslastung
+  und der Stundennachweis, den der Kunde auf dem Handy unterschreibt.
 ---
 
-# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Stundennachweis
+# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Auslastung, Stundennachweis
 
 Unter **Projekte** legt der Betrieb an, worauf seine Leute Zeit buchen: Kunden, Aufträge und
 Tätigkeiten, dazu die Stundensätze. Der Bereich gehört zum Modul Projektzeit; ist es aus, fehlt er in
@@ -15,11 +15,11 @@ dabei erhalten. Gebucht wird mit der [Stoppuhr](#stoppuhr) unter **Heute**.
 
 ## Wer was sieht
 
-| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Stundennachweise |
-| --- | --- | --- | --- | --- | --- | --- |
-| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | alle |
-| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene |
-| Gerät (Terminal) | nein | nein | nein | nein | nein | nein |
+| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung | Stundennachweise |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | Team; je Person, wenn eingeschaltet (schalten: nur Inhaber) | alle |
+| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene, wenn eingeschaltet | eigene |
+| Gerät (Terminal) | nein | nein | nein | nein | nein | nein | nein |
 
 Wer bucht, muss Aufträge und Tätigkeiten sehen. Geld (Budget in Euro, Stundensätze) braucht nur, wer
 die Aufträge führt.
@@ -193,6 +193,53 @@ mit: Sie bekommen keine neuen Sätze, und ein archivierter Auftrag kommt erst na
 zurück. Sonst geht zurückholen jederzeit. Jede Änderung steht in der
 [Audit-Kette](audit-kette.md).
 
+## Auslastung
+
+Unter **Auswertungen** zeigt Soll, wie sich die gestempelte Arbeitszeit eines Monats auf die
+gebuchte Projektzeit verteilt:
+
+| Wert | Was zählt |
+| --- | --- |
+| Anwesend | die gestempelte Arbeitszeit ohne Pausen (§ 2 Abs. 1 ArbZG), je Arbeitstag so gezählt wie unter **Heute**; eine Nachtschicht gehört zum Tag ihres Beginns |
+| Abrechenbar | Buchungen auf einem Auftrag mit einer Tätigkeit, die der Betrieb abrechnet |
+| Intern | alle anderen Buchungen: ohne Auftrag oder mit einer Tätigkeit, die der Betrieb nicht abrechnet |
+| Ohne Buchung | anwesend, aber nicht gebucht, je Person nie unter null |
+| Anteil abrechenbar | abrechenbar von anwesend, in ganzen Prozent (kaufmännisch gerundet) |
+
+Eine Buchung zählt im Monat ihres Arbeitstags, eine laufende bis jetzt. Alles in ganzen Minuten.
+
+### Je Team
+
+Inhaber und Planer sehen die Auslastung des **Teams**: aller Personen mit gestempelter oder
+gebuchter Zeit im Monat, auch wer den Betrieb inzwischen verlassen hat. Damit niemand einzeln
+erkennbar wird (§ 87 Abs. 1 Nr. 6 BetrVG, Art. 5 Abs. 1 lit. c DSGVO), gilt:
+
+- **Mindestens drei Personen.** Bei weniger nennt Soll keine Zahlen, nur dass die Gruppe zu klein
+  ist.
+- **Nur abgelaufene Monate.** In einem laufenden Monat zeigte der Unterschied zwischen zwei Abrufen,
+  was eine einzelne Person in der Zwischenzeit gestempelt oder gebucht hat.
+- **Keine Tage, keine Namen.** Das Team ist eine Summe über den ganzen Monat.
+
+Andere Rollen sehen die Auslastung des Teams nicht.
+
+### Je Person
+
+Eine Auswertung je Person ist eine technische Einrichtung, die Leistung überwachen kann. Sie ist
+deshalb **aus**, bis der Inhaber sie unter **Auswertungen** einschaltet; hat der Betrieb einen
+Betriebsrat, erst mit seiner Zustimmung (§ 87 Abs. 1 Nr. 6 BetrVG, [Regel R-30](regeln.md)). Soll
+schreibt jedes Ein- und Ausschalten mit Person und Zeitpunkt in die [Audit-Kette](audit-kette.md);
+schaltet der Inhaber sie erneut ein, bleibt der erste Zeitpunkt.
+
+Solange sie an ist,
+
+- sehen Inhaber und Planer die Zahlen jeder Person, auch für den laufenden Monat;
+- sieht jede Person unter **Auswertungen** ihre eigenen;
+- steht auf jeder Seite der App für alle: „Auswertung je Person ist eingeschaltet seit …“ mit der
+  Norm.
+
+Solange sie aus ist, lehnt der Server jede Zahl je Person ab (`403 auswertung_aus`), auch die
+eigenen.
+
 ## API
 
 Alle Routen liegen unter `/api/v1/projektzeit` und verlangen eine Sitzung im Betrieb:
@@ -214,9 +261,17 @@ Alle Routen liegen unter `/api/v1/projektzeit` und verlangen eine Sitzung im Bet
 | `POST /stundennachweise` | wie die Vorschau | `{ projektId, von, bis, nutzerId?, stand, bemerkung?, unterzeichner, unterschrift }`, `unterschrift` als Liste von Strichen aus Punkten `[x, y]` (ganze Zahlen, 0 bis 600 und 0 bis 200): `201` mit dem Nachweis, `inhalt` und `inhaltHash` |
 | `GET /stundennachweise`, `GET /stundennachweise/{id}` | alle außer Geräten (Mitarbeiter ihre eigenen) | die Nachweise ohne Inhalt, neueste zuerst; einer mit Inhalt |
 | `GET /stundennachweise/{id}/pdf` | wie oben | das PDF, `stundennachweis-<Nummer>.pdf` |
+| `GET /auslastung?monat=JJJJ-MM` | Inhaber, Planer | das Team eines abgelaufenen Monats: `team` mit `art: "team"`, `personen` und den Werten, oder `art: "zu_klein"` mit `personen` und `mindestens`; `422 monat_laeuft` für einen laufenden Monat; dazu `jePersonSeit` |
+| `GET /auslastung/personen?monat=JJJJ-MM` | Inhaber, Planer, nur eingeschaltet | `personen` mit `nutzerId`, `name` und den Werten; sonst `403 auswertung_aus` |
+| `GET /auslastung/ich?monat=JJJJ-MM` | alle außer Geräten, nur eingeschaltet | `eigene`: die Werte der Person selbst; sonst `403 auswertung_aus` |
+| `PUT /auslastung/einstellung` | Inhaber | `{ jePerson }`: schaltet die Auswertung je Person ein oder aus, Antwort `{ jePersonSeit }` (`null`: aus) |
 
 `GET /projekte` nennt je Auftrag `budget`: eine Zeile je gesetztem Budget mit `verbraucht`, `rest`
 und `stufe` (`ok`, `warnung`, `aufgebraucht`), die Zeile in Cent nur für Inhaber und Planer.
+
+Die Werte der Auslastung heißen `anwesendMinuten`, `abrechenbarMinuten`, `internMinuten`,
+`ohneBuchungMinuten` und `abrechenbarProzent` (`null` ohne gestempelte Zeit). `GET /api/v1/betrieb`
+nennt allen Mitgliedern `auswertungJePersonSeit` (`null`: aus oder Modul Projektzeit aus).
 
 Antworten: `400 ungueltig` bei falschen Angaben (auch Bruchteile von Minuten oder Cent, ein Zeitpunkt
 außerhalb der vollen Minute), `404 unbekannt` (auch für die Buchung einer anderen Person ohne Recht

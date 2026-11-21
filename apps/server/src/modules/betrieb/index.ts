@@ -163,3 +163,9 @@ export const einrichtungAbschliessen = (
   );
   return true;
 };
+
+export {
+  type AuswertungErgebnis,
+  auswertungJePersonSeit,
+  auswertungJePersonSetzen,
+} from "./auswertung.ts";

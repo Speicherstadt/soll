@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen, senden } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { thema } from "./thema.ts";
 
 test.use({ locale: "de", timezoneId: "Europe/Berlin" });
 const de = messagesOf("de");
@@ -56,8 +57,7 @@ const baustelle = async (page: Page) => {
  */
 const axeGruen = async (page: Page) => {
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
-    await page.waitForFunction(() => document.getAnimations().length === 0);
+    await thema(page, theme);
     expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
   }
 };

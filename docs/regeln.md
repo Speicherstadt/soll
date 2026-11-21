@@ -1112,13 +1112,16 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   oder Leistung überwachen.
 - **Regel**: Eine Auswertung je Person (Auslastung, gebuchte gegen anwesende Zeit) gibt es nur,
   wenn der Betrieb sie eingeschaltet hat; die Einstellung steht im Audit-Log, und die Beschäftigten
-  sehen, dass sie eingeschaltet ist (DESIGN.md, „Kontrolle sichtbar machen“).
+  sehen, dass sie eingeschaltet ist (DESIGN.md, „Kontrolle sichtbar machen“). Eine Auswertung je
+  Team darf keine Person erkennbar machen: Zahlen erst ab drei Personen und nur für abgelaufene
+  Monate ([Auslastung](projektzeit.md#auslastung)).
 - **Schwere**: Verstoß, wenn eine Auswertung je Person ohne Einstellung erzeugt würde (der Server
   lehnt ab).
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
 | erlaubt | Auswertung je Team | erlaubt | § 87 Abs. 1 Nr. 6 BetrVG |
+| Grenze | Auswertung je Team mit nur zwei Personen im Monat | keine Zahlen, nur „zu wenige Personen“ (S-604) | § 87 Abs. 1 Nr. 6 BetrVG; Art. 5 Abs. 1 lit. c DSGVO |
 | Grenze | Auswertung je Person, eingeschaltet am 1.11., Abruf am 1.11. | erlaubt, Hinweis an die Beschäftigten | § 87 Abs. 1 Nr. 6 BetrVG |
 | Verstoß | Auswertung je Person ohne Einstellung | abgelehnt | § 87 Abs. 1 Nr. 6 BetrVG |
 

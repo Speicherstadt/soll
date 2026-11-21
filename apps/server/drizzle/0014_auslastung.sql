@@ -1,0 +1,1 @@
+ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;

@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen, senden } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { thema } from "./thema.ts";
 
 test.use({ locale: "de", timezoneId: "Europe/Berlin" });
 const de = messagesOf("de");
@@ -92,7 +93,7 @@ test("books by hand, sees the hint, starts, switches in one tap and stops @phone
   await expect(bereich.getByText(t("stoppuhr_steht"))).toBeVisible();
 
   for (const theme of ["light", "dark"] as const) {
-    await page.emulateMedia({ colorScheme: theme });
+    await thema(page, theme);
     expect((await new AxeBuilder({ page }).analyze()).violations, theme).toEqual([]);
   }
 

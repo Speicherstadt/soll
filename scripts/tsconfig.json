@@ -4,5 +4,6 @@
     "outDir": "../node_modules/.tsbuild/scripts",
     "types": ["bun"]
   },
-  "include": ["*.ts"]
+  "include": ["*.ts", "gesetze/*.ts"],
+  "references": [{ "path": "../packages/arbeitszeit" }]
 }

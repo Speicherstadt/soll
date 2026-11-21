@@ -650,8 +650,30 @@ Alle Punkte: nach S-305.
   `DOCKER_PAT` gesetzt ist; ohne veröffentlicht er nichts und sagt das in der Zusammenfassung.
   `docs/installation.md` (Docker Compose, Podman Quadlet, Binary, Umgebung, Sicherung und
   Wiederherstellung, Update), README mit Abschnitt Installation.
-- [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
+- [x] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
+  Fertig, wenn: `scripts/gesetze/normen.json` jede beobachtete Norm mit ihrer Adresse auf
+  gesetze-im-internet.de und dem SHA-256 ihres normalisierten Textes führt (Überschrift, Text und
+  Fußnoten ohne Tags, Navigation und Fußzeile, Entities aufgelöst, Leerraum zusammengefasst; nach
+  `scripts/jahreswerte/normen.ts` aus `firsttris/haben`, kopiert mit Quelle); der Normalisierer an
+  Fixtures zeigt, dass Navigation, Zeichensatz (ISO-8859-1 nur im meta-Element) und Leerraum den Hash
+  nicht ändern, ein geändertes Wort aber schon (Tests). Ein Test liest jede Fundstelle mit Paragraf
+  und Gesetz aus `docs/regeln.md` und verlangt sie in der Liste: ArbZG, ArbSchG, MiLoG,
+  SchwarzArbG, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG, SGB IV (§§ 8, 8a, 109), SGB V § 45,
+  SGB IX § 208, BEEG § 17, EStG § 3b, BetrVG § 87, BGB, SvEV § 1, dazu die Grundlagen der Jahreswerte
+  (§ 1 MiLoG, § 1 MiLoV5, § 8 SGB IV, § 45 SGB V); Recht, das gesetze-im-internet.de nicht führt
+  (Landesrecht wie die Feiertagsgesetze, DSGVO, Urteile, Richtlinien wie die LStR), steht mit Grund
+  in einer Ausnahmeliste, ein unbekanntes Gesetz lässt den Test scheitern. `bun run gesetze` ruft
+  die Normen ab, vergleicht und schreibt einen Bericht (`--bericht`), `--schreiben` übernimmt die
+  aktuellen Hashes; eine Norm ohne Hash ist „noch kein Stand“ und kein Befund, eine nicht
+  erreichbare Seite eine Warnung, 404 ein Befund. Fehlende Jahreswerte sind Befunde: das laufende
+  Jahr immer, das nächste ab dem 1. Oktober (Mindestlohn, Minijob-Grenze, Kinderkrankentage), dazu
+  eine neue Mindestlohnanpassungsverordnung auf gesetze-im-internet.de. Der Workflow
+  `.github/workflows/gesetze.yml` läuft wöchentlich und auf Knopfdruck mit `issues: write` über
+  `GITHUB_TOKEN` und öffnet genau ein Issue mit dem Label `gesetzeswaechter`, das alle Befunde
+  auflistet; ein offenes bekommt bei geänderten Befunden einen Kommentar und neuen Text, bei gleichen
+  nichts; ohne Befund entsteht keins (Tests mit nachgestellter API). Alle Abrufe in Tests laufen
+  gegen Fixtures, ohne Netz. Doku `docs/gesetzeswaechter.md` und `docs/entwicklung.md`.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
   README aktuell.
 - [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,

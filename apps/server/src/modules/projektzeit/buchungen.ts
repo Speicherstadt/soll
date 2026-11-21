@@ -9,6 +9,7 @@ import {
   ueberschneidende,
 } from "./buchungen-lesen.ts";
 import { type Ergebnis, type Grund, gesetzt, nein, ok } from "./ergebnis.ts";
+import { imNachweis } from "./nachweis-sperre.ts";
 
 /** A booking by hand: a finished span on whole minutes of the person `nutzerId` */
 export type NeueBuchung = Bezug & {
@@ -57,7 +58,7 @@ export const buchungAnlegen = (
 
 /**
  * A booking the caller may change: of the business, the caller's own or (for owner and planner)
- * anyone's, and not yet billed. Someone else's reads as unknown.
+ * anyone's, not yet billed and in no signed Stundennachweis (S-605). Someone else's reads as unknown.
  */
 export const aenderbare = (
   db: Db,
@@ -67,7 +68,8 @@ export const aenderbare = (
 ): Ergebnis<BuchungZeile> => {
   const zeile = buchungLesen(db, kontext.betriebId, buchungId);
   if (!zeile || (!fuerAndere && zeile.nutzerId !== kontext.akteur)) return nein("unbekannt");
-  return zeile.abgerechnetAm === null ? ok(zeile) : nein("abgerechnet");
+  if (zeile.abgerechnetAm !== null) return nein("abgerechnet");
+  return imNachweis(db, kontext.betriebId, buchungId) ? nein("unterschrieben") : ok(zeile);
 };
 
 /** Why a change is refused: the span, what it is on (only when that changes), an overlap */

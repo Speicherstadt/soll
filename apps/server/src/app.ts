@@ -30,6 +30,7 @@ import { pruefexportRouten } from "./routes/pruefexport.ts";
 import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
 import { stoppuhrRouten } from "./routes/stoppuhr.ts";
+import { stundennachweisRouten } from "./routes/stundennachweise.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { terminalRouten } from "./routes/terminals.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
@@ -135,6 +136,7 @@ export const createApp = ({
           "/saetze": satzRouten(db, schreibDb, now),
           "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
           "/buchungen": buchungRouten(db, schreibDb, now),
+          "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
           "/auslastung": auslastungRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },

@@ -1,6 +1,7 @@
 import * as auslastung from "../routes/auslastung.ts";
 import * as buchungen from "../routes/buchungen.ts";
 import * as stoppuhr from "../routes/stoppuhr.ts";
+import * as stundennachweise from "../routes/stundennachweise.ts";
 import type { Operation } from "./dokument.ts";
 import { unter } from "./module.ts";
 
@@ -71,3 +72,31 @@ export const AUSLASTUNG: readonly Operation[] = unter("/api/v1/projektzeit", "Pr
     koerper: auslastung.einstellungSchema,
   },
 ]);
+
+/** The record of hours the customer signs on the phone (S-605) */
+export const STUNDENNACHWEISE: readonly Operation[] = unter(
+  "/api/v1/projektzeit/stundennachweise",
+  "Projektzeit",
+  [
+    {
+      methode: "get",
+      pfad: "/vorschau",
+      zusammenfassung: "Was der Kunde unterschreibt: die Buchungen eines Auftrags in einer Spanne",
+      abfrage: stundennachweise.vorschauSchema,
+    },
+    {
+      methode: "post",
+      pfad: "",
+      zusammenfassung: "Einen Stundennachweis mit der Unterschrift des Kunden anlegen",
+      koerper: stundennachweise.unterschriftSchema,
+    },
+    { methode: "get", pfad: "", zusammenfassung: "Die Stundennachweise, neueste zuerst" },
+    { methode: "get", pfad: "/:nachweisId", zusammenfassung: "Ein Stundennachweis mit Inhalt" },
+    {
+      methode: "get",
+      pfad: "/:nachweisId/pdf",
+      zusammenfassung: "Der Stundennachweis als PDF mit Unterschrift und Prüfsumme",
+      antwort: "pdf",
+    },
+  ],
+);

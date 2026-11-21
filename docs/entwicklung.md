@@ -24,6 +24,7 @@ wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE
 | `apps/web` | Solid-2-App als statische SPA/PWA mit Service Worker, Routen mit TanStack Router |
 | `e2e/` | Playwright mit den Projekten `desktop`, `phone` und `terminal` |
 | `messages/` | Texte der App in `de`, `en`, `tr`, `pl`, `uk` und `ar` (Paraglide) |
+| `scripts/gesetze/` | Gesetzeswächter: beobachtete Normen mit Hash (`normen.json`), Abruf, Bericht und Issue ([Gesetzeswächter](gesetzeswaechter.md)) |
 
 ## Befehle
 
@@ -34,6 +35,7 @@ bun run dev:web      # App auf Port 5177, leitet /api an den Server auf 18200 we
 bun run check        # Typen, Lint, Solid-2-Prüfung, Tests, Build
 bun run solid2       # nur die Prüfung auf Formen aus Solid 1.x
 bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
+bun run gesetze      # Gesetzeswächter: Normen abrufen und vergleichen, Bericht auf der Konsole
 ```
 
 Die App ruft die API unter ihrer eigenen Adresse auf; Vite leitet `/api` an den Server weiter

@@ -29,6 +29,7 @@ export const PFAD = {
   satzPersonen: `${PZ}/saetze/personen`,
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
+  terminalKarten: `${TERMINAL}/karten`,
   stoppuhr: `${PZ}/stoppuhr`,
 } as const;
 
@@ -68,6 +69,7 @@ export const ressourcen = {
   satzPersonen: () => einfach(PFAD.satzPersonen),
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
+  terminalKarten: () => einfach(PFAD.terminalKarten),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
 };
 

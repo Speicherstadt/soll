@@ -65,6 +65,7 @@ const zeilenVon = (
     projektzeiten: projekt.projektzeiten.map(({ buchungId }) => ({ buchungId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
+    karten: terminal.karten.map(({ karteId }) => ({ karteId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */

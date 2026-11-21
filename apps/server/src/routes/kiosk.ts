@@ -7,10 +7,12 @@ import { namenVon } from "../modules/mitglieder/index.ts";
 import { istPin } from "../modules/pin/index.ts";
 import {
   type Ausweis,
+  belegAusstellen,
   erkennen,
   FEHLVERSUCHE_BIS_SPERRE,
   koppeln,
   type Terminal,
+  type TerminalSchluessel,
   terminalVonToken,
 } from "../modules/terminal/index.ts";
 import { art, zeitpunkt } from "./stempel-antwort.ts";
@@ -19,9 +21,15 @@ import { art, zeitpunkt } from "./stempel-antwort.ts";
 export type KioskAnfrage = { Variables: { terminal: Terminal } };
 
 const kopplungSchema = z.object({ code: z.string().min(1).max(40) }).strict();
+const hex = (zeichen: number) => z.string().regex(new RegExp(`^[0-9a-fA-F]{${zeichen}}$`));
+const pin = z.string().refine(istPin);
+/** A card's UID alone is no identification: it comes with a PIN, or the card sends SUN (S-802) */
 const ausweisSchema = z.union([
-  z.object({ pin: z.string().refine(istPin) }).strict(),
+  z.object({ pin }).strict(),
   z.object({ qr: z.string().min(1).max(200) }).strict(),
+  z.object({ karte: z.string().min(1).max(40), pin }).strict(),
+  z.object({ sun: z.object({ e: hex(32), c: hex(16) }).strict() }).strict(),
+  z.object({ beleg: z.string().min(1).max(400) }).strict(),
 ]);
 const stempelSchema = z
   .object({ ausweis: ausweisSchema, art, geraetZeitpunkt: zeitpunkt.optional() })
@@ -71,18 +79,30 @@ const personUndTag = (db: Db, betriebId: string, nutzerId: string, jetzt: number
 };
 
 /**
- * The tablet's side (S-801) under /api/v1/kiosk: trading a pairing code for a device token, then,
- * with the token, the terminal itself, recognising a person by PIN or QR code and stamping for them
- * (`quelle` "terminal" with the terminal's id). Every refusal says why, so the kiosk can show it.
+ * The tablet's side (S-801, S-802) under /api/v1/kiosk: trading a pairing code for a device token,
+ * then, with the token, the terminal itself, recognising a person by PIN, QR code or NFC card and
+ * stamping for them (`quelle` "terminal" with the terminal's id). Every refusal says why, so the
+ * kiosk can show it; a refused card says no more than a wrong PIN.
  */
 export const kioskRouten = (
   db: Db,
   schreibDb: SchreibDb,
   jetzt: () => number,
-  pinSchluessel: Uint8Array,
+  schluessel: TerminalSchluessel,
 ) => {
   const erkannt = (terminal: Terminal, ausweis: Ausweis) =>
-    erkennen(db, schreibDb, terminal, ausweis, pinSchluessel, jetzt());
+    erkennen(db, schreibDb, terminal, ausweis, schluessel, jetzt());
+  /** A SUN message counts once: the kiosk stamps with the receipt instead (beleg.ts) */
+  const beleg = (terminal: Terminal, ausweis: Ausweis, nutzerId: string) =>
+    "sun" in ausweis
+      ? {
+          beleg: belegAusstellen(
+            schluessel.beleg,
+            { terminalId: terminal.terminalId, nutzerId },
+            jetzt(),
+          ),
+        }
+      : {};
   const abgelehnt = (ergebnis: Exclude<ReturnType<typeof erkannt>, { ok: true }>) =>
     ergebnis.grund === "gesperrt"
       ? ({ fehler: "gesperrt", gesperrtBis: ergebnis.gesperrtBis } as const)
@@ -121,7 +141,13 @@ export const kioskRouten = (
       const ergebnis = erkannt(terminal, eingabe.data);
       if (!ergebnis.ok)
         return c.json(abgelehnt(ergebnis), ergebnis.grund === "gesperrt" ? 423 : 401);
-      return c.json(personUndTag(db, terminal.betriebId, ergebnis.nutzerId, jetzt()), 200);
+      return c.json(
+        {
+          ...personUndTag(db, terminal.betriebId, ergebnis.nutzerId, jetzt()),
+          ...beleg(terminal, eingabe.data, ergebnis.nutzerId),
+        },
+        200,
+      );
     })
     .post("/stempeln", arbeitszeit(db), async (c) => {
       const eingabe = stempelSchema.safeParse(await c.req.json().catch(() => null));

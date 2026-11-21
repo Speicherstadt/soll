@@ -55,5 +55,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0013_zugaenge",
     "sql": "CREATE TABLE `api_zugaenge` (\n\t`betrieb_id` text NOT NULL,\n\t`zugang_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`name` text NOT NULL,\n\t`praefix` text NOT NULL,\n\t`token_hash` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\t`gueltig_bis` integer,\n\t`zuletzt_genutzt` text,\n\tPRIMARY KEY(`betrieb_id`, `zugang_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `api_zugaenge_token_hash_unique` ON `api_zugaenge` (`token_hash`);--> statement-breakpoint\nCREATE INDEX `api_zugaenge_person` ON `api_zugaenge` (`betrieb_id`,`nutzer_id`);"
+  },
+  {
+    "tag": "0014_auslastung",
+    "sql": "ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;"
   }
 ];

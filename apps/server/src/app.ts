@@ -6,6 +6,7 @@ import type { Mailer } from "./modules/mail/index.ts";
 import { pinSchluesselAus } from "./modules/terminal/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
+import { auslastungRouten } from "./routes/auslastung.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
 import { buchungRouten } from "./routes/buchungen.ts";
 import { datevRouten } from "./routes/datev.ts";
@@ -133,6 +134,7 @@ export const createApp = ({
           "/saetze": satzRouten(db, schreibDb, now),
           "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
           "/buchungen": buchungRouten(db, schreibDb, now),
+          "/auslastung": auslastungRouten(db, schreibDb, now),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
         terminal: {

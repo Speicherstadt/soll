@@ -1,3 +1,4 @@
+import * as auslastung from "../routes/auslastung.ts";
 import * as buchungen from "../routes/buchungen.ts";
 import * as stoppuhr from "../routes/stoppuhr.ts";
 import type { Operation } from "./dokument.ts";
@@ -40,5 +41,33 @@ export const BUCHUNGEN: readonly Operation[] = unter("/api/v1/projektzeit", "Pro
     pfad: "/buchungen/abrechnen",
     zusammenfassung: "Buchungen als abgerechnet markieren (Inhaber, Planer)",
     koerper: buchungen.abrechnenSchema,
+  },
+]);
+
+/** The utilisation of a past month (S-604); per person only while the business switched it on */
+export const AUSLASTUNG: readonly Operation[] = unter("/api/v1/projektzeit", "Projektzeit", [
+  {
+    methode: "get",
+    pfad: "/auslastung",
+    zusammenfassung: "Die Auslastung des Teams in einem vergangenen Monat (Inhaber, Planer)",
+    abfrage: auslastung.monatSchema,
+  },
+  {
+    methode: "get",
+    pfad: "/auslastung/personen",
+    zusammenfassung: "Die Auslastung je Person, nur wenn der Betrieb sie eingeschaltet hat",
+    abfrage: auslastung.monatSchema,
+  },
+  {
+    methode: "get",
+    pfad: "/auslastung/ich",
+    zusammenfassung: "Die eigene Auslastung, nur wenn der Betrieb sie je Person eingeschaltet hat",
+    abfrage: auslastung.monatSchema,
+  },
+  {
+    methode: "put",
+    pfad: "/auslastung/einstellung",
+    zusammenfassung: "Die Auslastung je Person ein- oder ausschalten (Inhaber, § 87 BetrVG)",
+    koerper: auslastung.einstellungSchema,
   },
 ]);

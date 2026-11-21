@@ -31,6 +31,9 @@ export const PFAD = {
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
   stoppuhr: `${PZ}/stoppuhr`,
+  auslastung: `${PZ}/auslastung`,
+  auslastungPersonen: `${PZ}/auslastung/personen`,
+  auslastungIch: `${PZ}/auslastung/ich`,
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -71,6 +74,9 @@ export const ressourcen = {
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
+  auslastung: (monat: string) => mitParametern(PFAD.auslastung, { monat }),
+  auslastungPersonen: (monat: string) => mitParametern(PFAD.auslastungPersonen, { monat }),
+  auslastungIch: (monat: string) => mitParametern(PFAD.auslastungIch, { monat }),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

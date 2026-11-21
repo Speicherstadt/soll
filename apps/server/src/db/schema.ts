@@ -35,6 +35,9 @@ export const betriebe = sqliteTable("betriebe", {
   // When Soll switched working time on because the first employed person joined; the owner sees the
   // reason until confirming it, then it is empty again (S-603)
   pflichtHinweisAm: integer("pflicht_hinweis_am"),
+  // Since when the owner switched on the utilisation per person; null: off, only the team view
+  // (S-604, § 87 Abs. 1 Nr. 6 BetrVG). Each switch stands in the audit chain with actor and time.
+  auswertungJePersonSeit: integer("auswertung_je_person_seit"),
 });
 
 /**

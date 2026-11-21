@@ -50,7 +50,8 @@ export async function pruefeAlles(
 
 const zaehle = (stand: readonly NormStand[]) => {
   const anzahl = (z: NormStand["zustand"]) => stand.filter((s) => s.zustand === z).length;
-  return `${stand.length} Norm(en) beobachtet: ${anzahl("gleich")} gleich, ${anzahl("geaendert")} geändert, ${anzahl("neu")} noch kein Stand, ${anzahl("weg")} nicht mehr abrufbar, ${anzahl("fehler")} nicht erreicht.`;
+  const ohne = stand.filter((s) => s.norm.sha256 === "").length;
+  return `${stand.length} Norm(en) beobachtet, ${ohne} noch ohne Stand: ${anzahl("gleich")} gleich, ${anzahl("geaendert")} geändert, ${anzahl("neu")} erstmals erreicht, ${anzahl("weg")} nicht mehr abrufbar, ${anzahl("fehler")} nicht erreicht.`;
 };
 
 const ohneStand = (stand: readonly NormStand[]) =>

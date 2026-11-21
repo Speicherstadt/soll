@@ -53,7 +53,7 @@ describe("a run of the Gesetzeswächter", () => {
     ]);
     expect(ergebnis.befunde[0]?.text).toContain("R-02");
     const text = bericht("2027-10-04", ergebnis, stand);
-    expect(text).toContain("1 Norm(en) beobachtet: 0 gleich, 1 geändert");
+    expect(text).toContain("1 Norm(en) beobachtet, 0 noch ohne Stand: 0 gleich, 1 geändert");
     expect(text).toContain("### Mindestlohn 2028 nicht hinterlegt");
     expect(text).toContain("## Warnungen");
     expect(text).toContain("milov6");
@@ -64,6 +64,10 @@ describe("a run of the Gesetzeswächter", () => {
       [`${GII}/arbzg/__4.html`]: antwort(503),
     });
     expect(ergebnis.befunde).toEqual([]);
-    expect(bericht("2026-11-21", ergebnis, stand)).toContain("§ 4 ArbZG: noch nicht erreicht");
+    const text = bericht("2026-11-21", ergebnis, stand);
+    expect(text).toContain("§ 4 ArbZG: noch nicht erreicht");
+    expect(text).toContain(
+      "1 Norm(en) beobachtet, 1 noch ohne Stand: 0 gleich, 0 geändert, 0 erstmals erreicht, 0 nicht mehr abrufbar, 1 nicht erreicht.",
+    );
   });
 });

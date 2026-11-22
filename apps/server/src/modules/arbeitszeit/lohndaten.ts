@@ -3,6 +3,7 @@ import type { LohnmonatEingabe } from "@soll/export";
 import { and, eq, gte, lt, lte } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import {
+  aussonderungen,
   mitgliedschaften,
   modellzuordnungen,
   monatsabschluesse,
@@ -31,6 +32,15 @@ const abgeschlossene = (db: Db, betriebId: string, monat: Monat) =>
     )
     .all()
     .map(({ nutzerId, inhalt }) => ({ nutzerId, inhalt: JSON.parse(inhalt) as Monatsinhalt }));
+
+/** Persons whose closed month was removed after its retention period (S-901): not open either */
+const ausgesondert = (db: Db, betriebId: string, monat: Monat): string[] =>
+  db
+    .select({ nutzerId: aussonderungen.nutzerId })
+    .from(aussonderungen)
+    .where(and(eq(aussonderungen.betriebId, betriebId), eq(aussonderungen.monat, monat)))
+    .all()
+    .map(({ nutzerId }) => nutzerId);
 
 /** Persons with a model by the month's end, members or not */
 const mitModell = (db: Db, betriebId: string, monat: Monat): string[] =>
@@ -135,7 +145,10 @@ export const lohndaten = (
       standort,
     }),
   );
-  const geschlossen = new Set(monate.map((m) => m.nutzerId));
+  const geschlossen = new Set([
+    ...monate.map((m) => m.nutzerId),
+    ...ausgesondert(db, betriebId, monat),
+  ]);
   const offen = beschaeftigt(db, betriebId, monat).filter((id) => !geschlossen.has(id));
   return { monate, offen: offen.sort() };
 };

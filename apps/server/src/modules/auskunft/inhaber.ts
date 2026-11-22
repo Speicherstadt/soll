@@ -29,6 +29,7 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   stempelungen: eigen.stempelungen,
   gegeneintraege: eigen.gegeneintraege,
   monatsabschluesse: eigen.monatsabschluesse,
+  aussonderungen: eigen.aussonderungen,
   arbeitszeitmodelle: eigen.arbeitszeitmodelle,
   schichten: eigen.schichten,
   stundensaetze: eigen.stundensaetze,

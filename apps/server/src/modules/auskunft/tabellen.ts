@@ -12,6 +12,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   stempelungen: "stempelungen",
   korrekturen: "gegeneintraege",
   monatsabschluesse: "monatsabschluesse",
+  aussonderungen:
+    "aussonderungen (welcher Monat nach Ablauf der Frist entfernt wurde, ohne Inhalt)",
   modellzuordnungen: "arbeitszeitmodelle",
   arbeitszeitmodelle: "arbeitszeitmodelle",
   schichten: "schichten",
@@ -73,6 +75,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   korrekturen: frei("Gegeneinträge, die der Betrieb im Monat bucht"),
   monatsabschluesse: frei(
     "Schritte des Abschlusses mit Inhalt und Prüfwert, wie der Monat sie zeigt",
+  ),
+  aussonderungen: frei(
+    "welcher Monat nach Ablauf der Frist entfernt wurde, wie der Monat es zeigt",
   ),
   modellzuordnungen: frei("Modelle, die der Inhaber der Person zuordnet"),
   arbeitszeitmodelle: frei("Soll und Lohn, die der Inhaber festlegt"),

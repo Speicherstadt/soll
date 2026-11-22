@@ -88,6 +88,7 @@ lit. b und c DSGVO).
 | `mitgliedschaft`, `einladungen`, `pin` | Rolle und seit wann; die angenommene Einladung; ob eine PIN gesetzt und gesperrt ist |
 | `stempelungen` | jede Fassung jeder Stempelung mit Grund, wer und wann; nichts wird überschrieben |
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |
+| `aussonderungen` | die Monate, deren Inhalt nach Ablauf der Aufbewahrungsfrist entfernt wurde (S-901): Monat, Frist, abgeschlossen und entfernt am, ohne Inhalt |
 | `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll, Lohn und Sätzen der Zuschläge; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
 | `ausweis` | wann und von wem der QR-Code für das Terminal ausgestellt wurde (S-801), ohne seinen Wert und Hash, sonst `null` |
 | `personalnummer` | die Personalnummer im Lohnprogramm für den DATEV-Export (S-308), sonst `null` |

@@ -12,6 +12,7 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/aussonderung.ts";
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";

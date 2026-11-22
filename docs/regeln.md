@@ -442,17 +442,19 @@ Regel:
 - **Norm**: § 16 Abs. 2 ArbZG: die über 8 h werktäglich hinausgehende Arbeitszeit aufzeichnen,
   „Die Nachweise sind mindestens zwei Jahre aufzubewahren.“
 - **Regel**: Soll zeichnet jede Arbeitszeit auf (R-01) und bewahrt jeden abgeschlossenen Monat mindestens
-  zwei Jahre ab Ablauf seines Kalenderjahres auf, mit Lohnbezug 6 Jahre, als Buchungsbeleg 8 Jahre
-  (Projektplan, „Fristen je Monatsabschluss“); die Aussonderung (S-901) entfernt nichts vor Ablauf der längsten Frist.
-- **Schwere**: Verstoß, wenn eine Aussonderung eine Aufzeichnung vor Ablauf entfernen würde (die
-  Aussonderung bricht dann ab).
+  zwei Jahre ab Ablauf des Kalenderjahres seines Abschlusses auf; bucht das Lohnbüro aus ihm
+  (Stundenlohn, Minijob, Zuschläge oder kein Modell an einem Tag), als Buchungsbeleg 8 Jahre
+  (§ 147 Abs. 3 Satz 1 AO; Projektplan, „Aufbewahrung je Monatsabschluss“); die Aussonderung (S-901)
+  wählt nur Monate, deren Frist abgelaufen ist, und nie einen offenen.
+- **Schwere**: Verstoß, wenn eine Aussonderung eine Aufzeichnung vor Ablauf entfernen würde; sie
+  entfernt dann nichts.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
-| erlaubt | Monat Januar 2026 ohne Lohnbezug, Aussonderung am 1.1.2029 | entfernt | § 16 Abs. 2 Satz 2 ArbZG |
-| Grenze | Monat Dezember 2026 ohne Lohnbezug, Aussonderung am 31.12.2028 | nicht entfernt (Frist mit Ablauf des Jahres 2026 + 2 Jahre) | § 16 Abs. 2 Satz 2 ArbZG; Projektplan, „Fristen“ |
-| Verstoß | Aussonderung eines Monats von 2026 im Jahr 2027 | abgelehnt | § 16 Abs. 2 Satz 2 ArbZG |
-| Lohnunterlage | Monat Januar 2026 mit Stundenlohn, Aussonderung am 1.1.2029 | nicht entfernt (6 Jahre als Lohnunterlage) | Projektplan, „Fristen“ |
+| erlaubt | Monat Januar 2026 ohne Lohnbezug, abgeschlossen im Februar 2026, Aussonderung am 1.1.2029 | entfernt | § 16 Abs. 2 Satz 2 ArbZG |
+| Grenze | Monat Dezember 2026 ohne Lohnbezug, Aussonderung am 31.12.2028 | nicht entfernt (Frist mit Ablauf des Jahres 2026 + 2 Jahre); abgeschlossen im Januar 2027 erst am 1.1.2030 | § 16 Abs. 2 Satz 2 ArbZG; § 147 Abs. 4 AO |
+| Verstoß | Aussonderung eines Monats von 2026 im Jahr 2027 | nicht entfernt | § 16 Abs. 2 Satz 2 ArbZG |
+| Buchungsbeleg | Monat Januar 2026 mit Stundenlohn, Aussonderung am 1.1.2029 | nicht entfernt (8 Jahre), am 1.1.2035 entfernt | § 147 Abs. 3 Satz 1 AO; Projektplan, „Aufbewahrung je Monatsabschluss“ |
 
 ### R-11 Bereitschaftsdienst
 

@@ -1,7 +1,7 @@
 import { type Monat, monatVon, NEUE_SCHICHT_AB, type Tag, tagInBerlin } from "@soll/arbeitszeit";
 import { and, asc, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
-import { auditGlieder, monatsabschluesse } from "../../db/schema.ts";
+import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { formatPruefwert, type Kontext, schreiben } from "../audit/index.ts";
 import { monatJetzt } from "./monat.ts";
@@ -56,6 +56,30 @@ export type Abschluss = {
   inhalt: Monatsinhalt;
 };
 
+export type Ausgesondert = { am: number; abgeschlossenAm: number; jahre: number };
+
+const aussonderungVon = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  monat: Monat,
+): Ausgesondert | null => {
+  const zeile = db
+    .select()
+    .from(aussonderungen)
+    .where(
+      and(
+        eq(aussonderungen.betriebId, betriebId),
+        eq(aussonderungen.nutzerId, nutzerId),
+        eq(aussonderungen.monat, monat),
+      ),
+    )
+    .get();
+  return zeile
+    ? { am: zeile.ausgesondertAm, abgeschlossenAm: zeile.abgeschlossenAm, jahre: zeile.jahre }
+    : null;
+};
+
 /** Where a person's month stands: confirmed (still valid for the records now?), closed */
 export type MonatStatus = {
   monat: Monat;
@@ -64,6 +88,11 @@ export type MonatStatus = {
   offeneTage: Tag[];
   bestaetigung: Bestaetigung | null;
   abschluss: Abschluss | null;
+  /**
+   * the month was closed and its content removed after the retention period (S-901): it stays
+   * locked, and neither its records nor its closing can be shown any more
+   */
+  ausgesondert: Ausgesondert | null;
   /** whether the month has ended; a running month is neither confirmed nor closed */
   vorbei: boolean;
   /**
@@ -122,6 +151,7 @@ export const monatStatus = (
           inhalt: inhaltVon(geschlossen),
         }
       : null,
+    ausgesondert: aussonderungVon(db, betriebId, nutzerId, monat),
     vorbei: monat < monatVon(tagInBerlin(jetzt)),
     abschliessbarAb: ab !== null && jetzt < ab ? ab : null,
   };
@@ -167,7 +197,7 @@ const schrittEinfuegen = (
 /** Why a month cannot take a step now, or null */
 const hindernis = (status: MonatStatus): AbschlussFehler | null => {
   if (!status.vorbei) return "monat_laeuft";
-  if (status.abschluss) return "abgeschlossen";
+  if (status.abschluss || status.ausgesondert) return "abgeschlossen";
   if (status.offeneTage.length > 0) return "offene_schicht";
   return null;
 };

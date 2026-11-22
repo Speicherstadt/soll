@@ -15,6 +15,15 @@ export const MAIL: Record<string, () => string> = {
 
 /** Where a month stands, in words: confirmed by the person, closed by the business */
 export const Stand = (props: { ansicht: MonatAnsicht }) => (
+  <Show when={props.ansicht.ausgesondert} fallback={<Schritte ansicht={props.ansicht} />}>
+    {(ausgesondert) => (
+      <Badge>{m.monat_ausgesondert({ datum: datumText(ausgesondert().am) })}</Badge>
+    )}
+  </Show>
+);
+
+/** The steps of a month whose content is still there */
+const Schritte = (props: { ansicht: MonatAnsicht }) => (
   <div class="flex flex-wrap items-center gap-2">
     <Show when={props.ansicht.bestaetigung} fallback={<Badge>{m.monat_nicht_bestaetigt()}</Badge>}>
       {(bestaetigung) => (

@@ -59,5 +59,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0014_auslastung",
     "sql": "ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;"
+  },
+  {
+    "tag": "0015_aussonderung",
+    "sql": "CREATE TABLE `aussonderungen` (\n\t`betrieb_id` text NOT NULL,\n\t`aussonderung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`monat` text NOT NULL,\n\t`abschluss_id` text NOT NULL,\n\t`jahre` integer NOT NULL,\n\t`abgeschlossen_am` integer NOT NULL,\n\t`ausgesondert_am` integer NOT NULL,\n\t`zeilen` integer NOT NULL,\n\t`inhalte` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `aussonderung_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_monat` ON `aussonderungen` (`betrieb_id`,`nutzer_id`,`monat`);--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_abschluss` ON `aussonderungen` (`betrieb_id`,`abschluss_id`);"
   }
 ];

@@ -30,7 +30,7 @@ const HINWEISE = {
   empfaenger:
     "Im Betrieb, wer nach seiner Rolle Zeiten sehen darf (Inhaber, Planer, Lohnbüro); außerhalb nur, wohin der Betrieb exportiert (Lohnbuchhaltung, Behörden auf Verlangen).",
   speicherdauer:
-    "Aufzeichnungen der Arbeitszeit mindestens zwei Jahre (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG), Unterlagen der Lohnabrechnung bis zu zehn Jahre (§ 147 AO, § 41 EStG); danach werden die Inhalte entfernt, die Kette behält nur ihre Hashes.",
+    "Aufzeichnungen der Arbeitszeit mindestens zwei Jahre (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG), Monate, aus denen der Lohn gebucht wird, acht Jahre (§ 147 Abs. 3 AO), jeweils ab dem Ende des Jahres ihres Abschlusses; danach werden die Inhalte entfernt, die Kette behält nur ihre Hashes.",
   rechte:
     "Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung (Art. 18), Widerspruch (Art. 21) beim Betrieb; Beschwerde bei einer Aufsichtsbehörde (Art. 77 DSGVO).",
   herkunft:
@@ -56,6 +56,7 @@ const zeilenVon = (
     stempelungen: arbeit.stempelungen.map(({ stempelId }) => ({ stempelId })),
     korrekturen: arbeit.gegeneintraege.map(({ korrekturId }) => ({ korrekturId })),
     monatsabschluesse: arbeit.monatsabschluesse.map(({ abschlussId }) => ({ abschlussId })),
+    aussonderungen: arbeit.aussonderungen.map(({ aussonderungId }) => ({ aussonderungId })),
     modellzuordnungen: arbeit.arbeitszeitmodelle.map(({ gueltigAb }) => ({ nutzerId, gueltigAb })),
     schichten: arbeit.schichten.map(({ schichtId }) => ({ schichtId })),
     geraete: arbeit.geraete.map(({ geraetId }) => ({ geraetId })),

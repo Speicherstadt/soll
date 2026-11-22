@@ -102,6 +102,41 @@ Arbeitsschutz, prüft einen Stundenzettel. Die Antwort ist
 Monat, Name und geänderte Tage zeigt die Prüfseite nur zu einem Prüfwert, dessen Kettenglied noch
 stimmt: Wer ihn hat, hat den Stundenzettel bekommen.
 
+Nach Ablauf der Aufbewahrungsfrist (unten) antwortet die Prüfseite **Echt, Inhalt nach Ablauf der
+Frist entfernt**, mit Monat, Tag des Abschlusses, Tag der Aussonderung und Frist, aber ohne Namen.
+Das gilt nur, wenn die Aussonderung selbst in der Kette steht, zum Abschluss passt und nicht vor
+Ablauf der Frist kam; sonst bleibt es eine Abweichung.
+
+## Aufbewahrung und Aussonderung
+
+Jeder abgeschlossene Monat einer Person wird aufbewahrt, solange das Gesetz es verlangt, und danach
+entfernt (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO):
+
+| Monat | Frist | Grund |
+| --- | --- | --- |
+| an einem Tag Stundenlohn, Minijob, ein Zuschlag oder kein Arbeitszeitmodell | 8 Jahre | das Lohnbüro bucht aus ihm Stunden oder Beträge; er ist Buchungsbeleg (§ 147 Abs. 1 Nr. 4, Abs. 3 Satz 1 AO, § 257 Abs. 4 HGB) |
+| sonst (fester Monatslohn ohne Zuschläge) | 2 Jahre | Aufzeichnung der Arbeitszeit (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG) |
+
+Die Frist beginnt mit dem Ende des Kalenderjahres, in dem der Monat abgeschlossen wurde: Oktober 2026,
+abgeschlossen im November 2026, ohne Lohnbezug, wird am 1. Januar 2029 entfernt. Ein Monat, der nie
+abgeschlossen wurde, wird nicht entfernt.
+
+Der Server prüft das beim Start und dann alle sechs Stunden. Entfernt werden die Stempelungen des
+Monats (jede Fassung einer korrigierten Stempelung mit), die in ihm gebuchten Gegeneinträge, die
+Bestätigungen und der Abschluss, und mit ihnen der gespeicherte Inhalt ihrer Einträge in der
+[Audit-Kette](audit-kette.md). Die Einträge selbst bleiben, denn sie enthalten nur den Hash des
+Inhalts: Die Kette prüft danach fehlerfrei, und jeder Prüfwert passt weiter zu seinem Eintrag. Die
+Aussonderung steht selbst in der Kette, als eigener Eintrag je entfernter Zeile und als Zeile, die
+festhält, welcher Monat welcher Person mit welcher Frist entfernt wurde, ohne seinen Inhalt.
+
+Der Monat bleibt danach gesperrt: Niemand kann in ihm nachtragen, bestätigen oder abschließen. Die
+Monatsansicht zeigt nur noch, dass und wann sein Inhalt entfernt wurde; einen Stundenzettel gibt es
+nicht mehr. Würde das Entfernen die Aufzeichnungen eines anderen, noch aufbewahrten Monats ändern
+(etwa eine Nachtschicht über den Jahreswechsel), wartet der Monat, bis auch dieser entfernt wird.
+
+Soll weiß nicht, ob für ein Jahr noch eine Steuerfestsetzung offen ist; dann läuft die Frist nicht ab
+(§ 147 Abs. 3 AO). Wer eine Außenprüfung hat, legt vorher eine [Sicherung](installation.md#sicherung) an.
+
 ## Verfahrensdokumentation
 
 Für die Verfahrensdokumentation nach den GoBD (BMF-Schreiben vom 28.11.2019, Rz. 107 ff. und
@@ -136,19 +171,21 @@ Arbeitszeit aus ist; die Prüfseite liegt außerhalb davon.
 
 | Endpunkt | Was | Wer |
 | --- | --- | --- |
-| `GET /monat?monat=JJJJ-MM&nutzerId=` | der Monat: Inhalt (abgeschlossen oder heute), offene Tage, Bestätigung, Abschluss mit Prüfwert, geänderte Tage, `abschliessbarAb` (vor diesem Zeitpunkt kein Abschluss, sonst `null`) | selbst; andere: Inhaber, Planer, Lohnbüro |
-| `GET /monat/stundenzettel?monat=&nutzerId=` | der Stundenzettel als PDF | wie oben |
+| `GET /monat?monat=JJJJ-MM&nutzerId=` | der Monat: Inhalt (abgeschlossen oder heute), offene Tage, Bestätigung, Abschluss mit Prüfwert, geänderte Tage, `abschliessbarAb` (vor diesem Zeitpunkt kein Abschluss, sonst `null`), `ausgesondert` (`am`, `abgeschlossenAm`, `jahre` nach der Aussonderung, sonst `null`) | selbst; andere: Inhaber, Planer, Lohnbüro |
+| `GET /monat/stundenzettel?monat=&nutzerId=` | der Stundenzettel als PDF; `410 ausgesondert` nach der Aussonderung | wie oben |
 | `POST /monat/bestaetigen` | `{ monat }`: der eigene Monat, wie er heute steht | selbst |
 | `POST /monat/abschliessen` | `{ monat, nutzerId, grund? }`, schickt den Stundenzettel per Mail; Antwort mit `mail`; vor `abschliessbarAb` 409 `{ fehler: "schicht_kann_weiterlaufen", ab }` | Inhaber |
 | `POST /monat/gegeneintrag` | `{ nutzerId, tag, minuten, grund }` zu einem Tag eines abgeschlossenen Monats | Inhaber, Planer |
-| `POST /api/v1/pruefen` | `{ betriebId, pruefwert }` → `uebereinstimmend`, `abweichung` (mit `grund` und `tage`), `unlesbar`, `unbekannt` | alle, ohne Anmeldung |
+| `POST /api/v1/pruefen` | `{ betriebId, pruefwert }` → `uebereinstimmend`, `abweichung` (mit `grund` und `tage`), `ausgesondert` (mit `monat`, `abgeschlossenAm`, `ausgesondertAm`, `jahre`), `unlesbar`, `unbekannt` | alle, ohne Anmeldung |
 
 Die Tabelle `monatsabschluesse` hat je Schritt eine Zeile (`bestaetigt`, `abgeschlossen`) mit dem
 Inhalt als kanonischem JSON und seinem SHA-256; ein eindeutiger Index auf `sperrt` lässt je Person
 und Monat einen Abschluss zu. `korrekturen` hält die Gegeneinträge. Beide stehen in der
 Audit-Kette und werden nur angefügt. Den Inhalt baut `monatsinhalt.ts` als reine Funktion, mit
 Testvektoren, das Fenster, aus dem ein Monat gelesen wird, `lesefenster()`; die Sperre prüft
-`aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen.
+`aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen. Die Aussonderung (`aussonderung.ts`, die Frist in `aufbewahrung.ts`)
+löscht über `aussondern` des Schreibers der Kette, der mit der Zeile die gespeicherten Inhalte ihrer
+Glieder entfernt, und schreibt `aussonderungen`.
 
 Mail kommt über SMTP aus `SOLL_SMTP_URL` (etwa `smtps://soll:geheim@mail.example.de:465`) mit dem
 Absender aus `SOLL_MAIL_VON`; beide zusammen oder keins. Die Tests schicken an einen SMTP-Testserver.

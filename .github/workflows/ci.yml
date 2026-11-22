@@ -51,24 +51,55 @@ jobs:
       # Known vulnerabilities in the dependencies fail the run
       - run: bun audit
 
-  e2e:
+  # Four parts in parallel (Playwright --shard), as in Haben: 290 tests took 8 minutes on one runner
+  # with two workers. Each part starts its own servers on a fresh database (playwright.config.ts).
+  e2e-teil:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        teil: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
-      # Projects desktop, phone and terminal (playwright.config.ts)
-      - run: bun run e2e
+      # Chromium from the cache, per Playwright version; the system libraries come on every run
+      # an empty version would key a cache whose Chromium fits no Playwright: fail instead
+      - id: playwright
+        run: |
+          set -euo pipefail
+          version="$(bun --bun playwright --version | awk '{print $2}')"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}-chromium
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+      # Projects desktop, phone and terminal (playwright.config.ts), four workers per part
+      - name: e2e, part ${{ matrix.teil }} of 4
+        run: bun run e2e --shard=${{ matrix.teil }}/4
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.teil }}
           path: test-results/
           retention-days: 7
+
+  # One result named e2e, however many parts the tests run in
+  e2e:
+    if: ${{ always() && !github.event.pull_request.draft }}
+    needs: e2e-teil
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.e2e-teil.result }}" = success
 
   # The container image (Containerfile, BAULISTE.md S-905): built for amd64 with the same build
   # cache as the release, then started on an empty volume with a key made for this run, asked for

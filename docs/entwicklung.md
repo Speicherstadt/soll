@@ -44,6 +44,10 @@ eine einzige Adresse. Für Playwright startet `scripts/e2e-server.ts` den Server
 einer leeren Datenbank in einem temporären Verzeichnis und einem Schlüssel nur für diesen Lauf;
 `e2e/betrieb.ts` legt je Test ein eigenes Konto mit Betrieb an.
 
+In der CI laufen die Ende-zu-Ende-Tests in vier Teilen parallel (`--shard`, Job `e2e-teil`), jeder
+mit eigenen Servern und vier Workern; der Job `e2e` fasst sie zu einem Ergebnis zusammen. Chromium
+kommt aus dem Cache. Einen Teil lokal nachstellen: `bun run e2e --shard=2/4`.
+
 `bun run check` muss vor jedem Push grün sein. Die gemeinsamen Checks aus `firsttris/workflows`
 (Dateigröße, Funktionslänge, Importringe, Übersetzungen, Seiten im Barrierefreiheitstest) laufen in
 der CI.

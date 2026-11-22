@@ -52,7 +52,10 @@ export const abwesenheitQuelle = () => {
     return true;
   };
 
-  return { liste, fehler, meldung, senden, arbeitet: () => schritt.isPending };
+  /** A step a dialog sent went through: the error of the step before is gone, as after `senden` */
+  const geschafft = () => setFehler("");
+
+  return { liste, fehler, meldung, senden, geschafft, arbeitet: () => schritt.isPending };
 };
 
 export type AbwesenheitQuelle = ReturnType<typeof abwesenheitQuelle>;

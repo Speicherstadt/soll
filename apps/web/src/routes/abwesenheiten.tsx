@@ -45,7 +45,7 @@ const Abwesenheiten = () => {
                     heute={l().heute}
                     abTag={l().bescheinigungAbTag}
                   />
-                  <Team heute={l().heute} />
+                  <Team heute={l().heute} onGespeichert={q.geschafft} />
                 </div>
               </div>
             </>

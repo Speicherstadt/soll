@@ -16,6 +16,7 @@ export const GrundFuer = (props: {
   a: Abwesenheit & { name?: string };
   aktion: "ablehnen" | "stornieren";
   onSchliessen: () => void;
+  onGespeichert: () => void;
 }) => (
   <GrundDialog
     titel={props.aktion === "ablehnen" ? m.abw_ablehnen_titel() : m.abw_stornieren_titel()}
@@ -28,7 +29,7 @@ export const GrundFuer = (props: {
     fehlerText={FEHLER}
     betrifft={ABWESENHEIT_AENDERT}
     onSchliessen={props.onSchliessen}
-    onGespeichert={() => undefined}
+    onGespeichert={props.onGespeichert}
   />
 );
 
@@ -58,7 +59,12 @@ const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
         </Button>
       </div>
       <Show when={ablehnen()}>
-        <GrundFuer a={props.a} aktion="ablehnen" onSchliessen={() => setAblehnen(false)} />
+        <GrundFuer
+          a={props.a}
+          aktion="ablehnen"
+          onSchliessen={() => setAblehnen(false)}
+          onGespeichert={props.quelle.geschafft}
+        />
       </Show>
     </li>
   );

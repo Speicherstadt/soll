@@ -22,7 +22,7 @@ const alsAbwesenheit = (e: TeamEintrag): Abwesenheit & { name: string } => ({
  * Who is away in the next four weeks: every absence only as „abwesend“, for everyone (Art. 9 DSGVO);
  * owner and planner cancel approved leave here, with a reason
  */
-export const Team = (props: { heute: string }) => {
+export const Team = (props: { heute: string; onGespeichert: () => void }) => {
   const [storno, setStorno] = createSignal<TeamEintrag | null>(null);
   const team = abfrage<{ abwesenheiten: TeamEintrag[] }>(() =>
     ressourcen.abwesenheitenTeam(teamZeitraum(props.heute)),
@@ -59,6 +59,7 @@ export const Team = (props: { heute: string }) => {
           <GrundFuer
             a={alsAbwesenheit(e())}
             aktion="stornieren"
+            onGespeichert={props.onGespeichert}
             onSchliessen={() => setStorno(null)}
           />
         )}

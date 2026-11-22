@@ -11,6 +11,8 @@ import {
   erinnerungseinstellungen,
   erinnerungsregeln,
   geraete,
+  habenUebergaben,
+  habenZugaenge,
   instanzschluessel,
   korrekturen,
   kunden,
@@ -68,6 +70,8 @@ export const kettenTabellen = {
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
   datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
   apiZugaenge: { tabelle: apiZugaenge, schluessel: ["zugangId"] },
+  habenZugaenge: { tabelle: habenZugaenge, schluessel: ["betriebId"] },
+  habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

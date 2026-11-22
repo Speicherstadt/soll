@@ -63,5 +63,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0015_stundennachweis",
     "sql": "CREATE TABLE `stundennachweis_buchungen` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `stundennachweis_buchungen_nachweis` ON `stundennachweis_buchungen` (`betrieb_id`,`nachweis_id`);--> statement-breakpoint\nCREATE TABLE `stundennachweise` (\n\t`betrieb_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`projekt_id` text NOT NULL,\n\t`nutzer_id` text,\n\t`von` text NOT NULL,\n\t`bis` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`unterschrieben_am` integer NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nachweis_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `stundennachweise_nummer` ON `stundennachweise` (`betrieb_id`,`nummer`);--> statement-breakpoint\nCREATE INDEX `stundennachweise_projekt` ON `stundennachweise` (`betrieb_id`,`projekt_id`);"
+  },
+  {
+    "tag": "0016_haben",
+    "sql": "CREATE TABLE `haben_uebergaben` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`inhalt` text,\n\t`leistung_id` text,\n\t`gesendet_am` integer,\n\t`fehler` text,\n\t`meldung` text,\n\t`versucht_am` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE TABLE `haben_zugaenge` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`adresse` text NOT NULL,\n\t`token` text NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
   }
 ];

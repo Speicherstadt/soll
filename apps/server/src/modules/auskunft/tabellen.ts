@@ -42,6 +42,9 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
   ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
+  haben_zugaenge: "ausgenommen: Adresse und Token des Betriebs für Haben, keine Daten der Person",
+  haben_uebergaben:
+    "ausgenommen: Leistung des Betriebs an seinen Kunden ohne Namen der Person; die Buchung selbst steht unter projektzeiten",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -111,6 +114,8 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ausweise: frei(
     "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",
   ),
+  haben_zugaenge: aus("keine Daten der Person (Zugang des Betriebs zu Haben)"),
+  haben_uebergaben: aus("keine eigenen Daten: die Buchungen stehen unter projektzeiten"),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

@@ -11,6 +11,8 @@ type Optionen = {
   uhr?: () => number;
   mail?: Mailer | null;
   webVerzeichnis?: string | null;
+  /** The stand-in for Haben the server calls (S-606) */
+  habenFetch?: typeof fetch;
 };
 
 /** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
@@ -37,6 +39,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
     webVerzeichnis: optionen.webVerzeichnis ?? null,
+    ...(optionen.habenFetch ? { habenFetch: optionen.habenFetch } : {}),
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

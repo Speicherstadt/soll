@@ -14,6 +14,7 @@ import {
 
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
+export * from "./schema/haben.ts";
 export * from "./schema/projektzeit.ts";
 export * from "./schema/stundennachweise.ts";
 export * from "./schema/terminal.ts";

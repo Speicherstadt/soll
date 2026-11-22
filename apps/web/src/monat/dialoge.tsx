@@ -3,6 +3,7 @@ import { ersterTag, type Monat } from "@soll/arbeitszeit";
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
+import type { Schluessel } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
@@ -27,12 +28,14 @@ export const GrundDialog = (props: {
   onGespeichert: (daten: unknown) => void;
   /** the words for an error the server names; those of the month by default */
   fehlerText?: Record<string, () => string>;
+  /** the keys the step changes; the month's by default */
+  betrifft?: readonly Schluessel[];
 }) => {
   const [offen, setOffen] = createSignal(true);
   const [fehler, setFehler] = createSignal("");
   const senden = aenderung(
     (anfrage: Anfrage) => api(anfrage.pfad, { body: anfrage.body }),
-    () => MONAT_AENDERT,
+    () => props.betrifft ?? MONAT_AENDERT,
   );
   const id = createUniqueId();
   const absenden = async (event: SubmitEvent) => {

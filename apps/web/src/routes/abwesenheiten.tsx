@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { Show } from "solid-js";
+import { Loading, Show } from "solid-js";
+import { daten } from "../abfragen/abfrage.ts";
 import { Antrag } from "../abwesenheiten/antrag.tsx";
 import { Konten } from "../abwesenheiten/konten.tsx";
 import { Krank } from "../abwesenheiten/krank.tsx";
@@ -17,30 +18,40 @@ import { Seite } from "../rahmen/seite.tsx";
  */
 const Abwesenheiten = () => {
   const q = abwesenheitQuelle();
+  /** one's own absences as loaded; the first load suspends to the Loading below */
+  const liste = () => daten(q.liste.data);
   return (
     <Seite titel={m.nav_abwesenheiten()}>
       <Fehler text={q.fehler()} />
       <Show when={q.meldung()}>
         <p role="status">{q.meldung()}</p>
       </Show>
-      <Show when={q.liste()}>
-        {(liste) => (
-          <>
-            <Konten liste={liste()} />
-            <Offen quelle={q} />
-            <div class="grid gap-5 lg:grid-cols-2">
-              <div class="flex flex-col gap-5">
-                <Antrag quelle={q} heute={liste().heute} />
-                <MeineListe quelle={q} />
+      <Loading>
+        <Fehler text={q.liste.data.ok ? "" : m.laden_fehler()} />
+        <Show when={liste()}>
+          {(l) => (
+            <>
+              <Konten liste={l()} />
+              <Offen quelle={q} rechte={l().rechte} />
+              <div class="grid gap-5 lg:grid-cols-2">
+                <div class="flex flex-col gap-5">
+                  <Antrag quelle={q} heute={l().heute} />
+                  <MeineListe quelle={q} abwesenheiten={l().abwesenheiten} />
+                </div>
+                <div class="flex flex-col gap-5">
+                  <Krank
+                    quelle={q}
+                    abwesenheiten={l().abwesenheiten}
+                    heute={l().heute}
+                    abTag={l().bescheinigungAbTag}
+                  />
+                  <Team heute={l().heute} />
+                </div>
               </div>
-              <div class="flex flex-col gap-5">
-                <Krank quelle={q} heute={liste().heute} abTag={liste().bescheinigungAbTag} />
-                <Team quelle={q} />
-              </div>
-            </div>
-          </>
-        )}
-      </Show>
+            </>
+          )}
+        </Show>
+      </Loading>
     </Seite>
   );
 };

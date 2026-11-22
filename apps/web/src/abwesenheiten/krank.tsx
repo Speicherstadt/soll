@@ -22,7 +22,7 @@ export const laufend = (a: Abwesenheit, heute: string) =>
 const Laufend = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
   const id = createUniqueId();
   const setzen = (bescheinigung: string) =>
-    props.quelle.senden(
+    props.quelle.senden(() =>
       api(`${BASIS}/${props.a.abwesenheitId}/bescheinigung`, {
         body: { bescheinigung: bescheinigung === "" ? null : bescheinigung },
       }),
@@ -30,7 +30,9 @@ const Laufend = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
   const beenden = (event: SubmitEvent) => {
     event.preventDefault();
     const bis = String(new FormData(event.currentTarget as HTMLFormElement).get("bis"));
-    void props.quelle.senden(api(`${BASIS}/${props.a.abwesenheitId}/beenden`, { body: { bis } }));
+    void props.quelle.senden(() =>
+      api(`${BASIS}/${props.a.abwesenheitId}/beenden`, { body: { bis } }),
+    );
   };
   return (
     <div class="flex flex-col gap-3 rounded-lg border border-border p-3">
@@ -93,7 +95,12 @@ const Laufend = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
  * „Krank melden“: oneself or a child, from today, without a diagnosis; the hint on the certificate
  * names the day the business set (design/mockup/Abwesenheit.dc.html)
  */
-export const Krank = (props: { quelle: AbwesenheitQuelle; heute: string; abTag: number }) => {
+export const Krank = (props: {
+  quelle: AbwesenheitQuelle;
+  abwesenheiten: Abwesenheit[];
+  heute: string;
+  abTag: number;
+}) => {
   const id = createUniqueId();
   const [kind, setKind] = createSignal(false);
   const melden = async (event: SubmitEvent) => {
@@ -102,19 +109,19 @@ export const Krank = (props: { quelle: AbwesenheitQuelle; heute: string; abTag: 
     const daten = new FormData(form);
     const bis = String(daten.get("bis") ?? "");
     const ok = await props.quelle.senden(
-      api(`${BASIS}/krank`, {
-        body: {
-          art: kind() ? "kind_krank" : "krank",
-          bis: bis === "" ? null : bis,
-          kind: kind() ? String(daten.get("kind")) : null,
-        },
-      }),
+      () =>
+        api(`${BASIS}/krank`, {
+          body: {
+            art: kind() ? "kind_krank" : "krank",
+            bis: bis === "" ? null : bis,
+            kind: kind() ? String(daten.get("kind")) : null,
+          },
+        }),
       () => m.abw_krank_gemeldet(),
     );
     if (ok) form.reset();
   };
-  const laufende = () =>
-    (props.quelle.liste()?.abwesenheiten ?? []).filter((a) => laufend(a, props.heute));
+  const laufende = () => props.abwesenheiten.filter((a) => laufend(a, props.heute));
   return (
     <Karte titel={m.abw_krank_titel()}>
       <p class="text-muted-foreground">{m.abw_krank_text()}</p>
@@ -148,7 +155,7 @@ export const Krank = (props: { quelle: AbwesenheitQuelle; heute: string; abTag: 
           <input id={`${id}-bis`} name="bis" type="date" class={feld} min={props.heute} />
         </div>
         <div>
-          <Button type="submit" variant="outline">
+          <Button type="submit" variant="outline" disabled={props.quelle.arbeitet()}>
             {m.abw_krank_melden()}
           </Button>
         </div>

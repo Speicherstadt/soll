@@ -1,5 +1,5 @@
 import { skipToken, useQuery } from "@tanstack/solid-query";
-import { createEffect, createSignal, onSettled } from "solid-js";
+import { createEffect, createSignal, onSettled, snapshot } from "solid-js";
 import { PFAD } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import {
@@ -170,16 +170,25 @@ const kioskStand = (z: Zustand) => {
       refetchInterval: z.meldung()?.art === "gesperrt" ? GESPERRT_FRAGEN_MS : false,
     };
   });
-  // every answer counts, also one like the last: a lock lifted answers as it did before the lock
+  // every answer counts, also one like the last (dataUpdatedAt): a lock lifted answers as it did
+  // before the lock. The compute takes plain values out of the query; the apply reads nothing
+  // reactive (docs/solid-2.0/CHEATSHEET.md, "Strict read untracked")
   createEffect(
-    () => (abfrage.isSuccess ? { antwort: abfrage.data, am: abfrage.dataUpdatedAt } : null),
+    () => {
+      if (!abfrage.isSuccess) return null;
+      const antwort = abfrage.data;
+      const am = abfrage.dataUpdatedAt;
+      return antwort.ok
+        ? { am, gesperrtBis: antwort.daten.gesperrtBis }
+        : { am, abgelehnt: snapshot(antwort) };
+    },
     (neu) => {
       if (!neu) return;
-      const { antwort } = neu;
-      if (!antwort.ok) return z.abgelehnt(antwort);
-      if (antwort.daten.gesperrtBis !== null)
-        z.setMeldung({ art: "gesperrt", bis: antwort.daten.gesperrtBis });
-      else if (z.meldung()?.art === "gesperrt") z.setMeldung(null);
+      if ("abgelehnt" in neu) return z.abgelehnt(neu.abgelehnt);
+      const bis = neu.gesperrtBis;
+      if (bis !== null) z.setMeldung({ art: "gesperrt", bis });
+      // only a lock the server no longer knows goes; any other message stays
+      else z.setMeldung((alt) => (alt?.art === "gesperrt" ? null : alt));
     },
   );
   return (): KioskStand | null => {

@@ -128,3 +128,17 @@ test("the owner unlocks a locked tablet from Einstellungen @terminal", async ({
   await pinTippen(tablet, "471100");
   await expect(tablet.getByText("Sandra Kühn")).toBeVisible();
 });
+
+test("a tablet just paired asks for its state at once @terminal", async ({
+  page: jonas,
+  browser,
+}) => {
+  await weberMitTerminal(jonas, browser, test.info());
+  const tablet = await tabletOeffnen(browser, test.info());
+  // the state names the terminal and its lock; without asking, a lock set before pairing anew stays unknown
+  const gefragt = tablet.waitForRequest(
+    (r) => new URL(r.url()).pathname === "/api/v1/kiosk" && r.method() === "GET",
+  );
+  await koppeln(jonas, tablet, "Lager");
+  await gefragt;
+});

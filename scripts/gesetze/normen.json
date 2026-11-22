@@ -1,0 +1,515 @@
+{
+  "normen": [
+    {
+      "id": "arbschg-3",
+      "norm": "§ 3 ArbSchG",
+      "url": "https://www.gesetze-im-internet.de/arbschg/__3.html",
+      "zweck": "Pflicht, die Arbeitszeit zu erfassen (BAG 1 ABR 22/21)",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-2",
+      "norm": "§ 2 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__2.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-3",
+      "norm": "§ 3 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__3.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-4",
+      "norm": "§ 4 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__4.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-5",
+      "norm": "§ 5 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__5.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-6",
+      "norm": "§ 6 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__6.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-7",
+      "norm": "§ 7 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__7.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-9",
+      "norm": "§ 9 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__9.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-10",
+      "norm": "§ 10 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__10.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-11",
+      "norm": "§ 11 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__11.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-12",
+      "norm": "§ 12 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__12.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-13",
+      "norm": "§ 13 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__13.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-15",
+      "norm": "§ 15 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__15.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "arbzg-16",
+      "norm": "§ 16 ArbZG",
+      "url": "https://www.gesetze-im-internet.de/arbzg/__16.html",
+      "zweck": "Höchstarbeitszeit, Ausgleich, Pausen, Ruhezeit, Nacht-, Sonn- und Feiertagsarbeit, Bereitschaft, Aufzeichnung",
+      "sha256": ""
+    },
+    {
+      "id": "milog-1",
+      "norm": "§ 1 MiLoG",
+      "url": "https://www.gesetze-im-internet.de/milog/__1.html",
+      "zweck": "Mindestlohn je Monat und Aufzeichnung binnen sieben Tagen; Grundlage des Jahreswerts Mindestlohn",
+      "sha256": ""
+    },
+    {
+      "id": "milog-17",
+      "norm": "§ 17 MiLoG",
+      "url": "https://www.gesetze-im-internet.de/milog/__17.html",
+      "zweck": "Mindestlohn je Monat und Aufzeichnung binnen sieben Tagen; Grundlage des Jahreswerts Mindestlohn",
+      "sha256": ""
+    },
+    {
+      "id": "milog-22",
+      "norm": "§ 22 MiLoG",
+      "url": "https://www.gesetze-im-internet.de/milog/__22.html",
+      "zweck": "Mindestlohn je Monat und Aufzeichnung binnen sieben Tagen; Grundlage des Jahreswerts Mindestlohn",
+      "sha256": ""
+    },
+    {
+      "id": "milov4-1",
+      "norm": "§ 1 MiLoV4",
+      "url": "https://www.gesetze-im-internet.de/milov4/__1.html",
+      "zweck": "Höhe des Mindestlohns 2024 und 2025 (Jahreswert Mindestlohn)",
+      "sha256": ""
+    },
+    {
+      "id": "milov5-1",
+      "norm": "§ 1 MiLoV5",
+      "url": "https://www.gesetze-im-internet.de/milov5/__1.html",
+      "zweck": "Höhe des Mindestlohns 2026 und 2027 (Jahreswert Mindestlohn)",
+      "sha256": ""
+    },
+    {
+      "id": "milodokv-1",
+      "norm": "§ 1 MiLoDokV",
+      "url": "https://www.gesetze-im-internet.de/milodokv_2015/__1.html",
+      "zweck": "Grenzen, ab denen die Aufzeichnungspflicht nach § 17 MiLoG entfällt",
+      "sha256": ""
+    },
+    {
+      "id": "schwarzarbg-2a",
+      "norm": "§ 2a SchwarzArbG",
+      "url": "https://www.gesetze-im-internet.de/schwarzarbg_2004/__2a.html",
+      "zweck": "Branchen mit Aufzeichnungspflicht",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-2",
+      "norm": "§ 2 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__2.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-4",
+      "norm": "§ 4 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__4.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-5",
+      "norm": "§ 5 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__5.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-6",
+      "norm": "§ 6 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__6.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-7",
+      "norm": "§ 7 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__7.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-8",
+      "norm": "§ 8 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__8.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-11",
+      "norm": "§ 11 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__11.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-12",
+      "norm": "§ 12 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__12.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-13",
+      "norm": "§ 13 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__13.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-14",
+      "norm": "§ 14 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__14.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-15",
+      "norm": "§ 15 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__15.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-16",
+      "norm": "§ 16 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__16.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-17",
+      "norm": "§ 17 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__17.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-18",
+      "norm": "§ 18 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__18.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "jarbschg-22",
+      "norm": "§ 22 JArbSchG",
+      "url": "https://www.gesetze-im-internet.de/jarbschg/__22.html",
+      "zweck": "Arbeitszeit, Pausen, Schichtzeit, Freizeit, Nachtruhe und freie Tage Jugendlicher",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-3",
+      "norm": "§ 3 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__3.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-4",
+      "norm": "§ 4 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__4.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-5",
+      "norm": "§ 5 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__5.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-6",
+      "norm": "§ 6 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__6.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-9",
+      "norm": "§ 9 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__9.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-10",
+      "norm": "§ 10 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__10.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-11",
+      "norm": "§ 11 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__11.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-12",
+      "norm": "§ 12 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__12.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-13",
+      "norm": "§ 13 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__13.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-14",
+      "norm": "§ 14 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__14.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-15",
+      "norm": "§ 15 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__15.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-16",
+      "norm": "§ 16 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__16.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "muschg-28",
+      "norm": "§ 28 MuSchG",
+      "url": "https://www.gesetze-im-internet.de/muschg_2018/__28.html",
+      "zweck": "Schutzfristen, Mehr-, Nacht-, Sonn- und Feiertagsarbeit im Mutterschutz",
+      "sha256": ""
+    },
+    {
+      "id": "tzbfg-12",
+      "norm": "§ 12 TzBfG",
+      "url": "https://www.gesetze-im-internet.de/tzbfg/__12.html",
+      "zweck": "Arbeit auf Abruf",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-1",
+      "norm": "§ 1 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__1.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-3",
+      "norm": "§ 3 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__3.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-4",
+      "norm": "§ 4 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__4.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-5",
+      "norm": "§ 5 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__5.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-7",
+      "norm": "§ 7 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__7.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-9",
+      "norm": "§ 9 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__9.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "burlg-13",
+      "norm": "§ 13 BUrlG",
+      "url": "https://www.gesetze-im-internet.de/burlg/__13.html",
+      "zweck": "Mindesturlaub, Teilurlaub, Übertragung, Krankheit im Urlaub",
+      "sha256": ""
+    },
+    {
+      "id": "sgb-ix-208",
+      "norm": "§ 208 SGB IX",
+      "url": "https://www.gesetze-im-internet.de/sgb_9_2018/__208.html",
+      "zweck": "Zusatzurlaub schwerbehinderter Menschen",
+      "sha256": ""
+    },
+    {
+      "id": "beeg-17",
+      "norm": "§ 17 BEEG",
+      "url": "https://www.gesetze-im-internet.de/beeg/__17.html",
+      "zweck": "Kürzung des Urlaubs bei Elternzeit",
+      "sha256": ""
+    },
+    {
+      "id": "entgfg-2",
+      "norm": "§ 2 EntgFG",
+      "url": "https://www.gesetze-im-internet.de/entgfg/__2.html",
+      "zweck": "Entgeltfortzahlung an Feiertagen und bei Krankheit, Bescheinigung der Arbeitsunfähigkeit",
+      "sha256": ""
+    },
+    {
+      "id": "entgfg-3",
+      "norm": "§ 3 EntgFG",
+      "url": "https://www.gesetze-im-internet.de/entgfg/__3.html",
+      "zweck": "Entgeltfortzahlung an Feiertagen und bei Krankheit, Bescheinigung der Arbeitsunfähigkeit",
+      "sha256": ""
+    },
+    {
+      "id": "entgfg-4",
+      "norm": "§ 4 EntgFG",
+      "url": "https://www.gesetze-im-internet.de/entgfg/__4.html",
+      "zweck": "Entgeltfortzahlung an Feiertagen und bei Krankheit, Bescheinigung der Arbeitsunfähigkeit",
+      "sha256": ""
+    },
+    {
+      "id": "entgfg-5",
+      "norm": "§ 5 EntgFG",
+      "url": "https://www.gesetze-im-internet.de/entgfg/__5.html",
+      "zweck": "Entgeltfortzahlung an Feiertagen und bei Krankheit, Bescheinigung der Arbeitsunfähigkeit",
+      "sha256": ""
+    },
+    {
+      "id": "sgb-iv-8",
+      "norm": "§ 8 SGB IV",
+      "url": "https://www.gesetze-im-internet.de/sgb_4/__8.html",
+      "zweck": "Minijob-Grenze und eAU; Grundlage des Jahreswerts Minijob-Grenze",
+      "sha256": ""
+    },
+    {
+      "id": "sgb-iv-8a",
+      "norm": "§ 8a SGB IV",
+      "url": "https://www.gesetze-im-internet.de/sgb_4/__8a.html",
+      "zweck": "Minijob-Grenze und eAU; Grundlage des Jahreswerts Minijob-Grenze",
+      "sha256": ""
+    },
+    {
+      "id": "sgb-iv-109",
+      "norm": "§ 109 SGB IV",
+      "url": "https://www.gesetze-im-internet.de/sgb_4/__109.html",
+      "zweck": "Minijob-Grenze und eAU; Grundlage des Jahreswerts Minijob-Grenze",
+      "sha256": ""
+    },
+    {
+      "id": "sgb-v-45",
+      "norm": "§ 45 SGB V",
+      "url": "https://www.gesetze-im-internet.de/sgb_5/__45.html",
+      "zweck": "Kinderkrankentage; Grundlage des Jahreswerts Kinderkrankentage",
+      "sha256": ""
+    },
+    {
+      "id": "estg-3b",
+      "norm": "§ 3b EStG",
+      "url": "https://www.gesetze-im-internet.de/estg/__3b.html",
+      "zweck": "steuerfreie Zuschläge für Sonntags-, Feiertags- und Nachtarbeit",
+      "sha256": ""
+    },
+    {
+      "id": "betrvg-87",
+      "norm": "§ 87 BetrVG",
+      "url": "https://www.gesetze-im-internet.de/betrvg/__87.html",
+      "zweck": "Mitbestimmung bei Auswertungen je Person",
+      "sha256": ""
+    },
+    {
+      "id": "bgb-187",
+      "norm": "§ 187 BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__187.html",
+      "zweck": "Fristen und vereinbarte Arbeit (Soll)",
+      "sha256": ""
+    },
+    {
+      "id": "bgb-188",
+      "norm": "§ 188 BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__188.html",
+      "zweck": "Fristen und vereinbarte Arbeit (Soll)",
+      "sha256": ""
+    },
+    {
+      "id": "bgb-611a",
+      "norm": "§ 611a BGB",
+      "url": "https://www.gesetze-im-internet.de/bgb/__611a.html",
+      "zweck": "Fristen und vereinbarte Arbeit (Soll)",
+      "sha256": ""
+    },
+    {
+      "id": "svev-1",
+      "norm": "§ 1 SvEV",
+      "url": "https://www.gesetze-im-internet.de/svev/__1.html",
+      "zweck": "steuerfreie Zuschläge im Arbeitsentgelt beim Minijob",
+      "sha256": ""
+    }
+  ]
+}

@@ -15,7 +15,7 @@ const spanne = z
   .strict()
   .refine(({ von, bis }) => bis === null || von <= bis);
 
-const angabenSchema = z
+export const angabenSchema = z
   .object({
     geburtsdatum: tag.nullable(),
     wechselschicht: z.boolean(),

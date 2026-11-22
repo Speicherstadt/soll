@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "54c8dfc8-d1a7-4c66-acf4-46113e60df07",
+  "id": "27e4df5e-bd63-46b7-a37b-99dbecae2210",
   "prevId": "e65908dd-6330-4307-93a9-81bca46a7f7e",
   "tables": {
     "arbeitszeitmodelle": {
@@ -401,34 +401,6 @@
         "eingerichtet_am": {
           "name": "eingerichtet_am",
           "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "branche": {
-          "name": "branche",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sonntagsausnahme": {
-          "name": "sonntagsausnahme",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "ausgleichszeitraum": {
-          "name": "ausgleichszeitraum",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "ausgleich_beginn": {
-          "name": "ausgleich_beginn",
-          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1682,8 +1654,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "personenangaben": {
-      "name": "personenangaben",
+    "kunden": {
+      "name": "kunden",
       "columns": {
         "betrieb_id": {
           "name": "betrieb_id",
@@ -1692,61 +1664,379 @@
           "notNull": true,
           "autoincrement": false
         },
-        "nutzer_id": {
-          "name": "nutzer_id",
+        "kunde_id": {
+          "name": "kunde_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "geburtsdatum": {
-          "name": "geburtsdatum",
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "wechselschicht": {
-          "name": "wechselschicht",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "abruf": {
-          "name": "abruf",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
-        },
-        "mutterschutz": {
-          "name": "mutterschutz",
+        "extern_id": {
+          "name": "extern_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
+          "notNull": false,
+          "autoincrement": false
         },
-        "geaendert_am": {
-          "name": "geaendert_am",
+        "archiviert_am": {
+          "name": "archiviert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "personenangaben_betrieb_id_nutzer_id_pk": {
+      "indexes": {
+        "kunden_extern": {
+          "name": "kunden_extern",
           "columns": [
             "betrieb_id",
-            "nutzer_id"
+            "extern_quelle",
+            "extern_id"
           ],
-          "name": "personenangaben_betrieb_id_nutzer_id_pk"
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "kunden_betrieb_id_kunde_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "kunde_id"
+          ],
+          "name": "kunden_betrieb_id_kunde_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "projekte": {
+      "name": "projekte",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "projekt_id": {
+          "name": "projekt_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kunde_id": {
+          "name": "kunde_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "budget_minuten": {
+          "name": "budget_minuten",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "budget_cent": {
+          "name": "budget_cent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "warnung_prozent": {
+          "name": "warnung_prozent",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 80
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_id": {
+          "name": "extern_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "archiviert_am": {
+          "name": "archiviert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "projekte_kunde": {
+          "name": "projekte_kunde",
+          "columns": [
+            "betrieb_id",
+            "kunde_id"
+          ],
+          "isUnique": false
+        },
+        "projekte_extern": {
+          "name": "projekte_extern",
+          "columns": [
+            "betrieb_id",
+            "extern_quelle",
+            "extern_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "projekte_betrieb_id_projekt_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "projekt_id"
+          ],
+          "name": "projekte_betrieb_id_projekt_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "stundensaetze": {
+      "name": "stundensaetze",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "satz_id": {
+          "name": "satz_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "kunde_id": {
+          "name": "kunde_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "projekt_id": {
+          "name": "projekt_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "taetigkeit_id": {
+          "name": "taetigkeit_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gueltig_ab": {
+          "name": "gueltig_ab",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cent_pro_stunde": {
+          "name": "cent_pro_stunde",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "schluessel": {
+          "name": "schluessel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "stundensaetze_schluessel": {
+          "name": "stundensaetze_schluessel",
+          "columns": [
+            "betrieb_id",
+            "schluessel"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "stundensaetze_betrieb_id_satz_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "satz_id"
+          ],
+          "name": "stundensaetze_betrieb_id_satz_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "taetigkeiten": {
+      "name": "taetigkeiten",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "taetigkeit_id": {
+          "name": "taetigkeit_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "abrechenbar": {
+          "name": "abrechenbar",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_id": {
+          "name": "extern_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "archiviert_am": {
+          "name": "archiviert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "taetigkeiten_extern": {
+          "name": "taetigkeiten_extern",
+          "columns": [
+            "betrieb_id",
+            "extern_quelle",
+            "extern_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "taetigkeiten_betrieb_id_taetigkeit_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "taetigkeit_id"
+          ],
+          "name": "taetigkeiten_betrieb_id_taetigkeit_id_pk"
         }
       },
       "uniqueConstraints": {},

@@ -16,11 +16,13 @@ import { Route as AuswertungenRouteImport } from './routes/auswertungen'
 import { Route as DienstplanRouteImport } from './routes/dienstplan'
 import { Route as EinrichtungRouteImport } from './routes/einrichtung'
 import { Route as EinstellungenRouteImport } from './routes/einstellungen'
+import { Route as ExportRouteImport } from './routes/export'
 import { Route as MehrRouteImport } from './routes/mehr'
 import { Route as MonatRouteImport } from './routes/monat'
 import { Route as ProjekteRouteImport } from './routes/projekte'
 import { Route as PruefenRouteImport } from './routes/pruefen'
 import { Route as RegistrierenRouteImport } from './routes/registrieren'
+import { Route as TerminalRouteImport } from './routes/terminal'
 import { Route as ZeitenRouteImport } from './routes/zeiten'
 import { Route as EinladungTokenRouteImport } from './routes/einladung.$token'
 
@@ -59,6 +61,11 @@ const EinstellungenRoute = EinstellungenRouteImport.update({
   path: '/einstellungen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExportRoute = ExportRouteImport.update({
+  id: '/export',
+  path: '/export',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MehrRoute = MehrRouteImport.update({
   id: '/mehr',
   path: '/mehr',
@@ -84,6 +91,11 @@ const RegistrierenRoute = RegistrierenRouteImport.update({
   path: '/registrieren',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminalRoute = TerminalRouteImport.update({
+  id: '/terminal',
+  path: '/terminal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ZeitenRoute = ZeitenRouteImport.update({
   id: '/zeiten',
   path: '/zeiten',
@@ -103,11 +115,13 @@ export interface FileRoutesByFullPath {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -119,11 +133,13 @@ export interface FileRoutesByTo {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -136,11 +152,13 @@ export interface FileRoutesById {
   '/dienstplan': typeof DienstplanRoute
   '/einrichtung': typeof EinrichtungRoute
   '/einstellungen': typeof EinstellungenRoute
+  '/export': typeof ExportRoute
   '/mehr': typeof MehrRoute
   '/monat': typeof MonatRoute
   '/projekte': typeof ProjekteRoute
   '/pruefen': typeof PruefenRoute
   '/registrieren': typeof RegistrierenRoute
+  '/terminal': typeof TerminalRoute
   '/zeiten': typeof ZeitenRoute
   '/einladung/$token': typeof EinladungTokenRoute
 }
@@ -154,11 +172,13 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   fileRoutesByTo: FileRoutesByTo
@@ -170,11 +190,13 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   id:
@@ -186,11 +208,13 @@ export interface FileRouteTypes {
     | '/dienstplan'
     | '/einrichtung'
     | '/einstellungen'
+    | '/export'
     | '/mehr'
     | '/monat'
     | '/projekte'
     | '/pruefen'
     | '/registrieren'
+    | '/terminal'
     | '/zeiten'
     | '/einladung/$token'
   fileRoutesById: FileRoutesById
@@ -203,11 +227,13 @@ export interface RootRouteChildren {
   DienstplanRoute: typeof DienstplanRoute
   EinrichtungRoute: typeof EinrichtungRoute
   EinstellungenRoute: typeof EinstellungenRoute
+  ExportRoute: typeof ExportRoute
   MehrRoute: typeof MehrRoute
   MonatRoute: typeof MonatRoute
   ProjekteRoute: typeof ProjekteRoute
   PruefenRoute: typeof PruefenRoute
   RegistrierenRoute: typeof RegistrierenRoute
+  TerminalRoute: typeof TerminalRoute
   ZeitenRoute: typeof ZeitenRoute
   EinladungTokenRoute: typeof EinladungTokenRoute
 }
@@ -263,6 +289,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof EinstellungenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/export': {
+      id: '/export'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof ExportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mehr': {
       id: '/mehr'
       path: '/mehr'
@@ -298,6 +331,13 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof RegistrierenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminal': {
+      id: '/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof TerminalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/zeiten': {
       id: '/zeiten'
       path: '/zeiten'
@@ -323,11 +363,13 @@ const rootRouteChildren: RootRouteChildren = {
   DienstplanRoute: DienstplanRoute,
   EinrichtungRoute: EinrichtungRoute,
   EinstellungenRoute: EinstellungenRoute,
+  ExportRoute: ExportRoute,
   MehrRoute: MehrRoute,
   MonatRoute: MonatRoute,
   ProjekteRoute: ProjekteRoute,
   PruefenRoute: PruefenRoute,
   RegistrierenRoute: RegistrierenRoute,
+  TerminalRoute: TerminalRoute,
   ZeitenRoute: ZeitenRoute,
   EinladungTokenRoute: EinladungTokenRoute,
 }

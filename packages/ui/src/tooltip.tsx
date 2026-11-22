@@ -1,5 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { createUniqueId } from "solid-js";
+import { createUniqueId, onSettled } from "solid-js";
 import { verankert } from "./popover.tsx";
 
 export type TooltipProps = {
@@ -17,6 +17,12 @@ export const Tooltip = (props: TooltipProps) => {
   const id = createUniqueId();
   const anker = `--tooltip-${id}`;
   let hinweis: HTMLDivElement | undefined;
+  let huelle: HTMLSpanElement | undefined;
+  // the trigger inside is what a screen reader lands on, so it carries the description; set once
+  // the content is in place (a ref runs before its element is attached and owns nothing)
+  onSettled(() => {
+    huelle?.firstElementChild?.setAttribute("aria-describedby", id);
+  });
   const zeigen = () => {
     if (hinweis && !hinweis.matches(":popover-open")) hinweis.showPopover();
   };
@@ -37,8 +43,7 @@ export const Tooltip = (props: TooltipProps) => {
         if (event.key === "Escape") verbergen();
       }}
       ref={(el) => {
-        // the trigger inside is what a screen reader lands on, so it carries the description
-        queueMicrotask(() => el.firstElementChild?.setAttribute("aria-describedby", id));
+        huelle = el;
       }}
     >
       {props.children}

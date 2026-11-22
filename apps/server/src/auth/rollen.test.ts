@@ -46,6 +46,32 @@ describe("darf", () => {
       expect(darf(rolle, "zeiten:alle"), rolle).toBe(false);
   });
 
+  it("lets owner and planner approve leave, and only owner and payroll see sickness", () => {
+    const rollen = [
+      "inhaber",
+      "planer",
+      "mitarbeiter",
+      "lohnbuero",
+      "betriebsrat",
+      "extern",
+      "geraet",
+    ];
+    const mit = (recht: Parameters<typeof darf>[1]) => rollen.filter((rolle) => darf(rolle, recht));
+    expect(mit("abwesenheiten:freigeben")).toEqual(["inhaber", "planer"]);
+    expect(mit("abwesenheiten:gesundheit")).toEqual(["inhaber", "lohnbuero"]);
+    expect(mit("abwesenheiten:einstellen")).toEqual(["inhaber"]);
+  });
+
+  it("lets owner and planner keep customers, orders and rates, and everyone but a device read orders", () => {
+    for (const rolle of ["inhaber", "planer"])
+      expect(darf(rolle, "projekte:verwalten"), rolle).toBe(true);
+    for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "projekte:verwalten"), rolle).toBe(false);
+    for (const rolle of ["inhaber", "planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern"])
+      expect(darf(rolle, "projekte:lesen"), rolle).toBe(true);
+    expect(darf("geraet", "projekte:lesen")).toBe(false);
+  });
+
   it("lets owner and planner plan, and everyone who works for the business read the plan", () => {
     for (const rolle of ["inhaber", "planer"]) expect(darf(rolle, "plan:planen"), rolle).toBe(true);
     for (const rolle of ["mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
@@ -53,6 +79,19 @@ describe("darf", () => {
     for (const rolle of ["inhaber", "planer", "mitarbeiter", "lohnbuero", "betriebsrat"])
       expect(darf(rolle, "plan:lesen"), rolle).toBe(true);
     for (const rolle of ["extern", "geraet"]) expect(darf(rolle, "plan:lesen"), rolle).toBe(false);
+  });
+
+  it("lets owner and payroll set up the DATEV export and take its file (S-308)", () => {
+    for (const rolle of ["inhaber", "lohnbuero"])
+      expect(darf(rolle, "lohn:datev"), rolle).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "lohn:datev"), rolle).toBe(false);
+  });
+
+  it("lets only the owner give the Auskunft of another person (Art. 15 DSGVO)", () => {
+    expect(darf("inhaber", "auskunft:erteilen")).toBe(true);
+    for (const rolle of ["planer", "mitarbeiter", "lohnbuero", "betriebsrat", "extern", "geraet"])
+      expect(darf(rolle, "auskunft:erteilen"), rolle).toBe(false);
   });
 
   it("refuses unknown roles", () => {

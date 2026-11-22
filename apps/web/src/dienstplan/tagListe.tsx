@@ -115,6 +115,7 @@ const Eintrag = (props: {
       </Show>
     </>
   );
+  // functions: an open shift may get a person and a finding may go when the week loads again
   const schwere = () => props.befunde[0]?.schwere;
   const klasse = () =>
     cn(

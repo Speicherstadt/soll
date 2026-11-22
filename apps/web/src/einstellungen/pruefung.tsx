@@ -1,8 +1,11 @@
 import { BRANCHEN, type Branche } from "@soll/arbeitszeit";
 import { Button } from "@soll/ui";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { Feld } from "../dienstplan/felder.tsx";
+import { PLAN_AENDERT } from "../dienstplan/quelle.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -63,88 +66,94 @@ const Auswahl = (props: {
  * § 3 ArbZG. Without a setting the law's strict default holds; only the owner changes them.
  */
 export const PruefungEinstellungen = () => {
-  const [werte, setWerte] = createSignal<Einstellungen | null>(null);
-  const [fehler, setFehler] = createSignal("");
-  const [status, setStatus] = createSignal("");
   const darf = () => {
     const betrieb = aktuellerBetrieb();
     return betrieb !== null && istInhaber(betrieb);
   };
-  void api<Einstellungen>("/api/v1/betrieb/pruefung").then((antwort) => {
-    if (antwort.ok) setWerte(antwort.daten);
-  });
+  // only the owner changes them, so only the owner asks for them
+  const gespeichert = abfrage<Einstellungen>(() => (darf() ? ressourcen.pruefung() : null));
+  // the form starts from what is stored and is edited from there
+  const [werte, setWerte] = createSignal<Einstellungen | null>(() =>
+    darf() ? (daten(gespeichert.data) ?? null) : null,
+  );
+  const [fehler, setFehler] = createSignal("");
+  const [status, setStatus] = createSignal("");
+  // the settings change the findings in the plan
+  const sichern = aenderung(
+    (neu: Einstellungen | null) => api<Einstellungen>(PFAD.pruefung, { method: "PUT", body: neu }),
+    () => [alle(PFAD.pruefung), ...PLAN_AENDERT],
+  );
   const setze = (teil: Partial<Einstellungen>) => {
     setStatus("");
     setWerte((alt) => (alt ? { ...alt, ...teil } : alt));
   };
   const speichern = async (event: SubmitEvent) => {
     event.preventDefault();
-    const antwort = await api<Einstellungen>("/api/v1/betrieb/pruefung", {
-      method: "PUT",
-      body: werte(),
-    });
+    const antwort = await sichern.mutate(werte());
     setFehler(antwort.ok ? "" : m.fehler_speichern());
     if (antwort.ok) setStatus(m.pruefung_gespeichert());
   };
   return (
-    <Show when={darf() && werte()}>
-      {(aktuell) => (
-        <section class="flex max-w-lg flex-col gap-3">
-          <h2 class="font-semibold">{m.pruefung_titel()}</h2>
-          <p class="text-muted-foreground">{m.pruefung_text()}</p>
-          <form class="flex flex-col gap-3" onSubmit={speichern} novalidate>
-            <Auswahl
-              label={m.pruefung_branche()}
-              wert={aktuell().branche ?? ""}
-              optionen={[
-                ["", m.pruefung_keine()],
-                ...BRANCHEN.map((b) => [b, BRANCHEN_NAMEN[b]()] as const),
-              ]}
-              onWert={(wert) => setze({ branche: (wert || null) as Branche | null })}
-            />
-            <Auswahl
-              label={m.pruefung_sonntag()}
-              wert={String(aktuell().sonntagsausnahme ?? "")}
-              optionen={[
-                ["", m.pruefung_keine()],
-                ...NUMMERN.map((n) => [String(n), m.pruefung_nummer({ nummer: n })] as const),
-              ]}
-              onWert={(wert) => setze({ sonntagsausnahme: wert ? Number(wert) : null })}
-            />
-            <Auswahl
-              label={m.pruefung_ausgleich()}
-              wert={aktuell().ausgleichszeitraum ?? ""}
-              optionen={ZEITRAEUME.map(([wert, text]) => [wert, text()] as const)}
-              onWert={(wert) =>
-                setze({
-                  ausgleichszeitraum: (wert || null) as Einstellungen["ausgleichszeitraum"],
-                })
-              }
-            />
-            <Feld
-              label={m.pruefung_beginn()}
-              kind={(id) => (
-                <input
-                  id={id}
-                  type="date"
-                  class={feld}
-                  value={aktuell().ausgleichBeginn ?? ""}
-                  onChange={(event) =>
-                    setze({ ausgleichBeginn: event.currentTarget.value || null })
-                  }
-                />
-              )}
-            />
-            <Fehler text={fehler()} />
-            <p class="text-success" aria-live="polite">
-              {status()}
-            </p>
-            <Button type="submit" class="self-start">
-              {m.pruefung_speichern()}
-            </Button>
-          </form>
-        </section>
-      )}
-    </Show>
+    <Loading>
+      <Show when={werte()}>
+        {(aktuell) => (
+          <section class="flex max-w-lg flex-col gap-3">
+            <h2 class="font-semibold">{m.pruefung_titel()}</h2>
+            <p class="text-muted-foreground">{m.pruefung_text()}</p>
+            <form class="flex flex-col gap-3" onSubmit={speichern} novalidate>
+              <Auswahl
+                label={m.pruefung_branche()}
+                wert={aktuell().branche ?? ""}
+                optionen={[
+                  ["", m.pruefung_keine()],
+                  ...BRANCHEN.map((b) => [b, BRANCHEN_NAMEN[b]()] as const),
+                ]}
+                onWert={(wert) => setze({ branche: (wert || null) as Branche | null })}
+              />
+              <Auswahl
+                label={m.pruefung_sonntag()}
+                wert={String(aktuell().sonntagsausnahme ?? "")}
+                optionen={[
+                  ["", m.pruefung_keine()],
+                  ...NUMMERN.map((n) => [String(n), m.pruefung_nummer({ nummer: n })] as const),
+                ]}
+                onWert={(wert) => setze({ sonntagsausnahme: wert ? Number(wert) : null })}
+              />
+              <Auswahl
+                label={m.pruefung_ausgleich()}
+                wert={aktuell().ausgleichszeitraum ?? ""}
+                optionen={ZEITRAEUME.map(([wert, text]) => [wert, text()] as const)}
+                onWert={(wert) =>
+                  setze({
+                    ausgleichszeitraum: (wert || null) as Einstellungen["ausgleichszeitraum"],
+                  })
+                }
+              />
+              <Feld
+                label={m.pruefung_beginn()}
+                kind={(id) => (
+                  <input
+                    id={id}
+                    type="date"
+                    class={feld}
+                    value={aktuell().ausgleichBeginn ?? ""}
+                    onChange={(event) =>
+                      setze({ ausgleichBeginn: event.currentTarget.value || null })
+                    }
+                  />
+                )}
+              />
+              <Fehler text={fehler()} />
+              <p class="text-success" aria-live="polite">
+                {status()}
+              </p>
+              <Button type="submit" class="self-start" disabled={sichern.isPending}>
+                {m.pruefung_speichern()}
+              </Button>
+            </form>
+          </section>
+        )}
+      </Show>
+    </Loading>
   );
 };

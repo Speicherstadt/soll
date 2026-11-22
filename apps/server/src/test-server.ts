@@ -1,12 +1,19 @@
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
 
-type Optionen = { log?: (line: string) => void; uhr?: () => number; mail?: Mailer | null };
+type Optionen = {
+  log?: (line: string) => void;
+  uhr?: () => number;
+  mail?: Mailer | null;
+  schichten?: Schichtquelle;
+  webVerzeichnis?: string | null;
+};
 
 /** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
 const testApp = (optionen: Optionen, jetzt: () => number) => {
@@ -29,8 +36,10 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     auth,
     url: TEST_URL,
     mail: optionen.mail ?? null,
+    ...(optionen.schichten ? { schichten: optionen.schichten } : {}),
     geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
+    webVerzeichnis: optionen.webVerzeichnis ?? null,
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

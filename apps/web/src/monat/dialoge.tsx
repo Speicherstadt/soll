@@ -2,37 +2,49 @@ import type { JSX } from "@solidjs/web";
 import { ersterTag, type Monat } from "@soll/arbeitszeit";
 import { Button, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId } from "solid-js";
-import { type Antwort, api } from "../api.ts";
+import { aenderung } from "../abfragen/abfrage.ts";
+import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
+import { MONAT_AENDERT } from "./quelle.ts";
 import { FEHLER } from "./text.ts";
 
-/** A dialog with a form that asks for a reason and sends it; closes once the server took it */
-const GrundDialog = (props: {
+type Anfrage = { pfad: string; body: unknown };
+
+/**
+ * A dialog with a form that asks for a reason and sends it; closes once the server took it and the
+ * month shows what changed
+ */
+export const GrundDialog = (props: {
   titel: string;
   text: string;
   knopf: string;
   felder?: (id: string) => JSX.Element;
-  senden: (daten: FormData, grund: string) => Promise<Antwort<unknown>> | null;
+  /** what to send, or nothing for input the server would refuse */
+  anfrage: (daten: FormData, grund: string) => Anfrage | null;
   onSchliessen: () => void;
   onGespeichert: (daten: unknown) => void;
+  /** the words for an error the server names; those of the month by default */
+  fehlerText?: Record<string, () => string>;
 }) => {
   const [offen, setOffen] = createSignal(true);
   const [fehler, setFehler] = createSignal("");
-  const [arbeitet, setArbeitet] = createSignal(false);
+  const senden = aenderung(
+    (anfrage: Anfrage) => api(anfrage.pfad, { body: anfrage.body }),
+    () => MONAT_AENDERT,
+  );
   const id = createUniqueId();
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
     const daten = new FormData(event.currentTarget as HTMLFormElement);
     const grund = String(daten.get("grund") ?? "").trim();
     if (grund === "") return setFehler(m.monat_fehler_grund());
-    const anfrage = props.senden(daten, grund);
+    const anfrage = props.anfrage(daten, grund);
     if (anfrage === null) return setFehler(m.fehler_speichern());
-    setArbeitet(true);
-    const antwort = await anfrage;
-    setArbeitet(false);
-    if (!antwort.ok) return setFehler((FEHLER[antwort.fehler] ?? (() => m.fehler_speichern()))());
+    const antwort = await senden.mutate(anfrage);
+    const texte = props.fehlerText ?? FEHLER;
+    if (!antwort.ok) return setFehler((texte[antwort.fehler] ?? (() => m.fehler_speichern()))());
     setOffen(false);
     props.onGespeichert(antwort.daten);
   };
@@ -59,7 +71,7 @@ const GrundDialog = (props: {
           <Button variant="outline" onClick={() => setOffen(false)}>
             {m.abbrechen()}
           </Button>
-          <Button type="submit" disabled={arbeitet()}>
+          <Button type="submit" disabled={senden.isPending}>
             {props.knopf}
           </Button>
         </div>
@@ -80,11 +92,10 @@ export const OhneBestaetigungDialog = (props: {
     titel={m.monat_ohne_titel()}
     text={m.monat_ohne_text({ name: props.name })}
     knopf={m.monat_abschliessen()}
-    senden={(_, grund) =>
-      api("/api/v1/arbeitszeit/monat/abschliessen", {
-        body: { monat: props.monat, nutzerId: props.nutzerId, grund },
-      })
-    }
+    anfrage={(_, grund) => ({
+      pfad: "/api/v1/arbeitszeit/monat/abschliessen",
+      body: { monat: props.monat, nutzerId: props.nutzerId, grund },
+    })}
     onSchliessen={props.onSchliessen}
     onGespeichert={props.onGespeichert}
   />
@@ -127,12 +138,13 @@ export const GegeneintragDialog = (props: {
         </div>
       </div>
     )}
-    senden={(daten, grund) => {
+    anfrage={(daten, grund) => {
       const minuten = Number(daten.get("minuten"));
       if (!Number.isSafeInteger(minuten) || minuten === 0) return null;
-      return api("/api/v1/arbeitszeit/monat/gegeneintrag", {
+      return {
+        pfad: "/api/v1/arbeitszeit/monat/gegeneintrag",
         body: { nutzerId: props.nutzerId, tag: String(daten.get("tag")), minuten, grund },
-      });
+      };
     }}
     onSchliessen={props.onSchliessen}
     onGespeichert={() => props.onGespeichert()}

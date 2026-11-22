@@ -58,3 +58,47 @@ export const oeffneDatenbank = (pfad: string, jetzt: number): Datenbank => {
     },
   };
 };
+
+/** What a file holds, before it is copied or restored */
+export type Bestand = "soll" | "fremd" | "kaputt";
+
+/**
+ * Looks at an existing file read-only: a database SQLite finds intact (`PRAGMA integrity_check`) with
+ * the migrations' bookkeeping table is Soll's; one without it is another app's (S-905)
+ */
+export const bestandPruefen = (pfad: string): Bestand => {
+  try {
+    const lesend = new Database(pfad, { readonly: true, strict: true });
+    try {
+      const pruefung = lesend
+        .query<{ integrity_check: string }, []>("PRAGMA integrity_check")
+        .all();
+      if (pruefung.length !== 1 || pruefung[0]?.integrity_check !== "ok") return "kaputt";
+      const buchhaltung = lesend
+        .query("SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'soll_migrationen'")
+        .get();
+      return buchhaltung ? "soll" : "fremd";
+    } finally {
+      lesend.close();
+    }
+  } catch {
+    return "kaputt";
+  }
+};
+
+/**
+ * Copies the database at `quelle` into the new file `ziel` with `VACUUM INTO`, over a read-only
+ * connection: SQLite writes a consistent snapshot of what was committed, including what still lies
+ * in the WAL, while the server goes on writing (sqlite.org/lang_vacuum.html#vacuuminto). The copy
+ * is one file without a WAL beside it. Nothing of Soll's database is written, so the audit chain is
+ * not involved.
+ */
+export const datenbankKopieren = (quelle: string, ziel: string): void => {
+  const lesend = new Database(quelle, { readonly: true, strict: true });
+  try {
+    lesend.run("PRAGMA busy_timeout = 5000");
+    lesend.run("VACUUM INTO ?", [ziel]);
+  } finally {
+    lesend.close();
+  }
+};

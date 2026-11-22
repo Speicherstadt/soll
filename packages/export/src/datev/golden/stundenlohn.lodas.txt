@@ -1,0 +1,17 @@
+[Allgemein]
+Ziel=LODAS
+Version_SST=1.0
+BeraterNr=1234567
+MandantenNr=10001
+Feldtrennzeichen=;
+Zahlenkomma=,
+Datumsformat=TT.MM.JJJJ
+
+[Satzbeschreibung]
+1;u_lod_bwd_buchung_standard;abrechnung_zeitraum#bwd;pnr#bwd;la_eigene#bwd;bs_nr#bwd;bs_wert_butab#bwd;
+
+[Bewegungsdaten]
+1;01.05.2026;101;1000;1;64,75;
+1;01.05.2026;101;1010;1;24,00;
+1;01.05.2026;102;1000;1;8,12;
+1;01.05.2026;102;1010;1;24,00;

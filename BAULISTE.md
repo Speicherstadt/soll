@@ -319,18 +319,58 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
   die passende Seite (Test). Playwright in `desktop` und `phone` meldet ein Gerät mit einem Ersatz
   für den Push-Dienst des Browsers an und ab und ändert die Einstellungen; Texte in allen sechs
   Sprachen, Arabisch von rechts nach links.
-- [ ] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
+- [x] **S-308 DATEV-Lohn-Export** – Bewegungsdaten für LODAS und Lohn und Gehalt mit Zuordnung der
   Lohnarten je Betrieb, Zuschläge nach § 3b EStG getrennt.
   nach: S-306, S-207. Fertig, wenn: Golden-File-Tests für Stundenlohn, Minijob und Zuschläge bestehen
   und jede Feldregel ihre Quelle im Code nennt.
-- [ ] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
+  Dazu: reine Funktionen in `packages/export/src/datev/` schreiben aus den Lohnposten eines Monats
+  die ASCII-Importdatei für LODAS (`[Allgemein]` mit `Ziel=LODAS`, `Version_SST`, `BeraterNr`,
+  `MandantenNr`, `Feldtrennzeichen`, `Zahlenkomma` und `Datumsformat`, `[Satzbeschreibung]` mit
+  `u_lod_bwd_buchung_standard`, `[Bewegungsdaten]` je Personalnummer und Lohnart mit Stunden oder
+  Betrag) und die Bewegungsdatei für Lohn und Gehalt (Satzaufbau aus den erreichbaren Quellen,
+  Entscheidung im Projektplan), in Windows-1252 mit CRLF und Dezimalkomma aus ganzen Minuten und
+  Cent ohne Gleitkommazahlen, Stunden nie zulasten der Person gerundet. Jede Feldregel nennt im
+  Code ihre Quelle; welche Quellen erreichbar waren, steht im Pull Request und in `docs/`. Je
+  Betrieb eine Zuordnung in einer neuen Tabelle mit `betrieb_id` in der Audit-Kette über eine neue
+  Migration: Berater- und Mandantennummer, Personalnummer je Person und eine Lohnart je Posten
+  (Stunden, Minijob, Feiertagsstunden, Urlaub, Krank, Kind krank, Sonderurlaub, Überstunden und die
+  Zuschläge für Nacht, Sonntag und Feiertag je steuerfrei und steuerpflichtig nach § 3b EStG aus
+  S-207); die Sätze der Zuschläge speichert das Arbeitszeitmodell. Exportiert werden nur
+  abgeschlossene Monate aus ihrem festgeschriebenen Inhalt (S-306), so dass sich die Zahlen nach
+  dem Export nicht mehr ändern; ein Monat einer Person, der nicht abgeschlossen ist, und jede
+  fehlende Angabe (Beraternummer, Personalnummer, Lohnart eines vorkommenden Postens) verhindern
+  den Export mit einer Liste dessen, was „nicht hinterlegt“ ist. Golden Files für Stundenlohn
+  (Weber Haustechnik), Minijob (Café Elbblick) und Zuschläge, je für LODAS und Lohn und Gehalt;
+  Abwesenheiten (S-401) gehen als Eingabe der reinen Funktion ein, ohne von S-401 abzuhängen.
+  Herunterladen in der App für Inhaber und Lohnbüro, ein Endpunkt des abgeschalteten Moduls
+  Arbeitszeit wird abgelehnt, ein Test je Endpunkt, dass kein Betrieb Einstellungen oder Exporte
+  eines anderen sieht oder ändert; Playwright `desktop` stellt die Zuordnung ein und lädt die
+  Datei herunter, axe grün in hell und dunkel; Texte in allen sechs Sprachen; `docs/datev.md`.
+- [x] **S-309 Prüfexport und Auskunft** – Zeiten je Person und Zeitraum als CSV und PDF für Zoll und
   Arbeitsschutz; Auskunft nach Art. 15 DSGVO als Export.
+  Fertig, wenn: der Prüfexport je Person und Arbeitstag Datum, Beginn, Ende, Pausen und Dauer in
+  ganzen Minuten, den Zeitpunkt der Erfassung (§ 17 Abs. 1 MiLoG), die Änderungen von Hand mit Grund,
+  wer und wann, die Gegeneinträge, die Befunde mit Norm und den Prüfwert des abgeschlossenen Monats
+  zeigt; das CSV ist eine reine Funktion in `packages/export` (RFC 4180, UTF-8 mit BOM, Semikolon,
+  CRLF; eine Zelle, die mit `=`, `+`, `-`, `@`, Tab oder CR beginnt, bekommt ein Hochkomma davor,
+  Entscheidung im Projektplan), das PDF mit `pdf-lib` zeigt denselben Inhalt, beide mit
+  Golden-File-Tests; Zeitraum (höchstens zwei Jahre) und Personen wählt, wer alle Zeiten sehen darf
+  (`zeiten:alle`), jede Person exportiert ihre eigenen Tage; ein Endpunkt des abgeschalteten Moduls
+  Arbeitszeit wird abgelehnt. Die Auskunft nach Art. 15 DSGVO gibt der Person alles, was Soll im
+  Betrieb über sie speichert (Konto ohne Kennwort, Mitgliedschaft, Stempelungen mit allen Fassungen
+  und Gründen, Gegeneinträge, Abschlüsse mit Prüfwert, Modelle, Schichten, Geräte, PIN ohne Hash,
+  Einladung, Glieder der Audit-Kette), als JSON, ohne Daten anderer Personen; ein Test hält fest, dass
+  jede Tabelle in der Auskunft steht oder mit Grund ausgenommen ist; der Inhaber erteilt sie auch
+  einer Person, die den Betrieb verlassen hat. Ein Test je Endpunkt, dass kein Betrieb Daten eines
+  anderen sieht und niemand ohne Recht die einer anderen Person; Playwright in `desktop` und `phone`
+  lädt beide Exporte herunter; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/`.
 
 ## Phase 4 – Abwesenheiten
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
+- [x] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
   ganze und halbe Tage.
   - **Urlaub**: Antrag mit Resturlaub und Hinweis auf eigene Schichten im Zeitraum; Freigabe oder
     Ablehnung mit Grund durch Inhaber oder Planer, Benachrichtigung beider Seiten; Zurückziehen des
@@ -346,7 +386,23 @@ Alle Punkte: nach S-306.
     Dienstplan steht nur „abwesend“.
   Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung und Krankmeldung zeigt und Tests „krank im
   Urlaub“, die Frist am 4. Tag, die Erinnerung an die eAU und die Sichtbarkeit von „krank“ je Rolle
-  abdecken.
+  abdecken. Dazu: eine neue Tabelle `abwesenheiten` mit `betrieb_id` in der Audit-Kette über eine
+  neue Migration (Art, von, bis, halbe Tage, Status, Bescheinigung „eAU“ oder „Papier“, Kennung des
+  Kinds; keine Diagnose, keine Datei); R-27 als reine Funktion in `packages/arbeitszeit` mit allen
+  Fällen aus `docs/regeln.md` (dazu „ab Tag 2“ und ein Feiertag am Fälligkeitstag), die Einstellung
+  „Bescheinigung ab Tag“ am Betrieb; genehmigte Abwesenheiten gehen in Soll und Ist des Monats
+  (Gutschrift, Urlaubstage, R-24), in den Inhalt des Monatsabschlusses und auf den Stundenzettel, ein
+  Monat ohne Abwesenheit behält seinen Inhalt aus S-306 (Prüfwerte bleiben gültig); eine
+  Abwesenheit, die einen Tag eines abgeschlossenen Monats ändern würde, wird abgelehnt (409), die
+  Korrektur geht über den Gegeneintrag aus S-306; Resturlaub des Jahres und Urlaubstage des Antrags
+  ohne Wochenenden und Feiertage; Überschneidungen abgelehnt außer Krankheit im Urlaub; Zähler der
+  Kinderkrankentage je Kind gegen den Jahreswert, „nicht hinterlegt“ ohne ihn; eine Schnittstelle,
+  über die der Dienstplan (S-501) eigene Schichten im Antrag zeigt und Schichten einer Krankmeldung als
+  offen meldet; Mails an Betrieb und Person über das Mail-Modul aus S-306 (Test mit SMTP-Ersatz);
+  ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert, und dass die
+  Routen bei abgeschaltetem Modul Arbeitszeit abgelehnt werden; Playwright in `desktop` und `@phone`,
+  axe grün auf `/abwesenheiten` in hell und dunkel; Texte in allen sechs Sprachen, Arabisch von rechts
+  nach links.
 - [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
 
@@ -404,24 +460,130 @@ Alle Punkte: nach S-306.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
+- [x] **S-601 Kunden, Aufträge, Tätigkeiten** – feste interne Tätigkeiten (Fahrt, Werkstatt, Lager,
   Schulung), Stundensätze nach Kunde, Projekt, Tätigkeit und Person, Budgets mit Warnung.
-- [ ] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
+  Fertig, wenn: der Stundensatz eine reine Funktion in `packages/arbeitszeit` ist, deren Vorrang
+  dokumentiert und für jede Stufe getestet ist (Tätigkeit vor Auftrag vor Kunde, auf jeder Stufe die
+  Person vor allen, dann die Person allein, dann der Satz des Betriebs, wie die Punktzahl der Sätze in
+  Kimai), mit „nicht hinterlegt“ ohne passenden Satz und dem Satz, der am Tag gilt (gültig ab); ein
+  Budget in Minuten und in Cent je Auftrag als reine Funktion mit Warnung ab einer Schwelle (Vorgabe
+  80 %) und „aufgebraucht“ ab 100 %, ganze Zahlen ohne Brüche, und der Betrag aus Minuten und Satz
+  kaufmännisch auf den Cent gerundet (Test). Dazu: die vier festen internen Tätigkeiten sind in jedem
+  Betrieb da und lassen sich weder umbenennen noch archivieren oder löschen; was ein Auftrag oder ein
+  Satz noch nennt, wird archiviert statt gelöscht (409); ein Kunde, ein Auftrag und eine Tätigkeit
+  tragen optional eine Kennung in einer anderen Quelle (Haben, ein Import), eindeutig je Betrieb;
+  Anlegen, Ändern, Archivieren und Löschen gehen über die Audit-Kette und eine neue Migration; der
+  Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt, dass
+  kein Betrieb die Daten eines anderen sieht oder ändert; Sätze sehen und ändern nur Inhaber und
+  Planer; Playwright legt Kunde, Auftrag mit Budget, Tätigkeit und Satz an und archiviert (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
+- [x] **S-602 Stoppuhr** – eine laufende je Person, Wechsel mit einem Tipp, Verweis auf die
   Stempelung, Hinweis bei mehr Projektzeit als Arbeitszeit; änderbar bis „abgerechnet“.
-- [ ] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
+  Fertig, wenn: je Person höchstens eine Stoppuhr läuft, vom Server erzwungen (auch bei zwei
+  Anfragen zugleich); ein Tipp auf einen anderen Auftrag oder eine andere Tätigkeit die laufende
+  Buchung beendet und die nächste in derselben Transaktion startet, ohne Lücke und ohne
+  Überschneidung; Beginn und Ende auf die volle Minute gelten und die Dauer ganze Minuten hat;
+  jede Buchung ihren Arbeitstag (den Tag der Schicht, in die sie fällt) und das Kommen dieser
+  Schicht nennt oder keins; eine reine Funktion in `packages/arbeitszeit` einen Hinweis mit Grund
+  (gebuchte und gestempelte Minuten) gibt, wenn die Projektzeit eines Arbeitstags die gestempelte
+  Arbeitszeit übersteigt (Test, auch für eine Nachtschicht über Mitternacht und die Nacht der
+  Zeitumstellung); Buchungen derselben Person sich nicht überschneiden (409); die Person ihre
+  eigenen Buchungen ändert, nachträgt und löscht, Inhaber und Planer alle, bis eine Buchung
+  „abgerechnet“ ist (danach 409); Inhaber und Planer (später S-606) als abgerechnet markieren und
+  dabei der geltende Satz festgehalten wird; die gebuchten Minuten und Beträge `budgetStand` des
+  Auftrags speisen (Warnung und „aufgebraucht“ in der Liste der Aufträge); Kunde, Auftrag und
+  Tätigkeit mit Buchung archiviert statt gelöscht werden (409) und ein archivierter Auftrag oder
+  eine archivierte Tätigkeit keine neue Buchung annimmt; ob ein abgeschlossener Monat Projektzeit
+  sperrt, im Projektplan entschieden ist. Dazu: Schreiben über die Audit-Kette und eine neue
+  Migration; der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je
+  Endpunkt zeigt, dass kein Betrieb die Buchungen eines anderen sieht oder ändert; Playwright
+  startet, wechselt und stoppt die Stoppuhr, ändert eine Buchung und sieht den Hinweis (desktop
+  und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen.
+- [x] **S-603 Betrieb ohne Beschäftigte (Solo-Modus)** – nur das Modul Projektzeit, ohne
   Arbeitszeitprüfung, Abwesenheiten und Dienstplan. Lädt der Betrieb später die erste beschäftigte
   Person ein, schaltet Soll die Arbeitszeit ein und sagt warum (Pflicht zur Erfassung).
   Fertig, wenn: ein Test diesen Wechsel zeigt und ein abgeschaltetes Modul in Navigation, Routen und
-  API fehlt.
-- [ ] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
+  API fehlt. Genauer: ein Servertest geht über jede Route unter `/api/v1/<modul>/` (aus der App
+  gelesen, nicht von Hand gelistet, auch künftige) und bekommt bei abgeschaltetem Modul `403
+  modul_aus`; ein Betrieb nur mit Projektzeit (Inhaber allein) bekommt nirgends einen Befund der
+  Arbeitszeitprüfung und keine Erinnerung; nimmt die erste beschäftigte Person eine Einladung an,
+  ist Arbeitszeit an, der Inhaber sieht einen Hinweis mit dem Grund (BAG 1 ABR 22/21, § 3 Abs. 2
+  Nr. 1 ArbSchG), bis er ihn bestätigt, und Arbeitszeit lässt sich nicht mehr abschalten; ein
+  Playwright-Test (Desktop und `@phone`) zeigt Navigation und Umleitung im Solo-Betrieb und diesen
+  Wechsel.
+- [x] **S-604 Auslastung** – anwesend gegen gebucht je Team; je Person nur eingeschaltet, sichtbar
   für die Beschäftigten, Einstellung im Audit-Log.
-- [ ] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
+  Fertig, wenn: reine Funktionen in `packages/arbeitszeit` die Auslastung eines Monats in ganzen
+  Minuten rechnen (anwesend als gestempelte Arbeitszeit nach § 2 Abs. 1 ArbZG wie `tagesstand()`
+  sie zählt, gebucht nach abrechenbar und intern, anwesend ohne Buchung, Anteil abrechenbar in
+  ganzen Prozent ohne Brüche), mit Vitest auch für eine Nachtschicht über Mitternacht, die zum Tag
+  ihres Beginns gehört, und die Nächte der Zeitumstellung; was „Team“ heißt und die Mindestgröße
+  einer Gruppe im Projektplan entschieden sind (mit Grund, § 87 Abs. 1 Nr. 6 BetrVG und Art. 5
+  Abs. 1 lit. c DSGVO) und der Server eine kleinere Gruppe ohne Zahlen beantwortet (Test); Inhaber
+  und Planer die Auslastung je Team sehen, andere Rollen nicht (403); die Auswertung je Person aus
+  ist, bis der Inhaber sie einschaltet, die Einstellung über die Audit-Kette mit Akteur und
+  Zeitpunkt geschrieben wird (Test) und eine neue Migration sie am Betrieb speichert; der Server
+  Zahlen je Person ablehnt, solange sie aus ist (`403 auswertung_aus`, Test), auch die eigenen;
+  ist sie an, sehen Inhaber und Planer die Zahlen je Person und jede Person ihre eigenen, und alle
+  Beschäftigten sehen in der App „Auswertung je Person ist eingeschaltet seit …“ mit der Norm;
+  der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein Test je Endpunkt zeigt,
+  dass kein Betrieb die Auslastung eines anderen sieht oder dessen Einstellung ändert; Playwright
+  zeigt die Auslastung je Team, das Einschalten und den Hinweis bei einer Mitarbeiterin (desktop und
+  `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/projektzeit.md`.
+- [x] **S-605 Stundennachweis** – Regiebericht mit Unterschrift des Kunden auf dem Handy, als PDF.
+  Fertig, wenn: ein Stundennachweis für einen Auftrag und eine Spanne von Arbeitstagen aus den
+  beendeten Buchungen entsteht, die noch in keinem unterschriebenen Nachweis stehen (je Zeile Tag,
+  Person, Beginn und Ende, Tätigkeit, ganze Minuten und Notiz, dazu die Summe und eine freie
+  Bemerkung für Material und Hinweise; kein Geld); Mitarbeiter nur aus ihren eigenen Buchungen,
+  Inhaber und Planer aus denen aller oder einer Person; der Kunde auf dem Handy mit seinem Namen und
+  einer Unterschrift unterschreibt, die er mit dem Finger auf eine Fläche zeichnet (Pointer Events),
+  gespeichert als Linienzug in ganzen Zahlen ohne Zeit, Druck oder Tempo (keine weiteren
+  biometrischen Merkmale), die Zeit der Unterschrift vom Server; der Nachweis nur unterschrieben
+  existiert, seinen Inhalt eingefroren hält und seine Buchungen sperrt (ändern und löschen `409
+  unterschrieben`, abrechnen weiter möglich), eine Buchung in höchstens einem Nachweis steht, vom
+  Server erzwungen (auch bei zwei Anfragen zugleich), und eine Buchung, die sich seit der Vorschau
+  geändert hat, das Unterschreiben ablehnt (`409 abweichung`); das PDF mit `pdf-lib` in
+  `packages/export` die Unterschrift als Zeichnung und den SHA-256 seines Inhalts trägt, aus
+  demselben Inhalt dieselbe Datei wird (Test) und der Hash im Glied der Audit-Kette steht; das
+  Modul eine Funktion für das PDF eines Nachweises bietet, die S-606 als Anlage an Haben schickt;
+  der Nachweis je Betrieb fortlaufend nummeriert ist; Herunterladen und Teilen vom Gerät aus gehen
+  (Web Share API mit der Datei, sonst Herunterladen), ohne öffentlichen Link, im Projektplan
+  begründet. Dazu: Schreiben über die Audit-Kette und eine neue Migration; die Auskunft entscheidet
+  über die neuen Tabellen; der Server lehnt jede Route ab, solange das Modul Projektzeit aus ist; ein
+  Test je Endpunkt zeigt, dass kein Betrieb die Nachweise oder Buchungen eines anderen sieht oder
+  unterschreibt; Playwright zeichnet die Unterschrift mit Pointer Events, unterschreibt und lädt das
+  PDF (desktop und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+  `docs/projektzeit.md`.
 - [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
-- [ ] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
+- [x] **S-607 REST-API und MCP** – Token je Zugang mit den Rechten seiner Rolle,
   OpenAPI-Beschreibung, MCP-Server.
+  Fertig, wenn: jede Person eines Betriebs (nicht das Gerät des Terminals) unter Einstellungen
+  persönliche Zugänge anlegt, mit Namen und wahlweise einem Ablauf (30, 90 oder 365 Tage oder
+  keiner); das Token zeigt die App einmal, gespeichert sind nur sein SHA-256 und ein kurzer Anfang
+  zum Wiedererkennen; die Liste zeigt Name, Anfang, angelegt, Ablauf und den Tag der letzten Nutzung,
+  jeder Zugang lässt sich widerrufen; Anlegen, Widerrufen und die letzte Nutzung (höchstens ein Glied
+  je Zugang und Tag) stehen in der Audit-Kette über eine neue Migration. Ein Token gilt als
+  `Authorization: Bearer` an jeder Route unter `/api/v1` neben der Sitzung und trägt genau die
+  Rechte der Rolle seiner Person in seinem Betrieb, nie mehr: eine geänderte Rolle gilt beim
+  nächsten Aufruf, wer den Betrieb verlässt, dessen Zugänge sind ab sofort tot und leben auch nach
+  einem Wiedereintritt nicht auf; widerrufen oder abgelaufen heißt 401; Zugänge verwaltet nur die
+  Sitzung, nie ein Token; was über ein Token gestempelt wird, trägt die Quelle `api`; je Token
+  höchstens 120 Aufrufe in der Minute, darüber 429 mit `Retry-After`. Eine OpenAPI-3.1-Beschreibung
+  liegt öffentlich unter `/api/v1/openapi.json`, erzeugt aus den Zod-Schemas der Routen, und ein
+  Test liest die Routen aus der App und verlangt für jede eine Beschreibung und umgekehrt. Ein
+  MCP-Server unter `/mcp` (Streamable HTTP, zustandslos, Fassungen 2026-07-28 mit `server/discover`
+  und 2025-03-26 bis 2025-11-25 mit `initialize`) bietet Werkzeuge zum Lesen (Betrieb, Tag, Monat,
+  Kunden, Aufträge, Tätigkeiten, Standorte, Woche im Dienstplan) und zum Stempeln, die über dieselbe
+  API mit demselben Token gehen, also mit denselben Rechten und Modulschaltern; er prüft `Origin`,
+  Kopfzeilen und Fassung nach der Spezifikation. Ein Test je Endpunkt zeigt, dass kein Betrieb die
+  Zugänge eines anderen sieht oder widerruft, und ein Test, dass ein Token nie die Daten eines
+  anderen Betriebs erreicht, auch nicht bei einer Person in zwei Betrieben; Playwright legt einen
+  Zugang an, nutzt und widerruft ihn (desktop und `@phone`), axe grün in hell und dunkel; Texte in
+  allen sechs Sprachen; Doku `docs/api.md`.
 
 ## Phase 7 – Umzug aus anderen Tools
 
@@ -458,12 +620,48 @@ ergänzen Menschen (siehe unten).
 
 Alle Punkte: nach S-305.
 
-- [ ] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
+- [x] **S-801 Terminal** – Gerät per Code koppeln, Kiosk-Ansicht in 1280 × 800, PIN und QR-Code,
   Wake Lock, Neuladen nach Fehler.
-- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
+  Fertig, wenn: Playwright im Projekt `terminal` (1280 × 800, `e2e/terminal/`, `@terminal`) ein
+  Tablet mit einem Code des Inhabers koppelt, eine Person per PIN und eine per QR-Code erkennt, beide
+  Kommen stempeln und die Ansicht danach von selbst zur Uhr zurückkehrt, und axe in hell und dunkel
+  nichts findet. Dazu: der Inhaber erzeugt einen Kopplungscode, der kurz gilt, einmal eingelöst wird
+  und nur als Hash gespeichert ist; das Tablet tauscht ihn gegen ein Geräte-Token, das nur als Hash
+  gespeichert, vom Inhaber widerrufbar und an seinen Betrieb gebunden ist und nichts darf außer
+  Personen per PIN oder QR-Code zu erkennen und für sie zu stempeln; eine PIN erkennt die Person
+  allein, ist im Betrieb eindeutig und nie im Klartext gespeichert, falsche Versuche sperren das
+  Gerät mit wachsender Wartezeit (Zahlen in `docs/plan.md`), jeder Versuch steht in der Audit-Kette;
+  der QR-Code je Person ist ein Zufallswert, nur als Hash gespeichert, neu ausstellbar und
+  entziehbar, druckbar aus der App; die Kamera liest ihn mit `BarcodeDetector`, kein Bild wird
+  gespeichert oder gesendet, nur der gelesene Wert (im Test ersetzt); nach dem Erkennen sieht die
+  Person ihren Stand und die passenden Knöpfe Kommen, Pause, Gehen, nach wenigen Sekunden ohne
+  Eingabe geht die Ansicht zurück; Wake Lock hält den Bildschirm an (im Test ersetzt); nach einem
+  Fehler und wenn das Netz zurückkommt, lädt die Ansicht neu; ein widerrufenes Gerät landet wieder
+  bei der Kopplung; jede Stempelung trägt die Quelle „terminal“ und das Gerät; ein abgeschaltetes
+  Modul Terminal wird abgelehnt; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen
+  sieht oder ändert; keine Fotos, Fingerabdrücke oder Standorte; Texte in allen sechs Sprachen.
+- [x] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
   SUN-Nachricht.
   Fertig, wenn: Playwright mit einem Ersatz für `NDEFReader` Karte mit PIN, Karte ohne PIN und eine
   gefälschte SUN-Nachricht prüft.
+  Dazu: der Inhaber trägt unter Einstellungen je Person Karten ein, als einfache Karte mit ihrer UID
+  oder als NTAG 424 DNA mit UID, SDMMetaReadKey und SDMFileReadKey; die Schlüssel stehen nur
+  verschlüsselt in der Datenbank, die UID nur als Kennung mit geheimem Schlüssel (wie die PIN), und
+  eine UID gibt es im Betrieb einmal; eine einfache Karte erkennt die Person nur zusammen mit deren
+  PIN, denn eine UID lässt sich kopieren, und eine Karte allein lehnt der Server ab; eine NTAG 424 DNA
+  erkennt die Person allein, wenn die SUN-Nachricht stimmt: PICCData mit dem SDMMetaReadKey
+  entschlüsselt, der CMAC mit dem aus dem SDMFileReadKey abgeleiteten Sitzungsschlüssel geprüft, ein
+  Lesezähler, der nicht größer ist als der zuletzt gesehene, abgelehnt (Wiederholung); AES-CMAC mit
+  `node:crypto`, geprüft mit den Beispielwerten aus AN12196 und RFC 4493; jede unbekannte Karte,
+  falsche PIN zur Karte und gefälschte oder wiederholte SUN-Nachricht zählt zur Sperre des Terminals
+  und steht in der Audit-Kette; der Inhaber entzieht eine Karte, ihre Schlüssel werden gelöscht, der
+  Zähler bleibt; Web NFC nur, wo der Browser `NDEFReader` hat (Chrome auf Android), sonst bleibt das
+  Terminal bei PIN und QR-Code; Playwright `@terminal` mit einem Ersatz für `NDEFReader`: eine Karte
+  mit PIN stempelt, eine Karte ohne PIN wird abgelehnt, eine gefälschte und eine wiederholte
+  SUN-Nachricht werden abgelehnt, eine echte erkennt die Person; ein Test je neuem Endpunkt, dass kein
+  Betrieb Karten eines anderen sieht oder ändert; die Auskunft nennt die Karten der Person ohne UID
+  und Schlüssel; ein abgeschaltetes Modul Terminal wird abgelehnt; axe in hell und dunkel; Texte in
+  allen sechs Sprachen.
 - [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
 
 ## Phase 9 – Härtung und Betrieb
@@ -478,12 +676,58 @@ Alle Punkte: nach S-305.
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
 - [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
-- [ ] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
+- [x] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
   Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und
   `/health` antwortet; veröffentlicht wird es erst mit den Zugangsdaten (Schritte für Menschen).
-- [ ] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
+  Dazu: ein mehrstufiges `Containerfile` baut ein kleines Laufzeit-Image nur mit dem kompilierten
+  Binary und dem statischen Build der App, ohne Bun, Quellen oder `node_modules`; es läuft als
+  Benutzer ohne Root-Rechte, die Daten liegen im Volume `/data`, ein `HEALTHCHECK` fragt `/health`
+  ohne curl im Image; kein Geheimnis steckt im Image, in `compose.yaml` oder in der Quadlet-Datei
+  (`SOLL_SECRET_KEY` kommt aus einer Datei neben der Compose-Datei bzw. aus einem Podman-Secret).
+  Der Server liefert die App aus (`SOLL_WEB_DIR`): eine Datei des Builds mit ihrem Typ, jeder Pfad
+  ohne Dateiendung außerhalb von `/api` die `index.html`, `/assets/*` unveränderlich gecacht,
+  `sw.js` und `index.html` nie; ein Pfad mit `..` liefert nichts außerhalb des Verzeichnisses, ein
+  unbekannter Pfad unter `/api` nie die App (Tests). `deploy/compose.yaml` und Quadlet-Dateien unter
+  `deploy/quadlet/` (Container, Volume, Sicherung als Timer). `soll backup [ziel]` schreibt mit
+  SQLite `VACUUM INTO` eine in sich stimmige Kopie, auch während der Server im WAL-Modus schreibt,
+  prüft sie mit `PRAGMA integrity_check` und überschreibt nie eine vorhandene Datei;
+  `soll restore <quelle>` legt sie in ein leeres Datenverzeichnis, verweigert ein vorhandenes
+  `soll.db` und meldet je Betrieb das Ergebnis der Kettenprüfung (Tests: Daten schreiben → Sicherung
+  bei offenem Schreiber → neues leeres Verzeichnis → Wiederherstellung → dieselben Zeilen, dieselben
+  Prüfwerte, die Kette prüft ohne Befund; ein vorhandenes Ziel, eine fremde oder kaputte Datei werden
+  als Wert abgelehnt). Ein CI-Job baut das Image für amd64 mit `actions/docker-build` aus
+  firsttris/workflows, startet es mit leerem Volume und erzeugtem Testschlüssel, fragt `/health`,
+  prüft, dass es ohne `SOLL_SECRET_KEY` nicht startet, und macht im Container eine Sicherung; arm64
+  baut erst der Release (Entscheidung im Projektplan). `.github/workflows/release.yml` ruft
+  `docker-release.yml` aus firsttris/workflows erst nach der CI und nur, wenn das Secret
+  `DOCKER_PAT` gesetzt ist; ohne veröffentlicht er nichts und sagt das in der Zusammenfassung.
+  `docs/installation.md` (Docker Compose, Podman Quadlet, Binary, Umgebung, Sicherung und
+  Wiederherstellung, Update), README mit Abschnitt Installation.
+- [x] **S-906 Gesetzeswächter** – Workflow wie in Haben: Normen mit SHA-256, Jahreswerte; ein Issue,
   wenn sich etwas ändert.
+  Fertig, wenn: `scripts/gesetze/normen.json` jede beobachtete Norm mit ihrer Adresse auf
+  gesetze-im-internet.de und dem SHA-256 ihres normalisierten Textes führt (Überschrift, Text und
+  Fußnoten ohne Tags, Navigation und Fußzeile, Entities aufgelöst, Leerraum zusammengefasst; nach
+  `scripts/jahreswerte/normen.ts` aus `firsttris/haben`, kopiert mit Quelle); der Normalisierer an
+  Fixtures zeigt, dass Navigation, Zeichensatz (ISO-8859-1 nur im meta-Element) und Leerraum den Hash
+  nicht ändern, ein geändertes Wort aber schon (Tests). Ein Test liest jede Fundstelle mit Paragraf
+  und Gesetz aus `docs/regeln.md` und verlangt sie in der Liste: ArbZG, ArbSchG, MiLoG,
+  SchwarzArbG, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG, SGB IV (§§ 8, 8a, 109), SGB V § 45,
+  SGB IX § 208, BEEG § 17, EStG § 3b, BetrVG § 87, BGB, SvEV § 1, dazu die Grundlagen der Jahreswerte
+  (§ 1 MiLoG, § 1 MiLoV5, § 8 SGB IV, § 45 SGB V); Recht, das gesetze-im-internet.de nicht führt
+  (Landesrecht wie die Feiertagsgesetze, DSGVO, Urteile, Richtlinien wie die LStR), steht mit Grund
+  in einer Ausnahmeliste, ein unbekanntes Gesetz lässt den Test scheitern. `bun run gesetze` ruft
+  die Normen ab, vergleicht und schreibt einen Bericht (`--bericht`), `--schreiben` übernimmt die
+  aktuellen Hashes; eine Norm ohne Hash ist „noch kein Stand“ und kein Befund, eine nicht
+  erreichbare Seite eine Warnung, 404 ein Befund. Fehlende Jahreswerte sind Befunde: das laufende
+  Jahr immer, das nächste ab dem 1. Oktober (Mindestlohn, Minijob-Grenze, Kinderkrankentage), dazu
+  eine neue Mindestlohnanpassungsverordnung auf gesetze-im-internet.de. Der Workflow
+  `.github/workflows/gesetze.yml` läuft wöchentlich und auf Knopfdruck mit `issues: write` über
+  `GITHUB_TOKEN` und öffnet genau ein Issue mit dem Label `gesetzeswaechter`, das alle Befunde
+  auflistet; ein offenes bekommt bei geänderten Befunden einen Kommentar und neuen Text, bei gleichen
+  nichts; ohne Befund entsteht keins (Tests mit nachgestellter API). Alle Abrufe in Tests laufen
+  gegen Fixtures, ohne Netz. Doku `docs/gesetzeswaechter.md` und `docs/entwicklung.md`.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
   README aktuell.
 - [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
@@ -500,7 +744,11 @@ Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie 
 Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 
 - [ ] GitHub Pages mit Domain soll.work, DNS
-- [ ] Zugangsdaten für Docker Hub als Secrets im Repo, dann das erste Release
+- [ ] Zugangsdaten für Docker Hub als Secrets im Repo, dann das erste Release: Repository
+  `tristanteu/soll` auf Docker Hub anlegen, ein Access Token als Secret `DOCKER_PAT` (ein anderes
+  Image über die Variablen `DOCKERHUB_IMAGE` und `DOCKERHUB_USER`), dann die Version in
+  `package.json` setzen und Tag `v0.1.0` pushen (`.github/workflows/release.yml`,
+  [Installation](https://soll.work/installation.html))
 - [ ] Marke „Soll“ bei DPMA und EUIPO prüfen (Klassen 9 und 42)
 - [ ] Übersetzungen Türkisch, Polnisch, Ukrainisch und Arabisch von Muttersprachlern prüfen lassen
 - [ ] Regelwerk von einer Fachanwältin oder einem Fachanwalt für Arbeitsrecht gegenlesen lassen

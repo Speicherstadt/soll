@@ -1,0 +1,34 @@
+# Soll mit Podman Quadlet (https://soll.work/installation.html), als Benutzer:
+#   ~/.config/containers/systemd/soll.container (dazu soll.volume, soll-backup.*)
+#   ~/.config/soll/soll.env mit SOLL_URL (und SMTP), ohne den Schlüssel
+#   openssl rand -base64 32 | podman secret create soll-secret-key -
+#   systemctl --user daemon-reload && systemctl --user start soll
+[Unit]
+Description=Soll – Zeiterfassung und Dienstplan
+
+[Container]
+ContainerName=soll
+# Fertiges Image (amd64 und arm64); selbst gebaut: Image=localhost/soll:latest
+Image=docker.io/tristanteu/soll:latest
+# `podman auto-update` zieht neue Images und startet den Dienst neu
+AutoUpdate=registry
+# Nur lokal; davor ein Reverse Proxy mit TLS
+PublishPort=127.0.0.1:8200:8200
+Volume=soll.volume:/data
+EnvironmentFile=%h/.config/soll/soll.env
+# Der Schlüssel als Podman-Secret, nie in dieser Datei oder in soll.env
+Secret=soll-secret-key,type=env,target=SOLL_SECRET_KEY
+# Gehärtet: Dateisystem schreibgeschützt bis auf /data, keine Capabilities, keine neuen Rechte
+ReadOnly=true
+DropCapability=ALL
+NoNewPrivileges=true
+# Wie der HEALTHCHECK im Image: das Binary fragt sein eigenes /health
+HealthCmd=soll health
+HealthInterval=30s
+HealthStartPeriod=30s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

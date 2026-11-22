@@ -1,9 +1,13 @@
 import { BRANCHEN, istTag } from "@soll/arbeitszeit";
 import { Hono } from "hono";
 import { z } from "zod";
+import { darf } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import {
+  auswertungJePersonSeit,
   betriebLesen,
+  hinweisBestaetigen,
+  hinweisVon,
   moduleSetzen,
   moduleVon,
   pruefeinstellungenSetzen,
@@ -11,7 +15,7 @@ import {
 } from "../modules/betrieb/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const moduleSchema = z
+export const moduleSchema = z
   .object({
     arbeitszeit: z.boolean(),
     dienstplan: z.boolean(),
@@ -22,7 +26,7 @@ const moduleSchema = z
   .strict();
 
 /** The settings the rules read (S-502); null keeps the default of the law */
-const pruefungSchema = z
+export const pruefungSchema = z
   .object({
     branche: z.enum(BRANCHEN).nullable(),
     // § 10 Abs. 1 Nr. 1 to 16 ArbZG
@@ -48,6 +52,10 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
         // one's own role, so the app knows what to offer (the server checks it again on each call)
         rolle: c.get("rolle"),
         module: moduleVon(betrieb),
+        // what Soll changed by itself and tells the owner, who switches the modules (S-603)
+        hinweis: darf(c.get("rolle"), "betrieb:module") ? hinweisVon(betrieb) : null,
+        // the utilisation per person, switched on: every member sees since when (S-604, R-30)
+        auswertungJePersonSeit: auswertungJePersonSeit(db, betrieb),
       });
     })
     .patch("/module", recht("betrieb:module"), async (c) => {
@@ -70,4 +78,9 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
       if (!betriebLesen(db, c.get("betriebId"))) return c.json({ fehler: "kein_betrieb" }, 404);
       const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
       return c.json(pruefeinstellungenSetzen(schreibDb, kontext, eingabe.data));
+    })
+    .delete("/hinweis", recht("betrieb:module"), (c) => {
+      const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      hinweisBestaetigen(db, schreibDb, kontext);
+      return c.body(null, 204);
     });

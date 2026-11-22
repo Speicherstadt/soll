@@ -34,6 +34,7 @@ Kennwort.
 | `--primary` | `#18181b` | `#fafafa` | Hauptknopf |
 | `--primary-foreground` | `#fafafa` | `#18181b` | Text auf `--primary` |
 | `--success` | `#15803d` | `#4ade80` | eingestempelt, Tag ohne Befund, Monat abgeschlossen |
+| `--success-surface` | `#dcfce7` | `#052e16` | Haken „Gestempelt“ am Terminal |
 | `--warning` | `#b45309` | `#fbbf24` | Hinweis (etwa 8 h überschritten) |
 | `--warning-surface` | `#fef3c7` | `#422006` | Badge „Hinweis“ |
 | `--danger` | `#b91c1c` | `#f87171` | Verstoß, Löschen, Fehler |
@@ -99,6 +100,21 @@ Summen, die Tabelle der Tage mit Beginn, Ende, Pause, Dauer, Befund, Änderungen
 und der Prüfwert. Bewusst anders als im Mockup: die Tabelle zeigt nur Tage mit Arbeit, Befund oder
 Änderung statt einer zugeklappten Zeile, und am Handy fehlt die Spalte Pause. Die **Prüfseite**
 steht wie Anmelden als eine Karte ohne Seitenleiste.
+
+**Projekte** (kein Screen im Mockup): Reiter Aufträge, Kunden, Tätigkeiten und Sätze; Kunden und
+Sätze nur für Inhaber und Planer. Je Reiter oben ein umrandetes Formular zum Anlegen (am Desktop die
+Felder nebeneinander, am Handy untereinander), darunter die Tabelle; Archivieren, Zurückholen und
+Entfernen als Icon-Knöpfe am Ende der Zeile, „archiviert“ als Badge. Die festen internen Tätigkeiten
+tragen das Badge „intern“ und haben keine Knöpfe.
+
+**Auswertungen** (kein Screen im Mockup): oben die Auslastung, darunter der DATEV-Export. Die
+Auslastung zeigt den Monat (zurück und vor wie im Monatsabschluss, zuerst der Vormonat), groß die
+anwesende Zeit und den Anteil abrechenbar, darunter einen Balken aus abrechenbar (`--primary`),
+intern (`--muted-foreground`) und ohne Buchung (`--border`) mit 2 px Abstand, Breiten in ganzen
+Minuten, und eine Legende mit den Zeiten: Der Balken ist `aria-hidden`, die Zahlen stehen als Text
+daneben, keine Farbe allein. Darunter der Schalter „Auswertung je Person“ und, wenn er an ist, die
+Tabelle je Person (am Handy ohne Intern und Ohne Buchung). Ist die Auswertung je Person an, steht
+unter dem Titel jeder Seite eine ruhige Zeile mit Auge-Icon, Zeitpunkt und Norm.
 
 ## Komponenten
 

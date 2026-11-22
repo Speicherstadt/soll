@@ -19,6 +19,7 @@
   --primary: #18181b;
   --primary-foreground: #fafafa;
   --success: #15803d;
+  --success-surface: #dcfce7;
   --warning: #b45309;
   --warning-surface: #fef3c7;
   --danger: #b91c1c;
@@ -36,6 +37,7 @@
     --primary: #fafafa;
     --primary-foreground: #18181b;
     --success: #4ade80;
+    --success-surface: #052e16;
     --warning: #fbbf24;
     --warning-surface: #422006;
     --danger: #f87171;
@@ -53,6 +55,7 @@
   --primary: #fafafa;
   --primary-foreground: #18181b;
   --success: #4ade80;
+  --success-surface: #052e16;
   --warning: #fbbf24;
   --warning-surface: #422006;
   --danger: #f87171;
@@ -69,6 +72,7 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
   --color-warning: var(--warning);
   --color-warning-surface: var(--warning-surface);
   --color-danger: var(--danger);

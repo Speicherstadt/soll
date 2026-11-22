@@ -28,24 +28,25 @@ export const StempelListe = (props: {
         aria-labelledby="stempelungen-titel"
         class="flex flex-col divide-y divide-border rounded-lg border border-border"
       >
-        <For each={props.stempelungen}>
+        {/* keyed by id: Heute counts on every 15 s with fresh objects for the same stamps */}
+        <For each={props.stempelungen} keyed={(stempel) => stempel.stempelId}>
           {(stempel) => {
             const name = () => ({
-              art: ART_NAMEN[stempel.art](),
-              uhrzeit: uhrzeitText(stempel.zeitpunkt),
+              art: ART_NAMEN[stempel().art](),
+              uhrzeit: uhrzeitText(stempel().zeitpunkt),
             });
             return (
               <li class="flex min-h-11 items-center justify-between gap-3 px-3 py-1.5">
                 <span class="flex items-center gap-2">
                   <span class="font-mono tabular-nums">{name().uhrzeit}</span>
                   <span>{name().art}</span>
-                  <Show when={stempel.korrigiert}>
+                  <Show when={stempel().korrigiert}>
                     <Badge>{m.stempel_korrigiert()}</Badge>
                   </Show>
                   <Show
-                    when={stempel.wartend}
+                    when={stempel().wartend}
                     fallback={
-                      <Show when={stempel.offline}>
+                      <Show when={stempel().offline}>
                         <Badge>{m.stempel_offline()}</Badge>
                       </Show>
                     }
@@ -53,13 +54,13 @@ export const StempelListe = (props: {
                     <Badge ton="warning">{m.stempel_wartet()}</Badge>
                   </Show>
                 </span>
-                <Show when={props.darfKorrigieren && !stempel.wartend}>
+                <Show when={props.darfKorrigieren && !stempel().wartend}>
                   <span class="flex gap-1">
                     <Button
                       variant="icon"
                       size="lg"
                       aria-label={m.stempel_aendern(name())}
-                      onClick={() => props.onAendern(stempel)}
+                      onClick={() => props.onAendern(stempel())}
                     >
                       <Icon icon={Pencil} />
                     </Button>
@@ -67,7 +68,7 @@ export const StempelListe = (props: {
                       variant="icon"
                       size="lg"
                       aria-label={m.stempel_entfernen(name())}
-                      onClick={() => props.onEntfernen(stempel)}
+                      onClick={() => props.onEntfernen(stempel())}
                     >
                       <Icon icon={Trash2} />
                     </Button>

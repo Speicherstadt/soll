@@ -136,6 +136,38 @@ test("a booking added right after choosing another day lands on that day", async
   await expect(bereich.getByRole("row", { name: /Bad Elbhof/ })).toContainText("08:00–09:00");
 });
 
+test("a booking added right after clearing the day lands on today", async ({ page }) => {
+  await page.clock.install();
+  await werkstatt(page);
+  await page.goto("/");
+  const bereich = stoppuhr(page);
+  const feld = bereich.getByLabel(t("stoppuhr_tag"), { exact: true });
+  await feld.fill(gestern());
+  await expect(bereich.getByText(t("stoppuhr_leer"))).toBeVisible();
+  // past the cache's five minutes today's answer has gone and loads again; it is held meanwhile
+  await page.clock.fastForward("06:00");
+  let freigeben = () => {};
+  const frei = new Promise<void>((resolve) => {
+    freigeben = resolve;
+  });
+  await page.route(
+    (url) => url.pathname === `${PZ}/stoppuhr` && !url.searchParams.has("tag"),
+    async (route) => {
+      await frei;
+      await route.continue();
+    },
+    { times: 1 },
+  );
+  await feld.fill("");
+  await bereich.getByRole("button", { name: t("buchung_nachtragen") }).click();
+  freigeben();
+  const dialog = page.getByRole("dialog", { name: t("buchung_titel_nachtragen") });
+  const heute = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin" }).format(
+    await page.evaluate(() => Date.now()),
+  );
+  await expect(dialog.getByLabel(t("buchung_datum"))).toHaveValue(heute);
+});
+
 test("Heute shows only the stopwatch without working time @phone", async ({ page }) => {
   await betriebAnlegen(page, {
     beschaeftigte: false,

@@ -1,3 +1,4 @@
+import { tagInBerlin } from "@soll/arbeitszeit";
 import { Button, Icon } from "@soll/ui";
 import { CircleAlert, Plus } from "lucide";
 import { createSignal, createUniqueId, Loading, latest, Show } from "solid-js";
@@ -115,9 +116,13 @@ export const Stoppuhr = () => {
                 variant="outline"
                 class="self-start"
                 // the day chosen, even while its bookings still load: tag() still reads the day before
-                // until the new day's answer lands (Solid 2 holds the write), latest() the day chosen
+                // until the new day's answer lands (Solid 2 holds the write), latest() the day chosen.
+                // No day chosen is today by the stopwatch's clock: the day shown is held as well
                 onClick={() =>
-                  setBearbeiten({ modus: "nachtragen", tag: latest(tag) ?? ansicht().tag })
+                  setBearbeiten({
+                    modus: "nachtragen",
+                    tag: latest(tag) ?? tagInBerlin(quelle.jetzt()),
+                  })
                 }
               >
                 <Icon icon={Plus} />

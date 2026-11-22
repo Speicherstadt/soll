@@ -13,6 +13,6 @@ export { GESUNDHEIT, type SichtbareArt, sichtbareArt } from "./sichtbarkeit.ts";
 export {
   type Abwesenheitszeitraum,
   tageDesZeitraums,
-  ueberschneiden,
+  tageUeberschneiden,
   ueberschneidungErlaubt,
 } from "./zeitraum.ts";

@@ -1,10 +1,13 @@
 import { Button, Dialog } from "@soll/ui";
-import { createSignal, For, Show, untrack } from "solid-js";
-import { api } from "../api.ts";
+import { createSignal, For, Loading, Show, untrack } from "solid-js";
+import { abfrage, daten, schreiben } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
+import { type Antwort, api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Feld, TextFeld, ZahlFeld, ZeitFeld } from "./felder.tsx";
+import { PLAN_AENDERT } from "./quelle.ts";
 import { minutenSpanne, wochentagName } from "./text.ts";
 import type { BedarfZeile } from "./typen.ts";
 
@@ -75,66 +78,58 @@ export const BedarfDialog = (props: {
   standortId: string;
   rollen: readonly string[];
   onSchliessen: () => void;
-  onGeaendert: () => void;
 }) => {
   // the dialog belongs to the site it was opened for
   const standortId = untrack(() => props.standortId);
   const [offen, setOffen] = createSignal(true);
-  const [bedarfe, setBedarfe] = createSignal<BedarfZeile[]>([]);
+  const bedarfe = abfrage<{ bedarfe: BedarfZeile[] }>(() => ressourcen.bedarf(standortId));
   const [entwurf, setEntwurf] = createSignal<Entwurf>(LEER);
   const [fehler, setFehler] = createSignal("");
-  const laden = async () => {
-    const frage = new URLSearchParams({ standortId });
-    const antwort = await api<{ bedarfe: BedarfZeile[] }>(`/api/v1/dienstplan/bedarf?${frage}`);
-    if (antwort.ok) setBedarfe(antwort.daten.bedarfe);
-  };
-  void laden();
-  const fertig = async (ok: boolean, text: string) => {
+  // the need and the coverage the week shows from it
+  const aendern = schreiben(() => [alle(PFAD.bedarf), ...PLAN_AENDERT]);
+  const fertig = async (auftrag: () => Promise<Antwort<unknown>>, text: string) => {
+    const ok = (await aendern.mutate(auftrag)).ok;
     setFehler(ok ? "" : text);
-    if (!ok) return;
-    await laden();
-    props.onGeaendert();
   };
   const anlegen = async (event: SubmitEvent) => {
     event.preventDefault();
     const neu = { ...entwurf(), rolle: entwurf().rolle.trim(), standortId };
     if (neu.rolle === "") return setFehler(m.plan_fehler_rolle());
-    await fertig(
-      (await api("/api/v1/dienstplan/bedarf", { body: neu })).ok,
-      m.plan_fehler_eingabe(),
-    );
+    await fertig(() => api("/api/v1/dienstplan/bedarf", { body: neu }), m.plan_fehler_eingabe());
   };
   const entfernen = async (bedarf: BedarfZeile) =>
     fertig(
-      (await api(`/api/v1/dienstplan/bedarf/${bedarf.bedarfId}`, { method: "DELETE" })).ok,
+      () => api(`/api/v1/dienstplan/bedarf/${bedarf.bedarfId}`, { method: "DELETE" }),
       m.fehler_speichern(),
     );
   return (
     <Dialog offen={offen()} titel={m.plan_bedarf_titel()} onSchliessen={props.onSchliessen}>
       <div class="flex flex-col gap-4">
-        <Show
-          when={bedarfe().length > 0}
-          fallback={<p class="text-muted-foreground">{m.plan_bedarf_leer()}</p>}
-        >
-          <ul class="m-0 flex list-none flex-col gap-1 p-0">
-            <For each={bedarfe()}>
-              {(bedarf) => (
-                <li class="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5">
-                  <span class="me-auto">{bedarfText(bedarf)}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    class="text-danger"
-                    onClick={() => void entfernen(bedarf)}
-                  >
-                    {m.plan_entfernen()}
-                    <span class="sr-only">{bedarfText(bedarf)}</span>
-                  </Button>
-                </li>
-              )}
-            </For>
-          </ul>
-        </Show>
+        <Loading>
+          <Show
+            when={(daten(bedarfe.data)?.bedarfe ?? []).length > 0}
+            fallback={<p class="text-muted-foreground">{m.plan_bedarf_leer()}</p>}
+          >
+            <ul class="m-0 flex list-none flex-col gap-1 p-0">
+              <For each={daten(bedarfe.data)?.bedarfe ?? []}>
+                {(bedarf) => (
+                  <li class="flex items-center gap-2 rounded-md bg-muted px-3 py-1.5">
+                    <span class="me-auto">{bedarfText(bedarf)}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      class="text-danger"
+                      onClick={() => void entfernen(bedarf)}
+                    >
+                      {m.plan_entfernen()}
+                      <span class="sr-only">{bedarfText(bedarf)}</span>
+                    </Button>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </Show>
+        </Loading>
         <form class="flex flex-col gap-3 border-border border-t pt-4" onSubmit={anlegen} novalidate>
           <h3 class="font-semibold">{m.plan_bedarf_neu()}</h3>
           <BedarfFelder

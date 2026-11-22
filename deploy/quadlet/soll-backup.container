@@ -1,0 +1,18 @@
+# Tägliche Sicherung (soll-backup.timer): `soll backup` schreibt mit VACUUM INTO eine in sich
+# stimmige Kopie nach /data/backups, während der Server weiterläuft. Alte Sicherungen räumt das
+# Backup des Rechners ab, das das Volume mitnimmt (https://soll.work/installation.html).
+[Unit]
+Description=Soll – Sicherung
+After=soll.service
+
+[Container]
+ContainerName=soll-backup
+Image=docker.io/tristanteu/soll:latest
+Exec=backup
+Volume=soll.volume:/data
+ReadOnly=true
+DropCapability=ALL
+NoNewPrivileges=true
+
+[Service]
+Type=oneshot

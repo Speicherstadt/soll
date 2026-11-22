@@ -1,0 +1,2 @@
+# The golden files of the DATEV export are compared byte for byte: CR LF stays
+packages/export/src/datev/golden/*.txt -text

@@ -56,14 +56,34 @@ export const beschaeftigte = (db: Db, betriebId: string): number =>
 
 /**
  * Switches working time back on once the business has employees, whichever way they came (an
- * invitation, a change of role): the duty to record holds for them (BAG 1 ABR 22/21). Called after
- * every change of membership.
+ * invitation, a change of role): the duty to record holds for them (BAG 1 ABR 22/21, § 3 Abs. 2
+ * Nr. 1 ArbSchG). Called after every change of membership; the owner is told why (S-603).
  */
 export const arbeitszeitPflichtWahren = (db: Db, schreibDb: SchreibDb, kontext: Kontext): void => {
   if (modulAktiv(db, kontext.betriebId, "arbeitszeit")) return;
   if (!betriebLesen(db, kontext.betriebId) || beschaeftigte(db, kontext.betriebId) === 0) return;
   schreiben(schreibDb, kontext, (s) =>
-    s.aendern("betriebe", { betriebId: kontext.betriebId }, { modulArbeitszeit: true }),
+    s.aendern(
+      "betriebe",
+      { betriebId: kontext.betriebId },
+      { modulArbeitszeit: true, pflichtHinweisAm: kontext.jetzt },
+    ),
+  );
+};
+
+/** What Soll tells the owner about a change it made itself: working time switched on (S-603) */
+export type Hinweis = { art: "arbeitszeit_eingeschaltet"; am: number };
+
+export const hinweisVon = (betrieb: Betrieb): Hinweis | null =>
+  betrieb.pflichtHinweisAm === null
+    ? null
+    : { art: "arbeitszeit_eingeschaltet", am: betrieb.pflichtHinweisAm };
+
+/** The owner has read the notice; confirming it again changes nothing */
+export const hinweisBestaetigen = (db: Db, schreibDb: SchreibDb, kontext: Kontext): void => {
+  if (betriebLesen(db, kontext.betriebId)?.pflichtHinweisAm == null) return;
+  schreiben(schreibDb, kontext, (s) =>
+    s.aendern("betriebe", { betriebId: kontext.betriebId }, { pflichtHinweisAm: null }),
   );
 };
 
@@ -153,3 +173,8 @@ export const bescheinigungAbTagSetzen = (
   schreiben(schreibDb, kontext, (s) =>
     s.aendern("betriebe", { betriebId: kontext.betriebId }, { bescheinigungAbTag: abTag }),
   );
+export {
+  type AuswertungErgebnis,
+  auswertungJePersonSeit,
+  auswertungJePersonSetzen,
+} from "./auswertung.ts";

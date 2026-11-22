@@ -68,6 +68,34 @@ describe("/api/v1/arbeitszeit/modelle", () => {
       ).toBe(400);
   });
 
+  it("keeps the surcharges a model pays in basis points; none set means none paid (S-308)", async () => {
+    const server = testServer();
+    const mia = await server.inhaberMitBetrieb("Café Elbblick", "elbblick");
+    const saetze = { nacht: 2500, sonntag: 5000, feiertag150: 15_000 };
+    const mit = await json(
+      await mia.anfrage("/api/v1/arbeitszeit/modelle", {
+        body: { ...VOLLZEIT, zuschlagssaetze: saetze },
+      }),
+    );
+    expect(mit.zuschlagssaetze).toEqual(saetze);
+    const ohne = await json(await mia.anfrage("/api/v1/arbeitszeit/modelle", { body: MINIJOB }));
+    expect(ohne.zuschlagssaetze).toEqual({});
+    for (const falsch of [
+      { nacht: 2500.5 },
+      { nacht: -1 },
+      { sonntag: 100_001 },
+      { samstag: 2500 },
+    ])
+      expect(
+        (
+          await mia.anfrage("/api/v1/arbeitszeit/modelle", {
+            body: { ...VOLLZEIT, zuschlagssaetze: falsch },
+          })
+        ).status,
+        JSON.stringify(falsch),
+      ).toBe(400);
+  });
+
   it("is refused while working time is switched off", async () => {
     const server = testServer();
     const solo = await server.inhaberMitBetrieb("Solo", "solo");

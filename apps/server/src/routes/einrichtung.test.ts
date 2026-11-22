@@ -26,6 +26,8 @@ describe("PUT /api/v1/einrichtung/betrieb", () => {
       eingerichtet: false,
       rolle: "inhaber",
       module: { arbeitszeit: true, dienstplan: true, projektzeit: false, terminal: false },
+      hinweis: null,
+      auswertungJePersonSeit: null,
     });
     expect(kettePruefen(server.db, mia.betriebId)).toEqual([]);
   });

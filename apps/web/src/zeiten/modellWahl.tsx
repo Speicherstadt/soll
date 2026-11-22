@@ -1,4 +1,6 @@
-import { createSignal, createUniqueId, For } from "solid-js";
+import { createSignal, createUniqueId, For, Loading } from "solid-js";
+import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
@@ -6,30 +8,29 @@ import { Fehler } from "../rahmen/karte.tsx";
 
 type Modell = { modellId: string; name: string };
 
+/** What a new model changes: the person's model, and the target of their days and months */
+const MODELL_AENDERT = [alle(PFAD.personen), alle(PFAD.tag), alle(PFAD.monat)];
+
 /**
  * The working-time model of a person from today on, for the owner (S-304): the target of each day
  * comes from it; without one it is "nicht hinterlegt"
  */
-export const ModellWahl = (props: {
-  nutzerId: string;
-  modellId: string | null;
-  onGespeichert: (modellId: string) => void;
-}) => {
+export const ModellWahl = (props: { nutzerId: string; modellId: string | null }) => {
   const id = createUniqueId();
-  const [modelle, setModelle] = createSignal<Modell[]>([]);
   const [fehler, setFehler] = createSignal("");
-  api<{ modelle: Modell[] }>("/api/v1/arbeitszeit/modelle").then(
-    (antwort) => antwort.ok && setModelle(antwort.daten.modelle),
+  const modelle = abfrage<{ modelle: Modell[] }>(ressourcen.modelle);
+  const zuweisen = aenderung(
+    (wahl: { nutzerId: string; modellId: string }) =>
+      api(`/api/v1/arbeitszeit/personen/${wahl.nutzerId}/modell`, {
+        method: "PUT",
+        body: { modellId: wahl.modellId },
+      }),
+    () => MODELL_AENDERT,
   );
   const waehlen = async (modellId: string) => {
     if (!modellId) return;
-    const antwort = await api(`/api/v1/arbeitszeit/personen/${props.nutzerId}/modell`, {
-      method: "PUT",
-      body: { modellId },
-    });
-    if (!antwort.ok) return setFehler(m.fehler_speichern());
-    setFehler("");
-    props.onGespeichert(modellId);
+    const antwort = await zuweisen.mutate({ nutzerId: props.nutzerId, modellId });
+    setFehler(antwort.ok ? "" : m.fehler_speichern());
   };
   return (
     <div class="flex min-w-48 flex-col gap-1.5">
@@ -45,9 +46,11 @@ export const ModellWahl = (props: {
         <option value="" disabled>
           {m.zeiten_modell_keins()}
         </option>
-        <For each={modelle()}>
-          {(modell) => <option value={modell.modellId}>{modell.name}</option>}
-        </For>
+        <Loading>
+          <For each={daten(modelle.data)?.modelle ?? []}>
+            {(modell) => <option value={modell.modellId}>{modell.name}</option>}
+          </For>
+        </Loading>
       </select>
       <Fehler text={fehler()} />
     </div>

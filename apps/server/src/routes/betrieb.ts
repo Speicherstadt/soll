@@ -1,10 +1,18 @@
 import { Hono } from "hono";
 import { z } from "zod";
+import { darf } from "../auth/rollen.ts";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
-import { betriebLesen, moduleSetzen, moduleVon } from "../modules/betrieb/index.ts";
+import {
+  auswertungJePersonSeit,
+  betriebLesen,
+  hinweisBestaetigen,
+  hinweisVon,
+  moduleSetzen,
+  moduleVon,
+} from "../modules/betrieb/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
-const moduleSchema = z
+export const moduleSchema = z
   .object({
     arbeitszeit: z.boolean(),
     dienstplan: z.boolean(),
@@ -30,6 +38,10 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
         // one's own role, so the app knows what to offer (the server checks it again on each call)
         rolle: c.get("rolle"),
         module: moduleVon(betrieb),
+        // what Soll changed by itself and tells the owner, who switches the modules (S-603)
+        hinweis: darf(c.get("rolle"), "betrieb:module") ? hinweisVon(betrieb) : null,
+        // the utilisation per person, switched on: every member sees since when (S-604, R-30)
+        auswertungJePersonSeit: auswertungJePersonSeit(db, betrieb),
       });
     })
     .patch("/module", recht("betrieb:module"), async (c) => {
@@ -40,4 +52,9 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
       if (!ergebnis.ok)
         return c.json({ fehler: ergebnis.grund }, ergebnis.grund === "kein_betrieb" ? 404 : 409);
       return c.json({ module: ergebnis.module });
+    })
+    .delete("/hinweis", recht("betrieb:module"), (c) => {
+      const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      hinweisBestaetigen(db, schreibDb, kontext);
+      return c.body(null, 204);
     });

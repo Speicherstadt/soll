@@ -12,6 +12,7 @@ type Optionen = {
   uhr?: () => number;
   mail?: Mailer | null;
   schichten?: Schichtquelle;
+  webVerzeichnis?: string | null;
 };
 
 /** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
@@ -38,6 +39,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     ...(optionen.schichten ? { schichten: optionen.schichten } : {}),
     geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
+    webVerzeichnis: optionen.webVerzeichnis ?? null,
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

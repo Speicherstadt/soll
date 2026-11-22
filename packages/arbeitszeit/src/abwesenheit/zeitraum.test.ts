@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { tageDesZeitraums, ueberschneiden, ueberschneidungErlaubt } from "./zeitraum.ts";
+import { tageDesZeitraums, tageUeberschneiden, ueberschneidungErlaubt } from "./zeitraum.ts";
 
 describe("tageDesZeitraums", () => {
   it("gives every day from von to bis, both included", () => {
@@ -51,9 +51,9 @@ describe("tageDesZeitraums", () => {
 describe("Überschneidungen", () => {
   const urlaub = { art: "urlaub" as const, von: "2026-08-03", bis: "2026-08-07" };
   it("finds two spans with a common day, an open end reaches on", () => {
-    expect(ueberschneiden(urlaub, { von: "2026-08-07", bis: "2026-08-10" })).toBe(true);
-    expect(ueberschneiden(urlaub, { von: "2026-08-08", bis: null })).toBe(false);
-    expect(ueberschneiden({ von: "2026-08-01", bis: null }, urlaub)).toBe(true);
+    expect(tageUeberschneiden(urlaub, { von: "2026-08-07", bis: "2026-08-10" })).toBe(true);
+    expect(tageUeberschneiden(urlaub, { von: "2026-08-08", bis: null })).toBe(false);
+    expect(tageUeberschneiden({ von: "2026-08-01", bis: null }, urlaub)).toBe(true);
   });
 
   it("allows sickness in leave only (§ 9 BUrlG)", () => {

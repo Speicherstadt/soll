@@ -17,6 +17,9 @@ copyright: >-
   <a href="https://teufel-it.de/de/impressum/">Impressum</a> ·
   <a href="https://speicherstadt.app/datenschutz/">Datenschutz</a>
 use_directory_urls: false
+# the copied Solid 2.0 reference (docs/solid-2.0/README.md) is for developers, not part of the site
+exclude_docs: |
+  solid-2.0/
 validation:
   anchors: warn
 theme:
@@ -57,13 +60,19 @@ markdown_extensions:
       custom_checkbox: true
 nav:
   - Soll: index.md
+  - Installation: installation.md
   - Einrichtung: einrichtung.md
   - Anmeldung, Rollen und Module: anmeldung.md
   - Stempeln: stempeln.md
   - Abwesenheiten: abwesenheiten.md
+  - Terminal: terminal.md
   - Monatsabschluss und Prüfwert: monatsabschluss.md
+  - Prüfexport und Auskunft: pruefexport.md
+  - Projektzeit: projektzeit.md
   - Erinnerungen: erinnerungen.md
+  - DATEV-Lohnexport: datev.md
   - Dienstplan: dienstplan.md
+  - REST-API und MCP-Server: api.md
   - Regelwerk: regeln.md
   - Arbeitstag aus Stempelungen: arbeitstag.md
   - Prüfung nach §§ 3 bis 5 ArbZG: pruefung.md
@@ -79,3 +88,4 @@ nav:
       - Projektplan: plan.md
       - Aufbau und Befehle: entwicklung.md
       - Audit-Kette und Prüfwert: audit-kette.md
+      - Gesetzeswächter: gesetzeswaechter.md

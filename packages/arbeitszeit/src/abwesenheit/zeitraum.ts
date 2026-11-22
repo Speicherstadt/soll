@@ -49,7 +49,7 @@ export const tageDesZeitraums = (
 /** Whether two spans share a day; an open end reaches on without limit */
 type Spanne = { von: Tag; bis: Tag | null };
 
-export const ueberschneiden = (a: Spanne, b: Spanne): boolean =>
+export const tageUeberschneiden = (a: Spanne, b: Spanne): boolean =>
   (a.bis === null || b.von <= a.bis) && (b.bis === null || a.von <= b.bis);
 
 /**

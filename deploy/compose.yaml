@@ -1,0 +1,30 @@
+# Soll mit Docker Compose (https://soll.work/installation.html)
+#
+#   cp soll.env.example soll.env    # Schlüssel und Adresse eintragen, nie einchecken
+#   docker compose up -d
+#   docker compose exec soll soll backup    # Sicherung nach /data/backups im Volume
+#
+# Der Schlüssel steht nur in soll.env neben dieser Datei, nicht hier und nicht im Image.
+name: soll
+
+services:
+  soll:
+    # Fertiges Image (amd64 und arm64); selbst gebaut stattdessen:
+    # build: { context: .., dockerfile: Containerfile }
+    image: docker.io/tristanteu/soll:latest
+    restart: unless-stopped
+    env_file: soll.env
+    ports:
+      # Nur lokal: davor gehört ein Reverse Proxy mit TLS (Passkeys und der Service Worker
+      # verlangen HTTPS); SOLL_URL in soll.env ist die Adresse, unter der er Soll erreichbar macht
+      - "127.0.0.1:8200:8200"
+    volumes:
+      # Datenbank, Sicherungen unter backups/; gehört ins Backup des Rechners
+      - daten:/data
+    # Gehärtet: Dateisystem schreibgeschützt bis auf /data, keine Capabilities, keine neuen Rechte
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+volumes:
+  daten:

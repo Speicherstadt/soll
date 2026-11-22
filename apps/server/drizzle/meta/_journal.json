@@ -61,8 +61,71 @@
     {
       "idx": 8,
       "version": "6",
-      "when": 1795197275002,
-      "tag": "0008_abwesenheiten",
+      "when": 1795197783321,
+      "tag": "0008_projektzeit",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1795207135326,
+      "tag": "0009_datev",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1795209359099,
+      "tag": "0010_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1795211176044,
+      "tag": "0011_stoppuhr",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1795213510135,
+      "tag": "0012_terminal",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1795215743311,
+      "tag": "0013_zugaenge",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1795219110501,
+      "tag": "0014_auslastung",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1795220563073,
+      "tag": "0015_stundennachweis",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1795222322197,
+      "tag": "0016_karten",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1795336582825,
+      "tag": "0017_abwesenheiten",
       "breakpoints": true
     }
   ]

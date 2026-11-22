@@ -5,20 +5,40 @@ import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { schichtquelle } from "./modules/dienstplan/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
+import { terminalSchluesselAus } from "./modules/terminal/index.ts";
+import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
+import { auskunftRouten } from "./routes/auskunft.ts";
+import { auslastungRouten } from "./routes/auslastung.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
+import { buchungRouten } from "./routes/buchungen.ts";
+import { datevRouten } from "./routes/datev.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
+import { kartenRouten } from "./routes/karten.ts";
+import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
+import { kundenRouten } from "./routes/kunden.ts";
+import { mcpRouten } from "./routes/mcp.ts";
 import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
-import { pinPruefRouten, pinRouten } from "./routes/pins.ts";
+import { openapiRouten } from "./routes/openapi.ts";
+import { pinRouten } from "./routes/pins.ts";
+import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
+import { pruefexportRouten } from "./routes/pruefexport.ts";
+import { satzRouten } from "./routes/saetze.ts";
 import { standortRouten } from "./routes/standorte.ts";
+import { stoppuhrRouten } from "./routes/stoppuhr.ts";
+import { stundennachweisRouten } from "./routes/stundennachweise.ts";
+import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
+import { terminalRouten } from "./routes/terminals.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
+import { zugangRouten } from "./routes/zugaenge.ts";
+import { webAuslieferung } from "./web.ts";
 
 export type AppDeps = {
   /** Where log lines go; stdout in production, a list in tests */
@@ -35,9 +55,14 @@ export type AppDeps = {
   mail: Mailer | null;
   /** The planned shifts for absences (S-401); the plan itself (S-501) unless a test passes one */
   schichten?: Schichtquelle;
-  /** The key of the encrypted columns (SOLL_SECRET_KEY) and the public VAPID key (S-307) */
+  /**
+   * The key of the encrypted columns (SOLL_SECRET_KEY; the key of the PIN lookup is derived from it,
+   * S-801) and the public VAPID key (S-307)
+   */
   geheimerSchluessel: Uint8Array;
   vapidOeffentlich: string;
+  /** The static build of apps/web (SOLL_WEB_DIR); absent, the server serves the API only */
+  webVerzeichnis?: string | null;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -53,7 +78,9 @@ export const createApp = ({
   schichten,
   geheimerSchluessel,
   vapidOeffentlich,
+  webVerzeichnis = null,
 }: AppDeps) => {
+  const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -74,25 +101,37 @@ export const createApp = ({
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
   app.route("/api/v1/pruefen", pruefRouten(db));
+  app.route("/api/v1/openapi.json", openapiRouten({ version, url }));
+
+  // one limit per token for the REST API and the MCP server together (S-607)
+  const zugang = { schreibDb, jetzt: now, grenze: ratenGrenze() };
+  app.route(
+    "/mcp",
+    mcpRouten({ db, zugang, version, url, fetch: (anfrage, env) => app.fetch(anfrage, env) }),
+  );
+  // the tablet with its device token, not a session (S-801)
+  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, terminalSchluessel));
 
   const v1 = new Hono<Anfrage>()
-    .use(angemeldet(auth, db))
+    .use(angemeldet(auth, db, zugang))
     .route("/betrieb", betriebRouten(db, schreibDb, now))
+    .route("/auskunft", auskunftRouten(db, now))
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
-    .route("/pins", pinRouten(db, schreibDb, now))
-    .route("/terminal/pins", pinPruefRouten(db, schreibDb, now))
+    .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route(
       "/",
       modulRouten(db, {
         arbeitszeit: {
           "/modelle": modellRouten(db, schreibDb, now),
+          "/datev": datevRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
           "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
             mail,
             schichten: schichten ?? schichtquelle(db),
           }),
+          "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,
             vapidOeffentlich,
@@ -100,10 +139,27 @@ export const createApp = ({
           }),
           "/": zeitRouten(db, schreibDb, now),
         },
+        projektzeit: {
+          "/kunden": kundenRouten(db, schreibDb, now),
+          "/projekte": projektRouten(db, schreibDb, now),
+          "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
+          "/saetze": satzRouten(db, schreibDb, now),
+          "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
+          "/buchungen": buchungRouten(db, schreibDb, now),
+          "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
+          "/auslastung": auslastungRouten(db, schreibDb, now),
+        },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
+        terminal: {
+          "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
+          "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),
+          "/": terminalRouten(db, schreibDb, now),
+        },
       }),
     );
   app.route("/api/v1", v1);
+  // Last, so every route of the API wins; unknown API paths stay 404 (src/web.ts)
+  if (webVerzeichnis) app.get("*", webAuslieferung(webVerzeichnis));
 
   return app;
 };

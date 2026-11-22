@@ -1,7 +1,8 @@
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { describe, expect, it } from "vitest";
+import { druckbar } from "../pdf/schreiber.ts";
 import { dauerText, monatText, tagText, uhrzeitText } from "./format.ts";
-import { druckbar, type Stundenzettel, stundenzettelPdf } from "./pdf.ts";
+import { type Stundenzettel, stundenzettelPdf } from "./pdf.ts";
 import { pdfText } from "./text.ts";
 
 const ms = (text: string) => Date.parse(text);

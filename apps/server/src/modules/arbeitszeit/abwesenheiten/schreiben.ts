@@ -3,9 +3,9 @@ import {
   GESUNDHEIT,
   plusTage,
   type Tag,
+  tageUeberschneiden,
   tageZwischen,
   tagInBerlin,
-  ueberschneiden,
   ueberschneidungErlaubt,
 } from "@soll/arbeitszeit";
 import type { Db, SchreibDb } from "../../../db/oeffnen.ts";
@@ -83,7 +83,7 @@ const ueberschneidet = (
     (alt) =>
       alt.abwesenheitId !== neu.abwesenheitId &&
       !(weichtGenehmigten && alt.status === "genehmigt" && !GESUNDHEIT.has(alt.art)) &&
-      ueberschneiden(bekannt(alt), span) &&
+      tageUeberschneiden(bekannt(alt), span) &&
       !ueberschneidungErlaubt(alt.art, neu.art),
   );
 };

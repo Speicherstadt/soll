@@ -13,7 +13,12 @@ import {
  */
 
 export * from "./schema/abwesenheiten.ts";
+export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
+export * from "./schema/projektzeit.ts";
+export * from "./schema/stundennachweise.ts";
+export * from "./schema/terminal.ts";
+export * from "./schema/zugaenge.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */
 export const betriebe = sqliteTable("betriebe", {
@@ -32,6 +37,12 @@ export const betriebe = sqliteTable("betriebe", {
   // From which day of a sickness the business wants the certificate: 4 by law, earlier if it asks
   // (§ 5 Abs. 1 Satz 2 and 3 EntgFG, S-401)
   bescheinigungAbTag: integer("bescheinigung_ab_tag").notNull().default(4),
+  // When Soll switched working time on because the first employed person joined; the owner sees the
+  // reason until confirming it, then it is empty again (S-603)
+  pflichtHinweisAm: integer("pflicht_hinweis_am"),
+  // Since when the owner switched on the utilisation per person; null: off, only the team view
+  // (S-604, § 87 Abs. 1 Nr. 6 BetrVG). Each switch stands in the audit chain with actor and time.
+  auswertungJePersonSeit: integer("auswertung_je_person_seit"),
 });
 
 /**
@@ -69,6 +80,8 @@ export const arbeitszeitmodelle = sqliteTable(
     lohnArt: text("lohn_art", { enum: ["monat", "stunde"] }).notNull(),
     lohnCent: integer("lohn_cent"),
     minijob: integer("minijob", { mode: "boolean" }).notNull().default(false),
+    // JSON object of the surcharges the model pays, in basis points (`Zuschlagssaetze`, S-207/S-308)
+    zuschlagssaetze: text("zuschlagssaetze").notNull().default("{}"),
     gueltigAb: text("gueltig_ab").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
   },
@@ -112,7 +125,8 @@ export const stempelungen = sqliteTable(
     }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
-    quelle: text("quelle", { enum: ["app", "terminal"] }).notNull(),
+    // "api": stamped with a personal access token (S-607)
+    quelle: text("quelle", { enum: ["app", "terminal", "api"] }).notNull(),
     ersetzt: text("ersetzt"),
     entfernt: integer("entfernt", { mode: "boolean" }).notNull().default(false),
     // required for every row a person entered by hand: an addition, a change, a removal
@@ -125,6 +139,8 @@ export const stempelungen = sqliteTable(
     signatur: text("signatur"),
     // stamped without a network: the instant comes from the device, `erstellt_am` is the receipt
     offline: integer("offline", { mode: "boolean" }).notNull().default(false),
+    // S-801: the terminal a person stamped at, with the PIN or the QR code
+    terminalId: text("terminal_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.stempelId] }),
@@ -315,7 +331,12 @@ export const einladungen = sqliteTable(
   (t) => [primaryKey({ columns: [t.betriebId, t.einladungId] })],
 );
 
-/** A person's PIN for the terminal, as a hash; locked after five wrong tries in a row */
+/**
+ * A person's PIN for the terminal, as a hash; locked after five wrong tries in a row. `pin_kennung`
+ * is a keyed hash (HMAC-SHA-256 with a key derived from SOLL_SECRET_KEY) by which the terminal finds
+ * the person from the PIN alone (S-801), so a PIN is unique in its business; a PIN set before S-801
+ * has none until the owner sets it again.
+ */
 export const pins = sqliteTable(
   "pins",
   {
@@ -324,8 +345,12 @@ export const pins = sqliteTable(
     pinHash: text("pin_hash").notNull(),
     fehlversuche: integer("fehlversuche").notNull().default(0),
     gesperrt: integer("gesperrt", { mode: "boolean" }).notNull().default(false),
+    pinKennung: text("pin_kennung"),
   },
-  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
+  (t) => [
+    primaryKey({ columns: [t.betriebId, t.nutzerId] }),
+    uniqueIndex("pins_kennung").on(t.betriebId, t.pinKennung),
+  ],
 );
 
 /**

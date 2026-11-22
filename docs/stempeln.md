@@ -9,7 +9,8 @@ description: >-
 # Stempeln
 
 Unter **Heute** stempelt jede Person, die für den Betrieb arbeitet, ihre Arbeitszeit: am Handy, am
-Tablet oder im Browser. Externe und Geräte stempeln hier nicht; das Terminal kommt später.
+Tablet oder im Browser. Externe und Geräte stempeln hier nicht; am Eingang stempelt man am
+[Terminal](terminal.md) mit PIN oder QR-Code.
 
 ## Der Knopf
 
@@ -168,7 +169,7 @@ aus ist:
 | `PUT /personen/:nutzerId/modell` | `{ modellId, gueltigAb? }` | Inhaber |
 
 Die Tabelle `stempelungen` hat `betrieb_id`, die Person, Art, Zeitpunkt (Server) und Zeitpunkt des
-Geräts, Quelle, `ersetzt` (die Zeile, die diese ersetzt), `entfernt`, Grund, wer und wann. In Kraft
+Geräts, Quelle (`app`, `terminal` oder `api` für einen [Zugang zur API](api.md)), `ersetzt` (die Zeile, die diese ersetzt), `entfernt`, Grund, wer und wann. In Kraft
 ist eine Zeile, die keine andere ersetzt und die nichts entfernt. Vor jeder Änderung fragt der
 Server `aenderungGesperrt()`, ob sie einen abgeschlossenen Monat der Person ändern würde
 ([Monatsabschluss](monatsabschluss.md)). Den laufenden Tag

@@ -46,7 +46,6 @@ export const TagAnsicht = (props: {
   ansicht: Ansicht;
   stand: Tagesstand;
   darfKorrigieren: boolean;
-  onGeaendert: () => void;
 }) => {
   const [korrektur, setKorrektur] = createSignal<Korrektur | null>(null);
   return (
@@ -79,11 +78,7 @@ export const TagAnsicht = (props: {
       <AenderungListe aenderungen={props.ansicht.aenderungen} />
       <Show when={korrektur()}>
         {(aktuell) => (
-          <KorrekturDialog
-            korrektur={aktuell()}
-            onSchliessen={() => setKorrektur(null)}
-            onGespeichert={props.onGeaendert}
-          />
+          <KorrekturDialog korrektur={aktuell()} onSchliessen={() => setKorrektur(null)} />
         )}
       </Show>
     </div>

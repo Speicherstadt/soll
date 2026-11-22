@@ -34,10 +34,12 @@ const monat = z.string().refine(istMonat);
 const id = z.string().min(1).max(100);
 const grund = z.string().trim().min(1).max(500);
 
-const lesenSchema = z.object({ monat, nutzerId: id.optional() }).strict();
-const bestaetigenSchema = z.object({ monat }).strict();
-const abschliessenSchema = z.object({ monat, nutzerId: id, grund: grund.optional() }).strict();
-const gegeneintragSchema = z
+export const lesenSchema = z.object({ monat, nutzerId: id.optional() }).strict();
+export const bestaetigenSchema = z.object({ monat }).strict();
+export const abschliessenSchema = z
+  .object({ monat, nutzerId: id, grund: grund.optional() })
+  .strict();
+export const gegeneintragSchema = z
   .object({
     nutzerId: id,
     tag: z.string().refine(istTag),
@@ -110,7 +112,7 @@ const ansicht = (db: Db, c: Context<Anfrage>, nutzerId: string, status: MonatSta
 };
 
 /** Where a person checks their Prüfwert: the check page of the app, for this business */
-const pruefseiteVon = (url: string, betriebId: string) =>
+export const pruefseiteVon = (url: string, betriebId: string) =>
   `${url}/pruefen?betrieb=${encodeURIComponent(betriebId)}`;
 
 const zettelVon = (

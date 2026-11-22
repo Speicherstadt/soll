@@ -1,4 +1,5 @@
 import { type Modellabschnitt, minutenAmWochentag, type Tag } from "@soll/arbeitszeit";
+import type { Lohnmodell } from "@soll/export";
 import { and, asc, desc, eq, gt, lte } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { modellzuordnungen } from "../../db/schema.ts";
@@ -38,15 +39,11 @@ export const sollAm = (db: Db, betriebId: string, nutzerId: string, tag: Tag): n
 };
 
 /**
- * The person's models as sections for `monatsstand` (S-208): each assignment from its day, or from
- * the model's own first day if that is later. Days a model does not hold yet are caught by `sollAm`.
+ * The person's models with the day each holds from: each assignment from its day, or from the
+ * model's own first day if that is later; a later assignment that starts on the same day holds
  */
-export const modellabschnitte = (
-  db: Db,
-  betriebId: string,
-  nutzerId: string,
-): Modellabschnitt[] => {
-  const abschnitte = db
+const zeitraeume = (db: Db, betriebId: string, nutzerId: string): { ab: Tag; modell: Modell }[] => {
+  const liste = db
     .select()
     .from(modellzuordnungen)
     .where(
@@ -59,11 +56,31 @@ export const modellabschnitte = (
       if (!modell) return [];
       // days as text YYYY-MM-DD: the later one sorts last
       const ab = [modell.gueltigAb, zuordnung.gueltigAb].sort()[1] as Tag;
-      return [{ ab, sollMinuten: modell.sollMinuten }];
+      return [{ ab, modell }];
     });
-  // a later assignment that starts on the same day holds
-  return [...new Map(abschnitte.map((abschnitt) => [abschnitt.ab, abschnitt])).values()];
+  return [...new Map(liste.map((eintrag) => [eintrag.ab, eintrag])).values()];
 };
+
+/**
+ * The person's models as sections for `monatsstand` (S-208). Days a model does not hold yet are
+ * caught by `sollAm`.
+ */
+export const modellabschnitte = (db: Db, betriebId: string, nutzerId: string): Modellabschnitt[] =>
+  zeitraeume(db, betriebId, nutzerId).map(({ ab, modell }) => ({
+    ab,
+    sollMinuten: modell.sollMinuten,
+  }));
+
+/** The person's models as payroll needs them: wage, mini-job and surcharges (S-308) */
+export const lohnmodelle = (db: Db, betriebId: string, nutzerId: string): Lohnmodell[] =>
+  zeitraeume(db, betriebId, nutzerId).map(({ ab, modell }) => ({
+    ab,
+    sollMinuten: modell.sollMinuten,
+    lohnArt: modell.lohnArt,
+    lohnCent: modell.lohnCent,
+    minijob: modell.minijob,
+    zuschlagssaetze: modell.zuschlagssaetze,
+  }));
 
 export type ZuordnungErgebnis =
   | { ok: true }

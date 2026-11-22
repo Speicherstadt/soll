@@ -19,9 +19,10 @@ export const GrundFuer = (props: {
     titel={props.aktion === "ablehnen" ? m.abw_ablehnen_titel() : m.abw_stornieren_titel()}
     text={m.abw_grund_text({ name: props.a.name ?? "" })}
     knopf={props.aktion === "ablehnen" ? m.abw_ablehnen() : m.abw_stornieren()}
-    senden={(_, grund) =>
-      api(`${BASIS}/${props.a.abwesenheitId}/${props.aktion}`, { body: { grund } })
-    }
+    anfrage={(_, grund) => ({
+      pfad: `${BASIS}/${props.a.abwesenheitId}/${props.aktion}`,
+      body: { grund },
+    })}
     fehlerText={FEHLER}
     onSchliessen={props.onSchliessen}
     onGespeichert={() => void props.quelle.laden()}

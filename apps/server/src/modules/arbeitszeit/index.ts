@@ -1,6 +1,6 @@
 /**
- * The module working time: models, assignments, stamps, the working day and closing a month
- * (S-303, S-304, S-306)
+ * The module working time: models, assignments, stamps, the working day, closing a month and what
+ * payroll reads of it (S-303, S-304, S-306, S-308)
  */
 export { monatAbgeschlossen } from "./abschluss.ts";
 export * from "./abwesenheiten/index.ts";
@@ -16,6 +16,7 @@ export {
   signaturPruefen,
 } from "./geraete.ts";
 export { arbeitstagVon, sollGrundlagen } from "./grundlagen.ts";
+export { hatAbschluss, lohndaten, mitAbschluss } from "./lohndaten.ts";
 export {
   type EntfernenErgebnis,
   type Modell,
@@ -34,6 +35,7 @@ export {
   type SchrittErgebnis,
 } from "./monatsabschluss.ts";
 export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
+export { pruefexportPerson } from "./pruefexport.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
   hatStempelungen,

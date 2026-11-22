@@ -1,6 +1,6 @@
 import { BRANCHEN, type Branche } from "@soll/arbeitszeit";
 import { Button } from "@soll/ui";
-import { createSignal, For, Loading, Show } from "solid-js";
+import { createMemo, createSignal, For, Loading, Show } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
@@ -66,10 +66,11 @@ const Auswahl = (props: {
  * § 3 ArbZG. Without a setting the law's strict default holds; only the owner changes them.
  */
 export const PruefungEinstellungen = () => {
-  const darf = () => {
+  // a memo: a new session (a module switched) that leaves the owner the owner keeps the edits
+  const darf = createMemo(() => {
     const betrieb = aktuellerBetrieb();
     return betrieb !== null && istInhaber(betrieb);
-  };
+  });
   // only the owner changes them, so only the owner asks for them
   const gespeichert = abfrage<Einstellungen>(() => (darf() ? ressourcen.pruefung() : null));
   // the form starts from what is stored and is edited from there

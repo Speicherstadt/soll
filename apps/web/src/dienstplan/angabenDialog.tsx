@@ -145,7 +145,7 @@ export const AngabenDialog = (props: {
           <Button variant="outline" onClick={() => setOffen(false)}>
             {m.plan_schliessen()}
           </Button>
-          <Button type="submit" disabled={sichern.isPending}>
+          <Button type="submit" disabled={sichern.isPending || geladen.isFetching}>
             {m.plan_speichern()}
           </Button>
         </div>

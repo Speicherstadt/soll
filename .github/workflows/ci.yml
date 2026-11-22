@@ -67,8 +67,13 @@ jobs:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
       # Chromium from the cache, per Playwright version; the system libraries come on every run
+      # an empty version would key a cache whose Chromium fits no Playwright: fail instead
       - id: playwright
-        run: echo "version=$(bun --bun playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+          version="$(bun --bun playwright --version | awk '{print $2}')"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - id: browsers
         uses: actions/cache@v6
         with:

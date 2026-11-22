@@ -31,7 +31,7 @@ import { koerper, kontextVon } from "./stempel-antwort.ts";
 const tag = z.string().refine(istTag);
 const grund = z.string().trim().min(1).max(500);
 
-const antragSchema = z
+export const antragSchema = z
   .object({
     art: z.enum(["urlaub", "sonderurlaub", "ueberstundenabbau"]),
     von: tag,
@@ -40,7 +40,7 @@ const antragSchema = z
     letzterHalb: z.boolean().default(false),
   })
   .strict();
-const krankSchema = z
+export const krankSchema = z
   .object({
     art: z.enum(["krank", "kind_krank"]),
     bis: tag.nullable().default(null),
@@ -48,13 +48,13 @@ const krankSchema = z
     kind: z.string().trim().min(1).max(20).nullable().default(null),
   })
   .strict();
-const grundSchema = z.object({ grund }).strict();
-const leerSchema = z.object({}).strict();
-const bescheinigungSchema = z
+export const grundSchema = z.object({ grund }).strict();
+export const leerSchema = z.object({}).strict();
+export const bescheinigungSchema = z
   .object({ bescheinigung: z.enum(["eau", "papier"]).nullable() })
   .strict();
-const beendenSchema = z.object({ bis: tag }).strict();
-const einstellungSchema = z
+export const beendenSchema = z.object({ bis: tag }).strict();
+export const einstellungSchema = z
   .object({
     bescheinigungAbTag: z
       .number()

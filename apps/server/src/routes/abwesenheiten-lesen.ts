@@ -28,8 +28,8 @@ import { liestEigene, person } from "./zeiten.ts";
 const id = z.string().min(1).max(100);
 const tag = z.string().refine(istTag);
 const jahr = z.coerce.number().int().min(2000).max(9999);
-const listeSchema = z.object({ nutzerId: id.optional(), jahr: jahr.optional() }).strict();
-const teamSchema = z.object({ von: tag, bis: tag }).strict();
+export const listeSchema = z.object({ nutzerId: id.optional(), jahr: jahr.optional() }).strict();
+export const teamSchema = z.object({ von: tag, bis: tag }).strict();
 
 /** The team calendar shows at most two months at once */
 const TEAM_TAGE = 62;

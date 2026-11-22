@@ -1,51 +1,47 @@
 import { createSignal } from "solid-js";
-import { type Antwort, api } from "../api.ts";
-import { m } from "../paraglide/messages.js";
+import { abfrage, schreiben } from "../abfragen/abfrage.ts";
+import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
+import type { Antwort } from "../api.ts";
 import { fehlerText } from "./text.ts";
-import type { Liste, Offen, TeamEintrag } from "./typen.ts";
+import type { Liste } from "./typen.ts";
 
-export const BASIS = "/api/v1/arbeitszeit/abwesenheiten";
-
-/** The next four weeks from today, for the team */
-const teamZeitraum = (heute: string) => {
-  const bis = new Date(Date.parse(`${heute}T12:00:00Z`) + 27 * 86_400_000)
-    .toISOString()
-    .slice(0, 10);
-  return new URLSearchParams({ von: heute, bis }).toString();
-};
+export const BASIS = PFAD.abwesenheiten;
 
 /**
- * The state of the absences page: one's own absences of the year, what waits for the caller's
- * decision or a certificate, the team, and the steps with what they report
+ * What a step on an absence changes: the absences, and the day, the month and the plan's week that
+ * count or show them (Soll, R-24, „abwesend“ in the plan)
+ */
+export const ABWESENHEIT_AENDERT = [
+  alle(PFAD.abwesenheiten),
+  alle(PFAD.abwesenheitenOffen),
+  alle(PFAD.abwesenheitenTeam),
+  alle(PFAD.tag),
+  alle(PFAD.monat),
+  alle(PFAD.woche),
+];
+
+/** The next four weeks from today, for the team */
+export const teamZeitraum = (heute: string) => ({
+  von: heute,
+  bis: new Date(Date.parse(`${heute}T12:00:00Z`) + 27 * 86_400_000).toISOString().slice(0, 10),
+});
+
+/**
+ * The state of the absences page: one's own absences of the year (a query), and the steps with what
+ * they report; the requests waiting for a decision and the team are queries of their cards
  */
 export const abwesenheitQuelle = () => {
-  const [liste, setListe] = createSignal<Liste | null>(null);
-  const [offen, setOffen] = createSignal<Offen | null>(null);
-  const [team, setTeam] = createSignal<TeamEintrag[]>([]);
+  const liste = abfrage<Liste>(ressourcen.abwesenheiten);
   const [fehler, setFehler] = createSignal("");
   const [meldung, setMeldung] = createSignal("");
+  const schritt = schreiben(() => ABWESENHEIT_AENDERT);
 
-  const laden = async () => {
-    const antwort = await api<Liste>(BASIS);
-    if (!antwort.ok) return setFehler(m.laden_fehler());
-    setFehler("");
-    setListe(antwort.daten);
-    const { rechte, heute } = antwort.daten;
-    const [neuOffen, neuTeam] = await Promise.all([
-      rechte.freigeben || rechte.gesundheit ? api<Offen>(`${BASIS}/offen`) : null,
-      api<{ abwesenheiten: TeamEintrag[] }>(`${BASIS}/team?${teamZeitraum(heute)}`),
-    ]);
-    setOffen(neuOffen?.ok ? neuOffen.daten : null);
-    setTeam(neuTeam.ok ? neuTeam.daten.abwesenheiten : []);
-  };
-  void laden();
-
-  /** Sends a step and loads again; the answer's error in words, or the message on success */
+  /** Sends a step; the answer's error in words, or the message on success, once the data is fresh */
   const senden = async <T>(
-    anfrage: Promise<Antwort<T>>,
+    auftrag: () => Promise<Antwort<T>>,
     erfolg: (daten: T) => string = () => "",
   ): Promise<boolean> => {
-    const antwort = await anfrage;
+    const antwort = (await schritt.mutate(auftrag)) as Antwort<T>;
     if (!antwort.ok) {
       setMeldung("");
       setFehler(fehlerText(antwort.fehler));
@@ -53,11 +49,13 @@ export const abwesenheitQuelle = () => {
     }
     setFehler("");
     setMeldung(erfolg(antwort.daten));
-    await laden();
     return true;
   };
 
-  return { liste, offen, team, fehler, meldung, laden, senden };
+  /** A step a dialog sent went through: the error of the step before is gone, as after `senden` */
+  const geschafft = () => setFehler("");
+
+  return { liste, fehler, meldung, senden, geschafft, arbeitet: () => schritt.isPending };
 };
 
 export type AbwesenheitQuelle = ReturnType<typeof abwesenheitQuelle>;

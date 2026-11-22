@@ -22,15 +22,16 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
     const form = event.currentTarget as HTMLFormElement;
     const daten = new FormData(form);
     const ok = await props.quelle.senden(
-      api<Antwort>(`${BASIS}/antrag`, {
-        body: {
-          art: String(daten.get("art")),
-          von: String(daten.get("start")),
-          bis: String(daten.get("end")),
-          ersterHalb: daten.get("ersterHalb") === "on",
-          letzterHalb: daten.get("letzterHalb") === "on",
-        },
-      }),
+      () =>
+        api<Antwort>(`${BASIS}/antrag`, {
+          body: {
+            art: String(daten.get("art")),
+            von: String(daten.get("start")),
+            bis: String(daten.get("end")),
+            ersterHalb: daten.get("ersterHalb") === "on",
+            letzterHalb: daten.get("letzterHalb") === "on",
+          },
+        }),
       (antwort) => {
         setSchichten(antwort.eigeneSchichten);
         return antwort.urlaubHalbtage
@@ -99,7 +100,9 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
           </p>
         </Show>
         <div>
-          <Button type="submit">{m.abw_antrag_titel()}</Button>
+          <Button type="submit" disabled={props.quelle.arbeitet()}>
+            {m.abw_antrag_titel()}
+          </Button>
         </div>
       </form>
     </Karte>

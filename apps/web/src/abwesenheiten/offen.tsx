@@ -1,19 +1,22 @@
 import { Button } from "@soll/ui";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Loading, Show } from "solid-js";
+import { abfrage, daten } from "../abfragen/abfrage.ts";
+import { ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import { GrundDialog } from "../monat/dialoge.tsx";
 import { m } from "../paraglide/messages.js";
+import { Fehler } from "../rahmen/karte.tsx";
 import { Karte } from "./karte.tsx";
-import { type AbwesenheitQuelle, BASIS } from "./quelle.ts";
+import { ABWESENHEIT_AENDERT, type AbwesenheitQuelle, BASIS } from "./quelle.ts";
 import { ART, FEHLER, tageText, tagText, zeitraumText } from "./text.ts";
-import type { Abwesenheit } from "./typen.ts";
+import type { Abwesenheit, Liste, Offen as OffeneListe } from "./typen.ts";
 
 /** Refusing or cancelling needs a reason the person sees (BAULISTE.md S-401) */
 export const GrundFuer = (props: {
   a: Abwesenheit & { name?: string };
   aktion: "ablehnen" | "stornieren";
-  quelle: AbwesenheitQuelle;
   onSchliessen: () => void;
+  onGespeichert: () => void;
 }) => (
   <GrundDialog
     titel={props.aktion === "ablehnen" ? m.abw_ablehnen_titel() : m.abw_stornieren_titel()}
@@ -24,8 +27,9 @@ export const GrundFuer = (props: {
       body: { grund },
     })}
     fehlerText={FEHLER}
+    betrifft={ABWESENHEIT_AENDERT}
     onSchliessen={props.onSchliessen}
-    onGespeichert={() => void props.quelle.laden()}
+    onGespeichert={props.onGespeichert}
   />
 );
 
@@ -43,7 +47,7 @@ const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
           variant="outline"
           onClick={() =>
             void props.quelle.senden(
-              api(`${BASIS}/${props.a.abwesenheitId}/freigeben`, { body: {} }),
+              () => api(`${BASIS}/${props.a.abwesenheitId}/freigeben`, { body: {} }),
               () => m.abw_freigegeben({ name: props.a.name ?? "" }),
             )
           }
@@ -58,8 +62,8 @@ const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
         <GrundFuer
           a={props.a}
           aktion="ablehnen"
-          quelle={props.quelle}
           onSchliessen={() => setAblehnen(false)}
+          onGespeichert={props.quelle.geschafft}
         />
       </Show>
     </li>
@@ -67,28 +71,30 @@ const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
 };
 
 /** Requests waiting for owner or planner, and certificates the business should fetch (R-27) */
-export const Offen = (props: { quelle: AbwesenheitQuelle }) => {
-  const rechte = () => props.quelle.liste()?.rechte;
+const OffeneKarten = (props: { quelle: AbwesenheitQuelle; rechte: Liste["rechte"] }) => {
+  const offen = abfrage<OffeneListe>(ressourcen.abwesenheitenOffen);
+  const stand = () => daten(offen.data);
   return (
-    <>
-      <Show when={rechte()?.freigeben}>
+    <Loading>
+      <Fehler text={offen.data.ok ? "" : m.laden_fehler()} />
+      <Show when={props.rechte.freigeben}>
         <Karte titel={m.abw_offen_titel()}>
           <Show
-            when={(props.quelle.offen()?.antraege.length ?? 0) > 0}
+            when={(stand()?.antraege.length ?? 0) > 0}
             fallback={<p class="text-muted-foreground">{m.abw_offen_keine()}</p>}
           >
             <ul class="flex flex-col">
-              <For each={props.quelle.offen()?.antraege ?? []}>
+              <For each={stand()?.antraege ?? []}>
                 {(a) => <Antrag a={a} quelle={props.quelle} />}
               </For>
             </ul>
           </Show>
         </Karte>
       </Show>
-      <Show when={rechte()?.gesundheit && (props.quelle.offen()?.erinnerungen.length ?? 0) > 0}>
+      <Show when={props.rechte.gesundheit && (stand()?.erinnerungen.length ?? 0) > 0}>
         <Karte titel={m.abw_erinnerungen_titel()}>
           <ul class="flex flex-col gap-1">
-            <For each={props.quelle.offen()?.erinnerungen ?? []}>
+            <For each={stand()?.erinnerungen ?? []}>
               {(e) => (
                 <li class={e.ueberfaellig ? "text-warning" : ""}>
                   {(e.ueberfaellig ? m.abw_erinnerung_ueberfaellig : m.abw_erinnerung)({
@@ -102,6 +108,13 @@ export const Offen = (props: { quelle: AbwesenheitQuelle }) => {
           </ul>
         </Karte>
       </Show>
-    </>
+    </Loading>
   );
 };
+
+/** Only who decides or sees sickness asks for what waits (abwesenheiten:freigeben, :gesundheit) */
+export const Offen = (props: { quelle: AbwesenheitQuelle; rechte: Liste["rechte"] }) => (
+  <Show when={props.rechte.freigeben || props.rechte.gesundheit}>
+    <OffeneKarten quelle={props.quelle} rechte={props.rechte} />
+  </Show>
+);

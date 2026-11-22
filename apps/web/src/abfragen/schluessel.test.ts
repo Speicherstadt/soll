@@ -16,6 +16,13 @@ describe("ressourcen", () => {
     expect(ressourcen.tag({}).pfad).toBe(PFAD.tag);
   });
 
+  it("keys the team's absences by their span, under the path every step invalidates", () => {
+    const team = ressourcen.abwesenheitenTeam({ von: "2026-11-20", bis: "2026-12-17" });
+    expect(team.pfad).toBe("/api/v1/arbeitszeit/abwesenheiten/team?von=2026-11-20&bis=2026-12-17");
+    expect(alle(PFAD.abwesenheitenTeam)).toEqual(team.schluessel.slice(0, 1));
+    expect(ressourcen.abwesenheiten().schluessel).toEqual([PFAD.abwesenheiten]);
+  });
+
   it("encodes values in the path", () => {
     expect(ressourcen.bedarf("a b&c").pfad).toBe("/api/v1/dienstplan/bedarf?standortId=a+b%26c");
   });

@@ -28,7 +28,7 @@ const Zeile = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => (
         <Button
           variant="outline"
           onClick={() =>
-            void props.quelle.senden(
+            void props.quelle.senden(() =>
               api(`${BASIS}/${props.a.abwesenheitId}/zurueckziehen`, { body: {} }),
             )
           }
@@ -41,14 +41,14 @@ const Zeile = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => (
 );
 
 /** „Meine Abwesenheiten“: the requests and absences of the year with their state */
-export const MeineListe = (props: { quelle: AbwesenheitQuelle }) => (
+export const MeineListe = (props: { quelle: AbwesenheitQuelle; abwesenheiten: Abwesenheit[] }) => (
   <Karte titel={m.abw_meine_titel()}>
     <Show
-      when={(props.quelle.liste()?.abwesenheiten.length ?? 0) > 0}
+      when={props.abwesenheiten.length > 0}
       fallback={<p class="text-muted-foreground">{m.abw_keine()}</p>}
     >
       <ul class="flex flex-col">
-        <For each={[...(props.quelle.liste()?.abwesenheiten ?? [])].reverse()}>
+        <For each={[...props.abwesenheiten].reverse()}>
           {(a) => <Zeile a={a} quelle={props.quelle} />}
         </For>
       </ul>

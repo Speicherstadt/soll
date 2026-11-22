@@ -57,6 +57,12 @@ test("the owner declines a request with a reason, Sandra sees it", async ({ page
   const meine = await beantragen(page);
 
   await jonas.goto("/abwesenheiten");
+  // a request of his own the server refuses leaves an error on the page (last day before the first)
+  const antrag = jonas.getByRole("region", { name: t("abw_antrag_titel") });
+  await antrag.getByLabel(t("abw_von"), { exact: true }).fill(inTagen(30));
+  await antrag.getByLabel(t("abw_bis"), { exact: true }).fill(inTagen(29));
+  await antrag.getByRole("button", { name: t("abw_antrag_titel") }).click();
+  await expect(jonas.locator("main p[role=alert]")).toHaveCount(1);
   const offen = jonas.getByRole("region", { name: t("abw_offen_titel") });
   await offen.getByRole("button", { name: t("abw_ablehnen") }).click();
   const dialog = jonas.getByRole("dialog", { name: t("abw_ablehnen_titel") });
@@ -66,6 +72,8 @@ test("the owner declines a request with a reason, Sandra sees it", async ({ page
   await dialog.getByRole("button", { name: t("abw_ablehnen") }).click();
   await expect(dialog).toBeHidden();
   await expect(offen).toContainText(t("abw_offen_keine"));
+  // the step went through, so the error of the step before is gone, as after any other step
+  await expect(jonas.locator("main p[role=alert]")).toHaveCount(0);
 
   await page.reload();
   await expect(meine).toContainText(t("abw_status_abgelehnt"));

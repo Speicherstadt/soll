@@ -7,6 +7,7 @@ export type Schluessel = readonly unknown[];
 export type Ressource = { schluessel: Schluessel; pfad: string };
 
 const AZ = "/api/v1/arbeitszeit";
+const ABW = `${AZ}/abwesenheiten`;
 const PLAN = "/api/v1/dienstplan";
 const PZ = "/api/v1/projektzeit";
 const TERMINAL = "/api/v1/terminal";
@@ -18,6 +19,9 @@ export const PFAD = {
   monat: `${AZ}/monat`,
   erinnerungen: `${AZ}/erinnerungen`,
   datev: `${AZ}/datev`,
+  abwesenheiten: ABW,
+  abwesenheitenOffen: `${ABW}/offen`,
+  abwesenheitenTeam: `${ABW}/team`,
   standorte: "/api/v1/standorte",
   woche: `${PLAN}/woche`,
   vorlagen: `${PLAN}/vorlagen`,
@@ -64,6 +68,10 @@ export const ressourcen = {
     mitParametern(PFAD.monat, parameter),
   erinnerungen: () => einfach(PFAD.erinnerungen),
   datev: () => einfach(PFAD.datev),
+  abwesenheiten: () => einfach(PFAD.abwesenheiten),
+  abwesenheitenOffen: () => einfach(PFAD.abwesenheitenOffen),
+  abwesenheitenTeam: (parameter: { von: string; bis: string }) =>
+    mitParametern(PFAD.abwesenheitenTeam, parameter),
   standorte: () => einfach(PFAD.standorte),
   woche: (parameter: { standortId: string; tag: string }) => mitParametern(PFAD.woche, parameter),
   vorlagen: () => einfach(PFAD.vorlagen),

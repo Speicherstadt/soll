@@ -6,6 +6,7 @@ import { type Arbeitsteil, arbeitsteil } from "./arbeit.ts";
 import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
 import { type Lohnteil, lohnteil } from "./lohn.ts";
+import { type Personenangabenteil, personenangabenteil } from "./personenangaben.ts";
 import { type Projektteil, projektteil } from "./projektzeit.ts";
 import { type Terminalteil, terminalteil } from "./terminal.ts";
 
@@ -48,6 +49,7 @@ const zeilenVon = (
   lohn: Lohnteil,
   terminal: Terminalteil,
   abwesenheit: Abwesenheitsteil,
+  angaben: Personenangabenteil,
   einladungen: { einladungId: string }[],
   zugaenge: { zugangId: string }[],
 ) =>
@@ -71,6 +73,7 @@ const zeilenVon = (
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
     karten: terminal.karten.map(({ karteId }) => ({ karteId })),
     abwesenheiten: abwesenheit.abwesenheiten.map(({ abwesenheitId }) => ({ abwesenheitId })),
+    personenangaben: angaben.personenangaben === null ? [] : [{ nutzerId }],
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -93,6 +96,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
   const lohn = lohnteil(db, betriebId, nutzerId);
   const terminal = terminalteil(db, betriebId, nutzerId, name);
   const abwesenheit = abwesenheitsteil(db, betriebId, nutzerId, name);
+  const angaben = personenangabenteil(db, betriebId, nutzerId);
   const kette = kettenteil(
     db,
     betriebId,
@@ -105,6 +109,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
       lohn,
       terminal,
       abwesenheit,
+      angaben,
       konto.einladungen,
       konto.zugaenge,
     ),
@@ -126,6 +131,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     ...lohn,
     ...terminal,
     ...abwesenheit,
+    ...angaben,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

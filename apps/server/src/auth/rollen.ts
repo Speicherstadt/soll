@@ -37,6 +37,7 @@ export const RECHTE = [
   "erinnerungen:regeln",
   "plan:lesen",
   "plan:planen",
+  "personen:angaben",
   "terminal:verwalten",
   "lohn:datev",
   "auskunft:erteilen",
@@ -72,6 +73,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "erinnerungen:regeln",
     "plan:lesen",
     "plan:planen",
+    // birth date, Mutterschutz and the like are the employer's records, read and kept by the owner;
+    // whoever plans sees only the findings they lead to (Art. 5 Abs. 1 lit. c, Art. 9 DSGVO; S-502)
+    "personen:angaben",
     // pairs and revokes terminals, issues QR codes (S-801): the owner, who also sets the PINs
     "terminal:verwalten",
     // the DATEV payroll export: mapping and file (S-308)

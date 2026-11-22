@@ -164,6 +164,12 @@ export const einrichtungAbschliessen = (
   return true;
 };
 
+export {
+  type Pruefeinstellungen,
+  planBetriebAus,
+  pruefeinstellungenSetzen,
+  pruefeinstellungenVon,
+} from "./pruefung.ts";
 /** From which day of a sickness the business wants the certificate (§ 5 Abs. 1 EntgFG, S-401) */
 export const bescheinigungAbTagSetzen = (
   schreibDb: SchreibDb,

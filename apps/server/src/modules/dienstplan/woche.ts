@@ -10,6 +10,7 @@ import { darf } from "../../auth/rollen.ts";
 import type { Db } from "../../db/oeffnen.ts";
 import { mitgliederMitNamen, namenVon } from "../mitglieder/index.ts";
 import { bedarfeLesen } from "./bedarf.ts";
+import { type WochenBefund, wochenBefunde } from "./pruefung.ts";
 import { type Schicht, schichtenZwischen } from "./schichten.ts";
 
 export type Planperson = { nutzerId: string; name: string };
@@ -23,6 +24,8 @@ export type Wochenansicht = {
   schichten: Schicht[];
   /** the need per role and its coverage; only for whoever plans */
   deckung: Deckung[] | null;
+  /** the findings of the rules on the shifts shown (S-502); only for whoever plans */
+  befunde: WochenBefund[] | null;
 };
 
 /** Only the shifts of the week itself, without the neighbouring days read for the coverage */
@@ -34,9 +37,16 @@ const ohneAlte = (alle: Schicht[], tage: readonly Tag[]) =>
  * (names of colleagues are what a plan shows, docs/plan.md "Wer die Mitgliederliste sieht"), and the
  * coverage of the need. A night shift of the Sunday before reaches into Monday's need, and Sunday's
  * need over midnight reaches into the next Monday's shifts, so both days are read for the coverage,
- * not shown. No sums per person (BetrVG § 87, CLAUDE.md).
+ * not shown. The findings of the rules on the shifts shown (S-502). No sums per person (BetrVG § 87,
+ * CLAUDE.md).
  */
-export const planerWoche = (db: Db, betriebId: string, standortId: string, tag: Tag) => {
+export const planerWoche = (
+  db: Db,
+  betriebId: string,
+  standortId: string,
+  tag: Tag,
+  jetzt: number,
+) => {
   const { tage, kw } = planWoche(tag);
   const alle = schichtenZwischen(
     db,
@@ -63,6 +73,7 @@ export const planerWoche = (db: Db, betriebId: string, standortId: string, tag: 
     personen: [...personen, ...fehlende],
     schichten: gezeigt,
     deckung: bedarfsDeckung(tage, bedarfeLesen(db, betriebId, standortId), alle),
+    befunde: wochenBefunde(db, betriebId, standortId, gezeigt, jetzt),
   } satisfies Wochenansicht;
 };
 
@@ -95,5 +106,6 @@ export const veroeffentlichteWoche = (
     personen: [...namen].map(([nutzerId, name]) => ({ nutzerId, name })),
     schichten,
     deckung: null,
+    befunde: null,
   };
 };

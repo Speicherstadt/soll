@@ -45,6 +45,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   karten: "karten (Art, wann und von wem eingetragen, widerrufen; ohne UID, Schlüssel und Zähler)",
   abwesenheiten:
     "abwesenheiten (Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer; keine Diagnose)",
+  personenangaben:
+    "personenangaben (Geburtsdatum, Wechselschicht, Arbeit auf Abruf, Zeiträume des Mutterschutzes)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -119,6 +121,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ),
   abwesenheiten: frei(
     "Abwesenheiten mit Art, die der Inhaber freigibt und sieht (abwesenheiten:gesundheit)",
+  ),
+  personenangaben: frei(
+    "Angaben für die Prüfung, die der Inhaber selbst einträgt und liest (personen:angaben)",
   ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),

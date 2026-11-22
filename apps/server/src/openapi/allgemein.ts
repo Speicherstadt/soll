@@ -2,6 +2,7 @@ import * as auskunft from "../routes/auskunft.ts";
 import * as betrieb from "../routes/betrieb.ts";
 import * as einladungen from "../routes/einladungen.ts";
 import * as einrichtung from "../routes/einrichtung.ts";
+import * as personen from "../routes/personen.ts";
 import * as pruefen from "../routes/pruefen.ts";
 import * as standorte from "../routes/standorte.ts";
 import * as zugaenge from "../routes/zugaenge.ts";
@@ -53,6 +54,34 @@ export const ALLGEMEIN: readonly Operation[] = [
     zusammenfassung: "Module ein- und ausschalten (Inhaber)",
     bereich: "Betrieb",
     koerper: betrieb.moduleSchema,
+  },
+  {
+    methode: "get",
+    pfad: `${V1}/betrieb/pruefung`,
+    zusammenfassung:
+      "Die Einstellungen der Prüfung: Branche, Ausnahme für Sonntage, Ausgleichszeitraum",
+    bereich: "Betrieb",
+  },
+  {
+    methode: "put",
+    pfad: `${V1}/betrieb/pruefung`,
+    zusammenfassung: "Die Einstellungen der Prüfung ändern (Inhaber)",
+    bereich: "Betrieb",
+    koerper: betrieb.pruefungSchema,
+  },
+  {
+    methode: "get",
+    pfad: `${V1}/personen/:nutzerId/angaben`,
+    zusammenfassung:
+      "Was die Regeln von einer Person brauchen: Geburtsdatum, Wechselschicht, Abruf, Mutterschutz (Inhaber)",
+    bereich: "Betrieb",
+  },
+  {
+    methode: "put",
+    pfad: `${V1}/personen/:nutzerId/angaben`,
+    zusammenfassung: "Die Angaben einer Person für die Prüfung ändern (Inhaber)",
+    bereich: "Betrieb",
+    koerper: personen.angabenSchema,
   },
   {
     methode: "delete",

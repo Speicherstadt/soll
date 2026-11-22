@@ -23,6 +23,9 @@ export const PFAD = {
   abwesenheitenOffen: `${ABW}/offen`,
   abwesenheitenTeam: `${ABW}/team`,
   standorte: "/api/v1/standorte",
+  pruefung: "/api/v1/betrieb/pruefung",
+  // the key of every person's data for the rules; each is loaded from /personen/:nutzerId/angaben
+  angaben: "/api/v1/personen/angaben",
   woche: `${PLAN}/woche`,
   vorlagen: `${PLAN}/vorlagen`,
   bedarf: `${PLAN}/bedarf`,
@@ -73,6 +76,11 @@ export const ressourcen = {
   abwesenheitenTeam: (parameter: { von: string; bis: string }) =>
     mitParametern(PFAD.abwesenheitenTeam, parameter),
   standorte: () => einfach(PFAD.standorte),
+  pruefung: () => einfach(PFAD.pruefung),
+  angaben: (nutzerId: string): Ressource => ({
+    schluessel: [PFAD.angaben, { nutzerId }],
+    pfad: `/api/v1/personen/${encodeURIComponent(nutzerId)}/angaben`,
+  }),
   woche: (parameter: { standortId: string; tag: string }) => mitParametern(PFAD.woche, parameter),
   vorlagen: () => einfach(PFAD.vorlagen),
   bedarf: (standortId: string) => mitParametern(PFAD.bedarf, { standortId }),

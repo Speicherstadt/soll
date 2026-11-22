@@ -71,5 +71,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0017_abwesenheiten",
     "sql": "CREATE TABLE `abwesenheiten` (\n\t`betrieb_id` text NOT NULL,\n\t`abwesenheit_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`von` text NOT NULL,\n\t`bis` text,\n\t`erster_halb` integer DEFAULT false NOT NULL,\n\t`letzter_halb` integer DEFAULT false NOT NULL,\n\t`status` text NOT NULL,\n\t`kind` text,\n\t`bescheinigung` text,\n\t`grund` text,\n\t`entschieden_von` text,\n\t`entschieden_am` integer,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `abwesenheit_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `abwesenheiten_person` ON `abwesenheiten` (`betrieb_id`,`nutzer_id`,`von`);--> statement-breakpoint\nALTER TABLE `betriebe` ADD `bescheinigung_ab_tag` integer DEFAULT 4 NOT NULL;"
+  },
+  {
+    "tag": "0018_pruefung",
+    "sql": "CREATE TABLE `personenangaben` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`geburtsdatum` text,\n\t`wechselschicht` integer DEFAULT false NOT NULL,\n\t`abruf` integer DEFAULT false NOT NULL,\n\t`mutterschutz` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `branche` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `sonntagsausnahme` integer;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleichszeitraum` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleich_beginn` text;"
   }
 ];

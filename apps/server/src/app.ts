@@ -26,6 +26,7 @@ import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
 import { openapiRouten } from "./routes/openapi.ts";
+import { personenRouten } from "./routes/personen.ts";
 import { pinRouten } from "./routes/pins.ts";
 import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
@@ -119,6 +120,7 @@ export const createApp = ({
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
+    .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route(
       "/",

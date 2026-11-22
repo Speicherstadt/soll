@@ -16,6 +16,7 @@ export {
   signaturPruefen,
 } from "./geraete.ts";
 export { arbeitstagVon, sollGrundlagen } from "./grundlagen.ts";
+export { istTage } from "./isttage.ts";
 export { hatAbschluss, lohndaten, mitAbschluss } from "./lohndaten.ts";
 export {
   type EntfernenErgebnis,

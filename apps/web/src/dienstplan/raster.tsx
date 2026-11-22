@@ -3,6 +3,7 @@ import { Button, cn, Icon } from "@soll/ui";
 import { Plus } from "lucide";
 import { createMemo, createSignal, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
+import { befundeDer } from "./befunde.ts";
 import { Block, GRIFF_HINWEIS } from "./block.tsx";
 import { type Zelle, zielNach } from "./tastatur.ts";
 import { spanneText, tagDerZahl, tagLang, wochentagKurz } from "./text.ts";
@@ -188,6 +189,7 @@ const Zeile = (props: {
                   <Block
                     schicht={schicht()}
                     vorlagen={props.raster.vorlagen}
+                    befunde={befundeDer(props.raster.woche.befunde, schicht().schichtId)}
                     planer={props.raster.planer}
                     griffName={m.plan_verschieben({
                       zeit: spanneText(schicht()),

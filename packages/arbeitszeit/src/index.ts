@@ -50,6 +50,7 @@ export {
   offlineZeitpunkt,
   stempelNachricht,
 } from "./offline/offline.ts";
+export * from "./planpruefung/index.ts";
 export * from "./projektzeit/index.ts";
 export * from "./pruefung/index.ts";
 export * from "./pruefung-bereitschaft/index.ts";

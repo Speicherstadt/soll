@@ -7,7 +7,10 @@ description: >-
 
 # Regelwerk
 
-Soll prüft jede Zeit gegen diese Regeln, beim Stempeln, beim Einplanen und zum Monatsabschluss. Jede
+Soll prüft jede Zeit gegen diese Regeln, beim Stempeln, beim Einplanen und zum Monatsabschluss.
+Beim Einplanen (S-502) gelten R-02 bis R-09, R-14 bis R-22 und R-32 für die geplanten Schichten,
+zusammen mit dem, was vor heute gestempelt ist; wie Soll eine geplante Schicht liest, steht im
+[Dienstplan](dienstplan.md#prufung-beim-einplanen). Jede
 Regel hat eine Kennung (`R-…`), ihre Norm, die Grenzwerte, die Ausnahmen und eine **Schwere**:
 
 - **Hinweis**: Etwas ist zu beachten oder bald fällig, ist aber für sich erlaubt (etwa mehr als 8 h
@@ -886,9 +889,12 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
   drei aufeinanderfolgende Stunden; § 12 Abs. 1 Satz 3: ohne vereinbarte Wochenarbeitszeit gelten
   20 Stunden; § 12 Abs. 3 Satz 1: der Betrieb legt den Zeitrahmen (Referenzstunden und -tage) fest, in dem
   abgerufen werden kann; Arbeit außerhalb verpflichtet ebenfalls nicht.
-- **Regel**: Für Mitarbeiter mit Arbeit auf Abruf (Merkmal am Arbeitszeitmodell) prüft der
-  Dienstplan beim Veröffentlichen den Abstand zwischen Mitteilung und Schichtbeginn. Der Tag der
-  Mitteilung zählt nicht mit (§ 187 Abs. 1 BGB): Mitteilung am Mo, frühester Schichttag Sa.
+- **Regel**: Für Mitarbeiter mit Arbeit auf Abruf (Merkmal an der Person, das der Inhaber unter
+  „Angaben zur Prüfung“ setzt) prüft der Dienstplan den Abstand zwischen Mitteilung und
+  Schichtbeginn. Mitgeteilt ist eine Schicht mit ihrer Veröffentlichung (S-503); ein Entwurf
+  frühestens heute, so warnt der Plan schon beim Einplanen. Der Tag der Mitteilung zählt nicht mit
+  (§ 187 Abs. 1 BGB): Mitteilung am Mo, frühester Schichttag Sa. Eine tägliche Dauer ist vereinbart,
+  wenn das Arbeitszeitmodell für den Wochentag Minuten hat; sonst gelten mindestens 3 Stunden.
 - **Ausnahmen**: Tarifvertrag nach § 12 Abs. 6 TzBfG (Einstellung).
 - **Schwere**: Hinweis (die Person muss dann nicht kommen; verboten ist die Schicht nicht).
 
@@ -899,6 +905,8 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | Verstoß | Mo 10:00 – Fr 10:00 (drei volle Tage Di bis Do dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 3 Tage“: der Mitteilungstag und der Tag der Arbeit zählen nicht | § 12 Abs. 3 Satz 2 TzBfG; § 187 Abs. 1 BGB |
 | Verstoß | Mo – Do (zwei volle Tage dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 2 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
 | Dauer | Abruf ohne vereinbarte Tagesdauer für 2:30 | Hinweis „mindestens 3 Stunden“ | § 12 Abs. 1 Satz 4 TzBfG |
+| Dauer | Abruf ohne vereinbarte Tagesdauer für 3:00, oder mit vereinbarter Tagesdauer für 2:30 | kein Befund | § 12 Abs. 1 Satz 4 TzBfG („wenn die Dauer … nicht festgelegt ist“) |
+| am selben Tag | Entwurf für heute | Hinweis „keine Pflicht zur Arbeit, Vorlauf 0 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
 
 Hinweis zur Grenze: Die Frist von vier Tagen ist erst gewahrt, wenn zwischen dem Tag der Mitteilung
 und dem Tag der Arbeit vier volle Tage liegen; so lesen es die Kommentare (ErfK/Preis, § 12 TzBfG).

@@ -1,6 +1,7 @@
 import type { Db } from "../../db/oeffnen.ts";
 import { betriebLesen } from "../betrieb/index.ts";
 import { namenVon } from "../mitglieder/index.ts";
+import { type Abwesenheitsteil, abwesenheitsteil } from "./abwesenheiten.ts";
 import { type Arbeitsteil, arbeitsteil } from "./arbeit.ts";
 import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
@@ -25,7 +26,7 @@ import { iso } from "./zeit.ts";
 /** Art. 15 Abs. 1 lit. a to h DSGVO: what the copy is accompanied by (docs/auskunft.md) */
 const HINWEISE = {
   zwecke:
-    "Erfassung der Arbeitszeit (§ 3 Abs. 2 Nr. 1 ArbSchG, BAG 1 ABR 22/21, § 16 Abs. 2 ArbZG, § 17 MiLoG), Prüfung nach dem Arbeitszeitgesetz, Monatsabschluss und Lohnabrechnung, Dienstplan.",
+    "Erfassung der Arbeitszeit (§ 3 Abs. 2 Nr. 1 ArbSchG, BAG 1 ABR 22/21, § 16 Abs. 2 ArbZG, § 17 MiLoG), Prüfung nach dem Arbeitszeitgesetz, Monatsabschluss und Lohnabrechnung, Dienstplan, Abwesenheiten (Urlaub, Krankheit ohne Diagnose, Entgeltfortzahlung).",
   rechtsgrundlage: "Art. 6 Abs. 1 lit. b und c DSGVO, Art. 88 DSGVO mit § 26 BDSG.",
   empfaenger:
     "Im Betrieb, wer nach seiner Rolle Zeiten sehen darf (Inhaber, Planer, Lohnbüro); außerhalb nur, wohin der Betrieb exportiert (Lohnbuchhaltung, Behörden auf Verlangen).",
@@ -46,6 +47,7 @@ const zeilenVon = (
   projekt: Projektteil,
   lohn: Lohnteil,
   terminal: Terminalteil,
+  abwesenheit: Abwesenheitsteil,
   einladungen: { einladungId: string }[],
   zugaenge: { zugangId: string }[],
 ) =>
@@ -68,6 +70,7 @@ const zeilenVon = (
     apiZugaenge: zugaenge.map(({ zugangId }) => ({ zugangId })),
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
     karten: terminal.karten.map(({ karteId }) => ({ karteId })),
+    abwesenheiten: abwesenheit.abwesenheiten.map(({ abwesenheitId }) => ({ abwesenheitId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -89,6 +92,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
   const projekt = projektteil(db, betriebId, nutzerId);
   const lohn = lohnteil(db, betriebId, nutzerId);
   const terminal = terminalteil(db, betriebId, nutzerId, name);
+  const abwesenheit = abwesenheitsteil(db, betriebId, nutzerId, name);
   const kette = kettenteil(
     db,
     betriebId,
@@ -100,6 +104,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
       projekt,
       lohn,
       terminal,
+      abwesenheit,
       konto.einladungen,
       konto.zugaenge,
     ),
@@ -120,6 +125,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     ...projekt,
     ...lohn,
     ...terminal,
+    ...abwesenheit,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

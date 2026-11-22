@@ -67,5 +67,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0016_karten",
     "sql": "CREATE TABLE `karten` (\n\t`betrieb_id` text NOT NULL,\n\t`karte_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`uid_kennung` text NOT NULL,\n\t`schluessel` text,\n\t`zaehler` integer,\n\t`widerrufen_am` integer,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `karte_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid` ON `karten` (`betrieb_id`,`uid_kennung`);"
+  },
+  {
+    "tag": "0017_abwesenheiten",
+    "sql": "CREATE TABLE `abwesenheiten` (\n\t`betrieb_id` text NOT NULL,\n\t`abwesenheit_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`von` text NOT NULL,\n\t`bis` text,\n\t`erster_halb` integer DEFAULT false NOT NULL,\n\t`letzter_halb` integer DEFAULT false NOT NULL,\n\t`status` text NOT NULL,\n\t`kind` text,\n\t`bescheinigung` text,\n\t`grund` text,\n\t`entschieden_von` text,\n\t`entschieden_am` integer,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `abwesenheit_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `abwesenheiten_person` ON `abwesenheiten` (`betrieb_id`,`nutzer_id`,`von`);--> statement-breakpoint\nALTER TABLE `betriebe` ADD `bescheinigung_ab_tag` integer DEFAULT 4 NOT NULL;"
   }
 ];

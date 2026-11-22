@@ -36,6 +36,8 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   personalnummer: eigen.personalnummer,
   ausweis: eigen.ausweis,
   karten: eigen.karten,
+  // the owner sees every absence with its kind (abwesenheiten:gesundheit, docs/abwesenheiten.md)
+  abwesenheiten: eigen.abwesenheiten,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

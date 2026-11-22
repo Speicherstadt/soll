@@ -370,7 +370,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
+- [x] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
   ganze und halbe Tage.
   - **Urlaub**: Antrag mit Resturlaub und Hinweis auf eigene Schichten im Zeitraum; Freigabe oder
     Ablehnung mit Grund durch Inhaber oder Planer, Benachrichtigung beider Seiten; Zurückziehen des
@@ -386,7 +386,23 @@ Alle Punkte: nach S-306.
     Dienstplan steht nur „abwesend“.
   Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung und Krankmeldung zeigt und Tests „krank im
   Urlaub“, die Frist am 4. Tag, die Erinnerung an die eAU und die Sichtbarkeit von „krank“ je Rolle
-  abdecken.
+  abdecken. Dazu: eine neue Tabelle `abwesenheiten` mit `betrieb_id` in der Audit-Kette über eine
+  neue Migration (Art, von, bis, halbe Tage, Status, Bescheinigung „eAU“ oder „Papier“, Kennung des
+  Kinds; keine Diagnose, keine Datei); R-27 als reine Funktion in `packages/arbeitszeit` mit allen
+  Fällen aus `docs/regeln.md` (dazu „ab Tag 2“ und ein Feiertag am Fälligkeitstag), die Einstellung
+  „Bescheinigung ab Tag“ am Betrieb; genehmigte Abwesenheiten gehen in Soll und Ist des Monats
+  (Gutschrift, Urlaubstage, R-24), in den Inhalt des Monatsabschlusses und auf den Stundenzettel, ein
+  Monat ohne Abwesenheit behält seinen Inhalt aus S-306 (Prüfwerte bleiben gültig); eine
+  Abwesenheit, die einen Tag eines abgeschlossenen Monats ändern würde, wird abgelehnt (409), die
+  Korrektur geht über den Gegeneintrag aus S-306; Resturlaub des Jahres und Urlaubstage des Antrags
+  ohne Wochenenden und Feiertage; Überschneidungen abgelehnt außer Krankheit im Urlaub; Zähler der
+  Kinderkrankentage je Kind gegen den Jahreswert, „nicht hinterlegt“ ohne ihn; eine Schnittstelle,
+  über die der Dienstplan (S-501) eigene Schichten im Antrag zeigt und Schichten einer Krankmeldung als
+  offen meldet; Mails an Betrieb und Person über das Mail-Modul aus S-306 (Test mit SMTP-Ersatz);
+  ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert, und dass die
+  Routen bei abgeschaltetem Modul Arbeitszeit abgelehnt werden; Playwright in `desktop` und `@phone`,
+  axe grün auf `/abwesenheiten` in hell und dunkel; Texte in allen sechs Sprachen, Arabisch von rechts
+  nach links.
 - [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
 

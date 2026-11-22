@@ -29,6 +29,7 @@ const FREIGEGEBEN = [
   "personalnummer",
   "ausweis",
   "karten",
+  "abwesenheiten",
   "auditKette",
 ];
 

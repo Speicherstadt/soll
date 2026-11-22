@@ -16,7 +16,7 @@ type Anfrage = { pfad: string; body: unknown };
  * A dialog with a form that asks for a reason and sends it; closes once the server took it and the
  * month shows what changed
  */
-const GrundDialog = (props: {
+export const GrundDialog = (props: {
   titel: string;
   text: string;
   knopf: string;
@@ -25,6 +25,8 @@ const GrundDialog = (props: {
   anfrage: (daten: FormData, grund: string) => Anfrage | null;
   onSchliessen: () => void;
   onGespeichert: (daten: unknown) => void;
+  /** the words for an error the server names; those of the month by default */
+  fehlerText?: Record<string, () => string>;
 }) => {
   const [offen, setOffen] = createSignal(true);
   const [fehler, setFehler] = createSignal("");
@@ -41,7 +43,8 @@ const GrundDialog = (props: {
     const anfrage = props.anfrage(daten, grund);
     if (anfrage === null) return setFehler(m.fehler_speichern());
     const antwort = await senden.mutate(anfrage);
-    if (!antwort.ok) return setFehler((FEHLER[antwort.fehler] ?? (() => m.fehler_speichern()))());
+    const texte = props.fehlerText ?? FEHLER;
+    if (!antwort.ok) return setFehler((texte[antwort.fehler] ?? (() => m.fehler_speichern()))());
     setOffen(false);
     props.onGespeichert(antwort.daten);
   };

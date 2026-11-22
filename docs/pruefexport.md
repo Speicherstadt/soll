@@ -74,7 +74,7 @@ Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die
 der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
 Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
 Modelle mit Lohn und Zuschlägen, Schichten, Stundensätze, Buchungen der Projektzeit,
-Personalnummer, QR-Code und NFC-Karten der Person (wann eingetragen) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+Abwesenheiten mit Art (Krankheit ohne Diagnose), Personalnummer, QR-Code und NFC-Karten der Person (wann eingetragen) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
 draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
 Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
 verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie

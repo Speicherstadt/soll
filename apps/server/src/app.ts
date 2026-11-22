@@ -2,9 +2,12 @@ import { Hono } from "hono";
 import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
+import { schichtquelle } from "./modules/dienstplan/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
+import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
 import { auslastungRouten } from "./routes/auslastung.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
@@ -50,6 +53,8 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
+  /** The planned shifts for absences (S-401); the plan itself (S-501) unless a test passes one */
+  schichten?: Schichtquelle;
   /**
    * The key of the encrypted columns (SOLL_SECRET_KEY; the key of the PIN lookup is derived from it,
    * S-801) and the public VAPID key (S-307)
@@ -70,6 +75,7 @@ export const createApp = ({
   auth,
   url,
   mail,
+  schichten,
   geheimerSchluessel,
   vapidOeffentlich,
   webVerzeichnis = null,
@@ -121,6 +127,10 @@ export const createApp = ({
           "/modelle": modellRouten(db, schreibDb, now),
           "/datev": datevRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
+            mail,
+            schichten: schichten ?? schichtquelle(db),
+          }),
           "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,

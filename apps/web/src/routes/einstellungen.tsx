@@ -4,6 +4,7 @@ import { createSignal, Show } from "solid-js";
 import { api } from "../api.ts";
 import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
+import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
 import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
@@ -39,6 +40,7 @@ const Einstellungen = () => {
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
+      <BescheinigungEinstellung />
       <Erinnerungen />
       <Show when={terminal()}>
         <TerminalGeraete />

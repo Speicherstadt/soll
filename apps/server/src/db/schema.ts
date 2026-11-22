@@ -12,6 +12,7 @@ import {
  * chain (src/modules/audit). Instants are UTC milliseconds in integer columns.
  */
 
+export * from "./schema/abwesenheiten.ts";
 export * from "./schema/datev.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/projektzeit.ts";
@@ -33,6 +34,9 @@ export const betriebe = sqliteTable("betriebe", {
   land: text("land"),
   // When the owner finished the setup; until then the app leads the owner there (S-303)
   eingerichtetAm: integer("eingerichtet_am"),
+  // From which day of a sickness the business wants the certificate: 4 by law, earlier if it asks
+  // (§ 5 Abs. 1 Satz 2 and 3 EntgFG, S-401)
+  bescheinigungAbTag: integer("bescheinigung_ab_tag").notNull().default(4),
   // When Soll switched working time on because the first employed person joined; the owner sees the
   // reason until confirming it, then it is empty again (S-603)
   pflichtHinweisAm: integer("pflicht_hinweis_am"),

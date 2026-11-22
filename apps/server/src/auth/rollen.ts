@@ -29,6 +29,9 @@ export const RECHTE = [
   "zeiten:korrigieren",
   "modelle:zuordnen",
   "monat:abschliessen",
+  "abwesenheiten:freigeben",
+  "abwesenheiten:gesundheit",
+  "abwesenheiten:einstellen",
   "projekte:lesen",
   "projekte:verwalten",
   "erinnerungen:regeln",
@@ -58,6 +61,10 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "modelle:zuordnen",
     // the business confirms and closes a month: the owner, who answers for the records (S-306)
     "monat:abschliessen",
+    // S-401: approves leave, sees sickness (it pays it, § 3 EntgFG) and sets when a certificate is due
+    "abwesenheiten:freigeben",
+    "abwesenheiten:gesundheit",
+    "abwesenheiten:einstellen",
     // customers, orders, activities and hourly rates (S-601)
     "projekte:lesen",
     "projekte:verwalten",
@@ -85,6 +92,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "stempeln",
     "zeiten:alle",
     "zeiten:korrigieren",
+    // planners approve leave for the plan, but see sickness only as "abwesend" (Art. 9 DSGVO)
+    "abwesenheiten:freigeben",
     // the office keeps customers, orders and rates (docs/plan.md, "Wer Stundensätze sieht")
     "projekte:lesen",
     "projekte:verwalten",
@@ -98,12 +107,14 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
   // the plan they read once it is published (S-503)
   mitarbeiter: ["betrieb:lesen", "stempeln", "projekte:lesen", "plan:lesen", "api:zugang"],
   // wages in the working-time models: for the owner and payroll only (Art. 5 Abs. 1 lit. c DSGVO)
+  // payroll sees sickness: continued pay and the eAU go through its program (§ 109 SGB IV)
   lohnbuero: [
     "betrieb:lesen",
     "mitglieder:lesen",
     "modelle:lesen",
     "stempeln",
     "zeiten:alle",
+    "abwesenheiten:gesundheit",
     "projekte:lesen",
     "plan:lesen",
     // the payroll office chooses the wage types with the business and takes the file (S-308)

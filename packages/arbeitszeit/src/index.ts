@@ -3,6 +3,7 @@
  * (docs/regeln.md, BAULISTE.md).
  */
 
+export * from "./abwesenheit/index.ts";
 export * from "./arbeitstag/index.ts";
 export * from "./auslastung/index.ts";
 export type { Befund, Schwere } from "./befund.ts";

@@ -598,7 +598,13 @@ Alle Punkte: nach S-305.
   nennen).
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
-- [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
+- [x] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
+  Fertig, wenn: `bun run lasttest` den Server auf einer leeren Datenbank in einem temporären
+  Verzeichnis auf Port 28300 startet, 50 Betriebe mit je 50 Personen über die HTTP-API anlegt (echte
+  Konten und Sitzungen), alle 2.500 gleichzeitig „Kommen“ stempeln lässt, p50, p95, p99, Maximum und
+  Fehler ausgibt, danach genau eine Stempelung je Person und jede Kette ohne Befund prüft und nur bei
+  bestandener Schwelle mit 0 endet (Schwelle, Dauerhaftigkeit und CI in `docs/plan.md`); eine kleine
+  Fassung läuft in `bun run test`, der volle Lauf im Workflow `Lasttest`.
 - [x] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
   Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und

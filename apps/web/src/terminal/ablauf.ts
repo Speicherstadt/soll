@@ -1,4 +1,6 @@
-import { createSignal, onSettled } from "solid-js";
+import { skipToken, useQuery } from "@tanstack/solid-query";
+import { createEffect, createSignal, onSettled, snapshot } from "solid-js";
+import { PFAD } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
 import {
   kioskAnfrage,
@@ -40,7 +42,6 @@ const kioskZustand = () => {
   const [ansicht, setAnsicht] = createSignal<Ansicht>(
     gemerkt ? { art: "bereit" } : { art: "koppeln" },
   );
-  const [stand, setStand] = createSignal<KioskStand | null>(null);
   const [meldung, setMeldung] = createSignal<Meldung | null>(null);
   const [jetzt, setJetzt] = createSignal(Date.now());
   const [beschaeftigt, setBeschaeftigt] = createSignal(false);
@@ -54,7 +55,6 @@ const kioskZustand = () => {
   const vergessen = () => {
     kopplungVergessen(ablage);
     setKopplung(null);
-    setStand(null);
     setAnsicht({ art: "koppeln" });
   };
   const gekoppelt = (neu: Kopplung) => {
@@ -73,8 +73,6 @@ const kioskZustand = () => {
     kopplung,
     ansicht,
     setAnsicht,
-    stand,
-    setStand,
     meldung,
     setMeldung,
     jetzt,
@@ -105,22 +103,12 @@ const kioskAufrufe = (z: Zustand) => {
       z.setBeschaeftigt(false);
     }
   };
-  const laden = async () => {
-    const k = z.kopplung();
-    if (!k) return;
-    const antwort = await kioskAnfrage<KioskStand>(k.token, "");
-    if (!antwort.ok) return z.abgelehnt(antwort);
-    z.setStand(antwort.daten);
-    if (antwort.daten.gesperrtBis !== null)
-      z.setMeldung({ art: "gesperrt", bis: antwort.daten.gesperrtBis });
-    else if (z.meldung()?.art === "gesperrt") z.setMeldung(null);
-  };
   const koppeln = async (code: string): Promise<Meldung | "code_ungueltig" | null> => {
     const antwort = await api<Kopplung>("/api/v1/kiosk/koppeln", { body: { code } });
     if (!antwort.ok)
       return antwort.fehler === "code_ungueltig" ? "code_ungueltig" : meldungAus(antwort);
+    // the new pairing asks for its state by itself (standAbfrage)
     z.gekoppelt(antwort.daten);
-    await laden();
     return null;
   };
   const erkennen = (ausweis: Ausweis) =>
@@ -165,7 +153,49 @@ const kioskAufrufe = (z: Zustand) => {
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setAnsicht({ art: "gestempelt", daten: antwort.daten, bis: Date.now() + GESTEMPELT_MS });
     });
-  return { laden, koppeln, erkennen, pin, karteGelesen, stempeln };
+  return { koppeln, erkennen, pin, karteGelesen, stempeln };
+};
+
+/**
+ * The kiosk's state as a query (docs/entwicklung.md, "Daten laden"), asked with the device token on
+ * pairing and, while locked, every GESPERRT_FRAGEN_MS: nobody can tap a locked tablet, yet the owner
+ * may lift the lock or revoke it (docs/plan.md, "Sperre am Terminal")
+ */
+const kioskStand = (z: Zustand) => {
+  const abfrage = useQuery(() => {
+    const k = z.kopplung();
+    return {
+      queryKey: [PFAD.kiosk, k?.terminalId ?? "-"],
+      queryFn: k ? () => kioskAnfrage<KioskStand>(k.token, "") : skipToken,
+      refetchInterval: z.meldung()?.art === "gesperrt" ? GESPERRT_FRAGEN_MS : false,
+    };
+  });
+  // every answer counts, also one like the last (dataUpdatedAt): a lock lifted answers as it did
+  // before the lock. The compute takes plain values out of the query; the apply reads nothing
+  // reactive (docs/solid-2.0/CHEATSHEET.md, "Strict read untracked")
+  createEffect(
+    () => {
+      if (!abfrage.isSuccess) return null;
+      const antwort = abfrage.data;
+      const am = abfrage.dataUpdatedAt;
+      return antwort.ok
+        ? { am, gesperrtBis: antwort.daten.gesperrtBis }
+        : { am, abgelehnt: snapshot(antwort) };
+    },
+    (neu) => {
+      if (!neu) return;
+      if ("abgelehnt" in neu) return z.abgelehnt(neu.abgelehnt);
+      const bis = neu.gesperrtBis;
+      if (bis !== null) z.setMeldung({ art: "gesperrt", bis });
+      // only a lock the server no longer knows goes; any other message stays
+      else z.setMeldung((alt) => (alt?.art === "gesperrt" ? null : alt));
+    },
+  );
+  return (): KioskStand | null => {
+    if (!abfrage.isSuccess) return null;
+    const antwort = abfrage.data;
+    return antwort.ok ? antwort.daten : null;
+  };
 };
 
 /**
@@ -176,9 +206,8 @@ const kioskAufrufe = (z: Zustand) => {
 export const kioskAblauf = () => {
   const z = kioskZustand();
   const aufrufe = kioskAufrufe(z);
+  const stand = kioskStand(z);
   onSettled(() => {
-    void aufrufe.laden();
-    let gefragt = Date.now();
     const takt = setInterval(() => {
       const nun = Date.now();
       z.setJetzt(nun);
@@ -187,17 +216,13 @@ export const kioskAblauf = () => {
       if ((z.karte()?.bis ?? nun) < nun) z.setKarte(null);
       const offen = z.meldung();
       if (offen?.art === "gesperrt" && offen.bis <= nun) z.setMeldung(null);
-      else if (offen?.art === "gesperrt" && nun - gefragt >= GESPERRT_FRAGEN_MS) {
-        gefragt = nun;
-        void aufrufe.laden();
-      }
     }, TAKT_MS);
     return () => clearInterval(takt);
   });
   return {
     kopplung: z.kopplung,
     ansicht: z.ansicht,
-    stand: z.stand,
+    stand,
     meldung: z.meldung,
     jetzt: z.jetzt,
     beschaeftigt: z.beschaeftigt,

@@ -39,6 +39,8 @@ export const PFAD = {
   terminalPersonen: `${TERMINAL}/personen`,
   terminalKarten: `${TERMINAL}/karten`,
   stoppuhr: `${PZ}/stoppuhr`,
+  // the kiosk's own state, asked with its device token instead of a session (terminal/ablauf.ts)
+  kiosk: "/api/v1/kiosk",
   nachweise: `${PZ}/stundennachweise`,
   nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
   auslastung: `${PZ}/auslastung`,

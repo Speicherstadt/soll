@@ -98,6 +98,14 @@ Ladern aus Effekt und Signal:
   einem Betrieb; beim Abmelden oder Wechsel leert ihn `sitzung.ts`.
 - Die Offline-Warteschlange von Heute (S-305, `apps/web/src/offline/`) bleibt eigen; nach dem
   Senden macht sie den Tag ungültig.
+- Das Terminal fragt seinen Stand mit dem Token des Geräts statt einer Sitzung ab, als Abfrage je
+  Terminal; gesperrt fragt es alle 15 Sekunden nach (`refetchInterval`), und jede Antwort zählt,
+  auch eine wie die vorige (`terminal/ablauf.ts`).
+- Eigen bleiben auch die Sitzung (`sitzung/sitzung.ts`: sie entscheidet, wem der Cache gehört, und
+  leert ihn, gilt offline aus dem Gerät und wird vor jeder Route geprüft) und die einmaligen Schritte
+  ohne Daten im Cache: Anmelden, Registrieren, Abmelden, eine Einladung annehmen, die Prüfseite und
+  die Schritte der Einrichtung. Was sie ändern, steht in der Sitzung; danach fragen sie sie neu
+  (`sitzungNeu()`).
 
 ## Server
 

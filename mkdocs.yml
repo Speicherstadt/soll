@@ -15,7 +15,7 @@ edit_uri: edit/main/docs/
 copyright: >-
   Lizenz AGPL-3.0 · © Tristan Teufel und Mitwirkende ·
   <a href="https://teufel-it.de/de/impressum/">Impressum</a> ·
-  <a href="https://speicherstadt.app/datenschutz/">Datenschutz</a>
+  <a href="https://speicherstadt.org/datenschutz/">Datenschutz</a>
 use_directory_urls: false
 # the copied Solid 2.0 reference (docs/solid-2.0/README.md) is for developers, not part of the site
 exclude_docs: |

@@ -22,6 +22,7 @@ export const PFAD = {
   abwesenheiten: ABW,
   abwesenheitenOffen: `${ABW}/offen`,
   abwesenheitenTeam: `${ABW}/team`,
+  konten: `${AZ}/konten`,
   standorte: "/api/v1/standorte",
   pruefung: "/api/v1/betrieb/pruefung",
   // the key of every person's data for the rules; each is loaded from /personen/:nutzerId/angaben
@@ -79,8 +80,9 @@ export const ressourcen = {
   datev: () => einfach(PFAD.datev),
   abwesenheiten: () => einfach(PFAD.abwesenheiten),
   abwesenheitenOffen: () => einfach(PFAD.abwesenheitenOffen),
-  abwesenheitenTeam: (parameter: { von: string; bis: string }) =>
+  abwesenheitenTeam: (parameter: { von: string; bis: string; standortId?: string | undefined }) =>
     mitParametern(PFAD.abwesenheitenTeam, parameter),
+  konten: (parameter: { nutzerId?: string | undefined }) => mitParametern(PFAD.konten, parameter),
   standorte: () => einfach(PFAD.standorte),
   pruefung: () => einfach(PFAD.pruefung),
   angaben: (nutzerId: string): Ressource => ({

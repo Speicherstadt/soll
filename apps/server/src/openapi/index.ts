@@ -1,4 +1,4 @@
-import { ABWESENHEITEN } from "./abwesenheiten.ts";
+import { ABWESENHEITEN, KONTEN_OPERATIONEN } from "./abwesenheiten.ts";
 import { ALLGEMEIN } from "./allgemein.ts";
 import { ARBEITSZEIT } from "./arbeitszeit.ts";
 import { AUSLASTUNG, BUCHUNGEN, STUNDENNACHWEISE } from "./buchungen.ts";
@@ -13,6 +13,7 @@ export const OPERATIONEN = [
   ...ALLGEMEIN,
   ...ARBEITSZEIT,
   ...ABWESENHEITEN,
+  ...KONTEN_OPERATIONEN,
   ...DIENSTPLAN,
   ...PROJEKTZEIT,
   ...BUCHUNGEN,

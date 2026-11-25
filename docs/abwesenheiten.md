@@ -110,6 +110,62 @@ Krankengeld endet. Für ein Jahr ohne hinterlegten Wert steht „nicht hinterleg
 (siehe [Jahreswerte](jahreswerte.md)). Ob jemand allein erzieht, weiß Soll noch nicht; bis es die
 Daten zum Mitarbeiter gibt, zählt der Wert für zwei Eltern.
 
+## Konten
+
+Oben auf der Seite stehen die Konten der Person: der **Resturlaub** und die **Überstunden**. Beide
+rechnet Soll bei jedem Aufruf aus, gespeichert werden nur Anpassungen von Hand.
+
+- **Resturlaub**: der Urlaub jedes Jahres ([Urlaubsanspruch](regeln.md)) abzüglich des genommenen
+  Urlaubs, mit Übertrag ins Folgejahr und Verfall (R-23). Genehmigter Urlaub, der noch kommt, steht
+  als „davon genehmigt“. Je Jahr steht da, ob und wann der Rest verfällt, oder dass der Hinweis
+  auf Verfall noch fällig ist.
+- **Überstunden**: Ist minus Soll jedes abgeschlossenen Monats, so wie er abgeschlossen wurde, dazu
+  die Anpassungen. Monate dazwischen, die noch nicht abgeschlossen sind, nennt Soll, statt sie zu
+  schätzen.
+
+Fehlt ein Wert (ein Arbeitszeitmodell, ein abgeschlossener Monat ohne Summen) oder wurde ein Monat
+nach Ablauf der Frist [ausgesondert](monatsabschluss.md#aufbewahrung-und-aussonderung), steht „nicht hinterlegt“ statt einer falschen
+Zahl.
+
+Wer alle Zeiten sieht (Inhaber, Planer, Lohnbüro), wählt die Person über „Konten von“. Eine Liste
+der Konten aller Personen gibt es nicht (keine Auswertung je Person, BetrVG § 87 Abs. 1 Nr. 6). Der
+Planer sieht von einer anderen Person nur den Resturlaub und die Überstunden: Die genommenen Tage
+je Jahr verrieten Krankheit im Urlaub (§ 9 BUrlG), Auszahlungen gehören zur Lohnabrechnung.
+
+### Hinweis auf Verfall
+
+Urlaub verfällt nur, wenn der Betrieb die Person rechtzeitig und konkret darauf hingewiesen hat,
+wie viel Urlaub offen ist und wann er verfällt (§ 7 Abs. 3 BUrlG; EuGH C-684/16 Max-Planck; BAG,
+19.02.2019, 9 AZR 541/15 und 9 AZR 423/16). Soll verlangt den Hinweis drei Monate vor dem Verfall,
+also bis 31. Dezember für den Urlaub, der mit dem 31. März des Folgejahres verfällt.
+
+Der Inhaber hält unter „Hinweis auf Verfall festhalten“ den Tag fest, an dem er den Hinweis gegeben
+hat: heute oder, für einen Hinweis auf Papier, einen Tag davor, nie in der Zukunft und nicht vor dem
+Beginn des Kontos. Soll speichert dazu, was der Hinweis an diesem Tag nannte (offene Tage je Jahr
+und Tag des Verfalls), und zeigt ihn der Person mit Tag und Inhalt.
+
+| Hinweis | Folge |
+| --- | --- |
+| bis 31. Dezember | der Rest verfällt mit dem 31. März des Folgejahres |
+| später | der Rest verfällt erst mit dem 31. März nach dem Jahr des Hinweises |
+| keiner | der Rest verfällt nicht |
+
+Teilurlaub nach § 5 Abs. 1 Buchst. a BUrlG überträgt Soll immer ins ganze Folgejahr (§ 7 Abs. 3
+Satz 4 BUrlG); der Hinweis ist dann bis 30. September fällig.
+
+### Anpassungen von Hand
+
+Nur der Inhaber passt Konten an, immer mit Grund, den die Person sieht. Eine Anpassung wird nie
+geändert; eine falsche wird mit einer weiteren korrigiert.
+
+| Anpassung | Wofür |
+| --- | --- |
+| Überstunden zu Beginn | der Saldo, mit dem die Person zu Soll kommt; einmal, vor dem ersten abgeschlossenen Monat |
+| Überstunden ausgezahlt | ausbezahlte Stunden, sie gehen vom Konto ab |
+| Überstunden korrigiert | eine Korrektur mit Vorzeichen |
+| Resturlaub vor Soll | der Urlaub, der zu Beginn eines Jahres noch offen war; das Konto beginnt mit diesem Jahr |
+| Urlaub korrigiert | eine Korrektur des Urlaubs eines Jahres mit Vorzeichen, in halben Tagen |
+
 ## Wer sieht „krank“
 
 „Krank“ und „Kind krank“ sind Gesundheitsdaten (Art. 9 DSGVO).
@@ -120,6 +176,15 @@ Daten zum Mitarbeiter gibt, zählt der Wert für zwei Eltern.
 | Inhaber, Lohnbüro | die Art, die Bescheinigung und die Erinnerung an die eAU, weil sie die Entgeltfortzahlung abrechnen |
 | Planer und alle anderen ohne dieses Recht | jede genehmigte, abgelehnte, zurückgezogene oder stornierte Abwesenheit einer anderen Person nur als „abwesend“, auch Urlaub: ohne Art, Bescheinigung, Kind, Grund, Urlaubstage der Zeile und ohne, wer entschied; ein offenes Ende steht als heute. Die Art sieht der Planer nur bei einem offenen Antrag, über den er entscheidet, und im Augenblick seiner Entscheidung |
 | alle im Teamkalender und im Dienstplan | jede Abwesenheit nur als „abwesend“, auch Urlaub und auch für den Inhaber; ein offenes Ende steht als heute, in einem Zeitraum, der erst nach heute beginnt, fehlt es; dort storniert der Inhaber genehmigten Urlaub, der Planer nur den, den er selbst freigegeben hat |
+
+## Teamkalender
+
+Der Teamkalender zeigt vier Wochen ab heute, vor und zurück je vier Wochen, für einen Standort: die
+Feiertage des Standorts und, wer abwesend ist, jede Abwesenheit nur als „abwesend“, ganz oder halb.
+Am Desktop steht er als Raster (Personen als Zeilen, Tage als Spalten, Wochenenden und Feiertage
+hinterlegt), darunter und am Handy als Liste. Soll kennt keinen Standort je Person, alle arbeiten an
+jedem Standort; der Standort bestimmt deshalb die Feiertage, nicht die Personen. Zahlen je Person
+(Tage abwesend, Anteile) zeigt der Kalender nicht.
 
 Hieße nur Krankheit „abwesend“, verriete das Wort sie. Deshalb verrät auch keine Antwort des
 Servers die Art: Er prüft erst das Recht, dann den Status und die Art zuletzt.
@@ -142,7 +207,7 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | --- | --- |
 | `GET /?nutzerId&jahr` | Abwesenheiten eines Jahres, Resturlaub, Kinderkrankentage, Fristen, Rechte des Aufrufers |
 | `GET /offen` | Anträge zur Entscheidung (Inhaber, Planer) und Erinnerungen an die eAU (Inhaber, Lohnbüro) |
-| `GET /team?von&bis` | genehmigte Abwesenheiten aller, höchstens 62 Tage, jede als „abwesend“, ein offenes Ende als heute, `bis` höchstens bis zum Ende des Zeitraums, `stornierbar` nur für Inhaber und Planer (Planer: selbst freigegebener Urlaub) |
+| `GET /team?von&bis&standortId` | Feiertage des Standorts (ohne `standortId` des ersten Standorts oder des Bundeslands), genehmigte Abwesenheiten aller, höchstens 62 Tage, jede als „abwesend“, ein offenes Ende als heute, `bis` höchstens bis zum Ende des Zeitraums, `stornierbar` nur für Inhaber und Planer (Planer: selbst freigegebener Urlaub) |
 | `POST /antrag` | Antrag: `art`, `von`, `bis`, `ersterHalb`, `letzterHalb` |
 | `POST /krank` | Krankmeldung ab heute: `art` (`krank`, `kind_krank`), `bis` (oder `null`), `kind` |
 | `POST /:id/freigeben`, `/ablehnen`, `/zurueckziehen`, `/stornieren` | Entscheidungen, Ablehnen und Stornieren mit `grund` |
@@ -150,12 +215,21 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | `POST /:id/beenden` | `bis`: der letzte Krankheitstag |
 | `PUT /einstellungen` | `bescheinigungAbTag`: 1 bis 4 (nur Inhaber) |
 
+| API (unter `/api/v1/arbeitszeit/konten`) | Was |
+| --- | --- |
+| `GET /?nutzerId` | Resturlaub (`urlaub`) mit Jahren und Verfall, Überstunden (`ueberstunden`), Hinweise und Anpassungen; die eigenen oder mit `zeiten:alle` die einer Person |
+| `POST /:nutzerId/hinweise` | `tag` des Hinweises auf Verfall (nur Inhaber, `konten:pflegen`); 422 in der Zukunft oder vor dem Beginn des Kontos, 409 zweimal am selben Tag |
+| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat |
+
 | Funktion in `packages/arbeitszeit` | Was |
 | --- | --- |
 | `tageDesZeitraums(zeitraum, offenBis)` | ein Zeitraum als Tage für `tagesSoll`, halbe Tage am Anfang und Ende |
 | `ueberschneiden`, `ueberschneidungErlaubt` | Überschneidung zweier Zeiträume; erlaubt ist nur Krankheit im Urlaub |
 | `bescheinigungFaellig`, `bescheinigungPruefen` | R-27: Fälligkeit, Stand, Erinnerung an die eAU, Befund |
 | `sichtbareArt(art, gesundheitSehen)` | ohne Recht jede Art als „abwesend“ |
+| `urlaubskonto`, `verfallHinweis` | R-23: Resturlaub je Jahr mit Verfall; was ein Hinweis an seinem Tag nennt |
+| `ueberstundenkonto` | Überstunden aus den Abschlüssen und den Anpassungen |
+| `feiertageZwischen(standort, von, bis)` | die Feiertage eines Standorts im Zeitraum |
 
 Der Dienstplan (S-501) liefert über sein `index.ts` eine `Schichtquelle`
 (`schichtquelle` in `apps/server/src/modules/dienstplan/abwesenheit.ts`, der Typ in

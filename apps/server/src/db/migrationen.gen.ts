@@ -87,5 +87,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0021_karten_neu_eintragen",
     "sql": "DROP INDEX `karten_uid`;--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid_aktiv` ON `karten` (`betrieb_id`,`uid_kennung`) WHERE \"karten\".\"widerrufen_am\" is null;"
+  },
+  {
+    "tag": "0022_konten",
+    "sql": "CREATE TABLE `konto_anpassungen` (\n\t`betrieb_id` text NOT NULL,\n\t`anpassung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`monat` text,\n\t`jahr` integer,\n\t`minuten` integer,\n\t`halbtage` integer,\n\t`grund` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `anpassung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `konto_anpassungen_person` ON `konto_anpassungen` (`betrieb_id`,`nutzer_id`);--> statement-breakpoint\nCREATE TABLE `urlaubshinweise` (\n\t`betrieb_id` text NOT NULL,\n\t`hinweis_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`tag` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `hinweis_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `urlaubshinweise_person` ON `urlaubshinweise` (`betrieb_id`,`nutzer_id`,`tag`);"
   }
 ];

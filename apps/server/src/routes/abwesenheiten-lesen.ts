@@ -1,7 +1,9 @@
 import {
+  feiertageZwischen,
   GESUNDHEIT,
   istTag,
   jahrVon,
+  type Standort,
   type Tag,
   tageZwischen,
   tagInBerlin,
@@ -17,10 +19,12 @@ import {
   erinnerungenVon,
   kinderkrankstand,
   sollGrundlagen,
+  standortVon,
   urlaubsstand,
   urlaubstageVon,
 } from "../modules/arbeitszeit/index.ts";
 import { mitgliederMitNamen, namenVon } from "../modules/mitglieder/index.ts";
+import { standorteLesen } from "../modules/standorte/index.ts";
 import { sicht, siehtGesundheit } from "./abwesenheit-sicht.ts";
 import type { Anfrage } from "./kontext.ts";
 import { liestEigene, person } from "./zeiten.ts";
@@ -29,7 +33,7 @@ const id = z.string().min(1).max(100);
 const tag = z.string().refine(istTag);
 const jahr = z.coerce.number().int().min(2000).max(9999);
 export const listeSchema = z.object({ nutzerId: id.optional(), jahr: jahr.optional() }).strict();
-export const teamSchema = z.object({ von: tag, bis: tag }).strict();
+export const teamSchema = z.object({ von: tag, bis: tag, standortId: id.optional() }).strict();
 
 /** The team calendar shows at most two months at once */
 const TEAM_TAGE = 62;
@@ -121,6 +125,31 @@ const teamkalender = (
 };
 
 /**
+ * The site of the team calendar (S-402): one of the business, undefined for a site it does not
+ * have; without one asked for, the place the holidays of Soll come from (the first site, else the
+ * Land of the business, `standortVon`), or null without either
+ */
+const standortFuer = (
+  db: Db,
+  betriebId: string,
+  standortId: string | undefined,
+): { standortId: string | null; ort: Standort | null } | undefined => {
+  if (standortId === undefined) return { standortId: null, ort: standortVon(db, betriebId) };
+  const standort = standorteLesen(db, betriebId).find((s) => s.standortId === standortId);
+  return standort && { standortId: standort.standortId, ort: standort };
+};
+
+/**
+ * The holidays of the site in the span (S-105), by name; none where the year is "nicht hinterlegt".
+ * Everyone works at every site in Soll, so the calendar shows everyone's absences (docs/plan.md,
+ * "Teamkalender je Standort").
+ */
+const feiertageAm = (standort: Standort, von: Tag, bis: Tag) => {
+  const ergebnis = feiertageZwischen(standort, von, bis);
+  return ergebnis.ok ? ergebnis.feiertage.map(({ tag, name }) => ({ tag, name })) : [];
+};
+
+/**
  * Reading absences below /api/v1/arbeitszeit/abwesenheiten: one's own, a person's for whoever sees
  * all times, what waits for a decision or a certificate, and the team calendar with „abwesend“
  */
@@ -171,5 +200,11 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
         return c.json({ fehler: "ungueltig" }, 400);
       if (!darf(c.get("rolle"), "stempeln") && !darf(c.get("rolle"), "zeiten:alle"))
         return c.json({ fehler: "keine_berechtigung" }, 403);
-      return c.json(teamkalender(db, c, { von, bis }, tagInBerlin(jetzt())));
+      const standort = standortFuer(db, c.get("betriebId"), eingabe.data.standortId);
+      if (standort === undefined) return c.json({ fehler: "standort_unbekannt" }, 404);
+      return c.json({
+        ...teamkalender(db, c, { von, bis }, tagInBerlin(jetzt())),
+        standortId: standort.standortId,
+        feiertage: standort.ort ? feiertageAm(standort.ort, von, bis) : [],
+      });
     });

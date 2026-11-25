@@ -29,7 +29,7 @@ import {
  */
 
 /** The Soll of each day of the absences; null when one of them is "nicht hinterlegt" */
-const tageMitSoll = (
+export const tageMitSoll = (
   grundlagen: SollGrundlagen,
   tage: readonly Abwesenheit[],
 ): TagesSoll[] | null => {

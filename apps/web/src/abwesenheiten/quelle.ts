@@ -9,12 +9,13 @@ export const BASIS = PFAD.abwesenheiten;
 
 /**
  * What a step on an absence changes: the absences, and the day, the month and the plan's week that
- * count or show them (Soll, R-24, „abwesend“ in the plan)
+ * count or show them (Soll, R-24, „abwesend“ in the plan) and the accounts (leave left, S-402)
  */
 export const ABWESENHEIT_AENDERT = [
   alle(PFAD.abwesenheiten),
   alle(PFAD.abwesenheitenOffen),
   alle(PFAD.abwesenheitenTeam),
+  alle(PFAD.konten),
   alle(PFAD.tag),
   alle(PFAD.monat),
   alle(PFAD.woche),

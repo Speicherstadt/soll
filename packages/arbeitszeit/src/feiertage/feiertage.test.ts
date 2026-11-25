@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { type Feiertag, feiertagAm as feiertagAmErgebnis, feiertage } from "./feiertage.ts";
+import {
+  type Feiertag,
+  feiertagAm as feiertagAmErgebnis,
+  feiertage,
+  feiertageZwischen,
+} from "./feiertage.ts";
 import fixtures from "./fixtures/feiertage-2026-2035.json" with { type: "json" };
 import { LAENDER, type Region, type Standort } from "./laender.ts";
 
@@ -123,5 +128,37 @@ describe("feiertage past the four-digit years", () => {
   it("says nicht hinterlegt instead of returning days that are no Tag", () => {
     expect(feiertage(10000, { land: "HH" })).toEqual({ ok: false, grund: "nicht_hinterlegt" });
     expect(feiertage(300000, { land: "HH" })).toEqual({ ok: false, grund: "nicht_hinterlegt" });
+  });
+});
+
+/* The holidays of a span, for the team calendar of a site (S-402) */
+describe("feiertageZwischen", () => {
+  it("lists the holidays from one day to another, across the turn of the year", () => {
+    const ergebnis = feiertageZwischen({ land: "HH" }, "2026-12-20", "2027-01-06");
+    expect(ergebnis.ok && ergebnis.feiertage.map((f) => `${f.tag} ${f.schluessel}`)).toEqual([
+      "2026-12-25 erster_weihnachtstag",
+      "2026-12-26 zweiter_weihnachtstag",
+      "2027-01-01 neujahr",
+    ]);
+  });
+
+  it("includes both ends and follows the site's Land and regions", () => {
+    const augsburg = feiertageZwischen(
+      { land: "BY", regionen: ["augsburg"] },
+      "2026-08-08",
+      "2026-08-08",
+    );
+    expect(augsburg.ok && augsburg.feiertage.map((f) => f.schluessel)).toEqual(["friedensfest"]);
+    expect(feiertageZwischen({ land: "HH" }, "2026-08-08", "2026-08-08")).toEqual({
+      ok: true,
+      feiertage: [],
+    });
+  });
+
+  it("is „nicht hinterlegt“ when a year of the span is", () => {
+    expect(feiertageZwischen({ land: "HH" }, "1994-12-20", "1995-01-06")).toEqual({
+      ok: false,
+      grund: "nicht_hinterlegt",
+    });
   });
 });

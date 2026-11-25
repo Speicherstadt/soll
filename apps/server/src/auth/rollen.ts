@@ -32,6 +32,7 @@ export const RECHTE = [
   "abwesenheiten:freigeben",
   "abwesenheiten:gesundheit",
   "abwesenheiten:einstellen",
+  "konten:pflegen",
   "projekte:lesen",
   "projekte:verwalten",
   "erinnerungen:regeln",
@@ -66,6 +67,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "abwesenheiten:freigeben",
     "abwesenheiten:gesundheit",
     "abwesenheiten:einstellen",
+    // S-402: changes the accounts by hand (start, payout, correction) and records the notice on
+    // leave expiring, which is the employer's duty (§ 7 Abs. 3 BUrlG, BAG 9 AZR 541/15)
+    "konten:pflegen",
     // customers, orders, activities and hourly rates (S-601)
     "projekte:lesen",
     "projekte:verwalten",

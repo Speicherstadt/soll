@@ -403,7 +403,7 @@ Alle Punkte: nach S-306.
   Routen bei abgeschaltetem Modul Arbeitszeit abgelehnt werden; Playwright in `desktop` und `@phone`,
   axe grün auf `/abwesenheiten` in hell und dunkel; Texte in allen sechs Sprachen, Arabisch von rechts
   nach links.
-- [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
+- [x] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
   - **Teamkalender**: je Standort die Tage eines Zeitraums mit den Feiertagen des Standorts (S-105)
     und den genehmigten Abwesenheiten, jede nur als „abwesend“, für jede Rolle, auch für den
@@ -802,6 +802,10 @@ Review vor jedem Merge.
 - [ ] OpenAPI-Dokument durch einen externen Validator prüfen
 - [ ] Quadlet und arm64-Image nicht geprüft
 - [ ] S-605: Storno eines unterschriebenen Stundennachweises fehlt
+- [ ] Konten über ausgesonderte Monate: Saldo und genommenen Urlaub eines Monats bei der
+  Aussonderung festhalten, bis dahin ist das Konto „nicht hinterlegt“ (S-402, fällig frühestens 2029)
+- [ ] Standort je Person (Teamkalender filtern, Feiertage im Soll vom Standort der Person) (S-402)
+- [ ] Hinweis auf Verfall zusätzlich per Mail an die Person (S-402)
 - [ ] Gesetzeswächter: Workflow einmal von Hand starten und die Prüfsummen in
   `scripts/gesetze/normen.json` übernehmen
 

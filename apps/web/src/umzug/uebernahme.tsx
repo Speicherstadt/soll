@@ -5,12 +5,14 @@ import { Lesefehler } from "./datei.tsx";
 import { ART_NAMEN, abgelehntText } from "./texte.ts";
 import { PLAN_ARTEN, type PlanArt, type Probelauf, type Uebernahme } from "./typen.ts";
 
-/** The kinds a result shows: bookings and activities only when there are any (S-702, S-705) */
+/** Kinds shown only when a file has any: bookings, activities (S-702, S-705), balances (S-708) */
+const NUR_MIT_INHALT: ReadonlySet<PlanArt> = new Set(["buchungen", "taetigkeiten", "salden"]);
+
+/** The kinds a result shows */
 const gezeigt = (probelauf: Probelauf): PlanArt[] =>
   PLAN_ARTEN.filter(
     (art) =>
-      (art !== "buchungen" && art !== "taetigkeiten") ||
-      Object.values(probelauf.zahlen[art] ?? {}).some((n) => n > 0),
+      !NUR_MIT_INHALT.has(art) || Object.values(probelauf.zahlen[art] ?? {}).some((n) => n > 0),
   );
 
 /** What the takeover creates, finds there already, leaves out and refuses, per kind */

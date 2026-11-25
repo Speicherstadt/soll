@@ -1,4 +1,5 @@
 import { istTag, jahrVon, type Tag } from "../kalender/tag.ts";
+import { verfallNachHinweis } from "./ablauf.ts";
 import type { Halbtage } from "./halbtage.ts";
 import { type UrlaubskontoEingaben, urlaubskonto } from "./verfall.ts";
 
@@ -31,8 +32,12 @@ export const verfallHinweis = (e: UrlaubskontoEingaben, tag: Tag): HinweisErgebn
       .map((topf) => ({
         jahr: topf.jahr,
         halbtage: topf.restHalbtage,
-        // the notice of `tag` names every year up to its own, so each has a day to expire
-        verfaelltAm: topf.verfaelltAm as Tag,
+        // the day an earlier notice set, while it is to come; else the day this notice sets, never
+        // one already past (review S-708; BAG, 19.02.2019, 9 AZR 423/16)
+        verfaelltAm:
+          topf.verfaelltAm !== null && topf.verfaelltAm >= tag
+            ? topf.verfaelltAm
+            : verfallNachHinweis(topf, tag),
       })),
   };
 };

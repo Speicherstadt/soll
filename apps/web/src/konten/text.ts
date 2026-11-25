@@ -1,4 +1,4 @@
-import type { HinweisPosten, Tag, Urlaubstopf } from "@soll/arbeitszeit";
+import type { HinweisPosten, VerfallBefund } from "@soll/arbeitszeit";
 import { tageText, tagText } from "../abwesenheiten/text.ts";
 import { saldoText } from "../monat/zeilen.ts";
 import { m } from "../paraglide/messages.js";
@@ -12,7 +12,12 @@ export const ART: Record<Anpassungsart, () => string> = {
   korrektur: () => m.konten_art_korrektur(),
   urlaub_start: () => m.konten_art_urlaub_start(),
   urlaub_korrektur: () => m.konten_art_urlaub_korrektur(),
+  urlaub_stichtag: () => m.konten_art_urlaub_stichtag(),
 };
+
+/** A start on a cut-off date counts from the first day of its month (S-708) */
+const amStichtag = (a: Anpassung): boolean =>
+  (a.art === "startsaldo" || a.art === "urlaub_stichtag") && a.monat !== null;
 
 export const FEHLER: Record<string, () => string> = {
   vorhanden: () => m.konten_fehler_vorhanden(),
@@ -27,52 +32,34 @@ export const lueckeText = (luecke: Luecke): string =>
     ? m.konten_ausgesondert({ monate: luecke.monate.join(", ") })
     : m.abw_nicht_hinterlegt();
 
-const NORM = "§ 7 Abs. 3 BUrlG";
+type TopfWerte = { jahr: string; tage: string; datum: string; norm: string };
+
+const TEXT: Record<VerfallBefund["art"], (werte: TopfWerte) => string> = {
+  verfallen: (w) => m.konten_topf_verfallen(w),
+  verfall_droht: (w) => m.konten_topf_verfaellt(w),
+  hinweis_faellig: (w) => m.konten_topf_hinweis_faellig(w),
+  hinweis_fehlt: (w) => m.konten_topf_kein_verfall(w),
+};
 
 /**
- * The leave left of a year and where it stands (R-23): expiring at the end of a day once the notice
- * was given, expired, the notice still due (a warning), or not expiring without one. Null for a
- * year with nothing left and nothing expired.
+ * The leave of each year and where it stands, from the server's findings (R-23): expired, the part
+ * a notice lets expire next, the part no notice names with the notice still due (a warning) or
+ * missing. A notice makes expire only what it named (review S-708), so one year may have two lines.
  */
-export const topfZeile = (
-  topf: Urlaubstopf,
-  heute: Tag,
-): { text: string; warnung: boolean } | null => {
-  const jahr = String(topf.jahr);
-  if (topf.verfallenHalbtage > 0)
-    return {
-      text: m.konten_topf_verfallen({
-        jahr,
-        tage: tageText(topf.verfallenHalbtage),
-        datum: tagText(topf.verfaelltAm ?? topf.verfallstag, true),
-        norm: NORM,
+export const befundZeilen = (
+  befunde: readonly VerfallBefund[],
+): { text: string; warnung: boolean }[] =>
+  [...befunde]
+    .sort((a, b) => a.jahr - b.jahr)
+    .map((befund) => ({
+      text: TEXT[befund.art]({
+        jahr: String(befund.jahr),
+        tage: tageText(befund.halbtage),
+        datum: tagText(befund.tage[0] ?? "", true),
+        norm: befund.norm,
       }),
-      warnung: false,
-    };
-  if (topf.restHalbtage <= 0) return null;
-  const tage = tageText(topf.restHalbtage);
-  if (topf.verfaelltAm !== null)
-    return {
-      text: m.konten_topf_verfaellt({
-        jahr,
-        tage,
-        datum: tagText(topf.verfaelltAm, true),
-        norm: NORM,
-      }),
-      warnung: false,
-    };
-  if (heute <= topf.hinweisBis)
-    return {
-      text: m.konten_topf_hinweis_faellig({
-        jahr,
-        tage,
-        datum: tagText(topf.hinweisBis, true),
-        norm: NORM,
-      }),
-      warnung: true,
-    };
-  return { text: m.konten_topf_kein_verfall({ jahr, tage, norm: NORM }), warnung: false };
-};
+      warnung: befund.art === "hinweis_faellig",
+    }));
 
 /** What a notice named: "5 Tage aus 2026 bis 31.12.2027" */
 export const hinweisText = (inhalt: readonly HinweisPosten[]): string =>
@@ -90,7 +77,9 @@ export const hinweisText = (inhalt: readonly HinweisPosten[]): string =>
 
 /** A change by hand as one line: what, for when, how much */
 export const anpassungText = (a: Anpassung): string => {
-  const wann = a.monat ?? String(a.jahr ?? "");
+  const wann = amStichtag(a)
+    ? m.konten_stichtag_wann({ datum: tagText(`${a.monat}-01`, true) })
+    : (a.monat ?? String(a.jahr ?? ""));
   const wert =
     a.minuten !== null
       ? saldoText(a.art === "auszahlung" ? -a.minuten : a.minuten)

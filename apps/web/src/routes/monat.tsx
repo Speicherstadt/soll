@@ -8,6 +8,7 @@ import { GegeneintragDialog, OhneBestaetigungDialog } from "../monat/dialoge.tsx
 import { Pruefwert } from "../monat/pruefwert.tsx";
 import { monatQuelle } from "../monat/quelle.ts";
 import { Stand } from "../monat/stand.tsx";
+import { Startsalden } from "../monat/startsalden.tsx";
 import { Gegeneintraege, Summen, TageTabelle } from "../monat/tabelle.tsx";
 import { datumText, monatText, tageText, zeitpunktText } from "../monat/text.ts";
 import type { MonatAnsicht } from "../monat/typen.ts";
@@ -77,6 +78,7 @@ const Inhalt = (props: { ansicht: MonatAnsicht }) => (
       )}
     />
     <Gegeneintraege eintraege={props.ansicht.inhalt.gegeneintraege} />
+    <Startsalden monat={props.ansicht.monat} salden={props.ansicht.inhalt.startsalden} />
     <Pruefwert
       name={props.ansicht.name}
       pruefwert={props.ansicht.abschluss?.pruefwert ?? null}

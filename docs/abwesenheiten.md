@@ -224,7 +224,7 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | --- | --- |
 | `GET /?nutzerId` | Resturlaub (`urlaub`) mit Jahren und Verfall, Überstunden (`ueberstunden`), Hinweise und Anpassungen; die eigenen oder mit `zeiten:alle` die einer Person |
 | `POST /:nutzerId/hinweise` | `tag` des Hinweises auf Verfall (nur Inhaber, `konten:pflegen`); 422 in der Zukunft, vor dem Eintritt oder vor dem Beginn des Kontos, 409 zweimal am selben Tag |
-| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat, 409 für Resturlaub vor Soll aus einem Jahr nach dem ersten Hinweis, 422 für einen Monat oder ein Jahr außerhalb des Kontos |
+| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_stichtag` mit `monat` und `halbtage`, [Salden zum Stichtag](konten.md#salden-zum-stichtag); `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Stichtag in oder nach einem abgeschlossenen Monat, 409 für Resturlaub vor Soll aus einem Jahr nach dem ersten Hinweis, 422 für einen Monat oder ein Jahr außerhalb des Kontos |
 
 | Funktion in `packages/arbeitszeit` | Was |
 | --- | --- |

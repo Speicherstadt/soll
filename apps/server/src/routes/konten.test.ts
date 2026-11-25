@@ -157,15 +157,21 @@ describe("POST /konten/:nutzerId/anpassungen: changes by hand", () => {
     });
     expect(danach.status).toBe(409);
     expect(await json(danach)).toEqual({ fehler: "widerspruch" });
-    expect(
-      (await anpassen(w.jonas, w.sandra, { art: "startsaldo", monat: "2026-10", minuten: 60 }))
-        .status,
-    ).toBe(201);
-    const zweiter = await anpassen(w.jonas, w.sandra, {
+    // in the closed month itself neither: its content and Prüfwert would not hold it (S-708)
+    const darin = await anpassen(w.jonas, w.sandra, {
       art: "startsaldo",
       monat: "2026-10",
       minuten: 60,
     });
+    expect(darin.status).toBe(409);
+    expect(await json(darin)).toEqual({ fehler: "widerspruch" });
+  });
+
+  it("refuses a second start balance", async () => {
+    const w = await weberMitAbwesenheiten();
+    const start = { art: "startsaldo", monat: "2026-10", minuten: 60 };
+    expect((await anpassen(w.jonas, w.sandra, start)).status).toBe(201);
+    const zweiter = await anpassen(w.jonas, w.sandra, start);
     expect(zweiter.status).toBe(409);
     expect(await json(zweiter)).toEqual({ fehler: "vorhanden" });
   });

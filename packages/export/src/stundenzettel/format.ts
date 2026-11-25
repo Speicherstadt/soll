@@ -53,6 +53,10 @@ export const uhrzeitText = (zeitpunkt: number): string => uhr.format(zeitpunkt);
 export const zeitpunktText = (zeitpunkt: number): string =>
   `${datumText(tagInBerlin.format(zeitpunkt))} ${uhrzeitText(zeitpunkt)}`;
 
+/** Half days of leave (never negative) as days, German: 17 → "8,5 Tage", 2 → "1 Tag" */
+export const halbtageText = (halbtage: number): string =>
+  `${Math.floor(halbtage / 2)}${halbtage % 2 === 1 ? ",5" : ""} ${halbtage === 2 ? "Tag" : "Tage"}`;
+
 /** Whole minutes as "7:30", with a sign when asked: "+3:28", "-0:15" */
 export const dauerText = (minuten: number, vorzeichen = false): string => {
   const betrag = Math.abs(minuten);

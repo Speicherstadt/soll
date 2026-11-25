@@ -36,6 +36,7 @@ export {
   type ImportDaten,
   type ImportKunde,
   type ImportProjekt,
+  type ImportSaldo,
   type ImportTaetigkeit,
   type ImportZeit,
   LESE_GRUENDE,
@@ -54,7 +55,13 @@ export {
   personioAbzugText,
   personioLesen,
 } from "./personio/index.ts";
-export { QUELLEN, type Quelle, quelleVon, SOLL_CSV_VORLAGE } from "./quellen.ts";
+export {
+  QUELLEN,
+  type Quelle,
+  quelleVon,
+  SOLL_CSV_VORLAGE,
+  SOLL_SALDEN_VORLAGE,
+} from "./quellen.ts";
 export { SOLL_CSV_FELDER, type SollCsvFeld, type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 export { tabelleLesen } from "./tabelle.ts";
 export { dauerFrei, pauseFrei, tagFrei, uhrzeitFrei } from "./tabelle-werte.ts";

@@ -1,4 +1,11 @@
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /* The tables of the accounts (S-402); re-exported by ../schema.ts */
 
@@ -7,8 +14,10 @@ import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlit
  * of the overtime account the balance when Soll begins (`startsaldo`), a payout (`auszahlung`) and a
  * correction (`korrektur`), each for a month in whole minutes; of the leave account the leave open
  * when Soll begins (`urlaub_start`, from that year on, counted as leave of the year before) and a
- * correction of a year (`urlaub_korrektur`), in half days. Every one with its reason; rows are only
- * appended, a wrong one is corrected by another.
+ * correction of a year (`urlaub_korrektur`), in half days; the leave open on a cut-off date
+ * (`urlaub_stichtag`, S-708: for the month of that first day, in half days, the leave of its year
+ * included). Every one with its reason; rows are only appended, a wrong one is corrected by another.
+ * A start taken over from another tool carries the import, the tool and its id there (S-708).
  */
 export const kontoAnpassungen = sqliteTable(
   "konto_anpassungen",
@@ -17,7 +26,14 @@ export const kontoAnpassungen = sqliteTable(
     anpassungId: text("anpassung_id").notNull(),
     nutzerId: text("nutzer_id").notNull(),
     art: text("art", {
-      enum: ["startsaldo", "auszahlung", "korrektur", "urlaub_start", "urlaub_korrektur"],
+      enum: [
+        "startsaldo",
+        "auszahlung",
+        "korrektur",
+        "urlaub_start",
+        "urlaub_korrektur",
+        "urlaub_stichtag",
+      ],
     }).notNull(),
     monat: text("monat"),
     jahr: integer("jahr"),
@@ -26,10 +42,14 @@ export const kontoAnpassungen = sqliteTable(
     grund: text("grund").notNull(),
     erstelltVon: text("erstellt_von").notNull(),
     erstelltAm: integer("erstellt_am").notNull(),
+    importId: text("import_id"),
+    externQuelle: text("extern_quelle"),
+    externId: text("extern_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.anpassungId] }),
     index("konto_anpassungen_person").on(t.betriebId, t.nutzerId),
+    uniqueIndex("konto_anpassungen_extern").on(t.betriebId, t.externQuelle, t.externId),
   ],
 );
 

@@ -79,7 +79,7 @@ abgeschlossenen Monats als Korrektur, nicht als Abweichung.
 ## Stundenzettel
 
 Der Stundenzettel ist ein PDF (A4, Deutsch) mit den Tagen und ihren genehmigten Abwesenheiten
-(Urlaub, krank, halber Tag), Soll, Ist und Saldo, den Befunden mit Norm, den Gegeneinträgen, wer bestätigt und wer abgeschlossen hat, und dem Prüfwert. Jede Person
+(Urlaub, krank, halber Tag), Soll, Ist und Saldo, den Befunden mit Norm, den Gegeneinträgen, im Monat eines Stichtags dem Startsaldo von Überstunden und Resturlaub ([Salden zum Stichtag](konten.md#salden-zum-stichtag), vom Prüfwert gedeckt), wer bestätigt und wer abgeschlossen hat, und dem Prüfwert. Jede Person
 lädt ihn jederzeit unter **Stundenzettel (PDF)** herunter; vor dem Abschluss ist er als Entwurf
 gekennzeichnet und trägt noch keinen Prüfwert.
 

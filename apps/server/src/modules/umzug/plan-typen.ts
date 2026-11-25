@@ -15,6 +15,7 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "salden",
 ];
 
 /**
@@ -37,6 +38,10 @@ export const PLAN_GRUENDE = [
   "taetigkeit_unbekannt",
   "zuordnung_abweichend",
   "geaendert_im_alten_tool",
+  // the balances on a cut-off date (S-708), refused by the rules of the accounts
+  "saldo_vorhanden",
+  "vor_eintritt",
+  "widerspruch",
 ] as const;
 export type PlanGrund = (typeof PLAN_GRUENDE)[number];
 
@@ -80,6 +85,21 @@ export type NeueBuchung = {
   externId: string;
 };
 
+/**
+ * A start balance on a cut-off date (S-708): of the overtime in minutes or of the leave in half
+ * days, for the month of the cut-off date
+ */
+export type NeuerSaldo = {
+  nutzerId: string;
+  art: "startsaldo" | "urlaub_stichtag";
+  monat: string;
+  wert: number;
+  externId: string;
+};
+
+/** A start balance an earlier import wrote, by its id in the old tool */
+export type GespeicherterSaldo = { nutzerId: string; monat: string | null; wert: number | null };
+
 /** A month of a person the old tool had closed, to be closed as taken over */
 export type Monatssperre = { nutzerId: string; monat: Monat };
 
@@ -90,6 +110,7 @@ export type Plan = {
   projekte: NeuesProjekt[];
   taetigkeiten: NeueTaetigkeit[];
   buchungen: NeueBuchung[];
+  salden: NeuerSaldo[];
   monate: Monatssperre[];
   zahlen: Zahlen;
   abgelehnt: Abgelehnt[];
@@ -126,7 +147,14 @@ export type Stand = {
     taetigkeiten: ReadonlyMap<string, string>;
     /** the bookings made from times of this tool, by their id (S-702) */
     buchungen: ReadonlySet<string>;
+    /** the start balances of this tool, by their id (S-708) */
+    salden: ReadonlyMap<string, GespeicherterSaldo>;
   };
+  /**
+   * why a start balance cannot be recorded, by the rules of the accounts by hand; null if it can.
+   * `ab` is the first day of the person's times taken over with it, which joining may not follow.
+   */
+  saldoPruefen: (saldo: NeuerSaldo, ab: Tag | null) => PlanGrund | null;
   /** whether a span would overlap a booking of the person there already (S-702) */
   buchungUeberschneidet: (nutzerId: string, spanne: { beginn: number; ende: number }) => boolean;
   /** the customers and orders of the business, for a mapping to an existing one */
@@ -153,6 +181,7 @@ export const keineZahlen = (): Zahlen => ({
   projekte: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+  salden: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
 });
 
 export const STEMPELARTEN: readonly Stempelart[] = [

@@ -4,12 +4,13 @@ import { icsKalender } from "@soll/export";
 import { and, eq, gte, isNotNull } from "drizzle-orm";
 import { darf } from "../../auth/rollen.ts";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
-import { kalenderAbos, schichten } from "../../db/schema.ts";
+import { kalenderAbos, rufdienste, schichten } from "../../db/schema.ts";
 import { type Kontext, schreiben, sha256, verlaufVon } from "../audit/index.ts";
 import { betriebLesen, modulAktiv } from "../betrieb/index.ts";
 import { type Sprache, spracheVon } from "../erinnerungen/index.ts";
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { standorteLesen } from "../standorte/index.ts";
+import { RUF_TEXTE, rufBeschreibung } from "./ruftexte.ts";
 import { terminBeschreibung, terminTitel } from "./texte.ts";
 
 /*
@@ -91,15 +92,57 @@ const veroeffentlichteVon = (db: Db, betriebId: string, nutzerId: string, von: T
     )
     .all();
 
+/** The published Rufbereitschaft of a person from a day on, every site (S-505) */
+const rufdiensteAb = (db: Db, betriebId: string, nutzerId: string, von: Tag) =>
+  db
+    .select()
+    .from(rufdienste)
+    .where(
+      and(
+        eq(rufdienste.betriebId, betriebId),
+        eq(rufdienste.nutzerId, nutzerId),
+        isNotNull(rufdienste.veroeffentlichtAm),
+        gte(rufdienste.tag, von),
+      ),
+    )
+    .all();
+
+/** The Rufbereitschaft of an abo as events: "Rufbereitschaft", the reaction time as description */
+const rufTermine = (
+  db: Db,
+  abo: KalenderAbo,
+  von: Tag,
+  sprache: ReturnType<typeof spracheVon>,
+  orte: ReadonlyMap<string, string>,
+) => {
+  const dienste = rufdiensteAb(db, abo.betriebId, abo.nutzerId, von);
+  const verlauf = verlaufVon(
+    db,
+    abo.betriebId,
+    "rufdienste",
+    dienste.map(({ rufdienstId }) => ({ rufdienstId })),
+  );
+  return dienste.map((dienst) => {
+    const v = verlauf.get(JSON.stringify([dienst.rufdienstId]));
+    return {
+      uid: dienst.rufdienstId,
+      beginn: dienst.beginn,
+      ende: dienst.ende,
+      erstellt: v?.erstes ?? dienst.angelegtAm,
+      geaendert: v?.letztes ?? dienst.veroeffentlichtAm ?? dienst.angelegtAm,
+      sequenz: v?.aenderungen ?? 0,
+      titel: RUF_TEXTE[sprache].wort,
+      ort: orte.get(dienst.standortId) ?? "",
+      beschreibung: rufBeschreibung(sprache, dienst.reaktionMinuten),
+    };
+  });
+};
+
 /** The feed of an abo as iCalendar: CREATED, LAST-MODIFIED and SEQUENCE from the audit chain */
 const feedVon = (db: Db, abo: KalenderAbo, jetzt: number): string => {
   const sprache = spracheVon(abo.sprache);
-  const geplant = veroeffentlichteVon(
-    db,
-    abo.betriebId,
-    abo.nutzerId,
-    plusTage(tagInBerlin(jetzt), -RUECKBLICK_TAGE),
-  );
+  const von = plusTage(tagInBerlin(jetzt), -RUECKBLICK_TAGE);
+  const geplant = veroeffentlichteVon(db, abo.betriebId, abo.nutzerId, von);
   const orte = new Map(standorteLesen(db, abo.betriebId).map((s) => [s.standortId, s.name]));
   const verlauf = verlaufVon(
     db,
@@ -110,20 +153,23 @@ const feedVon = (db: Db, abo: KalenderAbo, jetzt: number): string => {
   return icsKalender({
     produkt: "-//Soll//Dienstplan//DE",
     name: `Soll · ${betriebLesen(db, abo.betriebId)?.name ?? ""}`,
-    termine: geplant.map((schicht) => {
-      const v = verlauf.get(JSON.stringify([schicht.schichtId]));
-      return {
-        uid: schicht.schichtId,
-        beginn: schicht.beginn,
-        ende: schicht.ende,
-        erstellt: v?.erstes ?? schicht.angelegtAm,
-        geaendert: v?.letztes ?? schicht.veroeffentlichtAm ?? schicht.angelegtAm,
-        sequenz: v?.aenderungen ?? 0,
-        titel: terminTitel(sprache, schicht.rolle),
-        ort: orte.get(schicht.standortId) ?? "",
-        beschreibung: terminBeschreibung(sprache, schicht.pauseMinuten),
-      };
-    }),
+    termine: [
+      ...geplant.map((schicht) => {
+        const v = verlauf.get(JSON.stringify([schicht.schichtId]));
+        return {
+          uid: schicht.schichtId,
+          beginn: schicht.beginn,
+          ende: schicht.ende,
+          erstellt: v?.erstes ?? schicht.angelegtAm,
+          geaendert: v?.letztes ?? schicht.veroeffentlichtAm ?? schicht.angelegtAm,
+          sequenz: v?.aenderungen ?? 0,
+          titel: terminTitel(sprache, schicht.rolle),
+          ort: orte.get(schicht.standortId) ?? "",
+          beschreibung: terminBeschreibung(sprache, schicht.pauseMinuten),
+        };
+      }),
+      ...rufTermine(db, abo, von, sprache, orte),
+    ],
   });
 };
 

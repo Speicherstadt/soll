@@ -78,7 +78,11 @@ const einsatzLesen = (db: Db, betriebId: string, einsatzId: string): Einsatz | u
     .get();
 
 /** The call-out records of a closed month, as closing and the check page read them */
-const einsatzRecords = (monat: Monat, stempel: Parameters<typeof aufzeichnungen>[1], liste: readonly Einsatzspanne[]) =>
+const einsatzRecords = (
+  monat: Monat,
+  stempel: Parameters<typeof aufzeichnungen>[1],
+  liste: readonly Einsatzspanne[],
+) =>
   kanonisch(
     aufzeichnungen(monat, stempel, () => null, [], { einsaetze: liste }).map(
       (tag) => tag.einsaetze ?? [],
@@ -131,7 +135,9 @@ export const einsatzBeginnen = (
   const dienst = rufdienstUm(db, kontext.betriebId, nutzerId, jetzt);
   if (!dienst) return { ok: false, grund: "keine_rufbereitschaft" };
   if (laufender(db, kontext.betriebId, nutzerId)) return { ok: false, grund: "laeuft_schon" };
-  if (gesperrt(db, kontext.betriebId, nutzerId, [jetzt], (v) => [...v, { beginn: jetzt, ende: null }]))
+  if (
+    gesperrt(db, kontext.betriebId, nutzerId, [jetzt], (v) => [...v, { beginn: jetzt, ende: null }])
+  )
     return { ok: false, grund: "monat_gesperrt" };
   const einsatz = schreiben(schreibDb, kontext, (s) =>
     s.einfuegen("einsaetze", {

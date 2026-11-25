@@ -15,6 +15,14 @@ export {
 export type { Meldung } from "./meldungen.ts";
 export type { WochenBefund } from "./pruefung.ts";
 export {
+  type Rufdienst,
+  type RufdienstAngaben,
+  type RufdienstErgebnis,
+  rufdienstAendern,
+  rufdienstAnlegen,
+  rufdienstEntfernen,
+} from "./rufdienste.ts";
+export {
   type Schicht,
   type SchichtAngaben,
   type SchichtErgebnis,

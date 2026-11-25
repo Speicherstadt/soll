@@ -24,6 +24,7 @@ import {
 } from "../modules/dienstplan/index.ts";
 import type { ZustellDeps } from "../modules/erinnerungen/index.ts";
 import { kalenderRouten } from "./dienstplan-kalender.ts";
+import { rufdienstRouten } from "./dienstplan-rufdienste.ts";
 import { tauschRouten } from "./dienstplan-tausch.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon } from "./stempel-antwort.ts";
@@ -269,5 +270,6 @@ export const dienstplanRouten = (
     .route("/vorlagen", vorlagenRouten(db, schreibDb, jetzt))
     .route("/bedarf", bedarfRouten(db, schreibDb, jetzt))
     .route("/schichten", schichtRouten(db, schreibDb, jetzt, deps.zustellung))
+    .route("/rufdienste", rufdienstRouten(db, schreibDb, jetzt, deps.zustellung))
     .route("/kalender", kalenderRouten(db, schreibDb, jetzt, deps.url))
     .route("/tausch", tauschRouten(db, schreibDb, jetzt, deps.zustellung));

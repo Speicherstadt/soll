@@ -130,6 +130,8 @@ festgelegt; eine Änderung braucht die Zustimmung des Betriebsrats.
 | Schalter | Was er tut | Vereinbart |
 | --- | --- | --- |
 | Modul Dienstplan | Schichten planen, veröffentlichen, Prüfung beim Einplanen | [ ] an [ ] aus |
+| Soll aus dem Plan | ab einem Tag ist das Soll jedes Tages die Summe der veröffentlichten Schichten der Person statt des Arbeitszeitmodells; Monate, die schon abgeschlossen sind, bleiben, wie sie sind | [ ] aus [ ] an ab [Datum] |
+| Rufbereitschaft | Inhaber und Planer planen Rufbereitschaft im Dienstplan; Einsätze daraus erfasst die Person selbst, sie zählen als Arbeitszeit; Soll erfasst dabei keinen Ort | [ ] genutzt [ ] nicht genutzt |
 | Schichttausch ohne Freigabe | eine übernommene Schicht gilt sofort, wenn die Regeln für die übernehmende Person keinen Verstoß finden; sonst geben Inhaber oder Planer jeden Tausch frei | [ ] mit Freigabe [ ] ohne Freigabe |
 | Modul Projektzeit | Zeit auf Aufträge buchen, Stoppuhr, Stundennachweis mit Unterschrift des Kunden | [ ] an [ ] aus |
 | Auslastung des Teams | anwesend gegen gebucht als Summe über den ganzen Betrieb, nur für abgelaufene Monate, erst ab drei Personen | [ ] genutzt [ ] nicht genutzt |

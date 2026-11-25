@@ -132,3 +132,48 @@ describe("abweichendeTage", () => {
     expect(abweichendeTage(oktober(), jetzt)).toEqual(["2026-10-01", "2026-10-05", "2026-10-10"]);
   });
 });
+
+describe("aufzeichnungen with call-outs and the Soll from the plan (S-505)", () => {
+  it("adds no key without them, so a month closed before keeps its content and hash", () => {
+    const leer = aufzeichnungen("2026-10", stempel, vollzeit, [], {
+      einsaetze: [],
+      plan: new Map(),
+    });
+    expect(kanonisch(leer)).toBe(kanonisch(oktober()));
+  });
+
+  it("files a call-out within 9 hours of a shift under the day the shift began (R-12)", () => {
+    const nacht = {
+      beginn: ms("2026-10-02T00:30:00+02:00"),
+      ende: ms("2026-10-02T01:30:00+02:00"),
+    };
+    const tage = aufzeichnungen("2026-10", stempel, vollzeit, [], { einsaetze: [nacht] });
+    expect(tage[0]?.einsaetze).toEqual([[nacht.beginn, nacht.ende]]);
+    expect(tage[1]).not.toHaveProperty("einsaetze");
+  });
+
+  it("files a call-out far from other work under its own day, a running one too", () => {
+    const allein = { beginn: ms("2026-10-10T03:00:00+02:00"), ende: null };
+    const tage = aufzeichnungen("2026-10", stempel, vollzeit, [], { einsaetze: [allein] });
+    expect(tage[9]?.einsaetze).toEqual([[allein.beginn, null]]);
+  });
+
+  it("files a call-out in the night the clocks go back under the day it began", () => {
+    // 25.10.2026: 1:30 (+02:00) to 2:30 (+01:00) is two real hours
+    const herbst = {
+      beginn: ms("2026-10-25T01:30:00+02:00"),
+      ende: ms("2026-10-25T02:30:00+01:00"),
+    };
+    const tage = aufzeichnungen("2026-10", stempel, vollzeit, [], { einsaetze: [herbst] });
+    expect(tage[24]?.einsaetze).toEqual([[herbst.beginn, herbst.ende]]);
+    expect((herbst.ende - herbst.beginn) / 60_000).toBe(120);
+  });
+
+  it("records the planned minutes on the days of the plan only", () => {
+    const tage = aufzeichnungen("2026-10", stempel, vollzeit, [], {
+      plan: new Map([["2026-10-05", 360]]),
+    });
+    expect(tage[4]).toMatchObject({ tag: "2026-10-05", modellMinuten: 480, planMinuten: 360 });
+    expect(tage[5]).not.toHaveProperty("planMinuten");
+  });
+});

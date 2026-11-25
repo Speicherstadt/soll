@@ -1,5 +1,5 @@
-import { schichtMinuten } from "../dienstplan/zeiten.ts";
 import type { PlanSchicht } from "../dienstplan/typen.ts";
+import { schichtMinuten } from "../dienstplan/zeiten.ts";
 import type { Tag } from "../kalender/tag.ts";
 
 /**

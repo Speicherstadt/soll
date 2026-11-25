@@ -14,10 +14,12 @@ import {
 import { and, eq, gte } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { schichten } from "../../db/schema.ts";
-import { istTage, modellAm, sollAm } from "../arbeitszeit/index.ts";
+import { einsaetzeIn, istTage, modellAm, sollAm } from "../arbeitszeit/index.ts";
 import { betriebLesen, planBetriebAus, pruefeinstellungenVon } from "../betrieb/index.ts";
 import { angabenLesen, planPersonAus } from "../personen/index.ts";
+import { rufdiensteVon } from "../plandaten/index.ts";
 import { standorteLesen } from "../standorte/index.ts";
+import type { Rufdienst } from "./rufdienste.ts";
 import type { Schicht } from "./schichten.ts";
 
 /** A finding of the plan for one person (S-502): what the week shows on a block and in its list */
@@ -60,7 +62,9 @@ const ausModell = (db: Db, betriebId: string, nutzerId: string) => ({
  * and R-08 count over the calendar year; a shift of yesterday ends with this morning's stamp, § 5
  * ArbZG measures the rest from it), the planned shifts from today on, the settings of the
  * business, the person's data and model. Mitteilung of a shift is the day it was published (S-503);
- * a draft is told today at the earliest (docs/plan.md, "Mitteilung bei Arbeit auf Abruf").
+ * a draft is told today at the earliest (docs/plan.md, "Mitteilung bei Arbeit auf Abruf"). With
+ * them the person's Rufbereitschaft from today on, drafts included, and the call-outs recorded in
+ * the same span as the stamps (R-11, R-12, S-505).
  */
 const pruefungFuer = (
   db: Db,
@@ -80,6 +84,10 @@ const pruefungFuer = (
   const von = beginnInBerlin(tagAus(jahrVon(heute) - 1, 1, 1));
   return {
     schichten: geplant,
+    rufdienste: rufdiensteVon(db, betriebId, nutzerId, heute, "9999-12-31", true),
+    einsaetze: einsaetzeIn(db, betriebId, nutzerId, von, jetzt).flatMap(({ beginn, ende }) =>
+      ende === null ? [] : [{ beginn, ende }],
+    ),
     ist: istTage(db, betriebId, nutzerId, von, jetzt),
     heute,
     standort,
@@ -131,16 +139,18 @@ export const wochenBefunde = (
   db: Db,
   betriebId: string,
   standortId: string,
-  gezeigt: readonly Schicht[],
+  gezeigt: { schichten: readonly Schicht[]; rufdienste: readonly Rufdienst[] },
   jetzt: number,
 ): WochenBefund[] => {
   const heute = tagInBerlin(jetzt);
   const standort = standortVon(db, betriebId, standortId);
   if (!standort) return [];
-  const ids = new Set(gezeigt.filter((s) => s.tag >= heute).map((s) => s.schichtId));
-  const personen = new Set(
-    gezeigt.flatMap((s) => (s.nutzerId && ids.has(s.schichtId) ? [s.nutzerId] : [])),
-  );
+  const bloecke = [
+    ...gezeigt.schichten.map((s) => ({ id: s.schichtId, tag: s.tag, nutzerId: s.nutzerId })),
+    ...gezeigt.rufdienste.map((r) => ({ id: r.rufdienstId, tag: r.tag, nutzerId: r.nutzerId })),
+  ].filter((block) => block.tag >= heute);
+  const ids = new Set(bloecke.map((block) => block.id));
+  const personen = new Set(bloecke.flatMap((block) => (block.nutzerId ? [block.nutzerId] : [])));
   return [...personen].flatMap((nutzerId) => {
     const pruefung = pruefungFuer(db, betriebId, nutzerId, standort, jetzt);
     if (!pruefung) return [];

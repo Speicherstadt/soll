@@ -8,13 +8,13 @@ import { type ArbzgOptionen, arbzgBefunde } from "../pruefung/arbzg.ts";
 import type { Ausgleichszeitraum } from "../pruefung/ausgleichszeitraum.ts";
 import type { Branche } from "../pruefung/grenzen.ts";
 import { nachTag, type Pruefergebnis, type PruefTag, sortiert } from "../pruefung/typen.ts";
+import { bereitschaftBefunde } from "../pruefung-bereitschaft/bereitschaft.ts";
+import type { BereitschaftsTag } from "../pruefung-bereitschaft/typen.ts";
 import { jugendBefunde } from "../pruefung-jugend/jugend.ts";
 import { mutterschutzBefunde } from "../pruefung-mutterschutz/mutterschutz.ts";
 import type { Tagesspanne } from "../pruefung-mutterschutz/typen.ts";
 import { nachtSonntagBefunde } from "../pruefung-nacht-sonntag/nacht-sonntag.ts";
 import type { Sonntagsausnahme } from "../pruefung-nacht-sonntag/sonntagsruhe.ts";
-import { bereitschaftBefunde } from "../pruefung-bereitschaft/bereitschaft.ts";
-import type { BereitschaftsTag } from "../pruefung-bereitschaft/typen.ts";
 import { abrufBefunde } from "./abruf.ts";
 import { mitPlanBereitschaft, type PlanBereitschaft } from "./bereitschaft.ts";
 import { type LohnAm, lohnBefunde } from "./lohnmonate.ts";
@@ -175,7 +175,12 @@ const alleRegeln = (
  * count as working time.
  */
 export const planBefunde = (pruefung: PlanPruefung): Pruefergebnis<PlanBefund> => {
-  const { tage, tagVon: schichtTag, rufdienstTag, mitBereitschaft } = mitPlanBereitschaft(
+  const {
+    tage,
+    tagVon: schichtTag,
+    rufdienstTag,
+    mitBereitschaft,
+  } = mitPlanBereitschaft(
     planTage(pruefung.schichten, pruefung.ist, pruefung.heute),
     pruefung.heute,
     new Map(pruefung.schichten.map((schicht) => [schicht.schichtId, schicht.beginn])),

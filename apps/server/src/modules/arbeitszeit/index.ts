@@ -11,6 +11,16 @@ export {
   aussondern,
   aussonderungsSchleife,
 } from "./aussonderung.ts";
+export {
+  type Einsatz,
+  type EinsatzErgebnis,
+  type EinsatzFehler,
+  einsaetzeIn,
+  einsatzBeenden,
+  einsatzBeginnen,
+  einsatzEntfernen,
+  einsatzNachtragen,
+} from "./einsaetze.ts";
 export { type GegeneintragErgebnis, gegeneintragAnlegen } from "./gegeneintraege.ts";
 export {
   type AnmeldeErgebnis,
@@ -48,6 +58,12 @@ export {
 export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
 export { pruefexportPerson } from "./pruefexport.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
+export {
+  fruehesterSollquellenTag,
+  type SollquelleErgebnis,
+  sollquellenVon,
+  sollquelleSetzen,
+} from "./sollquellen.ts";
 export {
   type Dazu,
   hatStempelungen,

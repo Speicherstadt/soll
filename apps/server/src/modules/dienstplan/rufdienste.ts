@@ -83,7 +83,11 @@ const zeitraum = (dienst: Rufdienst): Zeitraum => ({
  */
 export const rufMeldungen = (alt: Rufdienst, neu: Rufdienst | null): Meldung[] => {
   if (alt.veroeffentlichtAm === null) return [];
-  const entfaellt = { art: "ruf_entfaellt" as const, nutzerId: alt.nutzerId, schicht: zeitraum(alt) };
+  const entfaellt = {
+    art: "ruf_entfaellt" as const,
+    nutzerId: alt.nutzerId,
+    schicht: zeitraum(alt),
+  };
   if (neu === null) return [entfaellt];
   if (!FELDER.some((feld) => alt[feld] !== neu[feld])) return [];
   if (alt.nutzerId === neu.nutzerId)

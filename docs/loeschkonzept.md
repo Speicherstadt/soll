@@ -76,6 +76,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `stempelungen` | M | Kommen, Pause, Gehen mit Zeit, Quelle, jeder Fassung und ihrem Grund | sondert jede Fassung mit dem Monat ihres Arbeitstags aus; vorher nie gelöscht, nur ersetzt oder als entfernt markiert |
 | `importe` | M | Werkzeug, SHA-256, Name und Größe der Originaldatei, Zuordnung der Personen, was dabei herauskam, wer und wann | bleibt; die Aussonderung entfernt die übernommenen Monate, nicht den Import (offener Punkt) |
 | `korrekturen` | M | Gegeneinträge nach dem Abschluss mit Grund | sondert sie mit dem Monat aus, in dem sie gebucht sind |
+| `einsaetze` | M | Einsätze aus der Rufbereitschaft mit Beginn, Ende, Grund, auch entfernte | nie gelöscht, nur als entfernt markiert; die Aussonderung entfernt sie noch nicht mit dem Monat ihres Arbeitstags (offener Punkt) |
 | `monatsabschluesse` | M | Bestätigung und Abschluss mit Inhalt und Prüfwert | sondert beide Schritte mit dem Monat aus |
 | `abwesenheiten` | M | Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer | sondert sie aus, wenn alle Monate entfernt sind, die sie berührt; eine offene Krankheit nie |
 | `aussonderungen` | A | welcher Monat welcher Person mit welcher Frist entfernt wurde, ohne Inhalt | bleibt als Nachweis der Löschung |
@@ -106,6 +107,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `erinnerungseinstellungen` | P | abgeschaltete Erinnerungen, Mail der Person | bleibt nach dem Austritt (offener Punkt) |
 | `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
 | `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | bleibt (offener Punkt) |
+| `rufdienste` | V | Rufbereitschaft mit Person, Zeit, Reaktionszeit, Standort, veröffentlicht oder Entwurf | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
 | `erinnerungen` | V | welche Erinnerung wann an wen ging | bleibt (offener Punkt) |
 | `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |
 | `stundensaetze` | L | Stundensätze in Cent, auch je Person | Inhaber löscht von Hand |
@@ -124,6 +126,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `datev_einstellungen` | B | Berater, Mandant, Lohnarten | bleibt, wird geändert |
 | `haben_zugaenge` | B | Adresse und Token für Haben, verschlüsselt | löscht beim Trennen |
 | `tauschregeln` | B | ob ein Tausch eine Freigabe braucht | bleibt, wird geändert |
+| `sollquellen` | B | ab welchem Tag das Soll aus dem Modell oder aus dem Plan kommt | bleibt als Verlauf, ein Eintrag für denselben Tag wird geändert |
 | `erinnerungsregeln` | B | Zeiten des Betriebs für Erinnerungen | bleibt, wird geändert |
 | `terminals` | B | Tablet mit Name, Hash des Tokens, Schlüssel, Sperren | Entkoppeln sperrt es, die Zeile bleibt |
 | `terminal_eintraege` | B | Nummer und Ergebnis jedes Eintrags eines Tablets ohne Netz, nie der Ausweis | bleibt (offener Punkt) |

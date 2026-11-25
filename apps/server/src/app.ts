@@ -19,6 +19,7 @@ import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { feedRouten } from "./routes/dienstplan-kalender.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
+import { einsatzRouten, sollquellenRouten } from "./routes/einsaetze.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { habenRouten } from "./routes/haben.ts";
 import { importRouten } from "./routes/importe.ts";
@@ -152,6 +153,8 @@ export const createApp = ({
             schichten: schichten ?? schichtquelle(db),
           }),
           "/konten": kontenRouten(db, schreibDb, now),
+          "/einsaetze": einsatzRouten(db, schreibDb, now),
+          "/sollquellen": sollquellenRouten(db, schreibDb, now),
           "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,

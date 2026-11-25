@@ -42,7 +42,10 @@ export const RUF_TEXTE: Record<Sprache, Ruftexte> = {
     minuten: "min",
   },
   tr: {
-    ruf_neu: { titel: "Yeni nöbet (çağrı)", text: (w) => `Çağrı nöbetin var: ${w.datum}, ${w.zeit}.` },
+    ruf_neu: {
+      titel: "Yeni nöbet (çağrı)",
+      text: (w) => `Çağrı nöbetin var: ${w.datum}, ${w.zeit}.`,
+    },
     ruf_geaendert: {
       titel: "Çağrı nöbeti değişti",
       text: (w) => `Çağrı nöbetin artık: ${w.datum}, ${w.zeit}.`,
@@ -56,7 +59,10 @@ export const RUF_TEXTE: Record<Sprache, Ruftexte> = {
     minuten: "dk",
   },
   pl: {
-    ruf_neu: { titel: "Nowy dyżur pod telefonem", text: (w) => `Masz dyżur: ${w.datum}, ${w.zeit}.` },
+    ruf_neu: {
+      titel: "Nowy dyżur pod telefonem",
+      text: (w) => `Masz dyżur: ${w.datum}, ${w.zeit}.`,
+    },
     ruf_geaendert: {
       titel: "Dyżur zmieniony",
       text: (w) => `Twój dyżur jest teraz: ${w.datum}, ${w.zeit}.`,

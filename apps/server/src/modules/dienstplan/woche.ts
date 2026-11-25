@@ -11,6 +11,7 @@ import type { Db } from "../../db/oeffnen.ts";
 import { mitgliederMitNamen, namenVon } from "../mitglieder/index.ts";
 import { bedarfeLesen } from "./bedarf.ts";
 import { type WochenBefund, wochenBefunde } from "./pruefung.ts";
+import { type Rufdienst, rufdiensteZwischen } from "./rufdienste.ts";
 import { type Schicht, schichtenZwischen } from "./schichten.ts";
 
 export type Planperson = { nutzerId: string; name: string };
@@ -22,6 +23,8 @@ export type Wochenansicht = {
   /** the people of the rows; for whoever plans every plannable member */
   personen: Planperson[];
   schichten: Schicht[];
+  /** the Rufbereitschaft of the week (S-505), drafts only for whoever plans */
+  rufdienste: Rufdienst[];
   /** the need per role and its coverage; only for whoever plans */
   deckung: Deckung[] | null;
   /** the findings of the rules on the shifts shown (S-502); only for whoever plans */
@@ -59,10 +62,11 @@ export const planerWoche = (
     .filter(({ rolle }) => darf(rolle, "stempeln"))
     .map(({ nutzerId, name }) => ({ nutzerId, name }));
   const gezeigt = ohneAlte(alle, tage);
-  const namen = namenVon(
-    db,
-    gezeigt.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
-  );
+  const rufdienste = rufdiensteZwischen(db, betriebId, standortId, tage[0] ?? tag, tage[6] ?? tag);
+  const namen = namenVon(db, [
+    ...gezeigt.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
+    ...rufdienste.map((dienst) => dienst.nutzerId),
+  ]);
   const fehlende = [...namen]
     .filter(([nutzerId]) => !personen.some((person) => person.nutzerId === nutzerId))
     .map(([nutzerId, name]) => ({ nutzerId, name }));
@@ -72,8 +76,9 @@ export const planerWoche = (
     kw,
     personen: [...personen, ...fehlende],
     schichten: gezeigt,
+    rufdienste,
     deckung: bedarfsDeckung(tage, bedarfeLesen(db, betriebId, standortId), alle),
-    befunde: wochenBefunde(db, betriebId, standortId, gezeigt, jetzt),
+    befunde: wochenBefunde(db, betriebId, standortId, { schichten: gezeigt, rufdienste }, jetzt),
   } satisfies Wochenansicht;
 };
 
@@ -95,16 +100,24 @@ export const veroeffentlichteWoche = (
     tage[0] ?? tag,
     tage[6] ?? tag,
   ).filter((schicht) => schicht.veroeffentlichtAm !== null);
-  const namen = namenVon(
+  const rufdienste = rufdiensteZwischen(
     db,
-    schichten.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
-  );
+    betriebId,
+    standortId,
+    tage[0] ?? tag,
+    tage[6] ?? tag,
+  ).filter((dienst) => dienst.veroeffentlichtAm !== null);
+  const namen = namenVon(db, [
+    ...schichten.flatMap((schicht) => (schicht.nutzerId ? [schicht.nutzerId] : [])),
+    ...rufdienste.map((dienst) => dienst.nutzerId),
+  ]);
   return {
     standortId,
     tage,
     kw,
     personen: [...namen].map(([nutzerId, name]) => ({ nutzerId, name })),
     schichten,
+    rufdienste,
     deckung: null,
     befunde: null,
   };

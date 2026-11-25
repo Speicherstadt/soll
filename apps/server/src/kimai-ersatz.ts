@@ -146,10 +146,11 @@ export type KimaiErsatz = ReturnType<typeof kimaiErsatz>;
  */
 export const ersatzHolen =
   (antworten: (anfrage: Request) => Promise<Response> | Response): Holen =>
-  async (url, kopf) => {
+  async (url, kopf, _nurOeffentlich, koerper) => {
     let antwort: Response;
     try {
-      antwort = await antworten(new Request(url, { headers: kopf, redirect: "manual" }));
+      const art = koerper === undefined ? {} : { method: "POST", body: koerper };
+      antwort = await antworten(new Request(url, { headers: kopf, redirect: "manual", ...art }));
     } catch {
       return { ok: false, grund: "nicht_erreichbar" };
     }

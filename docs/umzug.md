@@ -2,9 +2,9 @@
 title: Umzug aus anderen Tools
 description: >-
   Wie Soll Zeiten, Abwesenheiten, Salden zum Stichtag, Kunden, Aufträge und Tätigkeiten aus einem
-  anderen Tool oder einer Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo), mit
-  Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und mit den im alten Tool
-  abgeschlossenen Monaten.
+  anderen Tool oder einer Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo, Kimai,
+  Personio), mit Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und mit den im
+  alten Tool abgeschlossenen Monaten.
 ---
 
 # Umzug aus anderen Tools
@@ -15,7 +15,7 @@ Aus anderem Tool übernehmen** (`/umzug`). Jeder Import läuft gleich ab, egal a
 1. **Werkzeug**: das bisherige Tool wählen; Soll sagt, wie man dort die Daten exportiert.
 2. **Datei**: die Exportdatei hochladen (höchstens 5 MB und 20.000 Datensätze, die Kopfzeile
    höchstens 200 Spalten), oder bei einem Werkzeug mit API die Daten eines Zeitraums **über die API
-   abrufen** (siehe [Clockodo](#clockodo)). Soll liest sie und
+   abrufen** (siehe [Clockodo](#clockodo), [Kimai](#kimai), [Personio](#personio)). Soll liest sie und
    nennt jede Zeile, die es nicht lesen kann, mit dem Grund.
 3. **Zuordnung**: welche Spalte welche Angabe enthält, welche Person der Datei welche Person in
    Soll ist, welche Abwesenheitsart welcher Art in Soll entspricht, ob Kunden und Aufträge neu
@@ -39,6 +39,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | Kunde, Auftrag | Kunde und Auftrag des Moduls Projektzeit, mit Name und Nummer |
 | Projekt und Tätigkeit einer Zeit (Excel und CSV) | Buchungen der Projektzeit auf einem vorhandenen Auftrag und einer Tätigkeit, je Arbeitsstück vor und nach der Pause |
 | Tätigkeit (bei Clockodo: Leistung) | Tätigkeit des Moduls Projektzeit, nicht abrechenbar, bis der Inhaber es ändert |
+| Anwesenheit (Personio) | Stempelungen wie eine Zeit, die Pausen dazwischen wie gebucht (siehe [Personio](#personio)) |
 | Zeitbuchung (Kimai) | Stempelungen wie eine Zeit und eine Buchung der Projektzeit je Arbeitsstück auf das übernommene Projekt und die Tätigkeit (siehe [Kimai](#kimai)) |
 
 Personen legt der Import nicht an: Sie werden vorher eingeladen ([Einrichtung](einrichtung.md)) und
@@ -99,7 +100,11 @@ zwei Zeiten mit weniger als neun Stunden Abstand, sind sie wie beim Stempeln ein
 
 - Ein Monat, den der Betrieb **in Soll** schon abgeschlossen hat, nimmt nichts an: Was ihn ändern
   würde, lehnt der Probelauf mit „Monat ist in Soll abgeschlossen“ ab. Die Korrektur bleibt der
-  Gegeneintrag ([Monatsabschluss](monatsabschluss.md)).
+  Gegeneintrag ([Monatsabschluss](monatsabschluss.md)). Zeiten einer Person schneidet der Import
+  in Schichten wie Soll selbst (eine neue Schicht nach 9 Stunden Pause oder 24 Stunden nach dem
+  Beginn), mit den Stempelungen, die schon in Soll sind; eine Schicht gehört zum Monat ihres
+  Beginns: Eine Nachtschicht vom 30.9. auf den 1.10. mit einer Pause nach Mitternacht
+  übernimmt Soll ganz oder gar nicht, nie zur Hälfte.
 - Waren Monate **im alten Tool** schon abgeschlossen, trägt der Inhaber in der Zuordnung den letzten
   davon ein (höchstens den Vormonat). Nach der Übernahme schließt Soll für jede Person jeden dieser
   Monate ab, in den Zeiten oder Abwesenheiten fallen, die jetzt übernommen werden oder schon übernommen waren (ein abgelehnter Datensatz schließt keinen Monat): eine Zeile in
@@ -127,7 +132,7 @@ in einer Antwort oder in der Datei.
 | Excel/CSV mit freien Spalten | Datei | verfügbar |
 | Clockodo | Datei und API | verfügbar |
 | Kimai | API | verfügbar |
-| Personio | Datei und API | folgt |
+| Personio | API (Berichte über Excel/CSV) | verfügbar |
 | Papershift, Planday, Crewmeister | Datei | folgt |
 | Toggl, Clockify | Datei und API | folgt |
 
@@ -195,7 +200,8 @@ saldo;s-1;Sandra Kühn;01.10.2026;-3:15;8,5
 - Clockodo und Kimai liefern keine Salden über den Import: Kimai führt in seiner API kein Konto,
   und wie Clockodo seine Jahresberichte rechnet (`userreports`), legt seine Beschreibung nicht so
   fest, dass Soll die Zahl ohne Raten übernehmen könnte. Die Zahl aus dem alten Tool kommt über die
-  Vorlage. Personio bringt seine Salden mit dem eigenen Werkzeug.
+  Vorlage. Personios API v2 hat für Salden keinen Endpunkt (siehe [Personio](#personio)); auch
+  von dort kommt die Zahl über die Vorlage.
 
 ### Excel/CSV mit freien Spalten
 
@@ -335,3 +341,49 @@ an.
 Ende wird entfernt), Token abgelehnt, Rechte fehlen, zu viele
 Anfragen, nicht erreichbar, Weiterleitung, keine Antwort einer Kimai-API, mehr als 20.000
 Datensätze (dann einen kürzeren Zeitraum wählen). Einen Abruf wiederholt Soll nicht von selbst.
+
+### Personio
+
+Soll holt die Daten selbst über die API v2 von [Personio](https://www.personio.de/) (gebaut nach
+Personios Beschreibungen; developer.personio.de war beim Bau nicht erreichbar, die Quellen nennt der
+Code): Mitarbeiter, Abwesenheitsarten, Anwesenheiten und Abwesenheiten des gewählten Zeitraums
+(höchstens ein Jahr, nicht in der Zukunft). Die alte API v1 für Anwesenheiten schaltet Personio am
+31.01.2027 ab, darum nutzt Soll die v2.
+
+**Zugang**: In Personio unter *Marketplace → Verbundene Integrationen* eine eigene Integration
+anlegen, die Personen, Anwesenheiten und Abwesenheiten lesen darf. Im Schritt **Datei** gibst du
+Client-ID, Client-Secret und Zeitraum ein und rufst ab. Soll holt damit ein Token bei
+`api.personio.de`, liest die Listen Seite für Seite und widerruft das Token am Ende. Die Adresse ist
+fest, du gibst keine ein; ein Link auf eine weitere Seite, der woandershin zeigt oder auf eine schon
+gelesene Seite, beendet den Abruf. Client-ID, Secret und Token speichert Soll nicht, sie stehen in
+keinem Protokoll, keiner Antwort und nicht in der Datei.
+
+**Was daraus wird**:
+
+| In Personio | In Soll |
+| --- | --- |
+| Person | Person der Zuordnung mit Vor- und Nachnamen; zwei gleiche Namen mit der Kennung in Klammern. E-Mail, Geschlecht, Bild und eigene Attribute kommen nicht mit |
+| Anwesenheit (`WORK`, `BREAK`) | Arbeit wird auf die Minute nach außen, Pause nach innen gerundet; die Pausen werden aus der Arbeit herausgenommen, Stücke einer Person, die sich berühren oder überschneiden, werden eine Zeit mit Kommen und Gehen, die Lücke dazwischen ist die Pause |
+| Abwesenheit | Abwesenheit mit der zugeordneten Art, genehmigt; beginnt sie mit der zweiten Hälfte des Tages, ist der erste Tag halb, endet sie mit der ersten, der letzte |
+| Abwesenheitsart | Art der Zuordnung, mit ihrem Namen in Personio („Urlaub“, „Krankheit“ …) |
+
+Personio schreibt Uhrzeiten ohne Zeitzone; Soll liest sie in Europe/Berlin. Übernommen wird Arbeit, die im Zeitraum beginnt; die Pause einer Nachtschicht am letzten Tag nach Mitternacht holt Soll mit und nimmt sie heraus. Übernommen werden nur
+bestätigte Anwesenheiten und genehmigte Abwesenheiten (oder solche, für die Personio keine Freigabe
+führt). Mit Zeile genannt und nicht übernommen werden: eine Anwesenheit oder Abwesenheit, die noch
+auf eine Entscheidung wartet, eine offene Anwesenheit ohne Ende, eine Abwesenheit ohne Ende, eine
+Abwesenheit nach Stunden (etwa Freizeitausgleich nach Stunden; bitte in Soll eintragen), eine
+Uhrzeit, die es wegen der Zeitumstellung nicht oder zweimal gibt, und eine Zeit ab 24 Stunden.
+Abgelehnte kommen gar nicht. Von einer Krankheit übernimmt Soll nur die Art, keinen Kommentar und
+keinen Grund (Art. 9 DSGVO).
+
+**Salden** (Resturlaub, Überstunden) übernimmt Soll aus Personio noch nicht: die API v2 hat dafür
+keinen Endpunkt; sie kommen mit den Salden zum Stichtag. **Berichte**, die du in Personio als CSV
+oder Excel exportierst, liest das Werkzeug [Excel/CSV mit freien Spalten](#excelcsv-mit-freien-spalten).
+
+**Wiederholbar**: Kennungen sind Personios ids (eine Zeit trägt die ihrer ersten Anwesenheit). Ein
+zweiter Abruf desselben Zeitraums legt nichts an; ein Monat, der in Soll abgeschlossen ist, nimmt
+nichts an.
+
+**Fehler** sagt Soll mit Grund: Zugang abgelehnt, Rechte der Integration fehlen, zu viele Anfragen,
+nicht erreichbar, Weiterleitung, keine Antwort der Personio-API, mehr als 20.000 Datensätze (dann
+einen kürzeren Zeitraum wählen). Einen Abruf wiederholt Soll nicht von selbst.

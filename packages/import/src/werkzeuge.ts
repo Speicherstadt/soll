@@ -57,4 +57,13 @@ export const WERKZEUGE: readonly Werkzeug[] = [
     endungen: [".jsonl"],
     vorlagen: [],
   },
+  {
+    // the API v2 at a fixed address; a report exported as CSV or Excel goes through "tabelle" (S-704)
+    id: "personio",
+    name: "Personio",
+    wege: ["api"],
+    felder: [],
+    endungen: [".jsonl"],
+    vorlagen: [],
+  },
 ];

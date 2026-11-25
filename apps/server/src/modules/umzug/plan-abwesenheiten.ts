@@ -38,6 +38,8 @@ export const abwesenheitPlanen = (
     ...angaben,
     von: satz.von,
     bis: satz.bis,
+    ersterHalb: satz.ersterHalb === true,
+    letzterHalb: satz.letzterHalb === true,
     externId: satz.externalId,
   };
   const bisher = genommen.get(angaben.nutzerId) ?? [];

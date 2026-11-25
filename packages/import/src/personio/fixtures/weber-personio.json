@@ -1,0 +1,492 @@
+{
+  "persons": [
+    {
+      "id": "1001",
+      "email": "jonas@weber-haustechnik.test",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z",
+      "first_name": "Jonas",
+      "last_name": "Weber",
+      "preferred_name": "Jonas Weber",
+      "gender": "UNSPECIFIED",
+      "profile_picture": {
+        "url": "https://api.personio.de/v1/company/employees/1001/profile-picture"
+      },
+      "status": "ACTIVE",
+      "custom_attributes": [
+        {
+          "id": "dynamic_305",
+          "type": "string",
+          "value": "DE00 0000 0000",
+          "global_id": "IBAN"
+        }
+      ],
+      "employments": [
+        {
+          "id": "c85d978e-1104-4762-be94-c868525001001"
+        }
+      ],
+      "_meta": {
+        "links": {
+          "employments": {
+            "href": "https://api.personio.de/v2/persons/1001/employments"
+          }
+        }
+      }
+    },
+    {
+      "id": "1002",
+      "email": "sandra@weber-haustechnik.test",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z",
+      "first_name": "Sandra",
+      "last_name": "Kühn",
+      "preferred_name": "Sandra Kühn",
+      "gender": "UNSPECIFIED",
+      "profile_picture": {
+        "url": "https://api.personio.de/v1/company/employees/1002/profile-picture"
+      },
+      "status": "ACTIVE",
+      "custom_attributes": [
+        {
+          "id": "dynamic_305",
+          "type": "string",
+          "value": "DE00 0000 0000",
+          "global_id": "IBAN"
+        }
+      ],
+      "employments": [
+        {
+          "id": "c85d978e-1104-4762-be94-c868525001002"
+        }
+      ],
+      "_meta": {
+        "links": {
+          "employments": {
+            "href": "https://api.personio.de/v2/persons/1002/employments"
+          }
+        }
+      }
+    },
+    {
+      "id": "1003",
+      "email": "max@weber-haustechnik.test",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z",
+      "first_name": "Max",
+      "last_name": "Brandt",
+      "preferred_name": "Max Brandt",
+      "gender": "UNSPECIFIED",
+      "profile_picture": {
+        "url": "https://api.personio.de/v1/company/employees/1003/profile-picture"
+      },
+      "status": "ACTIVE",
+      "custom_attributes": [
+        {
+          "id": "dynamic_305",
+          "type": "string",
+          "value": "DE00 0000 0000",
+          "global_id": "IBAN"
+        }
+      ],
+      "employments": [
+        {
+          "id": "c85d978e-1104-4762-be94-c868525001003"
+        }
+      ],
+      "_meta": {
+        "links": {
+          "employments": {
+            "href": "https://api.personio.de/v2/persons/1003/employments"
+          }
+        }
+      }
+    },
+    {
+      "id": "1004",
+      "email": "leon@weber-haustechnik.test",
+      "created_at": "2024-01-15T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z",
+      "first_name": "Leon",
+      "last_name": "Albers",
+      "preferred_name": "Leon Albers",
+      "gender": "UNSPECIFIED",
+      "profile_picture": {
+        "url": "https://api.personio.de/v1/company/employees/1004/profile-picture"
+      },
+      "status": "ACTIVE",
+      "custom_attributes": [
+        {
+          "id": "dynamic_305",
+          "type": "string",
+          "value": "DE00 0000 0000",
+          "global_id": "IBAN"
+        }
+      ],
+      "employments": [
+        {
+          "id": "c85d978e-1104-4762-be94-c868525001004"
+        }
+      ],
+      "_meta": {
+        "links": {
+          "employments": {
+            "href": "https://api.personio.de/v2/persons/1004/employments"
+          }
+        }
+      }
+    }
+  ],
+  "absence_types": [
+    {
+      "id": "3a6f9c2e-7d41-4b8a-9e15-0c2d4f6a8b10",
+      "name": "Urlaub",
+      "category": "PAID_VACATION",
+      "unit": "DAY"
+    },
+    {
+      "id": "7b1e5d9a-2c48-4f63-a1d7-5e9c3b2a4f20",
+      "name": "Krankheit",
+      "category": "SICK_LEAVE",
+      "unit": "DAY"
+    },
+    {
+      "id": "c4d8a2f6-9b13-4e57-8d21-6f0a7c3e5b30",
+      "name": "Freizeitausgleich",
+      "category": "OVERTIME",
+      "unit": "HOUR"
+    }
+  ],
+  "attendance_periods": [
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000001",
+      "person": {
+        "id": "1002"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-01T07:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-01T12:00:00"
+      },
+      "attribution_date": "2026-09-01",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000002",
+      "person": {
+        "id": "1002"
+      },
+      "type": "BREAK",
+      "start": {
+        "date_time": "2026-09-01T12:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-01T12:30:00"
+      },
+      "attribution_date": "2026-09-01",
+      "comment": null,
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000003",
+      "person": {
+        "id": "1002"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-01T12:30:00"
+      },
+      "end": {
+        "date_time": "2026-09-01T15:30:00"
+      },
+      "attribution_date": "2026-09-01",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000004",
+      "person": {
+        "id": "1002"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-02T07:00:20"
+      },
+      "end": {
+        "date_time": "2026-09-02T15:30:10"
+      },
+      "attribution_date": "2026-09-02",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000005",
+      "person": {
+        "id": "1002"
+      },
+      "type": "BREAK",
+      "start": {
+        "date_time": "2026-09-02T11:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-02T11:30:00"
+      },
+      "attribution_date": "2026-09-02",
+      "comment": null,
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000006",
+      "person": {
+        "id": "1002"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-03T07:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-03T15:30:00"
+      },
+      "attribution_date": "2026-09-03",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "PENDING"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000007",
+      "person": {
+        "id": "1002"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-04T07:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-04T15:30:00"
+      },
+      "attribution_date": "2026-09-04",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "REJECTED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000008",
+      "person": {
+        "id": "1003"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-01T22:00:00"
+      },
+      "end": {
+        "date_time": "2026-09-02T06:00:00"
+      },
+      "attribution_date": "2026-09-01",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    },
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000009",
+      "person": {
+        "id": "1003"
+      },
+      "type": "WORK",
+      "start": {
+        "date_time": "2026-09-07T07:00:00"
+      },
+      "end": null,
+      "attribution_date": "2026-09-07",
+      "comment": "Baustelle Elbhof",
+      "project": null,
+      "approval": {
+        "status": "CONFIRMED"
+      },
+      "created_at": "2026-09-01T05:00:00Z",
+      "updated_at": "2026-09-01T16:00:00Z"
+    }
+  ],
+  "absence_periods": [
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000010",
+      "person": {
+        "id": "1002"
+      },
+      "absence_type": {
+        "id": "3a6f9c2e-7d41-4b8a-9e15-0c2d4f6a8b10"
+      },
+      "starts_from": {
+        "date_time": "2026-09-14T00:00:00",
+        "type": "FIRST_HALF"
+      },
+      "ends_at": {
+        "date_time": "2026-09-18T00:00:00",
+        "type": "SECOND_HALF"
+      },
+      "timezone_id": "Europe/Berlin",
+      "comment": "Sommerurlaub",
+      "approval": {
+        "status": "APPROVED"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    },
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000011",
+      "person": {
+        "id": "1002"
+      },
+      "absence_type": {
+        "id": "3a6f9c2e-7d41-4b8a-9e15-0c2d4f6a8b10"
+      },
+      "starts_from": {
+        "date_time": "2026-09-21T00:00:00",
+        "type": "SECOND_HALF"
+      },
+      "ends_at": {
+        "date_time": "2026-09-21T00:00:00",
+        "type": "SECOND_HALF"
+      },
+      "timezone_id": "Europe/Berlin",
+      "comment": "Sommerurlaub",
+      "approval": {
+        "status": "APPROVED"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    },
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000012",
+      "person": {
+        "id": "1003"
+      },
+      "absence_type": {
+        "id": "7b1e5d9a-2c48-4f63-a1d7-5e9c3b2a4f20"
+      },
+      "starts_from": {
+        "date_time": "2026-09-08T00:00:00.000",
+        "type": "FIRST_HALF"
+      },
+      "ends_at": {
+        "date_time": "2026-09-09T00:00:00.000",
+        "type": "FIRST_HALF"
+      },
+      "timezone_id": "Europe/Berlin",
+      "comment": "Rückenschmerzen",
+      "approval": {
+        "status": "APPROVED"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    },
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000013",
+      "person": {
+        "id": "1004"
+      },
+      "absence_type": {
+        "id": "3a6f9c2e-7d41-4b8a-9e15-0c2d4f6a8b10"
+      },
+      "starts_from": {
+        "date_time": "2026-09-24T00:00:00",
+        "type": "FIRST_HALF"
+      },
+      "ends_at": {
+        "date_time": "2026-09-25T00:00:00",
+        "type": "SECOND_HALF"
+      },
+      "timezone_id": "Europe/Berlin",
+      "comment": "Sommerurlaub",
+      "approval": {
+        "status": "PENDING"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    },
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000014",
+      "person": {
+        "id": "1001"
+      },
+      "absence_type": {
+        "id": "c4d8a2f6-9b13-4e57-8d21-6f0a7c3e5b30"
+      },
+      "starts_from": {
+        "date_time": "2026-09-10T14:00:00",
+        "type": null
+      },
+      "ends_at": {
+        "date_time": "2026-09-10T16:00:00",
+        "type": null
+      },
+      "timezone_id": "Europe/Berlin",
+      "comment": "Sommerurlaub",
+      "approval": {
+        "status": "APPROVED"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    },
+    {
+      "id": "e5f6a7b8-0000-4000-8000-000000000015",
+      "person": {
+        "id": "1003"
+      },
+      "absence_type": {
+        "id": "3a6f9c2e-7d41-4b8a-9e15-0c2d4f6a8b10"
+      },
+      "starts_from": {
+        "date_time": "2026-09-28T00:00:00",
+        "type": "FIRST_HALF"
+      },
+      "ends_at": null,
+      "timezone_id": "Europe/Berlin",
+      "comment": "Sommerurlaub",
+      "approval": {
+        "status": "APPROVED"
+      },
+      "created_at": "2026-08-01T08:00:00Z",
+      "updated_at": "2026-08-01T08:00:00Z"
+    }
+  ]
+}

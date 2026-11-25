@@ -47,6 +47,15 @@ export {
   MAX_TEXT,
 } from "./modell.ts";
 export {
+  PERSONIO_ARTEN,
+  PERSONIO_FELDER,
+  PERSONIO_FORMAT,
+  type PersonioAbzug,
+  type PersonioArt,
+  personioAbzugText,
+  personioLesen,
+} from "./personio/index.ts";
+export {
   QUELLEN,
   type Quelle,
   quelleVon,

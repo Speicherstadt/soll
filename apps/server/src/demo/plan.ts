@@ -14,8 +14,10 @@ import { um, type Zeitraum, zeitraumVon } from "./zeitraum.ts";
 export const aufbauZeit = (zr: Zeitraum): number => um(plusTage(zr.beginn, -1), 9, 0);
 
 /**
- * Each full month: on the first of the next month every person confirms it in the afternoon and the
- * owner closes it in the evening (docs/monatsabschluss.md), after the corrections of the morning
+ * Each full month: on the first of the next month every person confirms it at 9:30 and the owner
+ * closes it at 10:00 (docs/monatsabschluss.md): after the corrections of the morning (8:40, 9:00),
+ * more than 9 hours after the month's last stamp (20:08 at the latest, `schicht_kann_weiterlaufen`),
+ * and before the story ends at 10:30, so a `--heute` on the 1st still closes all three months
  */
 const abschluesse = (zr: Zeitraum, betrieb: Betrieb): Ereignis[] => {
   const inhaber = betrieb.personen.find((p) => p.rolle === "inhaber")?.schluessel ?? "";
@@ -24,12 +26,12 @@ const abschluesse = (zr: Zeitraum, betrieb: Betrieb): Ereignis[] => {
     const erster: Tag = ersterTag(plusMonate(monat, 1));
     return stempelnde.flatMap((person, i) => [
       {
-        zeit: um(erster, 17, 2 * i),
+        zeit: um(erster, 9, 30 + 2 * i),
         betrieb: betrieb.schluessel,
         handlung: { art: "bestaetigen", person: person.schluessel, monat },
       },
       {
-        zeit: um(erster, 18, i),
+        zeit: um(erster, 10, i),
         betrieb: betrieb.schluessel,
         handlung: { art: "abschliessen", von: inhaber, person: person.schluessel, monat },
       },

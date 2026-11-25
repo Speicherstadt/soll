@@ -77,9 +77,9 @@ Donnerstag davor und veröffentlicht sie; alle stempeln am Tablet am Tresen mit 
 eine Woche Urlaub, Lea zwei Tage „Kind krank“, Mia trägt ein am Terminal vergessenes „Gehen“ von
 Piotr nach. Das Café ist Gaststätte (§ 5 Abs. 2, § 10 Abs. 1 Nr. 4 ArbZG).
 
-Jeder volle Monat ist von jeder Person am Ersten des Folgemonats bestätigt und vom Betrieb
-[abgeschlossen](monatsabschluss.md); jede Person hält damit je Monat einen Prüfwert. Fällt
-`--heute` auf den Ersten, ist der letzte Monat noch offen.
+Jeder volle Monat ist von jeder Person am Ersten des Folgemonats um 9:30 Uhr bestätigt und vom
+Betrieb um 10 Uhr [abgeschlossen](monatsabschluss.md), nach den Korrekturen des Morgens; jede Person
+hält damit je Monat einen Prüfwert, auch wenn `--heute` auf den Ersten fällt.
 
 ## Befunde mit Absicht
 

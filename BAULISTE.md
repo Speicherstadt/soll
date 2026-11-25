@@ -711,6 +711,55 @@ S-701 und unabhängig voneinander.
     Projektplan.
 - [ ] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
   Tätigkeit), Datums- und Zahlenformate aus Deutschland, Vorlage zum Herunterladen.
+  Fertig, wenn: eine beliebige Tabelle mit einer Kopfzeile als CSV oder als Excel-Datei (`.xlsx`,
+  erstes Blatt) Zeiten liefert, deren Spalten der Inhaber in der Oberfläche frei zuordnet und die der
+  Server selbst liest und prüft. Genauer:
+  - **Werkzeug „Excel und CSV“** in `packages/import`, eine reine Funktion über die Bytes der Datei:
+    eine CSV (Trennzeichen erkannt, UTF-8 oder Windows-1252) oder eine `.xlsx` (am Anfang `PK`);
+    Felder Kennung (freiwillig), Person, Datum, Beginn, Ende, Dauer, Pause, Projekt, Tätigkeit;
+    Soll schlägt die Spalten nach dem Kopf vor (Deutsch und Englisch), der Inhaber wählt jede Spalte
+    selbst (auch dieselbe Spalte für Datum und Beginn, wenn sie Datum und Uhrzeit hält). Der Server
+    lehnt ein unbekanntes Feld in der Spaltenwahl mit `422` ab; fehlt eine nötige Spalte (Person,
+    Datum, Beginn, Ende oder Dauer), nennt der Leser sie (`spalte_fehlt`).
+  - **Formate aus Deutschland** (Vitest mit Tabellen von Fällen): Datum `01.09.2026`, `1.9.2026`,
+    `1.9.26` (20xx), `2026-09-01`, mit angehängter Uhrzeit, und Excel-Seriennummern (1900er System
+    mit dem erfundenen 29.02.1900, Nummer 60 ist kein Tag; 1904er System, wenn die Mappe es sagt);
+    Uhrzeit `7:00`, `07:00`, `7:00:00`, `700`, `0700`, `7` und der Tagesbruchteil aus Excel (`0,3125`);
+    Sekunden werden zugunsten der Person gerundet (Beginn ab-, Ende aufgerundet); Pause als Minuten
+    (`30`), `0:30` oder Dezimalstunden (`0,5`), Dauer als Stunden (`8`), `7,5`, `7.5` oder `7:30`,
+    alles in ganzen Minuten ohne Fließkomma; Ende leer und Dauer da: Ende = Beginn + Dauer + Pause;
+    beides da und verschieden: `dauer_abweichend` mit Zeile.
+  - **Excel-Leser** ohne große Bibliothek: ZIP über `fflate` (schon im Lockfile, ohne Abhängigkeiten),
+    XML mit einem eigenen kleinen Leser nur für Blatt, geteilte Texte, Formate und Mappe. Schutz und
+    Test: entpackt höchstens 50 MiB insgesamt und je Eintrag (Zip-Bombe: abgebrochen, bevor mehr
+    entsteht), höchstens 20.000 Zeilen und 200 Spalten wie in S-701, eine DTD oder Entität
+    (`<!DOCTYPE`, `<!ENTITY`) macht die Datei unlesbar (keine Expansion, kein XXE), nur die fünf
+    vordefinierten und numerische Entitäten werden aufgelöst; Formeln zählen mit ihrem gespeicherten
+    Wert.
+  - **Projekt und Tätigkeit**: jeder Wert der Spalten Projekt und Tätigkeit wird einem vorhandenen,
+    nicht archivierten Auftrag (mit Kunde) beziehungsweise einer Tätigkeit zugeordnet oder nicht
+    übernommen, Vorschlag nach Name oder Nummer; Zeiten ohne Tätigkeit bekommen die Tätigkeit, die
+    der Inhaber für „ohne Angabe“ wählt. Aus einer Zeit mit Projekt oder Tätigkeit werden zusätzlich
+    Buchungen der Projektzeit für ihre Arbeitsstücke (vor und nach der Pause in der Mitte), mit
+    Import, Werkzeug und Kennung (neue Migration); ohne Projektzeit-Modul `modul_aus`, bei
+    Überschneidung mit vorhandenen Buchungen `ueberschneidung`, die Zeit selbst wird trotzdem
+    übernommen. Der Server lehnt eine Zuordnung zu Auftrag oder Tätigkeit eines anderen Betriebs mit
+    `422` ab (Test).
+  - **Wiederholbar**: Kennung ist die zugeordnete Kennungsspalte, sonst ein SHA-256 über den
+    normalisierten Inhalt der Zeile (Person, Tag, Beginn, Ende, Pause; nicht Datei und nicht
+    Zeilennummer), so dass dieselbe Zeile in einer längeren Datei wieder „schon da“ ist; eine
+    gleiche Zeile zweimal in der Datei ist `zeile_doppelt` (Test über die API: zweiter Lauf legt
+    nichts an, auch mit umsortierten und ergänzten Zeilen).
+  - **Robust**: Fuzzing mit fast-check für CSV, Excel (zufällige Bytes, kaputte und echte ZIPs,
+    veränderte Blätter) und die Wertleser: nie ein Wurf, nie länger als 1 s; jeder Lesefehler nennt
+    Zeile und Spalte (Kopf, wie er in der Datei steht).
+  - **Vorlage**: CSV und `.xlsx` mit Kopf und Beispielzeile, aus einer reinen Funktion, Byte für Byte
+    gleich bei jedem Aufruf (Test), zum Herunterladen im ersten Schritt; die `.xlsx`-Vorlage liest
+    der eigene Leser wieder (Test).
+  - **Vorschau** mit den Befunden der Prüfregeln wie in S-701, Probelauf, Übernahme; Playwright
+    (desktop) lädt eine `.xlsx` hoch, ordnet die Spalten zu, übernimmt und zeigt, dass der zweite Lauf
+    nichts anlegt; axe grün; Texte in allen Sprachen der Umzugsseite; Doku `docs/umzug.md`, README,
+    Entscheidungen im Projektplan.
 - [ ] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
   Projekte, Leistungen.
 - [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.

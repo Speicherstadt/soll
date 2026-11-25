@@ -71,6 +71,23 @@ export const kundeAendern = (
   );
 };
 
+/**
+ * Links a customer with its row in another source (Haben's contact, S-606), replacing a link it had;
+ * `doppelt` while another customer of the business has the same reference (the unique index)
+ */
+export const kundeVerbinden = (
+  db: Db,
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  kundeId: string,
+  extern: { externQuelle: string; externId: string },
+): Ergebnis<Kunde> => {
+  if (!kundeLesen(db, kontext.betriebId, kundeId)) return nein("unbekannt");
+  return eindeutig(() =>
+    schreiben(schreibDb, kontext, (s) => s.aendern("kunden", { kundeId }, extern)),
+  );
+};
+
 /** Whether an order or a rate still names the customer: then it is archived, not removed */
 const kundeVerwendet = (db: Db, betriebId: string, kundeId: string): boolean =>
   Boolean(

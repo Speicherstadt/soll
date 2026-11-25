@@ -27,8 +27,8 @@ export const anlegen = async (person: Person, pfad: string, body: unknown) => {
 };
 
 /** Weber Haustechnik with customer Elbhof and its order "Bad Elbhof" */
-export const weberMitAuftrag = async () => {
-  const server = testServer();
+export const weberMitAuftrag = async (optionen: Parameters<typeof testServer>[0] = {}) => {
+  const server = testServer(optionen);
   const weber = await mitProjektzeit(server, "Weber Haustechnik", "weber");
   const kunde = await anlegen(weber, "/kunden", { name: "Elbhof", nummer: "K-1001" });
   const projekt = await anlegen(weber, "/projekte", {

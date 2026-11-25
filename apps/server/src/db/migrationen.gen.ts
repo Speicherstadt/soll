@@ -75,5 +75,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0018_pruefung",
     "sql": "CREATE TABLE `personenangaben` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`geburtsdatum` text,\n\t`wechselschicht` integer DEFAULT false NOT NULL,\n\t`abruf` integer DEFAULT false NOT NULL,\n\t`mutterschutz` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `branche` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `sonntagsausnahme` integer;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleichszeitraum` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleich_beginn` text;"
+  },
+  {
+    "tag": "0019_haben",
+    "sql": "CREATE TABLE `haben_uebergaben` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`leistung_id` text,\n\t`gesendet_am` integer,\n\t`fehler` text,\n\t`meldung` text,\n\t`versucht_am` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE TABLE `haben_zugaenge` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`adresse` text NOT NULL,\n\t`token` text NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
   }
 ];

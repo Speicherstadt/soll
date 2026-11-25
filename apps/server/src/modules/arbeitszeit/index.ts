@@ -2,7 +2,7 @@
  * The module working time: models, assignments, stamps, the working day, closing a month and what
  * payroll reads of it (S-303, S-304, S-306, S-308)
  */
-export { monatAbgeschlossen } from "./abschluss.ts";
+export { abgeschlosseneMonate, monatAbgeschlossen } from "./abschluss.ts";
 export * from "./abwesenheiten/index.ts";
 export { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 export {
@@ -42,6 +42,7 @@ export {
   monatAbschliessen,
   monatBestaetigen,
   monatStatus,
+  monatUebernehmen,
   type SchrittErgebnis,
 } from "./monatsabschluss.ts";
 export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
@@ -51,6 +52,7 @@ export {
   type Dazu,
   hatStempelungen,
   nachtragen,
+  neueGesperrt,
   offlineStempeln,
   type Quelle,
   type Signiert,
@@ -63,4 +65,12 @@ export {
 } from "./stempelungen.ts";
 export { stundenzettelAus } from "./stundenzettel.ts";
 export { type TagAnsicht, tagLesen } from "./tag.ts";
+export {
+  abwesenheitenUebernehmen,
+  type Herkunft,
+  stempelUebernehmen,
+  type UebernommeneAbwesenheit,
+  type UebernommenerStempel,
+  uebernommeneKennungen,
+} from "./uebernahme.ts";
 export { modellAm, modellZuordnen, sollAm, type ZuordnungErgebnis } from "./zuordnungen.ts";

@@ -31,6 +31,12 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/zugaenge",
   "POST /api/v1/zugaenge",
   "DELETE /api/v1/zugaenge/:zugangId",
+  // an import serves several modules and refuses per record what a switched-off one would hold (S-701)
+  "GET /api/v1/importe",
+  "POST /api/v1/importe",
+  "POST /api/v1/importe/vorschau",
+  "POST /api/v1/importe/probelauf",
+  "GET /api/v1/importe/:importId/datei",
   // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
   "GET /api/v1/auskunft",
   // public: an invitation and the check page of a Prüfwert (docs/plan.md, "Prüfseite")

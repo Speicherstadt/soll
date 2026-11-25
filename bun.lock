@@ -23,6 +23,7 @@
         "@better-auth/passkey": "1.7.26",
         "@soll/arbeitszeit": "workspace:*",
         "@soll/export": "workspace:*",
+        "@soll/import": "workspace:*",
         "better-auth": "1.7.26",
         "drizzle-orm": "0.45.4",
         "hono": "4.13.19",
@@ -75,6 +76,9 @@
     "packages/import": {
       "name": "@soll/import",
       "version": "0.0.0",
+      "dependencies": {
+        "@soll/arbeitszeit": "workspace:*",
+      },
       "devDependencies": {
         "fast-check": "4.10.2",
       },

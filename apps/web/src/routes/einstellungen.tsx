@@ -38,6 +38,11 @@ const Einstellungen = () => {
     if (!betrieb?.module.terminal) return false;
     return istInhaber(betrieb);
   };
+  // the move from other tools writes everyone's records: the owner's (S-701)
+  const umzug = () => {
+    const betrieb = aktuellerBetrieb();
+    return betrieb ? istInhaber(betrieb) : false;
+  };
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
@@ -50,6 +55,14 @@ const Einstellungen = () => {
         <TerminalKarten />
       </Show>
       <DatevZuordnung />
+      <Show when={umzug()}>
+        <section class="flex max-w-sm flex-col items-start gap-3">
+          <h2 class="font-semibold">{m.umzug_titel()}</h2>
+          <Link to="/umzug" class={knopfLink}>
+            {m.umzug_link()}
+          </Link>
+        </section>
+      </Show>
       <Zugaenge />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>

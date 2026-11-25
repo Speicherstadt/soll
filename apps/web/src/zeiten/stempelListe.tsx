@@ -1,3 +1,4 @@
+import { quelleVon } from "@soll/import";
 import { Badge, Button, Icon } from "@soll/ui";
 import { Pencil, Trash2 } from "lucide";
 import { For, Show } from "solid-js";
@@ -7,8 +8,9 @@ import type { Aenderung, Stempel } from "./typen.ts";
 
 /**
  * The stamps of a day, each with Ändern and Entfernen for whoever may correct it, and a mark when a
- * person entered or changed it by hand, when it came from a device's offline queue, and when it still
- * waits on this device (then there is nothing on the server to correct yet; S-305)
+ * person entered or changed it by hand, when it came from a device's offline queue or another tool
+ * (S-701), and when it still waits on this device (then there is nothing on the server to correct
+ * yet; S-305)
  */
 export const StempelListe = (props: {
   stempelungen: Stempel[];
@@ -42,6 +44,13 @@ export const StempelListe = (props: {
                   <span>{name().art}</span>
                   <Show when={stempel().korrigiert}>
                     <Badge>{m.stempel_korrigiert()}</Badge>
+                  </Show>
+                  <Show when={stempel().uebernommenAus}>
+                    {(quelle) => (
+                      <Badge>
+                        {m.stempel_uebernommen({ quelle: quelleVon(quelle())?.name ?? quelle() })}
+                      </Badge>
+                    )}
                   </Show>
                   <Show
                     when={stempel().wartend}

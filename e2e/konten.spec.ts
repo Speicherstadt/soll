@@ -17,9 +17,16 @@ const inTagen = (tage: number) =>
     Date.now() + tage * 86_400_000,
   );
 
+/**
+ * axe in both themes; each loaded afresh in its theme, as e2e/accessibility.spec.ts does, so no
+ * transition of the colours from the theme before is measured half way
+ */
 const axe = async (page: Page) => {
   for (const farbe of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: farbe });
+    await page.reload();
+    await expect(page.getByRole("region", { name: t("konten_titel") })).toBeVisible();
+    await page.waitForLoadState("networkidle");
     const ergebnis = await new AxeBuilder({ page }).analyze();
     expect(ergebnis.violations, farbe).toEqual([]);
   }

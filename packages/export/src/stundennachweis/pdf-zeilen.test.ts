@@ -106,4 +106,14 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
       expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
     }
   });
+
+  it("writes nothing into the bottom margin with a signer's name over several lines", async () => {
+    for (let anzahl = 1; anzahl <= 70; anzahl++) {
+      const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
+      const lang = nachweis(zeilen);
+      lang.unterschrift.name = "W".repeat(100);
+      const y = hoehen(await stundennachweisPdf(lang, HASH));
+      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+    }
+  });
 });

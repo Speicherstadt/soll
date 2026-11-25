@@ -976,5 +976,19 @@
   "haben_fehler_recht": "Dem Token fehlt ein Recht in Haben: „Kontakte lesen“ oder „Leistungen anlegen“.",
   "haben_fehler_abgelehnt": "Haben hat die Leistung abgelehnt.",
   "haben_fehler_zu_viele": "Zu viele Aufrufe an Haben. Versuch es in einer Minute noch einmal.",
-  "haben_fehler_haben": "Haben hat einen Fehler gemeldet."
+  "haben_fehler_haben": "Haben hat einen Fehler gemeldet.",
+  "plan_veroeffentlichen": "Veröffentlichen",
+  "plan_veroeffentlicht": "Veröffentlicht. Schichten: {anzahl} · benachrichtigt: {personen}",
+  "plan_kalender": "Kalender",
+  "plan_kalender_titel": "Schichten im Kalender",
+  "plan_kalender_text": "Mit diesem Link zeigt deine Kalender-App deine veröffentlichten Schichten und hält sie aktuell. Der Link ist geheim: Wer ihn kennt, sieht deine Schichten. Gib ihn nicht weiter.",
+  "plan_kalender_erstellen": "Link erstellen",
+  "plan_kalender_neu": "Neuer Link",
+  "plan_kalender_neu_hinweis": "Ein neuer Link ersetzt den alten; der alte zeigt sofort nichts mehr.",
+  "plan_kalender_widerrufen": "Link widerrufen",
+  "plan_kalender_aktiv": "Du hast einen Link seit {datum}.",
+  "plan_kalender_link": "Link zum Abonnieren",
+  "plan_kalender_kopieren": "Link kopieren",
+  "plan_kalender_oeffnen": "In Kalender-App öffnen",
+  "plan_kalender_einmal": "Der Link wird nur jetzt gezeigt."
 }

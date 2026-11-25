@@ -89,7 +89,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "DROP INDEX `karten_uid`;--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid_aktiv` ON `karten` (`betrieb_id`,`uid_kennung`) WHERE \"karten\".\"widerrufen_am\" is null;"
   },
   {
-    "tag": "0022_terminal_offline",
+    "tag": "0022_veroeffentlichen",
+    "sql": "CREATE TABLE `kalender_abos` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`token_hash` text NOT NULL,\n\t`sprache` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `kalender_abos_token_hash_unique` ON `kalender_abos` (`token_hash`);"
+  },
+  {
+    "tag": "0023_terminal_offline",
     "sql": "CREATE TABLE `terminal_eintraege` (\n\t`betrieb_id` text NOT NULL,\n\t`terminal_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`art` text NOT NULL,\n\t`geraet_zeitpunkt` integer NOT NULL,\n\t`stempel_id` text,\n\t`grund` text,\n\t`empfangen_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `terminal_id`, `nummer`)\n);\n--> statement-breakpoint\nALTER TABLE `terminals` ADD `schluessel` text;"
   }
 ];

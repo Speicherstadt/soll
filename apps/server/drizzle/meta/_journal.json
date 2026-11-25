@@ -159,8 +159,15 @@
     {
       "idx": 22,
       "version": "6",
-      "when": 1795608507682,
-      "tag": "0022_terminal_offline",
+      "when": 1795609202665,
+      "tag": "0022_veroeffentlichen",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1795611908766,
+      "tag": "0023_terminal_offline",
       "breakpoints": true
     }
   ]

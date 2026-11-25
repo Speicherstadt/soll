@@ -52,6 +52,7 @@ const zeilenVon = (
   angaben: Personenangabenteil,
   einladungen: { einladungId: string }[],
   zugaenge: { zugangId: string }[],
+  kalender: unknown,
 ) =>
   ({
     pushAbos: erinnerung.pushAbos.map(({ aboId }) => ({ aboId })),
@@ -71,6 +72,7 @@ const zeilenVon = (
     projektzeiten: projekt.projektzeiten.map(({ buchungId }) => ({ buchungId })),
     datevPersonalnummern: lohn.personalnummer === null ? [] : [{ nutzerId }],
     apiZugaenge: zugaenge.map(({ zugangId }) => ({ zugangId })),
+    kalenderAbos: kalender === null ? [] : [{ nutzerId }],
     ausweise: terminal.ausweis === null ? [] : [{ nutzerId }],
     karten: terminal.karten.map(({ karteId }) => ({ karteId })),
     abwesenheiten: abwesenheit.abwesenheiten.map(({ abwesenheitId }) => ({ abwesenheitId })),
@@ -113,6 +115,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
       angaben,
       konto.einladungen,
       konto.zugaenge,
+      konto.kalender,
     ),
     name,
     iso,

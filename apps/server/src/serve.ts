@@ -46,6 +46,7 @@ export const serverStarten = () => {
   // The instance creates its VAPID key pair on the first start (S-307)
   const vapid = vapidLaden(db, schreibDb, env.geheimerSchluessel, Date.now());
   const mail = env.smtp ? smtpMailer(env.smtp.url, env.smtp.von) : null;
+  const kontakt = vapidKontakt(env.url, env.smtp?.von);
 
   const app = createApp({
     log: (line) => console.log(line),
@@ -59,6 +60,8 @@ export const serverStarten = () => {
     geheimerSchluessel: env.geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
     webVerzeichnis: env.webDir,
+    // messages about the plan go the same way as the reminders (S-503)
+    push: { vapid, kontakt, senden: pushPerFetch },
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)
@@ -69,7 +72,7 @@ export const serverStarten = () => {
       geheimerSchluessel: env.geheimerSchluessel,
       vapid,
       url: env.url,
-      kontakt: vapidKontakt(env.url, env.smtp?.von),
+      kontakt,
       push: pushPerFetch,
       mail,
     },

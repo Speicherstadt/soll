@@ -43,3 +43,16 @@ export const zeitraumText = (von: Tag, bis: Tag): string =>
 /** The name of a weekday 1 (Monday) to 7 (Sunday), from a Monday known to be one */
 export const wochentagName = (iso: number): string =>
   tagFormat({ weekday: "long" }).format(mittag(plusTage("2026-11-23", iso - 1)));
+
+/** "20. November 2026" for an instant, on Berlin's calendar */
+export const datumText = (zeitpunkt: number): string =>
+  new Intl.DateTimeFormat(getLocale(), {
+    timeZone: "Europe/Berlin",
+    numberingSystem: "latn",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(zeitpunkt);
+
+/** The same feed for a calendar app: `webcal:` opens the subscription there (RFC 5545 over HTTP) */
+export const webcalVon = (url: string): string => url.replace(/^https?:/, "webcal:");

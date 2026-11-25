@@ -976,5 +976,19 @@
   "haben_fehler_recht": "The token lacks a right in Haben: “read contacts” or “create services”.",
   "haben_fehler_abgelehnt": "Haben refused the service.",
   "haben_fehler_zu_viele": "Too many calls to Haben. Try again in a minute.",
-  "haben_fehler_haben": "Haben reported an error."
+  "haben_fehler_haben": "Haben reported an error.",
+  "plan_veroeffentlichen": "Publish",
+  "plan_veroeffentlicht": "Published. Shifts: {anzahl} · notified: {personen}",
+  "plan_kalender": "Calendar",
+  "plan_kalender_titel": "Shifts in your calendar",
+  "plan_kalender_text": "With this link your calendar app shows your published shifts and keeps them up to date. The link is secret: anyone who has it sees your shifts. Do not share it.",
+  "plan_kalender_erstellen": "Create link",
+  "plan_kalender_neu": "New link",
+  "plan_kalender_neu_hinweis": "A new link replaces the old one; the old one stops working at once.",
+  "plan_kalender_widerrufen": "Revoke link",
+  "plan_kalender_aktiv": "You have had a link since {datum}.",
+  "plan_kalender_link": "Link to subscribe",
+  "plan_kalender_kopieren": "Copy link",
+  "plan_kalender_oeffnen": "Open in calendar app",
+  "plan_kalender_einmal": "The link is shown only now."
 }

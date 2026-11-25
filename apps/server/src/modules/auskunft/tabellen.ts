@@ -42,6 +42,7 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
+  kalender_abos: "kalender (wann ausgestellt und in welcher Sprache, ohne Hash des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
   terminal_eintraege:
     "ausgenommen: Nummer und Ergebnis der Einträge eines Tablets ohne Netz, ohne Ausweis; die Stempelung selbst steht unter stempelungen",
@@ -122,6 +123,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
   ),
   api_zugaenge: aus("Zugänge der Person zur API sieht der Inhaber sonst nirgends"),
+  kalender_abos: aus("ob die Person ihre Schichten abonniert, sieht der Inhaber sonst nirgends"),
   terminals: aus("keine Daten der Person (Tablets des Betriebs)"),
   terminal_eintraege: aus("keine eigenen Daten: die Stempelungen stehen unter stempelungen"),
   ausweise: frei(

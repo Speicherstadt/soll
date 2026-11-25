@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import * as dienstplan from "../routes/dienstplan.ts";
+import * as kalender from "../routes/dienstplan-kalender.ts";
 import * as kunden from "../routes/kunden.ts";
 import * as projekte from "../routes/projekte.ts";
 import * as saetze from "../routes/saetze.ts";
@@ -35,7 +36,7 @@ const liste = (
   { methode: "delete", pfad: `${pfad}/:${id}`, zusammenfassung: `${wort.eins} entfernen` },
 ];
 
-/** The shift plan: week, templates, demand, shifts */
+/** The shift plan: week, templates, demand, shifts, publishing and the own calendar feed */
 export const DIENSTPLAN: readonly Operation[] = unter("/api/v1/dienstplan", "Dienstplan", [
   STATUS,
   {
@@ -88,6 +89,24 @@ export const DIENSTPLAN: readonly Operation[] = unter("/api/v1/dienstplan", "Die
     koerper: dienstplan.aenderungSchema,
   },
   { methode: "delete", pfad: "/schichten/:schichtId", zusammenfassung: "Eine Schicht entfernen" },
+  {
+    methode: "post",
+    pfad: "/veroeffentlichen",
+    zusammenfassung: "Die Entwürfe einer Woche an einem Standort veröffentlichen",
+    koerper: dienstplan.veroeffentlichenSchema,
+  },
+  { methode: "get", pfad: "/kalender", zusammenfassung: "Ob der eigene Kalender-Feed besteht" },
+  {
+    methode: "post",
+    pfad: "/kalender",
+    zusammenfassung: "Den eigenen Kalender-Feed (neu) ausstellen, nur mit Sitzung",
+    koerper: kalender.kalenderSchema,
+  },
+  {
+    methode: "delete",
+    pfad: "/kalender",
+    zusammenfassung: "Den eigenen Kalender-Feed widerrufen, nur mit Sitzung",
+  },
 ]);
 
 /** Project time: customers, orders, activities, hourly rates */

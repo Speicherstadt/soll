@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b024881e-51fe-4865-9ada-caf0e13e83b8",
+  "id": "f1902243-1ae8-43aa-889a-20613d84e364",
   "prevId": "ee4fcd57-6d6c-4eb4-88e4-d1b761b964e5",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1553,6 +1553,67 @@
             "bedarf_id"
           ],
           "name": "bedarfe_betrieb_id_bedarf_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "kalender_abos": {
+      "name": "kalender_abos",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sprache": {
+          "name": "sprache",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "kalender_abos_token_hash_unique": {
+          "name": "kalender_abos_token_hash_unique",
+          "columns": [
+            "token_hash"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "kalender_abos_betrieb_id_nutzer_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "nutzer_id"
+          ],
+          "name": "kalender_abos_betrieb_id_nutzer_id_pk"
         }
       },
       "uniqueConstraints": {},
@@ -3111,88 +3172,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "terminal_eintraege": {
-      "name": "terminal_eintraege",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "terminal_id": {
-          "name": "terminal_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nummer": {
-          "name": "nummer",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt_hash": {
-          "name": "inhalt_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "art": {
-          "name": "art",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "geraet_zeitpunkt": {
-          "name": "geraet_zeitpunkt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "stempel_id": {
-          "name": "stempel_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "empfangen_am": {
-          "name": "empfangen_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "terminal_eintraege_betrieb_id_terminal_id_nummer_pk": {
-          "columns": [
-            "betrieb_id",
-            "terminal_id",
-            "nummer"
-          ],
-          "name": "terminal_eintraege_betrieb_id_terminal_id_nummer_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "terminals": {
       "name": "terminals",
       "columns": {
@@ -3277,13 +3256,6 @@
         },
         "fehler_tag": {
           "name": "fehler_tag",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "schluessel": {
-          "name": "schluessel",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

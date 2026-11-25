@@ -133,7 +133,8 @@ gesperrtes Terminal fragt alle 15 Sekunden beim Server nach, ob es entsperrt ode
 
 ## Ohne Netz
 
-Fällt das Netz aus oder antwortet der Server nicht, stempelt das Terminal weiter. Links unter dem
+Fällt das Netz aus oder antwortet der Server nicht, stempelt das Terminal weiter; eine Antwort, die
+nach 15 Sekunden nicht da ist, gilt als „ohne Netz“. Links unter dem
 Namen steht immer der Stand: **Verbunden** oder **Ohne Netz**, wie viele Stempelungen auf die
 Übertragung warten und wann zuletzt eine übertragen wurde.
 

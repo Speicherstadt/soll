@@ -6,6 +6,7 @@ import {
   terminalNachricht,
 } from "@soll/arbeitszeit";
 import type { Antwort } from "../../api.ts";
+import { mitFrist } from "../frist.ts";
 import type { KioskAblage, KioskGeraet, Schluessel } from "./ablage.ts";
 import {
   folge,
@@ -54,20 +55,6 @@ const geraetErzeugen = async (abh: KioskAbhaengigkeiten, terminalId: string) => 
 };
 
 const mitToken = (token: string) => ({ authorization: `Bearer ${token}` });
-
-/**
- * How long a call may take before the queue counts it as no network: a server out of reach behind
- * a working Wi-Fi leaves `fetch` pending for minutes
- */
-export const FRIST_MS = 15_000;
-
-const mitFrist = (antwort: Promise<Antwort<unknown>>): Promise<Antwort<unknown>> =>
-  Promise.race([
-    antwort,
-    new Promise<Antwort<unknown>>((fertig) =>
-      setTimeout(() => fertig({ ok: false, status: 0, fehler: "netz" }), FRIST_MS),
-    ),
-  ]);
 
 /**
  * Changes the stored record of the tablet under the lock, from its latest state: the network calls

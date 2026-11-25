@@ -15,6 +15,7 @@ import type { NfcKarte } from "./nfc.ts";
 import {
   direktInWarteschlange,
   nachErkennenOhneAntwort,
+  nachStempelnOhneAntwort,
   type OfflineAusweis,
   offlineAusweis,
 } from "./offline/schlange.ts";
@@ -179,10 +180,8 @@ const kioskAufrufe = (z: Zustand) => {
         geraetZeitpunkt: Date.now(),
       });
       z.schlange.netz(antwort.status);
-      const wartet = offlineAusweis(aktuell.ausweis);
-      // the network went between recognising and stamping: the stamp waits on the tablet
-      if (!antwort.ok && antwort.status === 0 && wartet && z.schlange.bereit())
-        return offline.speichern(wartet, art);
+      if (!antwort.ok && antwort.status === 0)
+        return offline.stempelnOhneAntwort(aktuell.ausweis, art);
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setAnsicht({ art: "gestempelt", daten: antwort.daten, bis: Date.now() + GESTEMPELT_MS });
     });
@@ -203,28 +202,44 @@ const ohneNetzAufrufe = (z: Zustand) => {
     z.setKarte(null);
     z.setAnsicht({ art: "offline", ausweis: wartet, bis: Date.now() + ERKANNT_MS });
   };
+  /** keeps the stamp in the queue and confirms it as saved */
+  const speichern = async (ausweis: OfflineAusweis, art: Stempelart) => {
+    const eintrag = await z.schlange.aufnehmen(ausweis, art);
+    if (!eintrag) {
+      z.zurueck();
+      z.setMeldung({ art: "fehler" });
+      return;
+    }
+    z.setAnsicht({
+      art: "gespeichert",
+      stempelart: art,
+      zeitpunkt: eintrag.geraetZeitpunkt,
+      bis: Date.now() + GESTEMPELT_MS,
+    });
+  };
+  /** after no answer: back to the clock with a message */
+  const melden = (meldung: Meldung) => {
+    z.zurueck();
+    z.setMeldung(meldung);
+  };
   return {
     ohneStand,
+    speichern,
     /** /erkennen went unanswered: wait, ask for a new tap of the card, or say there is no network */
     ohneAntwort: (ausweis: Ausweis) => {
       const weiter = nachErkennenOhneAntwort(ausweis, z.schlange.bereit());
       if (weiter === "warteschlange") return ohneStand(ausweis);
-      z.zurueck();
-      z.setMeldung(weiter === "nochmal" ? { art: "nochmal" } : { art: "netz" });
+      melden(weiter === "nochmal" ? { art: "nochmal" } : { art: "netz" });
     },
-    speichern: async (ausweis: OfflineAusweis, art: Stempelart) => {
-      const eintrag = await z.schlange.aufnehmen(ausweis, art);
-      if (!eintrag) {
-        z.zurueck();
-        z.setMeldung({ art: "fehler" });
-        return;
-      }
-      z.setAnsicht({
-        art: "gespeichert",
-        stempelart: art,
-        zeitpunkt: eintrag.geraetZeitpunkt,
-        bis: Date.now() + GESTEMPELT_MS,
-      });
+    /**
+     * /stempeln went unanswered (the network went between recognising and stamping, or the server
+     * is silent): the stamp waits, the person learns it is unclear, or there is no network
+     */
+    stempelnOhneAntwort: (ausweis: Ausweis, art: Stempelart) => {
+      const weiter = nachStempelnOhneAntwort(ausweis, z.schlange.bereit());
+      const wartet = offlineAusweis(ausweis);
+      if (weiter === "warteschlange" && wartet) return speichern(wartet, art);
+      melden(weiter === "unklar" ? { art: "unklar" } : { art: "netz" });
     },
   };
 };

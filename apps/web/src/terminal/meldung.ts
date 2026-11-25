@@ -7,6 +7,8 @@ export type Meldung =
   | { art: "netz" }
   /** a card's tap went unanswered: the next tap brings a new SUN message (S-803) */
   | { art: "nochmal" }
+  /** a stamp after a SUN message went unanswered: whether it is on the server is unknown (S-803) */
+  | { art: "unklar" }
   | { art: "modul_aus" }
   | { art: "abgeschlossen" }
   | { art: "fehler" };

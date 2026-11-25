@@ -601,6 +601,7 @@
   "kiosk_gesperrt_heute": "Bugün çok fazla hatalı deneme. Terminal gece yarısına kadar kilitli.",
   "kiosk_ohne_netz": "Bağlantı yok. Ağ geri geldiğinde terminal yeniden yüklenir.",
   "kiosk_karte_nochmal": "Sunucudan yanıt yok. Lütfen kartı tekrar okut.",
+  "kiosk_antwort_fehlt": "Sunucudan yanıt yok. Kaydın yapılıp yapılmadığı belirsiz: lütfen daha sonra Bugün sayfasına bak veya kartı tekrar okut.",
   "kiosk_abgeschlossen": "Bu ay kapatıldı. Lütfen ofise sor.",
   "kiosk_fehler": "Bu olmadı. Lütfen tekrar dene.",
   "kiosk_neustart": "Bir hata oluştu. Terminal birazdan yeniden başlıyor.",

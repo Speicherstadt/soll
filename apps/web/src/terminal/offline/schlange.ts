@@ -27,16 +27,31 @@ export const offlineAusweis = (ausweis: Ausweis): OfflineAusweis | null =>
   "beleg" in ausweis ? null : ausweis;
 
 /**
- * After /erkennen went unanswered: a SUN message asks for a new tap, as the server may already have
- * taken its read counter and would refuse it from the queue as a replay; any other credential waits
- * where the queue is ready, else the kiosk says it has no network (review of S-803, round 3)
+ * After /erkennen went unanswered, where the queue is ready: a SUN message asks for a new tap, as
+ * the server may already have taken its read counter and would refuse it from the queue as a
+ * replay; any other credential waits. Without a ready queue a new tap would not help: the kiosk says
+ * it has no network (review of S-803, rounds 3 and 4)
  */
 export const nachErkennenOhneAntwort = (
   ausweis: Ausweis,
   bereit: boolean,
 ): "nochmal" | "warteschlange" | "meldung" => {
-  if ("sun" in ausweis) return "nochmal";
-  return bereit && offlineAusweis(ausweis) ? "warteschlange" : "meldung";
+  if (!bereit || !offlineAusweis(ausweis)) return "meldung";
+  return "sun" in ausweis ? "nochmal" : "warteschlange";
+};
+
+/**
+ * After /stempeln went unanswered: a PIN, QR code or card with PIN waits in the ready queue (the
+ * server takes a live stamp of the same tap as the entry's, "Derselbe Tipp mit und ohne Netz"); the
+ * receipt after a SUN message cannot wait, and the stamp may be on the server, so the person is
+ * told; else the kiosk says it has no network
+ */
+export const nachStempelnOhneAntwort = (
+  ausweis: Ausweis,
+  bereit: boolean,
+): "warteschlange" | "unklar" | "meldung" => {
+  if ("beleg" in ausweis) return "unklar";
+  return bereit ? "warteschlange" : "meldung";
 };
 
 /**

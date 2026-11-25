@@ -1,9 +1,7 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { getTableName } from "drizzle-orm";
 import { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { describe, expect, it } from "vitest";
-import * as authSchema from "./auth-schema.ts";
-import * as schema from "./schema.ts";
 
 /*
  * The Löschkonzept (docs/loeschkonzept.md, S-903) names every table of the database with its
@@ -17,6 +15,40 @@ const tabellen = (modul: Record<string, unknown>) =>
   Object.values(modul)
     .filter((wert): wert is SQLiteTable => wert instanceof SQLiteTable)
     .map(getTableName);
+
+/**
+ * The tables as drizzle-kit finds them: every module the globs of drizzle.config.ts name, so a table
+ * not re-exported from schema.ts is found as well
+ */
+const schemaTabellen = async (): Promise<string[]> => {
+  const teile = readdirSync(new URL("./schema/", import.meta.url))
+    .filter((datei) => datei.endsWith(".ts") && !datei.endsWith(".test.ts"))
+    .map((datei) => `./schema/${datei}`);
+  const module = await Promise.all(
+    ["./schema.ts", "./auth-schema.ts", ...teile].map(
+      (pfad) => import(pfad) as Promise<Record<string, unknown>>,
+    ),
+  );
+  return [...new Set(module.flatMap(tabellen))].sort();
+};
+
+/** The tables of the newest migration snapshot, the database as the migrations build it */
+const snapshotTabellen = (): string[] => {
+  const journal = JSON.parse(
+    readFileSync(new URL("../../drizzle/meta/_journal.json", import.meta.url), "utf8"),
+  ) as { entries: { idx: number }[] };
+  const letzte = Math.max(...journal.entries.map(({ idx }) => idx));
+  const snapshot = JSON.parse(
+    readFileSync(
+      new URL(
+        `../../drizzle/meta/${String(letzte).padStart(4, "0")}_snapshot.json`,
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  ) as { tables: Record<string, unknown> };
+  return Object.keys(snapshot.tables).sort();
+};
 
 /** The rows of the markdown table under a heading, as cells */
 const zeilenUnter = (ueberschrift: string): string[][] => {
@@ -40,10 +72,11 @@ const tabellenzeilen = () => zeilenUnter("Tabellen");
 const klassen = () => zeilenUnter("Löschklassen").map(([klasse]) => klasse);
 
 describe("Löschkonzept", () => {
-  it("names every table of the database, each once", () => {
+  it("names every table of the schema and of the newest migration, each once", async () => {
     const genannt = tabellenzeilen().map(([tabelle]) => tabelle?.replaceAll("`", ""));
     expect(new Set(genannt).size, "a table named twice").toBe(genannt.length);
-    expect([...genannt].sort()).toEqual([...tabellen(schema), ...tabellen(authSchema)].sort());
+    expect([...genannt].sort()).toEqual(await schemaTabellen());
+    expect([...genannt].sort()).toEqual(snapshotTabellen());
   });
 
   it("gives every table a deletion class from the list, and says what Soll does", () => {

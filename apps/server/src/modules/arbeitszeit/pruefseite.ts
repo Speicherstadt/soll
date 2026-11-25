@@ -77,13 +77,15 @@ const aussonderungVon = (db: Db, betriebId: string, abschlussId: string, abschlu
     )
     .orderBy(desc(auditGlieder.seq))
     .get();
-  const jahre = aufbewahrungsjahre(lohnmodelle(db, betriebId, zeile.nutzerId), zeile.monat);
+  // the least the month's own days ask for: counter-entries booked in it can only raise it (to 8),
+  // and their days went with the month, so the stored years count when they are not fewer
+  const mindestens = aufbewahrungsjahre(lohnmodelle(db, betriebId, zeile.nutzerId), zeile.monat);
+  const jahre = zeile.jahre >= mindestens ? zeile.jahre : mindestens;
   const echt =
     glied?.aktion === "einfuegen" &&
     sha256(kanonisch(zeile)) === glied.inhaltHash &&
     pruefwertPruefen(db, betriebId, formatPruefwert(glied)) === "gueltig" &&
     zeile.abgeschlossenAm === abschluss.zeitpunkt &&
-    zeile.jahre === jahre &&
     aussonderbarAb(abschluss.zeitpunkt, jahre) <= tagInBerlin(glied.zeitpunkt);
   return echt ? zeile : null;
 };

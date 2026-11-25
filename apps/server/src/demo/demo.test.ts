@@ -192,4 +192,15 @@ describe("bun run demo (S-909)", () => {
       .all() as { zeitpunkt: number }[];
     expect(gestempelt.map((s) => s.zeitpunkt)).toEqual(geplant);
   });
+
+  it.each(["2026-12-01", "2027-01-01", "2026-03-01", "2026-04-01"])(
+    "closes all three full months also when --heute is the 1st (%s)",
+    (heute) => {
+      const { ereignisse, zeitraum: zr } = ereignisseBis(heute);
+      const abschluesse = ereignisse.filter((e) => e.handlung.art === "abschliessen");
+      expect(abschluesse).toHaveLength(27);
+      // after the corrections of the morning, before the story ends
+      expect(Math.max(...abschluesse.map((e) => e.zeit))).toBeLessThanOrEqual(zr.ende);
+    },
+  );
 });

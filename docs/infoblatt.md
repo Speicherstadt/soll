@@ -106,8 +106,9 @@ Push-Dienst eines Browsers kann außerhalb stehen; er bekommt nur den verschlüs
 - [falls übernommen] Übernommene Zeiten gelten wie in Soll erfasste. Die Originaldatei aus dem
   bisherigen Programm bewahren wir auf, bis der letzte Monat gelöscht ist, aus dem sie Zeiten
   enthält; Soll löscht sie nicht selbst, wir löschen sie dann von Hand.
-- Zugangsmittel (PIN, QR-Code, Karte, Zugang zur API, Benachrichtigungen) löschen wir, wenn sie
-  widerrufen werden; nach Ihrem Austritt gelten sie nicht mehr.
+- Zugänge zur API, Kalender-Abos und Benachrichtigungen löschen wir, wenn sie widerrufen werden.
+  Ihre PIN lässt sich nur ersetzen, eine entzogene Karte verliert ihre Schlüssel und bleibt als
+  Eintrag; nach Ihrem Austritt gilt keins dieser Zugangsmittel mehr.
 - Alles weitere steht im Löschkonzept: [Link oder Ort des Löschkonzepts des Betriebs].
 
 ### 7. Ihre Rechte

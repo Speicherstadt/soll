@@ -137,7 +137,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256, mit Namen und Zeiten aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: bis der letzte Monat ausgesondert ist, in den übernommene Zeiten fallen; Soll entfernt keine Datei (offener Punkt), der Betreiber löscht sie bis dahin von Hand; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
 | Log des Servers | je Anfrage Zeit, Methode, Pfad ohne Query, Status und Dauer; keine Header, keine Inhalte; ein Pfad kann die Kennung einer Person enthalten | der Betreiber legt sie im Log-System fest (Vorschlag: 14 Tage) |
 | Gerät der Person | die Warteschlange ohne Netz und der zuletzt geladene Tag (IndexedDB) | bis die Warteschlange gesendet ist; der Tag bis zum nächsten Laden |
-| Tablet am Eingang | die Warteschlange des Terminals ohne Netz, ohne Ausweis | bis sie gesendet ist |
+| Tablet am Eingang | die Warteschlange des Terminals ohne Netz, der Ausweis darin nur verschlüsselt für den Server | bis sie gesendet ist |
 | Lohnbüro, DATEV, Haben, Kunden | was der Betrieb exportiert oder überträgt | nach den Regeln des Empfängers; Soll löscht dort nichts |
 
 ## Löschsperren

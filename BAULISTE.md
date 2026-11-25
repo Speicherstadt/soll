@@ -1207,7 +1207,8 @@ Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streich
 neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
 requests“).
 
-- keine
+- S-505 Rufbereitschaft: [Speicherstadt/soll#73](https://github.com/Speicherstadt/soll/pull/73),
+  Branch `claude/s-505-rufbereitschaft` (Migration `0030`, neu erzeugen); siehe „Zurückgestellt“
 
 **Offene Nacharbeiten** (beim Bauen aufgefallen, noch ohne Pull Request):
 
@@ -1237,10 +1238,23 @@ requests“).
 - [ ] Hinweis auf Verfall zusätzlich per Mail an die Person (S-402)
 - [ ] Gesetzeswächter: Workflow einmal von Hand starten und die Prüfsummen in
   `scripts/gesetze/normen.json` übernehmen
+- [ ] Datenbanktests räumen ihre temporären Dateien unter `/tmp/soll-test-*` nicht weg; nach vielen
+  Läufen ist die Platte voll (`SQLITE_FULL`)
 
 ## Zurückgestellt
 
 Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie zurück.
+
+- **S-505 Rufbereitschaft und Soll aus dem Plan** – sieben Runden des unabhängigen Reviews, jede mit
+  Befunden derselben Art: Ein Einsatz wurde anders behandelt als dieselben Zeiten gestempelt (R-29).
+  Der Kern liest Einsätze inzwischen als Stempelpaare (Eigenschaftstests grün); offen ist die
+  Prüfung des Plans: Eine Rufbereitschaft ab heute gruppiert Ist und Plan gemeinsam und bringt R-07
+  eines vergangenen Sonntags an eine geplante Schicht, und eine alte Ist-Schicht ohne Gehen
+  zusammen mit einem Einsatz gibt der geplanten Schicht deren Tag, sodass ihre Befunde (auch R-04)
+  wegfallen. Die fehlschlagenden Tests liegen als `it.fails` auf dem Branch
+  (`packages/arbeitszeit/src/planpruefung/`). Ansatz für den nächsten Versuch: die Planprüfung
+  gruppiert vergangenes Ist (mit Einsätzen) und den Plan nie gemeinsam, auch nicht mit
+  Rufbereitschaft ab heute.
 
 ## Schritte für Menschen
 
@@ -1261,5 +1275,8 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 - [ ] Vorlagen zum Datenschutz juristisch prüfen lassen: Betriebsvereinbarung, Infoblatt für
   Beschäftigte und Löschkonzept (`docs/betriebsvereinbarung.md`, `docs/infoblatt.md`,
   `docs/loeschkonzept.md`)
+- [ ] In den Repository-Einstellungen „Allow GitHub Actions to create and approve pull requests“
+  einschalten, damit „Update screenshots“ einen Pull Request öffnen kann (sonst nur das Artifact
+  und der Branch `screenshots/<run>`, der Lauf endet rot)
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

@@ -3,9 +3,10 @@ import {
   type Monat,
   monatVon,
   plusTage,
-  type Rohstueck,
   type Stempelung,
-  schichtgruppen,
+  stempelSchluessel,
+  stempeltage,
+  type Tag,
 } from "@soll/arbeitszeit";
 import type { ImportZeit } from "@soll/import";
 import type { NeueStempelung, PlanGrund, Stand } from "./plan-typen.ts";
@@ -76,29 +77,12 @@ const ueberschneiden = (a: Spanne, b: Spanne): boolean => a.kommen < b.gehen && 
 export type Genommen = Map<string, Spanne[]>;
 
 /** A span of a person to plan, with its stamps */
-type Teil = { nummer: number; zeit: ImportZeit; stempel: Stempelung[]; spanne: Spanne };
+type Teil = { zeit: ImportZeit; stempel: Stempelung[]; spanne: Spanne };
 
 /** What became of a span: its stamps and the month of its shift, or why it is refused */
 export type Zeitplan = { stempel: NeueStempelung[]; monat: Monat } | PlanGrund;
 
-/**
- * The spans of one person as shifts, cut by Soll's own rule (`schichtgruppen` of
- * @soll/arbeitszeit: a new shift 9 h after the stretch before or 24 h after the shift began), so a
- * night shift that a break after midnight splits into two spans stays one, and the import and the
- * month sheet agree by construction (review S-704)
- */
-const schichtenVon = (teile: readonly Teil[]): Teil[][] => {
-  const sortiert = [...teile].sort((a, b) => a.spanne.kommen - b.spanne.kommen);
-  const stuecke: Rohstueck[] = sortiert.map(({ spanne }) => ({
-    beginn: spanne.kommen,
-    ende: spanne.gehen,
-    endetMit: "gehen",
-    nachPause: false,
-  }));
-  return schichtgruppen(stuecke).map((gruppe) => gruppe.map((i) => sortiert[i] as Teil));
-};
-
-/** Why a span of a shift cannot be taken on its own terms, or null */
+/** Why a span cannot be taken on its own terms, or null */
 const spanneGrund = (
   spanne: Spanne,
   nutzerId: string,
@@ -115,53 +99,53 @@ const spanneGrund = (
 };
 
 /**
- * A shift is decided as a whole (CLAUDE.md: a working day is the day the shift starts): each span
- * is first checked on its own as before (the future, an overlap; of two overlapping spans the one
- * earlier in the file stays, review 2 S-705), then whether a month is closed is asked once for the
- * spans that remain, for the month the shift starts in and for all their stamps together, so it
- * never takes half a shift
+ * The working day of each span by Soll's own month content: `stempeltage` over the person's stamps
+ * there already and those of the spans to take, so a span that continues a shift (one already in
+ * Soll included) is filed under the day that shift began (CLAUDE.md, "Time"; review S-704)
  */
-const schichtPlanen = (
-  schicht: readonly Teil[],
-  nutzerId: string,
-  stand: Stand,
-  genommen: Genommen,
-): Map<Teil, Zeitplan> => {
-  const plaene = new Map<Teil, Zeitplan>();
-  const bleiben: Teil[] = [];
-  const bisher = genommen.get(nutzerId) ?? [];
-  for (const teil of [...schicht].sort((a, b) => a.nummer - b.nummer)) {
-    const andere = [...bisher, ...bleiben.map((t) => t.spanne)];
-    const grund = spanneGrund(teil.spanne, nutzerId, stand, andere);
-    if (grund === null) bleiben.push(teil);
-    else plaene.set(teil, grund);
+const arbeitstageVon = (teile: readonly Teil[], vorhanden: readonly Stempelung[]) => {
+  const tage = stempeltage(
+    [...vorhanden, ...teile.flatMap((t) => t.stempel)].sort((a, b) => a.zeitpunkt - b.zeitpunkt),
+  );
+  const jeTag = new Map<Tag, Teil[]>();
+  for (const teil of teile) {
+    const tag = tage.get(stempelSchluessel(teil.stempel[0] as Stempelung)) ?? teil.zeit.tag;
+    jeTag.set(tag, [...(jeTag.get(tag) ?? []), teil]);
   }
-  const monat = monatVon((schicht[0] as Teil).zeit.tag);
-  // the stamps around are read only when the person has a closed month at all
-  const geschlossen = stand.geschlossen(nutzerId);
-  const alle = bleiben.flatMap((t) => t.stempel).sort((a, b) => a.zeitpunkt - b.zeitpunkt);
-  const zu =
-    bleiben.length > 0 &&
-    (geschlossen.has(monat) || (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle)));
-  if (!zu) genommen.set(nutzerId, [...bisher, ...bleiben.map((t) => t.spanne)]);
-  for (const teil of bleiben)
-    plaene.set(
-      teil,
-      zu
-        ? "monat_abgeschlossen"
-        : {
-            monat,
-            stempel: teil.stempel.map((st) => ({
-              ...st,
-              nutzerId,
-              externId: stempelKennung(teil.zeit.externalId, st.art),
-            })),
-          },
-    );
-  return plaene;
+  return jeTag;
 };
 
-/** The plan of the new spans of one person, by span */
+/**
+ * The spans of one working day are decided together: whether a month is closed is asked once, for
+ * the month of that day and for all their stamps, so a shift is never taken by halves
+ */
+const tagPlanen = (
+  tag: Tag,
+  teile: readonly Teil[],
+  nutzerId: string,
+  stand: Stand,
+): Zeitplan[] => {
+  const monat = monatVon(tag);
+  // the stamps around are read only when the person has a closed month at all
+  const geschlossen = stand.geschlossen(nutzerId);
+  const alle = teile.flatMap((t) => t.stempel).sort((a, b) => a.zeitpunkt - b.zeitpunkt);
+  if (geschlossen.has(monat) || (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle)))
+    return teile.map(() => "monat_abgeschlossen");
+  return teile.map((teil) => ({
+    monat,
+    stempel: teil.stempel.map((st) => ({
+      ...st,
+      nutzerId,
+      externId: stempelKennung(teil.zeit.externalId, st.art),
+    })),
+  }));
+};
+
+/**
+ * The plan of the new spans of one person, by span: each first on its own in the order of the file
+ * (the future, an overlap; of two overlapping spans the earlier in the file stays, review 2 S-705),
+ * then the rest by working day
+ */
 export const zeitenEinerPerson = (
   zeiten: readonly ImportZeit[],
   nutzerId: string,
@@ -169,21 +153,34 @@ export const zeitenEinerPerson = (
   genommen: Genommen,
 ): Map<ImportZeit, Zeitplan> => {
   const plaene = new Map<ImportZeit, Zeitplan>();
-  const teile: Teil[] = [];
+  const bisher = genommen.get(nutzerId) ?? [];
+  const bleiben: Teil[] = [];
   for (const zeit of zeiten) {
     const stempel = stempelAus(zeit);
-    if (typeof stempel === "string") plaene.set(zeit, stempel);
-    else {
-      const spanne = {
-        kommen: (stempel[0] as Stempelung).zeitpunkt,
-        gehen: (stempel.at(-1) as Stempelung).zeitpunkt,
-      };
-      teile.push({ nummer: teile.length, zeit, stempel, spanne });
+    if (typeof stempel === "string") {
+      plaene.set(zeit, stempel);
+      continue;
     }
+    const spanne = {
+      kommen: (stempel[0] as Stempelung).zeitpunkt,
+      gehen: (stempel.at(-1) as Stempelung).zeitpunkt,
+    };
+    const grund = spanneGrund(spanne, nutzerId, stand, [
+      ...bisher,
+      ...bleiben.map((t) => t.spanne),
+    ]);
+    if (grund === null) bleiben.push({ zeit, stempel, spanne });
+    else plaene.set(zeit, grund);
   }
-  for (const schicht of schichtenVon(teile)) {
-    for (const [teil, plan] of schichtPlanen(schicht, nutzerId, stand, genommen))
+  const genommeneSpannen = [...bisher];
+  for (const [tag, teile] of arbeitstageVon(bleiben, stand.stempelVon(nutzerId))) {
+    const ergebnisse = tagPlanen(tag, teile, nutzerId, stand);
+    teile.forEach((teil, i) => {
+      const plan = ergebnisse[i] as Zeitplan;
       plaene.set(teil.zeit, plan);
+      if (typeof plan !== "string") genommeneSpannen.push(teil.spanne);
+    });
   }
+  genommen.set(nutzerId, genommeneSpannen);
   return plaene;
 };

@@ -14,10 +14,8 @@ export {
   type Pause,
   type Schicht,
   type Stueck,
-  schichtgruppen,
 } from "./schichten.ts";
 export {
-  type Rohstueck,
   STEMPELARTEN,
   type Stempelart,
   type Stempelfehler,

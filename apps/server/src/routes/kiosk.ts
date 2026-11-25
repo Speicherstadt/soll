@@ -15,6 +15,7 @@ import {
   type TerminalSchluessel,
   terminalVonToken,
 } from "../modules/terminal/index.ts";
+import { offlineRoute, schluesselRoute } from "./kiosk-offline.ts";
 import { art, zeitpunkt } from "./stempel-antwort.ts";
 
 /** A call of a paired terminal: its row, found by its device token */
@@ -31,6 +32,24 @@ export const ausweisSchema = z.union([
   z.object({ sun: z.object({ e: hex(32), c: hex(16) }).strict() }).strict(),
   z.object({ beleg: z.string().min(1).max(400) }).strict(),
 ]);
+/**
+ * A credential from the offline queue (S-803), once opened: the same as online, but no receipt,
+ * which holds only 20 seconds after a SUN message
+ */
+const offlineAusweisSchema = z.union([
+  z.object({ pin }).strict(),
+  z.object({ qr: z.string().min(1).max(200) }).strict(),
+  z.object({ karte: z.string().min(1).max(40), pin }).strict(),
+  z.object({ sun: z.object({ e: hex(32), c: hex(16) }).strict() }).strict(),
+]);
+const offlineAusweisAus = (klartext: string) => {
+  try {
+    const gelesen = offlineAusweisSchema.safeParse(JSON.parse(klartext));
+    return gelesen.success ? gelesen.data : null;
+  } catch {
+    return null;
+  }
+};
 export const stempelSchema = z
   .object({ ausweis: ausweisSchema, art, geraetZeitpunkt: zeitpunkt.optional() })
   .strict();
@@ -81,7 +100,8 @@ const personUndTag = (db: Db, betriebId: string, nutzerId: string, jetzt: number
 /**
  * The tablet's side (S-801, S-802) under /api/v1/kiosk: trading a pairing code for a device token,
  * then, with the token, the terminal itself, recognising a person by PIN, QR code or NFC card and
- * stamping for them (`quelle` "terminal" with the terminal's id). Every refusal says why, so the
+ * stamping for them (`quelle` "terminal" with the terminal's id), and taking what the tablet kept
+ * while it had no network (S-803, kiosk-offline.ts). Every refusal says why, so the
  * kiosk can show it; a refused card says no more than a wrong PIN.
  */
 export const kioskRouten = (
@@ -132,8 +152,16 @@ export const kioskRouten = (
         name: terminal.name,
         betrieb: betriebLesen(db, terminal.betriebId)?.name ?? "",
         gesperrtBis: gesperrt ? terminal.gesperrtBis : null,
+        // the key the tablet encrypts each credential of its offline queue to (S-803)
+        ausweisSchluessel: schluessel.ausweis.oeffentlich,
       });
     })
+    .put("/schluessel", schluesselRoute(db, schreibDb, jetzt))
+    .post(
+      "/offline",
+      arbeitszeit(db),
+      offlineRoute({ db, schreibDb, schluessel, jetzt, ausweisAus: offlineAusweisAus }),
+    )
     .post("/erkennen", arbeitszeit(db), async (c) => {
       const eingabe = ausweisSchema.safeParse(await c.req.json().catch(() => null));
       if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);

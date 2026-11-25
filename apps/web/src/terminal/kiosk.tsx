@@ -5,6 +5,7 @@ import { Bereit } from "./bereit.tsx";
 import { Koppeln } from "./koppeln.tsx";
 import { neuladenBeiFehler } from "./neuladen.ts";
 import { type NdefLeserKlasse, type NfcKarte, nfcLesen, nfcLeser } from "./nfc.ts";
+import { GespeichertAnsicht, OhneNetzAnsicht } from "./offline/ansichten.tsx";
 import { ErkanntAnsicht, GestempeltAnsicht } from "./person.tsx";
 import { type DetectorKlasse, qrDetector } from "./qr.ts";
 import { Scannen } from "./scannen.tsx";
@@ -56,8 +57,9 @@ const nfcBereit = (
 /**
  * The terminal in kiosk mode on a tablet in landscape, 1280 × 800 (S-801, DESIGN.md "Terminal"):
  * the clock on the left, on the right the number pad, the camera for a QR code, the person
- * recognised or the stamp confirmed; NFC cards where the browser reads them (S-802). No navigation
- * and no other data.
+ * recognised or the stamp confirmed; NFC cards where the browser reads them (S-802); without a
+ * network the choice without the person's state and the stamp kept on the tablet (S-803). No
+ * navigation and no other data.
  */
 export const Kiosk = () => {
   const kiosk = kioskAblauf();
@@ -74,6 +76,14 @@ export const Kiosk = () => {
     const a = kiosk.ansicht();
     return a.art === "gestempelt" ? a : null;
   };
+  const ohneNetz = () => {
+    const a = kiosk.ansicht();
+    return a.art === "offline" ? a : null;
+  };
+  const gespeichert = () => {
+    const a = kiosk.ansicht();
+    return a.art === "gespeichert" ? a : null;
+  };
   return (
     <Show when={kiosk.kopplung()} fallback={<Koppeln onKoppeln={kiosk.koppeln} />}>
       {(kopplung) => (
@@ -85,6 +95,9 @@ export const Kiosk = () => {
             jetzt={kiosk.jetzt()}
             mitQr={Detector !== undefined}
             mitNfc={kiosk.nfc() === "an"}
+            ohneNetz={kiosk.schlange.ohneNetz()}
+            wartend={kiosk.schlange.wartend()}
+            zuletzt={kiosk.schlange.zuletzt()}
           />
           <Show when={neustart()}>
             <p role="alert" class="fixed inset-x-0 top-0 bg-danger p-4 text-center text-background">
@@ -113,6 +126,27 @@ export const Kiosk = () => {
             </Match>
             <Match when={gestempelt()}>
               {(a) => <GestempeltAnsicht daten={a().daten} bis={a().bis} jetzt={kiosk.jetzt()} />}
+            </Match>
+            <Match when={ohneNetz()}>
+              {(a) => (
+                <OhneNetzAnsicht
+                  bis={a().bis}
+                  jetzt={kiosk.jetzt()}
+                  beschaeftigt={kiosk.beschaeftigt()}
+                  onStempeln={kiosk.stempeln}
+                  onFertig={kiosk.zurueck}
+                />
+              )}
+            </Match>
+            <Match when={gespeichert()}>
+              {(a) => (
+                <GespeichertAnsicht
+                  stempelart={a().stempelart}
+                  zeitpunkt={a().zeitpunkt}
+                  bis={a().bis}
+                  jetzt={kiosk.jetzt()}
+                />
+              )}
             </Match>
             <Match when={true}>
               <Bereit

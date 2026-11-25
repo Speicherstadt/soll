@@ -173,8 +173,15 @@
     {
       "idx": 24,
       "version": "6",
-      "when": 1795614131275,
-      "tag": "0024_schichttausch",
+      "when": 1795614938600,
+      "tag": "0024_terminal_offline",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1795616097777,
+      "tag": "0025_schichttausch",
       "breakpoints": true
     }
   ]

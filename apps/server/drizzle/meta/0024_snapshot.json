@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "30020cd9-3de3-439a-a6d4-e95c90929545",
+  "id": "b167bd0c-6583-4b1a-93e3-825657155e11",
   "prevId": "4d816404-94bc-40e4-98af-22e96dd736ea",
   "tables": {
     "arbeitszeitmodelle": {
@@ -3034,141 +3034,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "schichttausche": {
-      "name": "schichttausche",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tausch_id": {
-          "name": "tausch_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "schicht_id": {
-          "name": "schicht_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "anbieter_id": {
-          "name": "anbieter_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "an_nutzer_id": {
-          "name": "an_nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "uebernehmer_id": {
-          "name": "uebernehmer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "angeboten_am": {
-          "name": "angeboten_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "uebernommen_am": {
-          "name": "uebernommen_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "entschieden_von": {
-          "name": "entschieden_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "entschieden_am": {
-          "name": "entschieden_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "schichttausche_schicht": {
-          "name": "schichttausche_schicht",
-          "columns": [
-            "betrieb_id",
-            "schicht_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "schichttausche_betrieb_id_tausch_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "tausch_id"
-          ],
-          "name": "schichttausche_betrieb_id_tausch_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "tauschregeln": {
-      "name": "tauschregeln",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ohne_freigabe": {
-          "name": "ohne_freigabe",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "stundennachweis_buchungen": {
       "name": "stundennachweis_buchungen",
       "columns": {
@@ -3488,6 +3353,88 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "terminal_eintraege": {
+      "name": "terminal_eintraege",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "terminal_id": {
+          "name": "terminal_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inhalt_hash": {
+          "name": "inhalt_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "art": {
+          "name": "art",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "geraet_zeitpunkt": {
+          "name": "geraet_zeitpunkt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "stempel_id": {
+          "name": "stempel_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "grund": {
+          "name": "grund",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "empfangen_am": {
+          "name": "empfangen_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "terminal_eintraege_betrieb_id_terminal_id_nummer_pk": {
+          "columns": [
+            "betrieb_id",
+            "terminal_id",
+            "nummer"
+          ],
+          "name": "terminal_eintraege_betrieb_id_terminal_id_nummer_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "terminals": {
       "name": "terminals",
       "columns": {
@@ -3572,6 +3519,13 @@
         },
         "fehler_tag": {
           "name": "fehler_tag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "schluessel": {
+          "name": "schluessel",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

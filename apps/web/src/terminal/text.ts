@@ -32,6 +32,10 @@ export const meldungText = (meldung: Meldung, jetzt: number): string => {
       return m.kiosk_gesperrt({ sekunden: sekundenBis(meldung.bis, jetzt) });
     case "netz":
       return m.kiosk_ohne_netz();
+    case "nochmal":
+      return m.kiosk_karte_nochmal();
+    case "unklar":
+      return m.kiosk_antwort_fehlt();
     case "modul_aus":
       return m.kiosk_modul_aus();
     case "abgeschlossen":

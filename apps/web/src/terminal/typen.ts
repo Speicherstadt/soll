@@ -9,6 +9,8 @@ export type KioskStand = {
   name: string;
   betrieb: string;
   gesperrtBis: number | null;
+  /** the server's key the tablet encrypts each credential of its offline queue to (S-803) */
+  ausweisSchluessel?: { kty: string; crv: string; x: string; y: string };
 };
 
 /**

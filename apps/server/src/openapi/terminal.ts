@@ -1,5 +1,7 @@
 import * as karten from "../routes/karten.ts";
 import * as kiosk from "../routes/kiosk.ts";
+import * as kioskOffline from "../routes/kiosk-offline.ts";
+import * as offline from "../routes/offline.ts";
 import * as pins from "../routes/pins.ts";
 import * as terminals from "../routes/terminals.ts";
 import type { Operation } from "./dokument.ts";
@@ -84,7 +86,8 @@ export const KIOSK: readonly Operation[] = unter("/api/v1/kiosk", "Terminal", [
   {
     methode: "get",
     pfad: "",
-    zusammenfassung: "Name, Betrieb und Sperre des Tablets (Geräte-Token)",
+    zusammenfassung:
+      "Name, Betrieb und Sperre des Tablets und der Schlüssel des Servers für Ausweise ohne Netz (Geräte-Token)",
   },
   {
     methode: "post",
@@ -98,5 +101,19 @@ export const KIOSK: readonly Operation[] = unter("/api/v1/kiosk", "Terminal", [
     pfad: "/stempeln",
     zusammenfassung: "Für eine erkannte Person stempeln (Geräte-Token)",
     koerper: kiosk.stempelSchema,
+  },
+  {
+    methode: "put",
+    pfad: "/schluessel",
+    zusammenfassung:
+      "Den öffentlichen Schlüssel des Tablets für seine Warteschlange ohne Netz anmelden, einmal je Kopplung (Geräte-Token)",
+    koerper: offline.anmeldeSchema,
+  },
+  {
+    methode: "post",
+    pfad: "/offline",
+    zusammenfassung:
+      "Einen Eintrag der Warteschlange ohne Netz übertragen: Nummer, Art, Zeit des Geräts, verschlüsselter Ausweis, Signatur (Geräte-Token)",
+    koerper: kioskOffline.kioskOfflineSchema,
   },
 ]);

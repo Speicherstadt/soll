@@ -35,3 +35,15 @@ export const nachFehlversuch = (stand: Sperrstand, jetzt: number): Sperrstand =>
       : jetzt + ERSTE_SPERRE_MS * 2 ** heute.sperren;
   return { fehlversuche: 0, sperren, gesperrtBis, fehlerTag: tag };
 };
+
+/**
+ * Whether an entry of the offline queue (S-803) finds the terminal locked: the short waits pace the
+ * typing at the tablet and mean nothing for entries that arrive together, so only the lock until
+ * midnight counts, and only for a credential that can be guessed (a PIN, a card with a PIN); a QR
+ * code or a SUN message cannot be guessed and is compared even then, so honest stamps behind a
+ * queue of guesses are not held back (review of S-803)
+ */
+export const offlineGesperrt = (stand: Sperrstand, jetzt: number, erratbar: boolean): boolean =>
+  erratbar &&
+  istGesperrt(stand, jetzt) &&
+  stand.sperren * FEHLVERSUCHE_BIS_SPERRE >= FEHLVERSUCHE_JE_TAG;

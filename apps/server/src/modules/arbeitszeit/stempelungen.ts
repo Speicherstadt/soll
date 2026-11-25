@@ -3,7 +3,7 @@ import { and, eq, gte, isNull, lt } from "drizzle-orm";
 import { alias } from "drizzle-orm/sqlite-core";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { stempelungen } from "../../db/schema.ts";
-import { type Kontext, schreiben } from "../audit/index.ts";
+import { type Kontext, type Schreiber, schreiben } from "../audit/index.ts";
 import { aenderungGesperrt } from "./abschluss.ts";
 
 type Zeile = typeof stempelungen.$inferSelect;
@@ -96,16 +96,21 @@ type Optional = "entfernt" | "geraetId" | "nummer" | "signatur" | "offline" | "t
 type Neu = Omit<Zeile, "betriebId" | "stempelId" | "erstelltVon" | "erstelltAm" | Optional> &
   Partial<Pick<Zeile, Optional>>;
 
-const einfuegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neu): Zeile =>
-  schreiben(schreibDb, kontext, (s) =>
-    s.einfuegen("stempelungen", {
+/** What else is written in the same transaction as a new stamp, e.g. the terminal's entry (S-803) */
+export type Dazu = (s: Schreiber, stempel: Stempel) => void;
+
+const einfuegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neu, dazu?: Dazu): Zeile =>
+  schreiben(schreibDb, kontext, (s) => {
+    const zeile = s.einfuegen("stempelungen", {
       ...neu,
       betriebId: kontext.betriebId,
       stempelId: crypto.randomUUID(),
       erstelltVon: kontext.akteur,
       erstelltAm: kontext.jetzt,
-    }),
-  );
+    });
+    dazu?.(s, alsStempel(zeile));
+    return zeile;
+  });
 
 /**
  * Whether a change would touch a month closed for the person (S-306): `weg` leaves force, `neu`
@@ -225,7 +230,9 @@ export const stempeln = (
 /**
  * An entry of a device's queue that arrives late (S-305): its instant is the device's, moved by the
  * error of the device's clock (`offlineZeitpunkt`), and it is marked offline; the server's clock at
- * receipt is `erstellt_am`. Never in a closed month, never in the future.
+ * receipt is `erstellt_am`. Never in a closed month, never in the future. An entry of a terminal's
+ * queue (S-803) names the terminal instead of a device of the person; the terminal keeps its own
+ * numbers (`dazu`, in the same transaction).
  */
 export const offlineStempeln = (
   db: Db,
@@ -236,8 +243,10 @@ export const offlineStempeln = (
     geraetZeitpunkt: number;
     gesendetAm: number;
     quelle: Quelle;
-    signiert: Signiert;
+    signiert?: Signiert | undefined;
+    terminalId?: string | undefined;
   },
+  dazu?: Dazu,
 ): StempelErgebnis => {
   const vorher = schonDa(db, kontext.betriebId, angaben.signiert, angaben);
   if (vorher) return vorher;
@@ -249,17 +258,23 @@ export const offlineStempeln = (
     })
   )
     return { ok: false, grund: "abgeschlossen" };
-  const zeile = einfuegen(schreibDb, kontext, {
-    nutzerId: kontext.akteur,
-    art: angaben.art,
-    zeitpunkt: zeit.zeitpunkt,
-    geraetZeitpunkt: angaben.geraetZeitpunkt,
-    quelle: angaben.quelle,
-    ersetzt: null,
-    grund: null,
-    offline: true,
-    ...angaben.signiert,
-  });
+  const zeile = einfuegen(
+    schreibDb,
+    kontext,
+    {
+      nutzerId: kontext.akteur,
+      art: angaben.art,
+      zeitpunkt: zeit.zeitpunkt,
+      geraetZeitpunkt: angaben.geraetZeitpunkt,
+      quelle: angaben.quelle,
+      ersetzt: null,
+      grund: null,
+      offline: true,
+      ...angaben.signiert,
+      ...(angaben.terminalId ? { terminalId: angaben.terminalId } : {}),
+    },
+    dazu,
+  );
   return { ok: true, stempel: alsStempel(zeile) };
 };
 

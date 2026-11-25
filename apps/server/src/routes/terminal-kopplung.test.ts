@@ -32,6 +32,7 @@ describe("pairing a terminal (S-801)", () => {
       name: "Eingang",
       betrieb: "Café Elbblick",
       gesperrtBis: null,
+      ausweisSchluessel: expect.objectContaining({ kty: "EC", crv: "P-256" }),
     });
     expect(kettePruefen(server.db, inhaber.betriebId)).toEqual([]);
   });
@@ -74,6 +75,7 @@ describe("pairing a terminal (S-801)", () => {
         gekoppeltAm: JETZT,
         kopplungBis: null,
         gesperrtBis: null,
+        offline: { luecken: [], abgelehnt: [] },
       },
     ]);
     const weg = await inhaber.anfrage(`/api/v1/terminal/geraete/${geraet.terminalId}`, {

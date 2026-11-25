@@ -157,14 +157,15 @@ Satz 4 BUrlG); der Hinweis ist dann bis 30. September fällig.
 ### Anpassungen von Hand
 
 Nur der Inhaber passt Konten an, immer mit Grund, den die Person sieht. Eine Anpassung wird nie
-geändert; eine falsche wird mit einer weiteren korrigiert.
+geändert; eine falsche wird mit einer weiteren korrigiert. Eine Anpassung der Überstunden gilt
+einem Monat vom Eintritt bis zum laufenden Monat, nie einem kommenden.
 
 | Anpassung | Wofür |
 | --- | --- |
 | Überstunden zu Beginn | der Saldo, mit dem die Person zu Soll kommt; einmal, vor dem ersten abgeschlossenen Monat; er steht für alles davor, ein früherer Monat, der erst danach abgeschlossen wird, zählt nicht |
 | Überstunden ausgezahlt | ausbezahlte Stunden, sie gehen vom Konto ab |
 | Überstunden korrigiert | eine Korrektur mit Vorzeichen |
-| Resturlaub vor Soll | der Urlaub, der zu Beginn eines Jahres noch offen war; das Konto beginnt mit diesem Jahr (vom Jahr des Eintritts bis zum nächsten Jahr) |
+| Resturlaub vor Soll | der Urlaub, der zu Beginn eines Jahres noch offen war; das Konto beginnt mit diesem Jahr (vom Jahr des Eintritts bis zum nächsten Jahr, nicht nach dem Jahr des ersten Hinweises auf Verfall) |
 | Urlaub korrigiert | eine Korrektur des Urlaubs eines Jahres mit Vorzeichen, in halben Tagen (vom Jahr vor dem Beginn des Kontos bis zum nächsten Jahr) |
 
 ## Wer sieht „krank“
@@ -220,7 +221,7 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | --- | --- |
 | `GET /?nutzerId` | Resturlaub (`urlaub`) mit Jahren und Verfall, Überstunden (`ueberstunden`), Hinweise und Anpassungen; die eigenen oder mit `zeiten:alle` die einer Person |
 | `POST /:nutzerId/hinweise` | `tag` des Hinweises auf Verfall (nur Inhaber, `konten:pflegen`); 422 in der Zukunft, vor dem Eintritt oder vor dem Beginn des Kontos, 409 zweimal am selben Tag |
-| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat, 422 für ein Jahr außerhalb des Kontos |
+| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat, 409 für Resturlaub vor Soll aus einem Jahr nach dem ersten Hinweis, 422 für einen Monat oder ein Jahr außerhalb des Kontos |
 
 | Funktion in `packages/arbeitszeit` | Was |
 | --- | --- |

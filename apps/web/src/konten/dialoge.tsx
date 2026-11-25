@@ -150,6 +150,7 @@ const AnpassungFelder = (props: { id: string; k: Konten }) => {
               type="month"
               class={feld}
               value={props.k.heute.slice(0, 7)}
+              max={props.k.heute.slice(0, 7)}
             />
           </div>
         </Show>

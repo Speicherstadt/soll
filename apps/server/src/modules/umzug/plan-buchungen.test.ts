@@ -116,6 +116,7 @@ describe("bookings from the project and activity of a time (S-702)", () => {
           abwesenheiten: new Map(),
           kunden: new Map(),
           projekte: new Set(),
+          taetigkeiten: new Map(),
           buchungen: new Set(buchungen),
         },
       });

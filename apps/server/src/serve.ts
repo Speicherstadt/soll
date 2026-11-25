@@ -13,7 +13,7 @@ import {
 } from "./modules/erinnerungen/index.ts";
 import { smtpMailer } from "./modules/mail/index.ts";
 import { DATENBANK } from "./modules/sicherung/index.ts";
-import { dateispeicher } from "./modules/umzug/index.ts";
+import { dateispeicher, sicherHolen } from "./modules/umzug/index.ts";
 
 const lesen = () => {
   try {
@@ -65,6 +65,8 @@ export const serverStarten = () => {
     push: { vapid, kontakt, senden: pushPerFetch },
     // the original files of imports beside the database (S-701)
     dateien: dateispeicher(() => join(env.dataDir, "dateien")),
+    // Kimai instances for imports (S-705): public https only, unless the operator allows an origin
+    kimai: { holen: sicherHolen(), erlaubt: env.importErlaubt },
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)

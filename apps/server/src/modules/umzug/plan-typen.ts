@@ -8,10 +8,20 @@ import type { ImportDaten } from "@soll/import";
  */
 
 export type Art = keyof ImportDaten;
-export const ARTEN: readonly Art[] = ["zeiten", "abwesenheiten", "kunden", "projekte"];
+export const ARTEN: readonly Art[] = [
+  "zeiten",
+  "abwesenheiten",
+  "kunden",
+  "projekte",
+  "taetigkeiten",
+  "buchungen",
+];
 
-/** What a plan counts: the records of the file, and the bookings made from times (S-702) */
-export type PlanArt = Art | "buchungen";
+/**
+ * What a plan counts: the records of the file; bookings are those the old tool kept (S-705) and
+ * those made from times (S-702)
+ */
+export type PlanArt = Art;
 
 export const PLAN_GRUENDE = [
   "person_unbekannt",
@@ -24,6 +34,7 @@ export const PLAN_GRUENDE = [
   "kunde_unbekannt",
   "projekt_unbekannt",
   "kunde_ausgelassen",
+  "taetigkeit_unbekannt",
   "zuordnung_abweichend",
   "geaendert_im_alten_tool",
 ] as const;
@@ -52,6 +63,9 @@ export type NeuesProjekt = {
   externId: string;
 };
 
+/** An activity of another tool (S-705) */
+export type NeueTaetigkeit = { taetigkeitId: string; name: string; externId: string };
+
 /** A booking of project time made from a time with a project or an activity (S-702) */
 export type NeueBuchung = {
   nutzerId: string;
@@ -71,6 +85,7 @@ export type Plan = {
   abwesenheiten: NeueAbwesenheit[];
   kunden: NeuerKunde[];
   projekte: NeuesProjekt[];
+  taetigkeiten: NeueTaetigkeit[];
   buchungen: NeueBuchung[];
   monate: Monatssperre[];
   zahlen: Zahlen;
@@ -104,6 +119,8 @@ export type Stand = {
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;
+    /** the activity created from an id (S-705) */
+    taetigkeiten: ReadonlyMap<string, string>;
     /** the bookings made from times of this tool, by their id (S-702) */
     buchungen: ReadonlySet<string>;
   };
@@ -112,6 +129,7 @@ export type Stand = {
   /** the customers and orders of the business, for a mapping to an existing one */
   kunden: ReadonlySet<string>;
   projekte: ReadonlySet<string>;
+  taetigkeiten: ReadonlySet<string>;
   /** the months closed for a person */
   geschlossen: (nutzerId: string) => ReadonlySet<Monat>;
   /** a person's stamps in force, in time order */
@@ -130,6 +148,7 @@ export const keineZahlen = (): Zahlen => ({
   abwesenheiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   kunden: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   projekte: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+  taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
 });
 

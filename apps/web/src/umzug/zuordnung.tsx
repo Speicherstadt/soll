@@ -3,6 +3,7 @@ import type { Ziel, Zuordnung } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { m } from "../paraglide/messages.js";
+import { taetigkeitName } from "../projekte/werte.ts";
 import { Abschnitt, type Option, Zeile } from "./auswahl.tsx";
 import { type BuchungAendern, BuchungZuordnung } from "./buchung.tsx";
 import { FELD_NAMEN } from "./texte.ts";
@@ -29,6 +30,7 @@ export type Aendern = BuchungAendern & {
   art: (art: string, ziel: Abwesenheitsart | null) => void;
   kunde: (externalId: string, ziel: Ziel) => void;
   projekt: (externalId: string, ziel: Ziel) => void;
+  taetigkeit: (externalId: string, ziel: Ziel) => void;
 };
 
 const Spalten = (props: {
@@ -98,6 +100,11 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
     props.vorschau.vorhandeneKunden.map((k) => ({ id: k.kundeId, name: k.name }));
   const projekte = () =>
     props.vorschau.vorhandeneProjekte.map((p) => ({ id: p.projektId, name: p.name }));
+  const taetigkeiten = () =>
+    props.vorschau.vorhandeneTaetigkeiten.map((t) => ({
+      id: t.taetigkeitId,
+      name: taetigkeitName(t),
+    }));
   return (
     <>
       <Show when={props.vorschau.kunden.length > 0}>
@@ -125,6 +132,20 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
                 wert={zielWert(props.zuordnung.projekte[p.externalId])}
                 optionen={zielOptionen(projekte())}
                 aendern={(wert) => props.aendern.projekt(p.externalId, zielAus(wert))}
+              />
+            )}
+          </For>
+        </Abschnitt>
+      </Show>
+      <Show when={props.vorschau.taetigkeiten.length > 0}>
+        <Abschnitt titel={m.umzug_taetigkeiten_titel()}>
+          <For each={props.vorschau.taetigkeiten}>
+            {(t) => (
+              <Zeile
+                name={t.name}
+                wert={zielWert(props.zuordnung.taetigkeiten?.[t.externalId])}
+                optionen={zielOptionen(taetigkeiten())}
+                aendern={(wert) => props.aendern.taetigkeit(t.externalId, zielAus(wert))}
               />
             )}
           </For>
@@ -185,7 +206,9 @@ export const ZuordnungSchritt = (props: {
     <Show when={!props.vorschau.module.arbeitszeit || !props.vorschau.module.projektzeit}>
       <p class="rounded-lg bg-warning-surface px-3 py-2.5">{m.umzug_module_aus()}</p>
     </Show>
-    <Spalten vorschau={props.vorschau} spalten={props.spalten} aendern={props.aendern} />
+    <Show when={props.vorschau.felder.length > 0}>
+      <Spalten vorschau={props.vorschau} spalten={props.spalten} aendern={props.aendern} />
+    </Show>
     <Show when={props.vorschau.personen.length > 0}>
       <Personen vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
     </Show>

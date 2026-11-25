@@ -15,12 +15,14 @@ import {
   type Eingabe,
   importDatei,
   importeLesen,
+  type KimaiDeps,
   MAX_BYTES,
   probelauf,
   uebernehmen,
   vorschau,
   zuordnungPruefen,
 } from "../modules/umzug/index.ts";
+import { abrufRouten } from "./importe-abruf.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon, ungueltig } from "./projektzeit-gemeinsam.ts";
 
@@ -62,6 +64,8 @@ export const uebernahmeSchema = vorschauSchema
         arten: z.record(schluessel, z.enum(ABWESENHEITSARTEN).nullable()),
         kunden: z.record(schluessel, zielSchema),
         projekte: z.record(schluessel, zielSchema),
+        // S-705: activities of a tool that keeps them (Kimai); none in a file without them
+        taetigkeiten: z.record(schluessel, zielSchema).optional(),
         buchung: buchungSchema.optional(),
       })
       .strict(),
@@ -140,10 +144,12 @@ export const importRouten = (
   schreibDb: SchreibDb,
   jetzt: () => number,
   speicher: Dateispeicher,
+  kimai: KimaiDeps,
 ) =>
   new Hono<Anfrage>()
     .use(recht("umzug:importieren"))
     .use(bodyLimit({ maxSize: MAX_KOERPER, onError: (c) => c.json({ fehler: "zu_gross" }, 413) }))
+    .route("/abruf", abrufRouten(kimai, jetzt))
     .get("/", (c) => c.json({ importe: importeLesen(db, c.get("betriebId")) }))
     .post("/vorschau", async (c) => {
       const gelesen = await eingabeLesen(c, vorschauSchema);

@@ -1,6 +1,15 @@
 /** Parsers for the exports of other tools and for spreadsheets, pure functions (S-303, S-701 and later). */
 export { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
 export {
+  KIMAI_ARTEN,
+  KIMAI_FELDER,
+  KIMAI_FORMAT,
+  type KimaiAbzug,
+  type KimaiArt,
+  kimaiAbzugText,
+  kimaiLesen,
+} from "./kimai/index.ts";
+export {
   CSV_ROLLEN,
   type CsvErgebnis,
   type CsvFehler,
@@ -13,9 +22,11 @@ export {
   type ArtZuordnung,
   type Gelesen,
   type ImportAbwesenheit,
+  type ImportBuchung,
   type ImportDaten,
   type ImportKunde,
   type ImportProjekt,
+  type ImportTaetigkeit,
   type ImportZeit,
   LESE_GRUENDE,
   type LeseFehler,

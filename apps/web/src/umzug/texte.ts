@@ -18,6 +18,7 @@ export const SCHRITT_NAMEN: Record<Schritt, () => string> = {
 export const ANLEITUNG: Record<string, () => string> = {
   "soll-csv": () => m.umzug_anleitung_soll_csv(),
   tabelle: () => m.umzug_anleitung_tabelle(),
+  kimai: () => m.umzug_anleitung_kimai(),
 };
 
 const LESEGRUND: Record<LeseGrund, () => string> = {
@@ -39,6 +40,9 @@ const LESEGRUND: Record<LeseGrund, () => string> = {
   zeile_doppelt: () => m.umzug_lese_zeile_doppelt(),
   dauer_ungueltig: () => m.umzug_lese_dauer_ungueltig(),
   dauer_abweichend: () => m.umzug_lese_dauer_abweichend(),
+  laeuft_noch: () => m.umzug_lese_laeuft_noch(),
+  projekt_unbekannt: () => m.umzug_lese_projekt_unbekannt(),
+  taetigkeit_unbekannt: () => m.umzug_lese_taetigkeit_unbekannt(),
 };
 
 /** The name of a field in the language of the app, or the field itself */
@@ -68,6 +72,7 @@ const PLANGRUND: Record<string, () => string> = {
   kunde_unbekannt: () => m.umzug_grund_kunde_unbekannt(),
   projekt_unbekannt: () => m.umzug_grund_projekt_unbekannt(),
   kunde_ausgelassen: () => m.umzug_grund_kunde_ausgelassen(),
+  taetigkeit_unbekannt: () => m.umzug_grund_taetigkeit_unbekannt(),
   zuordnung_abweichend: () => m.umzug_grund_zuordnung_abweichend(),
   geaendert_im_alten_tool: () => m.umzug_grund_geaendert_im_alten_tool(),
 };
@@ -80,6 +85,7 @@ export const ART_NAMEN: Record<PlanArt, () => string> = {
   abwesenheiten: () => m.umzug_art_abwesenheiten(),
   kunden: () => m.umzug_art_kunden(),
   projekte: () => m.umzug_art_projekte(),
+  taetigkeiten: () => m.umzug_art_taetigkeiten(),
   buchungen: () => m.umzug_art_buchungen(),
 };
 
@@ -99,6 +105,21 @@ export const FELD_NAMEN: Record<string, () => string> = {
   dauer: () => m.umzug_feld_dauer(),
   projekt: () => m.umzug_feld_projekt(),
   taetigkeit: () => m.umzug_feld_taetigkeit(),
+};
+
+/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-705) */
+export const ABRUF_FEHLER: Record<string, () => string> = {
+  adresse_ungueltig: () => m.umzug_abruf_adresse_ungueltig(),
+  adresse_intern: () => m.umzug_abruf_adresse_intern(),
+  weiterleitung: () => m.umzug_abruf_weiterleitung(),
+  zugang_abgelehnt: () => m.umzug_abruf_zugang_abgelehnt(),
+  rechte_fehlen: () => m.umzug_abruf_rechte_fehlen(),
+  zu_viele_anfragen: () => m.umzug_abruf_zu_viele_anfragen(),
+  nicht_erreichbar: () => m.umzug_abruf_nicht_erreichbar(),
+  antwort_ungueltig: () => m.umzug_abruf_antwort_ungueltig(),
+  antwort_zu_gross: () => m.umzug_abruf_antwort_zu_gross(),
+  zu_viele: () => m.umzug_abruf_zu_viele(),
+  zeitraum: () => m.umzug_abruf_zeitraum(),
 };
 
 /** A calendar day, read at noon so no time zone moves it */

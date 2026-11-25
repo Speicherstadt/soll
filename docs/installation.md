@@ -88,6 +88,7 @@ SOLL_SECRET_KEY=… SOLL_URL=https://soll.example.de SOLL_DATA_DIR=/var/lib/soll
 | `SOLL_URL` | `http://localhost:8200` | Adresse, unter der Soll erreichbar ist: Einladungslinks, Passkeys, die Prüfseite auf dem Stundenzettel |
 | `SOLL_SMTP_URL` | – | SMTP für Mail, etwa `smtps://soll:passwort@mail.example.de:465`; nur zusammen mit `SOLL_MAIL_VON` |
 | `SOLL_MAIL_VON` | – | Absender, etwa `Soll <soll@example.de>` |
+| `SOLL_IMPORT_ALLOWED_ORIGINS` | – | Ursprünge, die ein [Umzug](umzug.md#kimai) abrufen darf, obwohl sie `http` sind oder im eigenen Netz liegen, etwa `https://kimai.intern`; mehrere mit Komma. Sonst nur öffentliche `https`-Adressen |
 | `SOLL_PORT` | `8200` | Port im Container |
 | `SOLL_HOST` | `0.0.0.0` | Adresse im Container |
 | `SOLL_DATA_DIR` | `/data` | Datenverzeichnis mit `soll.db`, den Sicherungen unter `backups/` und den Originaldateien der Importe unter `dateien/` |

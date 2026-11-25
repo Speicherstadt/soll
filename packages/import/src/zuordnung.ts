@@ -21,6 +21,8 @@ export type Zuordnung = {
   /** by the id in the old tool; missing: created anew */
   kunden: Record<string, Ziel>;
   projekte: Record<string, Ziel>;
+  /** activities by their id in the old tool, like customers (S-705); missing: created anew */
+  taetigkeiten?: Record<string, Ziel> | undefined;
   /**
    * The project and activity of a time as the file names them, to an order and an activity of Soll
    * (S-702); null or missing: no booking. The activity "" is the one for times without one.
@@ -92,10 +94,10 @@ const gezaehlt = <K extends string>(werte: readonly string[], name: K) =>
         },
     );
 
-/** The persons a file names, with the number of their times and absences */
+/** The persons a file names, with the number of their times, absences and bookings (S-705) */
 export const personenAus = (daten: ImportDaten) =>
   gezaehlt(
-    [...daten.zeiten, ...daten.abwesenheiten].map((satz) => satz.person),
+    [...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen].map((satz) => satz.person),
     "person",
   );
 

@@ -44,11 +44,32 @@ export type ImportProjekt = {
   nummer: string;
 };
 
+/** An activity of the old tool (S-705; Clockodo's services in S-703 take the same shape) */
+export type ImportTaetigkeit = { externalId: string; zeile: number; name: string };
+
+/**
+ * A booking of project time the old tool keeps of its own (Kimai's timesheets, S-705): a piece of
+ * work of a person from `beginn` to `ende` (UTC milliseconds on whole minutes) on a project and an
+ * activity, both named by their ids in the same file; `tag` is the Berlin day of the piece's time
+ */
+export type ImportBuchung = {
+  externalId: string;
+  zeile: number;
+  person: string;
+  tag: string;
+  beginn: number;
+  ende: number;
+  projekt: string;
+  taetigkeit: string;
+};
+
 export type ImportDaten = {
   zeiten: ImportZeit[];
   abwesenheiten: ImportAbwesenheit[];
   kunden: ImportKunde[];
   projekte: ImportProjekt[];
+  taetigkeiten: ImportTaetigkeit[];
+  buchungen: ImportBuchung[];
 };
 
 export const LESE_GRUENDE = [
@@ -70,6 +91,9 @@ export const LESE_GRUENDE = [
   "zeile_doppelt",
   "dauer_ungueltig",
   "dauer_abweichend",
+  "laeuft_noch",
+  "projekt_unbekannt",
+  "taetigkeit_unbekannt",
 ] as const;
 export type LeseGrund = (typeof LESE_GRUENDE)[number];
 
@@ -108,4 +132,6 @@ export const leer = (): ImportDaten => ({
   abwesenheiten: [],
   kunden: [],
   projekte: [],
+  taetigkeiten: [],
+  buchungen: [],
 });

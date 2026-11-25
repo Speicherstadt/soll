@@ -8,8 +8,8 @@ import { projekteLesen } from "./projekte.ts";
 import { taetigkeitenLesen } from "./taetigkeiten.ts";
 
 /*
- * Customers and orders taken over from another tool (S-701), and bookings made from the project and
- * activity of a time in a spreadsheet (S-702), written by an import in its one transaction with the
+ * Customers and orders taken over from another tool (S-701), activities (S-705), bookings made from
+ * the project and activity of a time in a spreadsheet (S-702) or kept by the tool itself (S-705), written by an import in its one transaction with the
  * import, the tool and their id there (`extern_quelle`, `extern_id`, S-601).
  */
 
@@ -57,6 +57,31 @@ export const projekteUebernehmen = (
       nummer: projekt.nummer,
       externQuelle: herkunft.quelle,
       externId: projekt.externId,
+      angelegtAm: kontext.jetzt,
+      importId: herkunft.importId,
+    });
+};
+
+export type UebernommeneTaetigkeit = { taetigkeitId: string; name: string; externId: string };
+
+/**
+ * Activities of another tool (S-705), not billed: whether work is billed is set per customer,
+ * project, activity and booking there, so the owner decides it here
+ */
+export const taetigkeitenUebernehmen = (
+  s: Schreiber,
+  kontext: Kontext,
+  herkunft: Herkunft,
+  neue: readonly UebernommeneTaetigkeit[],
+): void => {
+  for (const taetigkeit of neue)
+    s.einfuegen("taetigkeiten", {
+      betriebId: kontext.betriebId,
+      taetigkeitId: taetigkeit.taetigkeitId,
+      name: taetigkeit.name,
+      abrechenbar: false,
+      externQuelle: herkunft.quelle,
+      externId: taetigkeit.externId,
       angelegtAm: kontext.jetzt,
       importId: herkunft.importId,
     });

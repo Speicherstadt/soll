@@ -73,6 +73,18 @@ describe("SOLL_WEB_DIR", () => {
   });
 });
 
+describe("SOLL_IMPORT_ALLOWED_ORIGINS", () => {
+  it("allows no origin unless set, then the origins of the list (S-705)", () => {
+    expect(parseEnv({ SOLL_SECRET_KEY: KEY }).importErlaubt).toEqual(new Set());
+    expect(
+      parseEnv({
+        SOLL_SECRET_KEY: KEY,
+        SOLL_IMPORT_ALLOWED_ORIGINS: "https://kimai.intern/pfad, http://192.168.1.5:8001",
+      }).importErlaubt,
+    ).toEqual(new Set(["https://kimai.intern", "http://192.168.1.5:8001"]));
+  });
+});
+
 describe("parseBetriebsEnv", () => {
   it("reads port and data directory without SOLL_SECRET_KEY", () => {
     expect(parseBetriebsEnv({})).toEqual({ port: 8200, dataDir: "data" });

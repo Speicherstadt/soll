@@ -27,6 +27,9 @@ export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   arten: Object.fromEntries(vorschau.arten.map((a) => [a.art, a.vorschlag])),
   kunden: Object.fromEntries(vorschau.kunden.map((k) => [k.externalId, "neu" as const])),
   projekte: Object.fromEntries(vorschau.projekte.map((p) => [p.externalId, "neu" as const])),
+  taetigkeiten: Object.fromEntries(
+    vorschau.taetigkeiten.map((t) => [t.externalId, "neu" as const]),
+  ),
   buchung: {
     projekte: Object.fromEntries(vorschau.buchung.projekte.map((p) => [p.wert, p.vorschlag])),
     taetigkeiten: Object.fromEntries(

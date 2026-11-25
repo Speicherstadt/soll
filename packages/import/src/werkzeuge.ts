@@ -12,7 +12,8 @@ export type Werkzeug = {
   id: string;
   /** the tool's own name, the same in every language */
   name: string;
-  weg: "datei";
+  /** "datei": the owner uploads an export; "api": Soll fetches it with an access (S-705) */
+  weg: "datei" | "api";
   /** the fields of the file, for the mapping of columns */
   felder: readonly string[];
   /** the endings of the files it reads, for the file picker */
@@ -37,5 +38,14 @@ export const WERKZEUGE: readonly Werkzeug[] = [
     felder: TABELLE_FELDER,
     endungen: [".xlsx", ".csv"],
     vorlagen: ["soll-zeiten.xlsx", "soll-zeiten.csv"],
+  },
+  {
+    // the fetch becomes a file of JSON Lines the reader takes like an upload (S-705)
+    id: "kimai",
+    name: "Kimai",
+    weg: "api",
+    felder: [],
+    endungen: [".jsonl"],
+    vorlagen: [],
   },
 ];

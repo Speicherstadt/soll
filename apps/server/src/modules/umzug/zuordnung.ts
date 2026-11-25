@@ -1,6 +1,6 @@
 import type { Zuordnung } from "@soll/import";
 import type { Db } from "../../db/oeffnen.ts";
-import { buchbar, kundenLesen, projekteLesen } from "../projektzeit/index.ts";
+import { buchbar, kundenLesen, projekteLesen, taetigkeitenLesen } from "../projektzeit/index.ts";
 import { erfassteMitglieder } from "./stand.ts";
 
 /*
@@ -38,8 +38,8 @@ const buchungPruefen = (
   return null;
 };
 
-const ids = (ziele: Zuordnung["kunden"]): string[] =>
-  Object.values(ziele).flatMap((ziel) => (typeof ziel === "object" ? [ziel.id] : []));
+const ids = (ziele: Zuordnung["kunden"] | undefined): string[] =>
+  Object.values(ziele ?? {}).flatMap((ziel) => (typeof ziel === "object" ? [ziel.id] : []));
 
 export const zuordnungPruefen = (
   db: Db,
@@ -53,5 +53,8 @@ export const zuordnungPruefen = (
   if (ids(zuordnung.kunden).some((id) => !kunden.has(id))) return "kunde_unbekannt";
   const projekte = new Set(projekteLesen(db, betriebId).map((p) => p.projektId));
   if (ids(zuordnung.projekte).some((id) => !projekte.has(id))) return "projekt_unbekannt";
+  const taetigkeiten = new Set(taetigkeitenLesen(db, betriebId).map((t) => t.taetigkeitId));
+  if (ids(zuordnung.taetigkeiten).some((id) => !taetigkeiten.has(id)))
+    return "taetigkeit_unbekannt";
   return buchungPruefen(db, betriebId, zuordnung);
 };

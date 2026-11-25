@@ -6,7 +6,18 @@ import {
   monateZwischen,
 } from "./plan-abwesenheiten.ts";
 import { buchungenPlanen, buchungenWieder } from "./plan-buchungen.ts";
-import { type Ergebnis, kundePlanen, projektPlanen, zaehlen } from "./plan-projekte.ts";
+import {
+  type Bezugsids,
+  type GenommeneBuchungen,
+  toolBuchungPlanen,
+} from "./plan-buchungen-tool.ts";
+import {
+  type Ergebnis,
+  kundePlanen,
+  projektPlanen,
+  taetigkeitPlanen,
+  zaehlen,
+} from "./plan-projekte.ts";
 import {
   type Art,
   keineZahlen,
@@ -142,7 +153,7 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
 /** Counts and keeps a customer's or an order's result; the id in Soll, or null */
 const uebernehmen = <T>(
   bau: Bau,
-  art: "kunden" | "projekte",
+  art: "kunden" | "projekte" | "taetigkeiten",
   satz: Satz,
   ergebnis: Ergebnis<T>,
 ): string | null => {
@@ -152,21 +163,46 @@ const uebernehmen = <T>(
   return ergebnis.art === "neu" || ergebnis.art === "vorhanden" ? ergebnis.id : null;
 };
 
+/** Customers, orders and activities; the ids in Soll of the orders and activities (S-705) */
 const projekteUndKundenPlanen = (
   bau: Bau,
   daten: ImportDaten,
   zuordnung: Zuordnung,
   stand: Stand,
-) => {
+): Bezugsids => {
   const kundeVon = new Map<string, string | null>();
   for (const kunde of daten.kunden) {
     const ergebnis = kundePlanen(kunde, zuordnung.kunden[kunde.externalId] ?? "neu", stand);
     kundeVon.set(kunde.externalId, uebernehmen(bau, "kunden", kunde, ergebnis));
   }
+  const projekte = new Map<string, string | null>();
   for (const projekt of daten.projekte) {
     const ziel = zuordnung.projekte[projekt.externalId] ?? "neu";
     const kundeId = kundeVon.get(projekt.kunde) ?? null;
-    uebernehmen(bau, "projekte", projekt, projektPlanen(projekt, ziel, kundeId, stand));
+    const ergebnis = projektPlanen(projekt, ziel, kundeId, stand);
+    projekte.set(projekt.externalId, uebernehmen(bau, "projekte", projekt, ergebnis));
+  }
+  const taetigkeiten = new Map<string, string | null>();
+  for (const taetigkeit of daten.taetigkeiten) {
+    const ziel = zuordnung.taetigkeiten?.[taetigkeit.externalId] ?? "neu";
+    const ergebnis = taetigkeitPlanen(taetigkeit, ziel, stand);
+    taetigkeiten.set(taetigkeit.externalId, uebernehmen(bau, "taetigkeiten", taetigkeit, ergebnis));
+  }
+  return { projekte, taetigkeiten };
+};
+
+/** The bookings the old tool kept itself (S-705), on the orders and activities planned before */
+const toolBuchungenPlanen = (
+  bau: Bau,
+  daten: ImportDaten,
+  kontext: { zuordnung: Zuordnung; stand: Stand; ids: Bezugsids },
+) => {
+  const genommen: GenommeneBuchungen = new Map();
+  for (const satz of daten.buchungen) {
+    const ergebnis = toolBuchungPlanen(satz, { ...kontext, genommen });
+    if (ergebnis.art === "abgelehnt") ablehnen(bau, "buchungen", satz, ergebnis.grund);
+    else bau.zahlen.buchungen[ergebnis.art] += 1;
+    if (ergebnis.art === "neu") bau.buchungen.push(ergebnis.buchung);
   }
 };
 
@@ -192,14 +228,16 @@ export const planen = (
     abwesenheiten: [],
     kunden: [],
     projekte: [],
+    taetigkeiten: [],
     buchungen: [],
     monate: [],
     zahlen: keineZahlen(),
     abgelehnt: [],
     beruehrt: new Map(),
   };
-  projekteUndKundenPlanen(bau, daten, zuordnung, stand);
+  const ids = projekteUndKundenPlanen(bau, daten, zuordnung, stand);
   zeitenPlanen(bau, daten, zuordnung, stand);
+  toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids });
   abwesenheitenPlanen(bau, daten, zuordnung, stand);
   const { beruehrt: _, ...plan } = bau;
   return {

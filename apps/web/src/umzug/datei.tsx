@@ -1,8 +1,9 @@
 import { type LeseFehler, WERKZEUGE } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
+import { AbrufFormular } from "./abruf.tsx";
 import { lesefehlerText } from "./texte.ts";
-import type { Datei, Liste, Vorschau } from "./typen.ts";
+import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
 import { base64Von } from "./zustand.ts";
 
 /** The largest file the server takes (apps/server, modules/umzug/datei.ts) */
@@ -22,13 +23,32 @@ export const Lesefehler = (props: { fehler: Liste<LeseFehler> }) => (
   </Show>
 );
 
-/** Step 2: the exported file; the server reads it and answers with the preview */
-export const DateiSchritt = (props: {
+/** What was read: the numbers of records and the lines refused */
+const Gelesen = (props: { vorschau: Vorschau }) => (
+  <>
+    <p role="status">
+      {m.umzug_gelesen({
+        zeiten: props.vorschau.anzahl.zeiten,
+        abwesenheiten: props.vorschau.anzahl.abwesenheiten,
+        kunden: props.vorschau.anzahl.kunden,
+        projekte: props.vorschau.anzahl.projekte,
+      })}
+    </p>
+    <Lesefehler fehler={props.vorschau.lesefehler} />
+  </>
+);
+
+type Props = {
   quelle: string;
   vorschau: Vorschau | null;
   gewaehlt: (datei: Datei) => void;
   zuGross: () => void;
-}) => {
+  arbeitet: boolean;
+  abrufen: (abruf: Abruf) => Promise<boolean>;
+};
+
+/** The file input for a tool whose export the owner uploads */
+const DateiWahl = (props: Props) => {
   const id = createUniqueId();
   const waehlen = async (datei: File | undefined) => {
     if (!datei) return;
@@ -50,21 +70,22 @@ export const DateiSchritt = (props: {
           onChange={(event) => void waehlen(event.currentTarget.files?.[0])}
         />
       </div>
-      <Show when={props.vorschau}>
-        {(vorschau) => (
-          <>
-            <p role="status">
-              {m.umzug_gelesen({
-                zeiten: vorschau().anzahl.zeiten,
-                abwesenheiten: vorschau().anzahl.abwesenheiten,
-                kunden: vorschau().anzahl.kunden,
-                projekte: vorschau().anzahl.projekte,
-              })}
-            </p>
-            <Lesefehler fehler={vorschau().lesefehler} />
-          </>
-        )}
-      </Show>
     </div>
   );
 };
+
+/**
+ * Step 2: the exported file, or for a tool with an API the fetch (S-705); the server reads the file
+ * and answers with the preview
+ */
+export const DateiSchritt = (props: Props) => (
+  <div class="flex flex-col gap-4">
+    <Show
+      when={WERKZEUGE.find((w) => w.id === props.quelle)?.weg === "api"}
+      fallback={<DateiWahl {...props} />}
+    >
+      <AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+    </Show>
+    <Show when={props.vorschau}>{(vorschau) => <Gelesen vorschau={vorschau()} />}</Show>
+  </div>
+);

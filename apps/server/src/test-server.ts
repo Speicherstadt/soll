@@ -2,6 +2,7 @@ import { dirname, join } from "node:path";
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
+import { ersatzHolen } from "./kimai-ersatz.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { type PushSenden, vapidKontakt, vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
@@ -19,6 +20,8 @@ type Optionen = {
   habenFetch?: typeof fetch;
   /** The stand-in for the push service of messages about the plan (S-503) */
   push?: PushSenden;
+  /** The stand-in for a Kimai instance an import fetches from (S-705) */
+  kimaiFetch?: (anfrage: Request) => Promise<Response> | Response;
 };
 
 /**
@@ -65,6 +68,13 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
       ? { vapid, kontakt: vapidKontakt(TEST_URL, undefined), senden: optionen.push }
       : null,
     dateien: dateispeicher(() => join(dirname(datenbank.pfad), "dateien")),
+    // never the network: without a stand-in, no Kimai answers
+    kimai: {
+      holen: ersatzHolen(
+        optionen.kimaiFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
+      ),
+      erlaubt: new Set(),
+    },
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

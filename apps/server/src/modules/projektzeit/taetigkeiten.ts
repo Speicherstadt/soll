@@ -17,7 +17,7 @@ import {
 type Zeile = typeof taetigkeiten.$inferSelect;
 
 /** An activity as the API shows it: `fest` for the four of Soll, which have no name of their own */
-export type Taetigkeit = Omit<Zeile, "betriebId" | "angelegtAm"> & { fest: boolean };
+export type Taetigkeit = Omit<Zeile, "betriebId" | "angelegtAm" | "importId"> & { fest: boolean };
 
 export type NeueTaetigkeit = Extern & { name: string; abrechenbar?: boolean | undefined };
 export type TaetigkeitAenderung = {
@@ -26,7 +26,12 @@ export type TaetigkeitAenderung = {
   archiviert?: boolean | undefined;
 };
 
-const alsTaetigkeit = ({ betriebId: _b, angelegtAm: _a, ...zeile }: Zeile): Taetigkeit => ({
+const alsTaetigkeit = ({
+  betriebId: _b,
+  angelegtAm: _a,
+  importId: _i,
+  ...zeile
+}: Zeile): Taetigkeit => ({
   ...zeile,
   fest: istFesteTaetigkeit(zeile.taetigkeitId),
 });

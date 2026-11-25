@@ -61,6 +61,8 @@ const Schritt = (props: { ablauf: Ablauf }) => {
           vorschau={a.vorschau()}
           gewaehlt={(datei) => void a.dateiGewaehlt(datei)}
           zuGross={() => a.setFehler(m.umzug_fehler_zu_gross())}
+          arbeitet={a.arbeitet()}
+          abrufen={a.abrufen}
         />
       </Match>
       <Match when={a.schritt() === 2 && a.vorschau()}>

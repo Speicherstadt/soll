@@ -16,20 +16,22 @@ const server = Bun.spawn(["bun", "apps/server/src/main.ts"], {
     SOLL_SECRET_KEY: Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64"),
     // the origin the browser calls from (the Vite server on the e2e port), for Better Auth's origin check
     SOLL_URL: "http://localhost:5178",
+    // imports from Kimai fetch from its stand-in on this machine (S-705), allowed by its origin
+    SOLL_IMPORT_ALLOWED_ORIGINS: "http://127.0.0.1:28213",
   },
   stdout: "inherit",
   stderr: "inherit",
 });
-// the stand-in for Haben the tests connect a business to (S-606), on its own port
-const haben = Bun.spawn(["bun", "apps/server/src/haben-ersatz-dienst.ts"], {
-  stdout: "inherit",
-  stderr: "inherit",
-});
+// the stand-ins the tests connect to, each on its own port: Haben (S-606) and Kimai (S-705)
+const ersatz = [
+  "apps/server/src/haben-ersatz-dienst.ts",
+  "apps/server/src/kimai-ersatz-dienst.ts",
+].map((datei) => Bun.spawn(["bun", datei], { stdout: "inherit", stderr: "inherit" }));
 for (const signal of ["SIGINT", "SIGTERM"] as const)
   process.on(signal, () => {
-    haben.kill(signal);
+    for (const dienst of ersatz) dienst.kill(signal);
     server.kill(signal);
   });
 const code = await server.exited;
-haben.kill();
+for (const dienst of ersatz) dienst.kill();
 process.exit(code);

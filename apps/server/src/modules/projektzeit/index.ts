@@ -60,9 +60,11 @@ export {
   buchungUeberschneidet,
   kundenUebernehmen,
   projekteUebernehmen,
+  taetigkeitenUebernehmen,
   type UebernommeneBuchung,
   type UebernommenerKunde,
   type UebernommenesProjekt,
+  type UebernommeneTaetigkeit,
   uebernommeneBuchungen,
 } from "./uebernahme.ts";
 export { type Verbrauch, verbrauchJeProjekt } from "./verbrauch.ts";

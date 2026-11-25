@@ -6,9 +6,9 @@ import { m } from "../paraglide/messages.js";
 import { zeitpunktKurz } from "./texte.ts";
 import { ARTEN, type ImportEintrag } from "./typen.ts";
 
-/** What an import created, all kinds together */
+/** What an import created, all kinds together; an older import counts fewer kinds (S-705) */
 const neuAngelegt = (eintrag: ImportEintrag): number =>
-  ARTEN.reduce((summe, art) => summe + eintrag.zahlen[art].neu, 0);
+  ARTEN.reduce((summe, art) => summe + (eintrag.zahlen[art]?.neu ?? 0), 0);
 
 /** The imports taken over, newest first, each with its original file to download (S-701) */
 export const ImportListe = () => {

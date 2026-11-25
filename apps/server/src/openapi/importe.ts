@@ -1,9 +1,10 @@
 import * as importe from "../routes/importe.ts";
+import { abrufSchema } from "../routes/importe-abruf.ts";
 import type { Operation } from "./dokument.ts";
 
 const PFAD = "/api/v1/importe";
 
-/** Imports from other tools (S-701, S-702): for the owner, in no module */
+/** Imports from other tools (S-701, S-702, S-705): for the owner, in no module */
 export const IMPORTE: readonly Operation[] = [
   {
     methode: "get",
@@ -18,6 +19,14 @@ export const IMPORTE: readonly Operation[] = [
       "Eine Datei lesen: Datensätze, Fehler mit Zeile, Vorschläge zur Zuordnung, Befunde (Inhaber)",
     bereich: "Umzug",
     koerper: importe.vorschauSchema,
+  },
+  {
+    methode: "post",
+    pfad: `${PFAD}/abruf`,
+    zusammenfassung:
+      "Daten eines Zeitraums über die API eines Werkzeugs (Kimai) abrufen; Antwort ist die Datei für Vorschau und Übernahme, der Zugang wird nicht gespeichert (Inhaber)",
+    bereich: "Umzug",
+    koerper: abrufSchema,
   },
   {
     methode: "post",

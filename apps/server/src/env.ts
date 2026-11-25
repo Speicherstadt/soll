@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { erlaubteUrspruenge } from "./modules/umzug/kimai-adresse.ts";
 
 /** 32 random bytes in base64: the key of the encrypted columns and the secret of Better Auth */
 const schluessel = z
@@ -34,6 +35,8 @@ const envSchema = betriebsSchema
     // mail over SMTP (S-306): both or neither; the password in the URL stays in the environment
     SOLL_SMTP_URL: z.url({ protocol: /^smtps?$/ }).optional(),
     SOLL_MAIL_VON: z.string().min(3).optional(),
+    // origins an import may call although http or private (S-705): a Kimai in the own network
+    SOLL_IMPORT_ALLOWED_ORIGINS: z.string().optional(),
   })
   .refine((env) => (env.SOLL_SMTP_URL === undefined) === (env.SOLL_MAIL_VON === undefined), {
     message: "SOLL_SMTP_URL and SOLL_MAIL_VON go together: set both or neither",
@@ -52,6 +55,8 @@ export type Env = {
   url: string;
   /** SMTP for mail, or null when the instance sends none */
   smtp: { url: string; von: string } | null;
+  /** Origins an import may call although http or private (S-705) */
+  importErlaubt: ReadonlySet<string>;
 };
 
 /** Reads the settings or throws with the reason; the server refuses to start without a valid key */
@@ -69,6 +74,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
       parsed.SOLL_SMTP_URL && parsed.SOLL_MAIL_VON
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
+    importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };
 };
 

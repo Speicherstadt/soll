@@ -1,3 +1,4 @@
+import { kimaiLesen } from "./kimai/index.ts";
 import type { Gelesen } from "./modell.ts";
 import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 import { tabelleLesen } from "./tabelle.ts";
@@ -24,6 +25,7 @@ export const SOLL_CSV_VORLAGE = [
 const LESER: Record<string, Quelle["lesen"]> = {
   "soll-csv": (bytes, spalten) => sollCsvLesen(ohneBom(textAusBytes(bytes)), spalten),
   tabelle: tabelleLesen,
+  kimai: (bytes) => kimaiLesen(bytes),
 };
 
 export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({

@@ -20,6 +20,7 @@ import {
   buchbar,
   kundenLesen,
   projekteLesen,
+  taetigkeitenLesen,
 } from "../projektzeit/index.ts";
 import { type Vorschaubefund, vorschauBefunde } from "./befunde.ts";
 import { dateiLesen } from "./datei.ts";
@@ -48,6 +49,9 @@ export type Vorschau = {
   projekte: { externalId: string; name: string; nummer: string; kunde: string }[];
   vorhandeneKunden: { kundeId: string; name: string }[];
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
+  /** activities of a tool that keeps them (S-705), and those of the business to match them with */
+  taetigkeiten: { externalId: string; name: string }[];
+  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string; fest: boolean }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: { anzahl: number; liste: Vorschaubefund[] };
   /** the projects and activities the times name, with Soll's proposal, and what may be booked */
@@ -129,6 +133,10 @@ export const vorschau = (
       name,
       kundeId,
     })),
+    taetigkeiten: daten.taetigkeiten.map(({ externalId, name }) => ({ externalId, name })),
+    vorhandeneTaetigkeiten: taetigkeitenLesen(db, betriebId).map(
+      ({ taetigkeitId, name, fest }) => ({ taetigkeitId, name, fest }),
+    ),
     module: {
       arbeitszeit: modulAktiv(db, betriebId, "arbeitszeit"),
       projektzeit: modulAktiv(db, betriebId, "projektzeit"),

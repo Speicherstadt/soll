@@ -30,6 +30,7 @@ import {
   projektzeiten,
   pushAbos,
   schichten,
+  schichttausche,
   schichtvorlagen,
   standorte,
   stempelungen,
@@ -37,6 +38,7 @@ import {
   stundennachweise,
   stundensaetze,
   taetigkeiten,
+  tauschregeln,
   terminals,
   urlaubshinweise,
 } from "../../db/schema.ts";
@@ -86,6 +88,8 @@ export const kettenTabellen = {
   habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
   kontoAnpassungen: { tabelle: kontoAnpassungen, schluessel: ["anpassungId"] },
   urlaubshinweise: { tabelle: urlaubshinweise, schluessel: ["hinweisId"] },
+  schichttausche: { tabelle: schichttausche, schluessel: ["tauschId"] },
+  tauschregeln: { tabelle: tauschregeln, schluessel: ["betriebId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

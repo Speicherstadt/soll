@@ -4,6 +4,7 @@ import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { schichten } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import { aenderungsMeldungen, type Meldung, unterscheidet } from "./meldungen.ts";
+import { offeneBeenden, offeneTauscheDer } from "./tauschdaten.ts";
 import { type Verweisfehler, verweisFehler } from "./verweise.ts";
 
 export type Schicht = typeof schichten.$inferSelect & PlanSchicht;
@@ -104,7 +105,7 @@ export const schichtAnlegen = (
 /**
  * Changes a shift: moving it to another day or person (drag and drop) keeps its times on the clock
  * (`verschoben` in packages/arbeitszeit), so a night shift stays 22:00 to 6:00 across a change of
- * clocks. What is not given stays. A change to a published shift is published at once and is a new
+ * clocks. What is not given stays. It ends the shift's open swaps (S-504). A change to a published shift is published at once and is a new
  * notice (`veroeffentlicht_am`, § 12 TzBfG, S-503); a change that changes nothing writes nothing.
  */
 export const schichtAendern = (
@@ -130,9 +131,11 @@ export const schichtAendern = (
   if (!neu.ok) return neu;
   if (!unterscheidet(alt, neu.werte)) return { ok: true, schicht: alt, meldungen: [] };
   const veroeffentlichtAm = alt.veroeffentlichtAm === null ? null : kontext.jetzt;
-  const schicht = schreiben(schreibDb, kontext, (s) =>
-    s.aendern("schichten", { schichtId }, { ...neu.werte, veroeffentlichtAm }),
-  );
+  const offene = offeneTauscheDer(db, kontext.betriebId, schichtId);
+  const schicht = schreiben(schreibDb, kontext, (s) => {
+    offeneBeenden(s, offene, kontext);
+    return s.aendern("schichten", { schichtId }, { ...neu.werte, veroeffentlichtAm });
+  });
   return { ok: true, schicht, meldungen: aenderungsMeldungen(alt, schicht) };
 };
 
@@ -148,6 +151,10 @@ export const schichtEntfernen = (
 ): Meldung[] | null => {
   const alt = schichtLesen(db, kontext.betriebId, schichtId);
   if (!alt) return null;
-  schreiben(schreibDb, kontext, (s) => s.loeschen("schichten", { schichtId }));
+  const offene = offeneTauscheDer(db, kontext.betriebId, schichtId);
+  schreiben(schreibDb, kontext, (s) => {
+    offeneBeenden(s, offene, kontext);
+    s.loeschen("schichten", { schichtId });
+  });
   return aenderungsMeldungen(alt, null);
 };

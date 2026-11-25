@@ -55,23 +55,52 @@ const geraetErzeugen = async (abh: KioskAbhaengigkeiten, terminalId: string) => 
 
 const mitToken = (token: string) => ({ authorization: `Bearer ${token}` });
 
+/**
+ * How long a call may take before the queue counts it as no network: a server out of reach behind
+ * a working Wi-Fi leaves `fetch` pending for minutes
+ */
+export const FRIST_MS = 15_000;
+
+const mitFrist = (antwort: Promise<Antwort<unknown>>): Promise<Antwort<unknown>> =>
+  Promise.race([
+    antwort,
+    new Promise<Antwort<unknown>>((fertig) =>
+      setTimeout(() => fertig({ ok: false, status: 0, fehler: "netz" }), FRIST_MS),
+    ),
+  ]);
+
+/**
+ * Changes the stored record of the tablet under the lock, from its latest state: the network calls
+ * run outside the lock, so a stamp taken meanwhile is never held up by them (review of S-803)
+ */
+const geraetAendern = (
+  abh: KioskAbhaengigkeiten,
+  terminalId: string,
+  aenderung: (geraet: KioskGeraet) => KioskGeraet,
+) =>
+  abh.sperre(async () => {
+    const geraet = await abh.ablage.geraet(terminalId);
+    if (geraet) await abh.ablage.geraetSetzen(aenderung(geraet));
+  });
+
 /** Registers the tablet's public key; a key the server already has for another pair stays refused */
 const anmelden = async (
   abh: KioskAbhaengigkeiten,
   token: string,
   geraet: KioskGeraet,
-): Promise<KioskGeraet> => {
-  if (geraet.angemeldet !== "nein") return geraet;
-  const antwort = await abh.api("/api/v1/kiosk/schluessel", {
-    method: "PUT",
-    body: { schluessel: geraet.schluessel },
-    headers: mitToken(token),
-  });
+): Promise<KioskGeraet["angemeldet"]> => {
+  if (geraet.angemeldet !== "nein") return geraet.angemeldet;
+  const antwort = await mitFrist(
+    abh.api("/api/v1/kiosk/schluessel", {
+      method: "PUT",
+      body: { schluessel: geraet.schluessel },
+      headers: mitToken(token),
+    }),
+  );
   const angemeldet = antwort.ok ? "ja" : antwort.status === 409 ? "vergeben" : "nein";
-  if (angemeldet === "nein") return geraet;
-  const neu = { ...geraet, angemeldet } as const;
-  await abh.ablage.geraetSetzen(neu);
-  return neu;
+  if (angemeldet !== "nein")
+    await geraetAendern(abh, geraet.terminalId, (g) => ({ ...g, angemeldet }));
+  return angemeldet;
 };
 
 export type Versand = {
@@ -88,13 +117,15 @@ export const kioskSchlange = (abh: KioskAbhaengigkeiten) => {
    * Makes the key pair on the first start of a pairing, keeps the server's key for credentials and
    * registers the public key; an already paired tablet does this on its next start
    */
-  const vorbereiten = (token: string, terminalId: string, server: Schluessel) =>
-    abh.sperre(async () => {
+  const vorbereiten = async (token: string, terminalId: string, server: Schluessel) => {
+    const geraet = await abh.sperre(async () => {
       const da = (await abh.ablage.geraet(terminalId)) ?? (await geraetErzeugen(abh, terminalId));
-      const geraet = { ...da, server };
-      await abh.ablage.geraetSetzen(geraet);
-      return anmelden(abh, token, geraet);
+      const neu = { ...da, server };
+      await abh.ablage.geraetSetzen(neu);
+      return neu;
     });
+    return { ...geraet, angemeldet: await anmelden(abh, token, geraet) };
+  };
 
   /**
    * Whether the queue can take an entry: a key, the server's key, and a key the server does not
@@ -135,36 +166,45 @@ export const kioskSchlange = (abh: KioskAbhaengigkeiten) => {
     });
   };
 
-  /**
-   * Sends what waits, oldest number first; an entry taken or refused for good leaves the tablet,
-   * at the first that cannot go now the queue stops, so the numbers arrive in order
-   */
-  const uebertragen = (token: string, terminalId: string) =>
-    abh.sperre(async (): Promise<Versand> => {
-      const offen = nachNummer(await abh.ablage.eintraege(terminalId));
-      const da = await abh.ablage.geraet(terminalId);
-      const geraet = da && (await anmelden(abh, token, da));
-      if (offen.length === 0 || geraet?.angemeldet !== "ja")
-        return { erledigt: 0, wartend: offen.length, entkoppelt: false };
-      let erledigt = 0;
-      for (const [index, eintrag] of offen.entries()) {
-        const antwort = await abh.api("/api/v1/kiosk/offline", {
+  /** Sends the entries in order; the lock is taken only to change what is stored */
+  const senden = async (token: string, terminalId: string): Promise<Versand> => {
+    const offen = nachNummer(await abh.ablage.eintraege(terminalId));
+    const geraet = await abh.ablage.geraet(terminalId);
+    if (offen.length === 0 || !geraet || (await anmelden(abh, token, geraet)) !== "ja")
+      return { erledigt: 0, wartend: offen.length, entkoppelt: false };
+    let erledigt = 0;
+    for (const [index, eintrag] of offen.entries()) {
+      const antwort = await mitFrist(
+        abh.api("/api/v1/kiosk/offline", {
           body: koerperFuer(eintrag, abh.jetzt()),
           headers: mitToken(token),
-        });
-        const was = folge(antwort.status, antwort.ok ? "" : antwort.fehler);
-        if (was === "spaeter" || was === "entkoppelt")
-          return { erledigt, wartend: offen.length - index, entkoppelt: was === "entkoppelt" };
-        await abh.ablage.eintragEntfernen(eintrag);
-        erledigt += 1;
-        if (was === "uebertragen")
-          await abh.ablage.geraetSetzen({
-            ...((await abh.ablage.geraet(terminalId)) ?? geraet),
-            zuletzt: abh.jetzt(),
-          });
-      }
-      return { erledigt, wartend: 0, entkoppelt: false };
+        }),
+      );
+      const was = folge(antwort.status, antwort.ok ? "" : antwort.fehler);
+      if (was === "spaeter" || was === "entkoppelt")
+        return { erledigt, wartend: offen.length - index, entkoppelt: was === "entkoppelt" };
+      await abh.sperre(() => abh.ablage.eintragEntfernen(eintrag));
+      erledigt += 1;
+      if (was === "uebertragen")
+        await geraetAendern(abh, terminalId, (g) => ({ ...g, zuletzt: abh.jetzt() }));
+    }
+    return { erledigt, wartend: 0, entkoppelt: false };
+  };
+
+  /** The run under way, so a second call joins it instead of sending the same entries again */
+  let laeuft: Promise<Versand> | null = null;
+
+  /**
+   * Sends what waits, oldest number first; an entry taken or refused for good leaves the tablet,
+   * at the first that cannot go now the queue stops, so the numbers arrive in order. A stamp taken
+   * meanwhile waits for the next run; the server takes the same entry twice as once.
+   */
+  const uebertragen = (token: string, terminalId: string): Promise<Versand> => {
+    laeuft ??= senden(token, terminalId).finally(() => {
+      laeuft = null;
     });
+    return laeuft;
+  };
 
   /** What the kiosk shows: how many entries wait and when the server last took one */
   const stand = async (terminalId: string) => ({

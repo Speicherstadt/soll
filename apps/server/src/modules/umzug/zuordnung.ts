@@ -1,5 +1,6 @@
 import type { Zuordnung } from "@soll/import";
 import type { Db } from "../../db/oeffnen.ts";
+import { standortVorhanden } from "../dienstplan/index.ts";
 import { buchbar, kundenLesen, projekteLesen, taetigkeitenLesen } from "../projektzeit/index.ts";
 import { erfassteMitglieder } from "./stand.ts";
 
@@ -13,7 +14,8 @@ export type ZuordnungFehler =
   | "person_unbekannt"
   | "kunde_unbekannt"
   | "projekt_unbekannt"
-  | "taetigkeit_unbekannt";
+  | "taetigkeit_unbekannt"
+  | "standort_unbekannt";
 
 const gesetzt = (ziele: Record<string, string | null> | undefined): string[] =>
   Object.values(ziele ?? {}).filter((id): id is string => id !== null);
@@ -56,5 +58,8 @@ export const zuordnungPruefen = (
   const taetigkeiten = new Set(taetigkeitenLesen(db, betriebId).map((t) => t.taetigkeitId));
   if (ids(zuordnung.taetigkeiten).some((id) => !taetigkeiten.has(id)))
     return "taetigkeit_unbekannt";
+  // the site of the shifts (S-706): one of the business, never another's
+  if (zuordnung.standort && !standortVorhanden(db, betriebId, zuordnung.standort))
+    return "standort_unbekannt";
   return buchungPruefen(db, betriebId, zuordnung);
 };

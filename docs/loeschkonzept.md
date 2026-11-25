@@ -104,7 +104,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `konto_anpassungen` | P | Startsaldo und Resturlaub zum Stichtag, Auszahlung, Korrekturen der Konten mit Grund; bei einem übernommenen Saldo Import, Werkzeug und Kennung im alten Tool | bleibt nach dem Austritt (offener Punkt) |
 | `urlaubshinweise` | P | Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub | bleibt nach dem Austritt (offener Punkt) |
 | `erinnerungseinstellungen` | P | abgeschaltete Erinnerungen, Mail der Person | bleibt nach dem Austritt (offener Punkt) |
-| `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
+| `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf; bei einer aus Planday oder Crewmeister übernommenen Import, Werkzeug und Kennung im alten Tool | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
 | `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | bleibt (offener Punkt) |
 | `erinnerungen` | V | welche Erinnerung wann an wen ging | bleibt (offener Punkt) |
 | `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am; bei einer aus einer Tabelle oder aus Kimai übernommenen Buchung Import, Werkzeug und Kennung im alten Tool | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |

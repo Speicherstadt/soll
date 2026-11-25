@@ -144,6 +144,10 @@ const schichtenVon = (db: Db, betriebId: string, nutzerId: string) =>
       pauseMinuten: z.pauseMinuten,
       rolle: z.rolle,
       veroeffentlichtAm: z.veroeffentlichtAm === null ? null : iso(z.veroeffentlichtAm),
+      // taken over from a shift planner (S-706): the import, the tool and the id there
+      ...(z.externQuelle === null
+        ? {}
+        : { uebernommen: { importId: z.importId, quelle: z.externQuelle, kennung: z.externId } }),
     }));
 
 const geraeteVon = (db: Db, betriebId: string, nutzerId: string) =>

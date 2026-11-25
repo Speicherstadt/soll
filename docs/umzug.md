@@ -1,10 +1,10 @@
 ---
 title: Umzug aus anderen Tools
 description: >-
-  Wie Soll Zeiten, Abwesenheiten, Salden zum Stichtag, Kunden, Aufträge und Tätigkeiten aus einem
-  anderen Tool oder einer Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo, Kimai,
-  Personio), mit Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und mit den im
-  alten Tool abgeschlossenen Monaten.
+  Wie Soll Zeiten, Abwesenheiten, Schichten, Salden zum Stichtag, Kunden, Aufträge und Tätigkeiten
+  aus einem anderen Tool oder einer Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo,
+  Kimai, Personio, Papershift, Planday, Crewmeister), mit Vorschau, Probelauf, aufbewahrter
+  Originaldatei, ohne Dubletten und mit den im alten Tool abgeschlossenen Monaten.
 ---
 
 # Umzug aus anderen Tools
@@ -41,6 +41,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | Tätigkeit (bei Clockodo: Leistung) | Tätigkeit des Moduls Projektzeit, nicht abrechenbar, bis der Inhaber es ändert |
 | Anwesenheit (Personio) | Stempelungen wie eine Zeit, die Pausen dazwischen wie gebucht (siehe [Personio](#personio)) |
 | Zeitbuchung (Kimai) | Stempelungen wie eine Zeit und eine Buchung der Projektzeit je Arbeitsstück auf das übernommene Projekt und die Tätigkeit (siehe [Kimai](#kimai)) |
+| Geplante Schicht (Planday, Crewmeister) | Schicht im Dienstplan als Entwurf, an dem Standort, den du wählst (siehe [Papershift, Planday und Crewmeister](#papershift-planday-und-crewmeister)) |
 
 Personen legt der Import nicht an: Sie werden vorher eingeladen ([Einrichtung](einrichtung.md)) und
 in der Zuordnung gewählt. Eine Person, die auf „nicht übernehmen“ steht, und eine Abwesenheitsart
@@ -387,3 +388,80 @@ nichts an.
 **Fehler** sagt Soll mit Grund: Zugang abgelehnt, Rechte der Integration fehlen, zu viele Anfragen,
 nicht erreichbar, Weiterleitung, keine Antwort der Personio-API, mehr als 20.000 Datensätze (dann
 einen kürzeren Zeitraum wählen). Einen Abruf wiederholt Soll nicht von selbst.
+
+### Papershift, Planday und Crewmeister
+
+Die drei Schichtplaner holt Soll über ihre API, wie bei Kimai mit einem Zugang, der nur für diesen
+einen Abruf gilt und nirgends gespeichert wird. Ihre Exporte als CSV oder Excel beschreibt keine
+Quelle, die Soll erreichen konnte; wer eine solche Datei hat, nimmt
+[Excel/CSV mit freien Spalten](#excelcsv-mit-freien-spalten). Die Adressen sind fest
+(`app.papershift.com`, `openapi.planday.com` und `id.planday.com`, `api.crewmeister.com`), du gibst
+keine ein.
+
+**Zugang**:
+
+| Werkzeug | Was du eingibst | Woher |
+| --- | --- | --- |
+| Papershift | API-Schlüssel | Einstellungen → API (die API ist bei Papershift ein Zusatz); Papershift verlangt ihn als `api_token` in der Adresse |
+| Planday | App-ID und Token | Einstellungen → Integrationen → API-Zugang: eine App, die Mitarbeiter, Schichten, Stempeluhr und Abwesenheiten lesen darf; Soll tauscht das Token bei `id.planday.com` gegen ein Zugriffstoken |
+| Crewmeister | E-Mail und Passwort | ein Konto mit Leserechten auf die ganze Crew, am besten ein eigenes; Crewmeisters API kennt nur diese Anmeldung |
+
+Der **Zeitraum** ist höchstens ein Jahr lang und darf bis zu 92 Tage in die Zukunft reichen: für den
+kommenden Dienstplan und genehmigten Urlaub. Gestempelte Zeiten holt Soll nur bis heute.
+
+**Was daraus wird**:
+
+| Beim Anbieter | In Soll |
+| --- | --- |
+| Mitarbeiter (Papershift `users`, Planday `employees` auch ehemalige, Crewmeister `members`) | Person der Zuordnung mit ihrem Namen; zwei gleiche Namen mit der Kennung in Klammern |
+| Gestempelte Zeit (Papershift `working_sessions`, Planday Stempeluhr, Crewmeister Stempel) | Arbeitsstücke um die gestempelten Pausen; die Stücke einer Person, die sich berühren, werden eine Zeit mit Kommen und Gehen, die Lücke ist die Pause, wie gestempelt |
+| Geplante Schicht (Planday, Crewmeister) | Schicht im Dienstplan an dem Standort, den du in der Zuordnung wählst, mit Position (Planday) oder Arbeitsort (Crewmeister) als Rolle; eine Schicht ohne Person bleibt offen |
+| Abwesenheit | Abwesenheit mit der zugeordneten Art, genehmigt; halbe Tage als halbe Tage |
+
+**Zeiten**: Beginn auf die Minute abgerundet, Ende aufgerundet, Pausen nach innen gerundet, nie zum
+Nachteil der Person. Papershift: die Pausen einer Arbeitszeit mit ihren Zeitpunkten (`breaks`);
+kennt Papershift nur ihre Länge (`break_duration`, Sekunden), liegt sie in der Mitte. Planday: die
+Stempeluhr mit ihren Pausen, in Ortszeit ohne Versatz geschrieben und in Europe/Berlin gelesen.
+Crewmeister: eine Kette von Stempeln (`chainStartStampId`), Arbeit von `START_WORK` bis zum
+nächsten Stempel; ungültige Stempel zählen nicht. Abgelehnt mit Zeile: eine Zeit, die noch läuft,
+eine ab 24 Stunden und eine Uhrzeit, die es wegen der Zeitumstellung nicht oder zweimal gibt. Die
+Zeiten einer Nachtschicht, die eine Pause nach Mitternacht teilt, übernimmt Soll zusammen oder gar
+nicht.
+
+**Schichten** kommen nur mit dem Modul Dienstplan und nur an einen Standort des Betriebs; ohne
+Standort bleiben sie draußen. Sie kommen als **Entwurf**: du veröffentlichst die Woche, wenn sie
+stimmt, erst dann erfahren es die Mitarbeiter. Eine Schicht, die sich mit einer anderen derselben
+Person überschneidet, lehnt Soll mit Zeile ab. Eine Schicht ist Plan, keine Aufzeichnung: ein
+abgeschlossener Monat sperrt sie nicht. Aus Papershift kommen keine Schichten: dort ist eine Schicht
+ein Platz eines Arbeitsbereichs mit einer Zahl von Personen, und wer darauf eingeplant ist, nennt
+keine Quelle, die Soll erreichen konnte. Entwürfe in Planday (noch nicht veröffentlicht) und in
+Crewmeister (ein Entwurf einer veröffentlichten Schicht) kommen nicht mit.
+
+**Abwesenheiten**: nur genehmigte (Papershift bestätigt, Planday `Approved`, Crewmeister
+`APPROVED`); beantragte nennt der Probelauf mit Zeile als „nicht genehmigt“, abgelehnte und
+zurückgezogene kommen gar nicht. Crewmeister kennt halbe Tage (ab Nachmittag, bis Vormittag), die
+als halbe Tage kommen; eine Abwesenheit nach Stunden nennt Soll mit Zeile als „nur ein Teil des
+Tages“. Die Art heißt wie beim Anbieter: bei Papershift und Crewmeister die eigenen Arten, bei
+Planday `Vacation`, `Absence`, `Flextime` oder `Accrued`. Eine Krankheit wird nur „krank“: Notizen,
+Gründe und Bescheinigungen liest Soll nicht.
+
+**Wiederholbar**: Kennungen sind die ids der Anbieter (eine Zeit trägt die ihres ersten Stücks). Ein
+zweiter Abruf desselben Zeitraums legt nichts an; eine Schicht, die sich beim Anbieter seither
+geändert hat, nennt der Probelauf mit Zeile, statt sie zu überschreiben.
+
+**Fehler** sagt Soll mit Grund wie bei Kimai: Zugang abgelehnt, Rechte fehlen, zu viele Anfragen,
+nicht erreichbar, keine lesbare Antwort, mehr als 20.000 Datensätze. Einen Abruf wiederholt Soll nicht
+von selbst.
+
+**Quellen und Annahmen**: Die Seiten der Anbieter waren nicht erreichbar. Gebaut ist nach
+öffentlichen Projekten, die die APIs benutzen oder beschreiben, genannt in Code und Tests:
+Papershifts eigenes `Papershift/hosted_pages_template`, `maluramichael/papershift-cli`,
+`bestit/bamboohr-connector` und `HelpCode-ai/anythingmcp` für Papershift;
+`borgels/mcp-server-planday` (nach Plandays OpenAPI-Dokumenten) und
+`mindcloud-inc/universal-api-reference` für Planday; `mztechnik/hacs-crewmeister` und
+`HelpCode-ai/anythingmcp` für Crewmeister. Was keine Quelle belegt, ist eine Annahme: bei
+Papershift der Name eines Mitarbeiters (`name`, sonst Vor- und Nachname) und dass `confirmed_at` die
+Bestätigung einer Abwesenheit ist; bei Planday die Pausen der Stempeluhr (`startDateTime`,
+`endDateTime`); bei Crewmeister, dass eine Schicht mit `publishedShiftId` der Entwurf einer
+veröffentlichten ist. Die geplante Pause einer Crewmeister-Schicht nennt keine Quelle, sie kommt
+nicht mit (0 Minuten). Echte, anonymisierte Abrufe ergänzen Menschen.

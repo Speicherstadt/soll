@@ -21,6 +21,9 @@ export const ANLEITUNG: Record<string, () => string> = {
   tabelle: () => m.umzug_anleitung_tabelle(),
   kimai: () => m.umzug_anleitung_kimai(),
   personio: () => m.umzug_anleitung_personio(),
+  papershift: () => m.umzug_anleitung_papershift(),
+  planday: () => m.umzug_anleitung_planday(),
+  crewmeister: () => m.umzug_anleitung_crewmeister(),
 };
 
 const LESEGRUND: Record<LeseGrund, () => string> = {
@@ -98,6 +101,7 @@ export const ART_NAMEN: Record<PlanArt, () => string> = {
   taetigkeiten: () => m.umzug_art_taetigkeiten(),
   buchungen: () => m.umzug_art_buchungen(),
   salden: () => m.umzug_art_salden(),
+  schichten: () => m.umzug_art_schichten(),
 };
 
 export const FELD_NAMEN: Record<string, () => string> = {

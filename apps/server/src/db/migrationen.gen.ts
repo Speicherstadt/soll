@@ -123,5 +123,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0030_salden",
     "sql": "ALTER TABLE `konto_anpassungen` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `konto_anpassungen` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `konto_anpassungen` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `konto_anpassungen_extern` ON `konto_anpassungen` (`betrieb_id`,`extern_quelle`,`extern_id`);"
+  },
+  {
+    "tag": "0031_import_schichten",
+    "sql": "ALTER TABLE `schichten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `schichten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `schichten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `schichten_extern` ON `schichten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
   }
 ];

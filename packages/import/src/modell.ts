@@ -82,6 +82,21 @@ export type ImportSaldo = {
   urlaubHalbtage: number | null;
 };
 
+/**
+ * A planned shift of a shift planner (S-706): instants in UTC milliseconds on whole minutes, the
+ * planned break in minutes, the role as the tool names it (position, workplace); `person` null for
+ * a shift nobody is planned on
+ */
+export type ImportSchicht = {
+  externalId: string;
+  zeile: number;
+  person: string | null;
+  beginn: number;
+  ende: number;
+  pauseMinuten: number;
+  rolle: string;
+};
+
 export type ImportDaten = {
   zeiten: ImportZeit[];
   abwesenheiten: ImportAbwesenheit[];
@@ -90,6 +105,7 @@ export type ImportDaten = {
   taetigkeiten: ImportTaetigkeit[];
   buchungen: ImportBuchung[];
   salden: ImportSaldo[];
+  schichten: ImportSchicht[];
 };
 
 export const LESE_GRUENDE = [
@@ -160,4 +176,5 @@ export const leer = (): ImportDaten => ({
   taetigkeiten: [],
   buchungen: [],
   salden: [],
+  schichten: [],
 });

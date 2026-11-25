@@ -28,6 +28,8 @@ export type Zuordnung = {
    * (S-702); null or missing: no booking. The activity "" is the one for times without one.
    */
   buchung?: Buchungszuordnung | undefined;
+  /** the site of the business the planned shifts of a shift planner go to (S-706); none: not taken */
+  standort?: string | null | undefined;
 };
 
 export type Buchungszuordnung = {
@@ -102,9 +104,13 @@ const gezaehlt = <K extends string>(werte: readonly string[], name: K) =>
 /** The persons a file names, with the number of their times, absences and bookings (S-705) */
 export const personenAus = (daten: ImportDaten) =>
   gezaehlt(
-    [...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen, ...daten.salden].map(
-      (satz) => satz.person,
-    ),
+    [
+      ...[...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen, ...daten.salden].map(
+        (satz) => satz.person,
+      ),
+      // a shift nobody is planned on names no person (S-706)
+      ...daten.schichten.flatMap((schicht) => (schicht.person === null ? [] : [schicht.person])),
+    ],
     "person",
   );
 

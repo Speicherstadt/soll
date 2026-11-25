@@ -20,7 +20,8 @@ export const base64Von = (bytes: Uint8Array): string => {
 
 /**
  * Soll's proposal: members by name, kinds by word, every customer, order and activity created anew,
- * the projects and activities of a spreadsheet's times to the order and activity known by their name
+ * the projects and activities of a spreadsheet's times to the order and activity known by their
+ * name, shifts to the only site
  */
 export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   personen: Object.fromEntries(vorschau.personen.map((p) => [p.person, p.vorschlag])),
@@ -36,6 +37,8 @@ export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
       vorschau.buchung.taetigkeiten.map((t) => [t.wert, t.vorschlag]),
     ),
   },
+  // the shifts of a shift planner (S-706) to the business's site when it has only one
+  standort: vorschau.standorte.length === 1 ? (vorschau.standorte[0]?.standortId ?? null) : null,
 });
 
 /** The columns as the server takes them: a field without a column as "" (none, not proposed) */

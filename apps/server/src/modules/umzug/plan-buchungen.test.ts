@@ -89,7 +89,7 @@ describe("bookings from the project and activity of a time (S-702)", () => {
       mitZeiten(montage()),
       MIT_BUCHUNG,
       null,
-      stand({ module: { arbeitszeit: true, projektzeit: false } }),
+      stand({ module: { arbeitszeit: true, projektzeit: false, dienstplan: true } }),
     );
     expect(aus.zahlen.zeiten.neu).toBe(1);
     expect(aus.abgelehnt).toEqual([
@@ -119,6 +119,7 @@ describe("bookings from the project and activity of a time (S-702)", () => {
           taetigkeiten: new Map(),
           buchungen: new Set(buchungen),
           salden: new Map(),
+          schichten: new Map(),
         },
       });
     const wieder = planen(

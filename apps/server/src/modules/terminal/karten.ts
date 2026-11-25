@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, max } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { karten } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
@@ -16,12 +16,27 @@ export type Karte = typeof karten.$inferSelect;
 /** The purpose of a card's encrypted keys: bound to business and card (geheim/index.ts) */
 const zweck = (betriebId: string, karteId: string) => `karte:${betriebId}:${karteId}`;
 
-const karteMitKennung = (db: Db, betriebId: string, kennung: string): Karte | undefined =>
+/** The card in use with this lookup value; revoked cards with it may be there besides */
+const aktiveKarteMitKennung = (db: Db, betriebId: string, kennung: string): Karte | undefined =>
   db
     .select()
     .from(karten)
-    .where(and(eq(karten.betriebId, betriebId), eq(karten.uidKennung, kennung)))
+    .where(
+      and(
+        eq(karten.betriebId, betriebId),
+        eq(karten.uidKennung, kennung),
+        isNull(karten.widerrufenAm),
+      ),
+    )
     .get();
+
+/** The highest read counter any card of the business with this UID reached, or null */
+const hoechsterZaehler = (db: Db, betriebId: string, kennung: string): number | null =>
+  db
+    .select({ zaehler: max(karten.zaehler) })
+    .from(karten)
+    .where(and(eq(karten.betriebId, betriebId), eq(karten.uidKennung, kennung)))
+    .get()?.zaehler ?? null;
 
 export const karteLesen = (db: Db, betriebId: string, karteId: string): Karte | undefined =>
   db
@@ -31,9 +46,11 @@ export const karteLesen = (db: Db, betriebId: string, karteId: string): Karte | 
     .get();
 
 /**
- * Enters a card for a person. A UID another card of the business holds is refused (`vergeben`); a
- * revoked card with the same UID is taken over with its read counter, which on the card never goes
- * back either, so a SUN message read before the revocation stays used up.
+ * Enters a card for a person. A UID another card in use holds is refused (`vergeben`). A UID
+ * entered before and revoked becomes a new card with an id of its own, so the old card's links stay
+ * with its person (Auskunft), but it starts from the read counter the UID reached: on the card the
+ * counter never goes back either, so a SUN message read before the revocation stays used up. Both
+ * are read inside the write transaction, which holds the write lock.
  */
 export const karteEintragen = (
   db: Db,
@@ -43,10 +60,10 @@ export const karteEintragen = (
   eingabe: KartenEingabe,
 ): { ok: true; karteId: string } | { ok: false; grund: "vergeben" } => {
   const kennung = kartenKennung(schluessel.karte, kontext.betriebId, eingabe.uid);
-  const bisher = karteMitKennung(db, kontext.betriebId, kennung);
-  if (bisher && bisher.widerrufenAm === null) return { ok: false, grund: "vergeben" };
-  const karteId = bisher?.karteId ?? crypto.randomUUID();
+  const karteId = crypto.randomUUID();
   const werte = {
+    betriebId: kontext.betriebId,
+    karteId,
     nutzerId: eingabe.nutzerId,
     art: eingabe.art,
     uidKennung: kennung,
@@ -58,16 +75,15 @@ export const karteEintragen = (
             JSON.stringify({ meta: eingabe.meta, datei: eingabe.datei }),
           )
         : null,
-    widerrufenAm: null,
     angelegtVon: kontext.akteur,
     angelegtAm: kontext.jetzt,
   };
-  schreiben(schreibDb, kontext, (s) =>
-    bisher
-      ? s.aendern("karten", { karteId }, werte)
-      : s.einfuegen("karten", { betriebId: kontext.betriebId, karteId, ...werte }),
-  );
-  return { ok: true, karteId };
+  return schreiben(schreibDb, kontext, (s) => {
+    if (aktiveKarteMitKennung(db, kontext.betriebId, kennung))
+      return { ok: false as const, grund: "vergeben" as const };
+    s.einfuegen("karten", { ...werte, zaehler: hoechsterZaehler(db, kontext.betriebId, kennung) });
+    return { ok: true as const, karteId };
+  });
 };
 
 /**
@@ -110,10 +126,8 @@ export const karteVonUid = (
   schluessel: TerminalSchluessel,
   betriebId: string,
   uid: string,
-): Karte | undefined => {
-  const karte = karteMitKennung(db, betriebId, kartenKennung(schluessel.karte, betriebId, uid));
-  return karte && karte.widerrufenAm === null ? karte : undefined;
-};
+): Karte | undefined =>
+  aktiveKarteMitKennung(db, betriebId, kartenKennung(schluessel.karte, betriebId, uid));
 
 const kartenSchluessel = (spalten: Uint8Array, karte: Karte) => {
   if (karte.schluessel === null) return undefined;

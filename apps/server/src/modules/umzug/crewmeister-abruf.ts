@@ -11,6 +11,7 @@ import {
   type SchichtplanerDeps,
   type Seite,
   tokenAus,
+  zeitenBis,
 } from "./schichtplaner-abruf.ts";
 
 /*
@@ -39,7 +40,7 @@ const mitternacht = (tag: Tag) => new Date(beginnInBerlin(tag)).toISOString();
 
 /** The lists of a fetch and their filters (RSQL; days `yyyy-MM-dd`); times only until today */
 const LISTEN = (z: { von: Tag; bis: Tag; heute: Tag }) => {
-  const zeitenBis = z.bis < z.heute ? z.bis : z.heute;
+  const bisHeute = zeitenBis(z);
   return [
     ["members", "/api/v3/platform-app/members", ""],
     ["absenceTypes", "/api/v3/absencemanager/absence-type-settings", ""],
@@ -53,7 +54,7 @@ const LISTEN = (z: { von: Tag; bis: Tag; heute: Tag }) => {
     [
       "stamps",
       "/api/v3/timetracking/stamps",
-      `allocationDate=ge=${z.von};allocationDate=le=${zeitenBis}`,
+      `allocationDate=ge=${z.von};allocationDate=le=${bisHeute}`,
     ],
     ["absences", "/api/v3/absencemanager/absences", `from=le=${z.bis};to=ge=${z.von}`],
   ] as const;

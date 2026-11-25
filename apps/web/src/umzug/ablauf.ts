@@ -174,6 +174,10 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
       geaendert((e) => {
         if (e.buchung) e.buchung.taetigkeiten[wert] = taetigkeitId;
       }),
+    standort: (standortId) =>
+      geaendert((e) => {
+        e.standort = standortId;
+      }),
   };
 };
 

@@ -1,8 +1,9 @@
 import { type LeseFehler, WERKZEUGE } from "@soll/import";
-import { createUniqueId, For, Show } from "solid-js";
+import { createUniqueId, For, Match, Show, Switch } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { AbrufFormular } from "./abruf.tsx";
 import { KimaiAbrufFormular } from "./abruf-kimai.tsx";
+import { SchichtplanerAbrufFormular } from "./abruf-schichtplaner.tsx";
 import { lesefehlerText } from "./texte.ts";
 import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
 import { base64Von } from "./zustand.ts";
@@ -54,6 +55,9 @@ const Dateiwahl = (props: {
 
 type Weg = "datei" | "api";
 
+/** The shift planners, which share one form (S-706) */
+const SCHICHTPLANER = ["papershift", "planday", "crewmeister"] as const;
+
 /** File or API, for a tool that offers both (S-703); Kimai has only the API (S-705) */
 const Wegwahl = (props: { weg: Weg; setWeg: (weg: Weg) => void }) => (
   <fieldset class="flex flex-wrap gap-2">
@@ -98,12 +102,20 @@ export const DateiSchritt = (props: {
           <Dateiwahl quelle={props.quelle} gewaehlt={props.gewaehlt} zuGross={props.zuGross} />
         }
       >
-        <Show
-          when={props.quelle === "kimai"}
-          fallback={<AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />}
-        >
-          <KimaiAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
-        </Show>
+        <Switch fallback={<AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />}>
+          <Match when={props.quelle === "kimai"}>
+            <KimaiAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+          </Match>
+          <Match when={SCHICHTPLANER.find((id) => id === props.quelle)}>
+            {(werkzeug) => (
+              <SchichtplanerAbrufFormular
+                werkzeug={werkzeug()}
+                arbeitet={props.arbeitet}
+                abrufen={props.abrufen}
+              />
+            )}
+          </Match>
+        </Switch>
       </Show>
       <Show when={props.vorschau}>
         {(vorschau) => (
@@ -117,6 +129,9 @@ export const DateiSchritt = (props: {
                 taetigkeiten: vorschau().anzahl.taetigkeiten,
               })}
             </p>
+            <Show when={vorschau().anzahl.schichten > 0}>
+              <p>{m.umzug_gelesen_schichten({ schichten: vorschau().anzahl.schichten })}</p>
+            </Show>
             <Lesefehler fehler={vorschau().lesefehler} />
           </>
         )}

@@ -5,6 +5,7 @@ import { ART } from "../abwesenheiten/text.ts";
 import { m } from "../paraglide/messages.js";
 import { Abschnitt, type Option, Zeile } from "./auswahl.tsx";
 import { type BuchungAendern, BuchungZuordnung } from "./buchung.tsx";
+import { SchichtZuordnung } from "./schichten.tsx";
 import { FELD_NAMEN } from "./texte.ts";
 import type { Vorschau } from "./typen.ts";
 
@@ -33,6 +34,8 @@ export type Aendern = BuchungAendern & {
   kunde: (externalId: string, ziel: Ziel) => void;
   projekt: (externalId: string, ziel: Ziel) => void;
   taetigkeit: (externalId: string, ziel: Ziel) => void;
+  /** the site of a shift planner's shifts (S-706) */
+  standort: (standortId: string | null) => void;
 };
 
 const Spalten = (props: {
@@ -226,6 +229,11 @@ export const ZuordnungSchritt = (props: {
       vorschau={props.vorschau}
       zuordnung={props.zuordnung}
       aendern={props.aendern}
+    />
+    <SchichtZuordnung
+      vorschau={props.vorschau}
+      zuordnung={props.zuordnung}
+      standort={props.aendern.standort}
     />
     <Abgeschlossen
       bis={props.abgeschlossenBis}

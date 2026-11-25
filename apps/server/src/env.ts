@@ -40,6 +40,11 @@ const envSchema = betriebsSchema
       .url({ protocol: /^https?$/ })
       .optional()
       .transform((url) => url?.replace(/\/+$/, "")),
+    // one stand-in for Papershift, Planday and Crewmeister (S-706); set only in the e2e tests
+    SOLL_SCHICHTPLANER_API: z
+      .url({ protocol: /^https?$/ })
+      .optional()
+      .transform((url) => url?.replace(/\/+$/, "")),
     // origins an import may call although http or private (S-705): a Kimai in the own network
     SOLL_IMPORT_ALLOWED_ORIGINS: z.string().optional(),
   })
@@ -62,6 +67,8 @@ export type Env = {
   smtp: { url: string; von: string } | null;
   /** Clockodo's API for imports, or null for its real address (S-703) */
   clockodoApi: string | null;
+  /** One stand-in for the shift planners' APIs, or null for their real addresses (S-706) */
+  schichtplanerApi: string | null;
   /** Origins an import may call although http or private (S-705) */
   importErlaubt: ReadonlySet<string>;
 };
@@ -82,6 +89,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
     clockodoApi: parsed.SOLL_CLOCKODO_API ?? null,
+    schichtplanerApi: parsed.SOLL_SCHICHTPLANER_API ?? null,
     importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };
 };

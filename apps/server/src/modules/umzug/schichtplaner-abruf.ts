@@ -118,6 +118,10 @@ export const alleSeiten = async (
   }
 };
 
+/** The last day of a period whose times are fetched: times are records, none lies ahead of today */
+export const zeitenBis = (zeitraum: { bis: string; heute: string }): string =>
+  [zeitraum.bis, zeitraum.heute].sort()[0] as string;
+
 /** An address of the tool with its query */
 export const adresse = (basis: string, pfad: string, abfrage: Record<string, string | number>) => {
   const url = new URL(`${basis}${pfad}`);

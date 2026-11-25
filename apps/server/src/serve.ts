@@ -13,7 +13,13 @@ import {
 } from "./modules/erinnerungen/index.ts";
 import { smtpMailer } from "./modules/mail/index.ts";
 import { DATENBANK } from "./modules/sicherung/index.ts";
-import { CLOCKODO_API, dateispeicher, sicherHolen } from "./modules/umzug/index.ts";
+import {
+  CLOCKODO_API,
+  dateispeicher,
+  SCHICHTPLANER_ADRESSEN,
+  type SchichtplanerAdressen,
+  sicherHolen,
+} from "./modules/umzug/index.ts";
 
 const lesen = () => {
   try {
@@ -31,6 +37,17 @@ const lesen = () => {
 };
 
 /** Starts the server: settings, database with its migrations, VAPID keys, reminders, HTTP */
+/** The shift planners' addresses, or all of one stand-in, whose paths do not overlap (S-706) */
+const adressenVon = (ersatz: string | null): SchichtplanerAdressen =>
+  ersatz === null
+    ? SCHICHTPLANER_ADRESSEN
+    : {
+        papershift: `${ersatz}/public_api/v1`,
+        planday: ersatz,
+        plandayId: ersatz,
+        crewmeister: ersatz,
+      };
+
 export const serverStarten = () => {
   const env = lesen();
   mkdirSync(env.dataDir, { recursive: true });
@@ -69,6 +86,8 @@ export const serverStarten = () => {
     clockodo: { fetch, basis: env.clockodoApi ?? CLOCKODO_API },
     // Kimai instances for imports (S-705): public https only, unless the operator allows an origin
     kimai: { holen: sicherHolen(), erlaubt: env.importErlaubt },
+    // Papershift, Planday and Crewmeister at their own addresses (S-706); a stand-in only in e2e
+    schichtplaner: { holen: sicherHolen(), adressen: adressenVon(env.schichtplanerApi) },
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)

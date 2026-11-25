@@ -24,6 +24,8 @@ type Optionen = {
   push?: PushSenden;
   /** The stand-in for a Kimai instance an import fetches from (S-705) */
   kimaiFetch?: (anfrage: Request) => Promise<Response> | Response;
+  /** The stand-ins for Papershift, Planday and Crewmeister, by the host asked (S-706) */
+  schichtplanerFetch?: (anfrage: Request) => Promise<Response> | Response;
 };
 
 /**
@@ -84,6 +86,18 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
         optionen.kimaiFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
       ),
       erlaubt: new Set(),
+    },
+    // never the network: without the stand-ins, no shift planner answers
+    schichtplaner: {
+      holen: ersatzHolen(
+        optionen.schichtplanerFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
+      ),
+      adressen: {
+        papershift: "https://papershift.test/public_api/v1",
+        planday: "https://planday.test",
+        plandayId: "https://id.planday.test",
+        crewmeister: "https://crewmeister.test",
+      },
     },
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };

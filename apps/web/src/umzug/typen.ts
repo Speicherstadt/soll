@@ -3,7 +3,14 @@ import type { LeseFehler, Ziel } from "@soll/import";
 
 /* What the API of imports answers (apps/server, routes/importe.ts; S-701) */
 
-export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte" | "taetigkeiten" | "buchungen";
+export type Art =
+  | "zeiten"
+  | "abwesenheiten"
+  | "kunden"
+  | "projekte"
+  | "taetigkeiten"
+  | "buchungen"
+  | "schichten";
 export const ARTEN: readonly Art[] = [
   "zeiten",
   "abwesenheiten",
@@ -11,6 +18,7 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "schichten",
 ];
 
 /**
@@ -49,7 +57,9 @@ export type Vorschau = {
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
   taetigkeiten: { externalId: string; name: string }[];
   vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
-  module: { arbeitszeit: boolean; projektzeit: boolean };
+  module: { arbeitszeit: boolean; projektzeit: boolean; dienstplan: boolean };
+  /** the sites the shifts of a shift planner may go to (S-706) */
+  standorte: { standortId: string; name: string }[];
   befunde: Liste<Vorschaubefund>;
   buchung: {
     projekte: Wertvorschlag[];
@@ -100,7 +110,11 @@ export type Datei = { name: string; inhalt: string };
 export type Abruf = {
   zugang:
     | { nutzer: string; schluessel: string }
-    | { instanz: string; token: string; benutzer: string | null };
+    | { instanz: string; token: string; benutzer: string | null }
+    // the shift planners (S-706): Papershift's token, Planday's app, a Crewmeister account
+    | { token: string }
+    | { appId: string; token: string }
+    | { email: string; passwort: string };
   von: string;
   bis: string;
 };

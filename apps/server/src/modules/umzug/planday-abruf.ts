@@ -17,6 +17,7 @@ import {
   type SchichtplanerDeps,
   type Seite,
   tokenAus,
+  zeitenBis,
 } from "./schichtplaner-abruf.ts";
 
 /*
@@ -120,10 +121,10 @@ export const plandayAbrufen = async (
     Authorization: `Bearer ${token.wert}`,
     "X-ClientId": zugang.appId,
   });
-  const zeitenBis = zeitraum.heute < zeitraum.bis ? zeitraum.heute : zeitraum.bis;
+  const bisHeute = zeitenBis(zeitraum);
   const antworten: Record<string, unknown[]> = {};
   let bisher = 0;
-  for (const [art, pfad, abfrage, versatz] of LISTEN({ ...zeitraum, zeitenBis })) {
+  for (const [art, pfad, abfrage, versatz] of LISTEN({ ...zeitraum, zeitenBis: bisHeute })) {
     const geholt = await alleSeiten(
       k,
       (_, gelesen) =>

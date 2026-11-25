@@ -12,6 +12,8 @@ import {
   type ClockodoDeps,
   type Dateispeicher,
   type KimaiDeps,
+  SCHICHTPLANER_ADRESSEN,
+  type SchichtplanerDeps,
   sicherHolen,
 } from "./modules/umzug/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
@@ -87,6 +89,8 @@ export type AppDeps = {
   clockodo?: ClockodoDeps;
   /** How the server calls a Kimai instance for an import (S-705); a stand-in in tests */
   kimai?: KimaiDeps;
+  /** How the server calls Papershift, Planday and Crewmeister for an import (S-706) */
+  schichtplaner?: SchichtplanerDeps;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -108,6 +112,7 @@ export const createApp = ({
   dateien,
   clockodo = { fetch, basis: CLOCKODO_API },
   kimai = { holen: sicherHolen(), erlaubt: new Set() },
+  schichtplaner = { holen: sicherHolen(), adressen: SCHICHTPLANER_ADRESSEN },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -153,7 +158,10 @@ export const createApp = ({
     .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
-    .route("/importe", importRouten(db, schreibDb, now, dateien, { clockodo, kimai }))
+    .route(
+      "/importe",
+      importRouten(db, schreibDb, now, dateien, { clockodo, kimai, schichtplaner }),
+    )
     .route(
       "/",
       modulRouten(db, {

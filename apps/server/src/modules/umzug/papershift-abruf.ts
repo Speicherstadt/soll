@@ -9,6 +9,7 @@ import {
   SCHICHTPLANER_ADRESSEN,
   type SchichtplanerDeps,
   type Seite,
+  zeitenBis,
 } from "./schichtplaner-abruf.ts";
 
 /*
@@ -54,8 +55,7 @@ export const papershiftAbrufen = async (
   const antworten: Record<string, unknown[]> = {};
   let bisher = 0;
   for (const [art, pfad, schluessel, mitZeitraum] of LISTEN) {
-    const ende =
-      art === "workingSessions" && zeitraum.heute < zeitraum.bis ? zeitraum.heute : zeitraum.bis;
+    const ende = art === "workingSessions" ? zeitenBis(zeitraum) : zeitraum.bis;
     const abfrage = {
       api_token: zugang.token,
       interface_language: "de",

@@ -120,6 +120,16 @@ describe("the tablet's offline queue (S-803)", () => {
     ]);
   });
 
+  it("keeps a stamp whose online call timed out at the time of the tap, not of queueing", async () => {
+    const a = aufbau(() => 0);
+    await a.schlange.vorbereiten(TOKEN, TERMINAL, await serverSchluessel());
+    // tapped at 07:57:45, /stempeln got no answer within 15 s, queued at 07:58
+    const eintrag = await a.schlange.aufnehmen(TERMINAL, PIN, "kommen", um("07:57") + 45_000);
+    expect(eintrag?.geraetZeitpunkt).toBe(um("07:57") + 45_000);
+    // a stamp from the offline view: the time it is taken in
+    expect((await a.schlange.aufnehmen(TERMINAL, PIN, "gehen"))?.geraetZeitpunkt).toBe(um("07:58"));
+  });
+
   it("takes nothing before it knows the server's key", async () => {
     const a = aufbau();
     expect(await a.schlange.bereit(TERMINAL)).toBe(false);

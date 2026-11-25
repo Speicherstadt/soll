@@ -140,6 +140,25 @@ describe("review of S-803: the offline queue of the terminal", { timeout: 60_000
     expect(await e.tagVonLea()).toMatchObject([{ art: "gehen" }]);
   });
 
+  it("makes no second stamp when the kiosk queued a /stempeln that timed out after FRIST_MS", async () => {
+    const e = await elbblick();
+    // the tap at 07:58 reaches the server, the answer does not come within the 15 s deadline
+    const online = await e.geraet.anfrage("/api/v1/kiosk/stempeln", {
+      body: { ausweis: { pin: "471100" }, art: "kommen", geraetZeitpunkt: JETZT },
+    });
+    expect(online.status).toBe(201);
+    // the kiosk queues it with the time of the tap (dienst.ts) and sends it 20 s later
+    e.server.stelleUhr(JETZT + 20_000);
+    const antwort = await e.offline.stempeln({
+      nummer: 1,
+      ausweis: { pin: "471100" },
+      geraetZeitpunkt: JETZT,
+      gesendetAm: JETZT + 20_000,
+    });
+    expect(await e.tagVonLea()).toHaveLength(1);
+    expect(antwort.status).toBe(200);
+  });
+
   it("makes no second stamp when an online stamp's answer was lost and the tablet queued it", async () => {
     const e = await elbblick();
     // the server stamps at 07:58, the answer never reaches the tablet

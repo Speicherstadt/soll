@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { tage } from "../pruefung/testhilfen.ts";
 import { einsatzAnteile } from "./anteile.ts";
-import { DI, MO, SPAETER, schicht, uhr, um } from "./testhilfen.ts";
+import { DI, kommen, MO, SPAETER, schicht, uhr, um } from "./testhilfen.ts";
 
 /*
  * The working day and the minutes of each call-out as working time (R-12, S-505 review): a call-out
@@ -65,5 +65,14 @@ describe("einsatzAnteile", () => {
     expect(
       einsatzAnteile([], [einsatz("2026-10-25T01:30+02:00", "2026-10-25T02:30+01:00")]),
     ).toEqual([{ tag: "2026-10-25", minuten: 120 }]);
+  });
+});
+
+describe("einsatzAnteile with an open shift (review S-505, round 2)", () => {
+  it("a forgotten Gehen holds at most 24 hours, a call-out two days later counts", () => {
+    const gestempelt = tage([kommen(uhr("16", "8:00"))], SPAETER);
+    expect(
+      einsatzAnteile(gestempelt, [{ beginn: um(uhr("18", "2:00")), ende: um(uhr("18", "3:00")) }]),
+    ).toEqual([{ tag: "2026-11-18", minuten: 60 }]);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { monatStatus, pruefexportPerson, stundenzettelAus } from "../modules/arbeitszeit/index.ts";
-import { JETZT, nachtrag, um } from "./monat-testhilfen.ts";
+import { JETZT, type Json, json, nachtrag, um } from "./monat-testhilfen.ts";
 import {
   abends,
   einsatz,
@@ -90,5 +90,32 @@ describe("review S-505: call-out at the end of a closed month", () => {
     const november = (await summen(w.jonas, "2026-11", w.jonas.nutzerId))
       .gearbeitetMinuten as number;
     expect(november - vorher).toBeGreaterThanOrEqual(480);
+  });
+});
+
+describe("review S-505, round 2: a finding of a joined shift never vanishes", () => {
+  it("§ 3 of a call-out on 31.10. joined to work on 1.11. shows in November once October is closed", async () => {
+    const w = await mitPlan();
+    await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
+    await nachtragen(w.jonas, einsatz("2026-10-31T23:30:00+01:00", "2026-10-31T23:50:00+01:00"));
+    await w.jonas.anfrage("/api/v1/arbeitszeit/monat/bestaetigen", { body: { monat: "2026-10" } });
+    const zu = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-10", nutzerId: w.jonas.nutzerId },
+    });
+    expect(zu.status).toBe(201);
+    for (const [art, zeit] of [
+      ["kommen", "2026-11-01T00:00:00+01:00"],
+      ["pause_beginn", "2026-11-01T05:00:00+01:00"],
+      ["pause_ende", "2026-11-01T05:45:00+01:00"],
+      ["gehen", "2026-11-01T10:40:00+01:00"],
+    ] as const)
+      expect((await nachtrag(w.jonas, { art, zeitpunkt: um(zeit), grund: "Zettel" })).status).toBe(
+        201,
+      );
+    const november = await json(
+      await w.jonas.anfrage(`/api/v1/arbeitszeit/monat?monat=2026-11&nutzerId=${w.jonas.nutzerId}`),
+    );
+    const befunde = (november.inhalt as Json).befunde as Json[];
+    expect(befunde.map((b) => [b.regel, b.norm])).toContainEqual(["R-02", "§ 3 Satz 2 ArbZG"]);
   });
 });

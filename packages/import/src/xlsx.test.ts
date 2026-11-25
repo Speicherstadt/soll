@@ -129,3 +129,21 @@ describe("a workbook that would harm the server is refused (S-702)", () => {
     expect(zipEintraege(new Uint8Array([0x50, 0x4b, 3, 4]))).toBeNull();
   });
 });
+
+describe("review of S-702: the Excel reader", () => {
+  it("refuses a DTD in the styles or the relationships of a workbook", () => {
+    for (const pfad of ["xl/styles.xml", "xl/_rels/workbook.xml.rels"]) {
+      const b = mappe(blattXml('<row r="1"><c><v>1</v></c></row>'), [], {
+        [pfad]: new TextEncoder().encode('<!DOCTYPE x [<!ENTITY a "b">]><styleSheet/>'),
+      });
+      expect(xlsxLesen(b, 10)).toEqual({ fehler: "unlesbar" });
+    }
+  });
+
+  it("reads a shared-string cell without a value as empty, not as the first string", () => {
+    const blatt = blattXml('<row r="1"><c r="A1" t="s"/><c r="B1" t="s"><v>0</v></c></row>');
+    expect(zeilenVon(mappe(blatt, ["erster"])).zeilen).toEqual([
+      { zeile: 1, felder: ["", "erster"] },
+    ]);
+  });
+});

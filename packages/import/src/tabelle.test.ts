@@ -184,3 +184,18 @@ describe("a spreadsheet of times with free columns (S-702)", () => {
     expect(lesen(viele).fehler).toEqual([{ zeile: MAX_DATENSAETZE + 2, grund: "zu_viele" }]);
   });
 });
+
+describe("review of S-702", () => {
+  it("accepts a duration that matches begin and end with seconds", () => {
+    expect(
+      lesen(["Person;Datum;Beginn;Ende;Dauer", "Max;01.09.2026;07:00:30;15:00:30;8:00:00"]).fehler,
+    ).toEqual([]);
+  });
+
+  it("names a chosen column that is not in the file", () => {
+    expect(
+      lesen(["Person;Datum;Beginn;Ende;Pause", "Max;01.09.2026;7:00;15:30;30"], { pause: "Pausen" })
+        .fehler,
+    ).toContainEqual({ zeile: 1, grund: "spalte_fehlt", feld: "pause" });
+  });
+});

@@ -219,6 +219,8 @@ describe("the templates of a spreadsheet of times (S-702)", () => {
     const csv = await weber.anfrage(`${IMP}/vorlagen/soll-zeiten.csv`);
     expect(await csv.text()).toBe(TABELLE_VORLAGE_CSV.replace(/^﻿/, ""));
     expect((await weber.anfrage(`${IMP}/vorlagen/passwd`)).status).toBe(404);
+    for (const name of ["constructor", "toString", "__proto__", "hasOwnProperty"])
+      expect((await weber.anfrage(`${IMP}/vorlagen/${name}`)).status).toBe(404);
     expect((await sandra.anfrage(`${IMP}/vorlagen/soll-zeiten.xlsx`)).status).toBe(403);
   });
 });

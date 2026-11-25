@@ -111,5 +111,13 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0027_verfahrensdoku",
     "sql": "CREATE TABLE `verfahrensdoku_angaben` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`rechtsform` text DEFAULT '' NOT NULL,\n\t`anschrift` text DEFAULT '' NOT NULL,\n\t`verantwortlich` text DEFAULT '' NOT NULL,\n\t`aufbewahrungsort` text DEFAULT '' NOT NULL,\n\t`serverbetrieb` text DEFAULT '' NOT NULL,\n\t`datensicherung` text DEFAULT '' NOT NULL,\n\t`schluesselablage` text DEFAULT '' NOT NULL,\n\t`eigene` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
+  },
+  {
+    "tag": "0028_import_buchungen",
+    "sql": "ALTER TABLE `projektzeiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_extern` ON `projektzeiten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
+  },
+  {
+    "tag": "0029_rufbereitschaft",
+    "sql": "CREATE TABLE `einsaetze` (\n\t`betrieb_id` text NOT NULL,\n\t`einsatz_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`rufdienst_id` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer,\n\t`grund` text,\n\t`entfernt` integer DEFAULT false NOT NULL,\n\t`entfernt_grund` text,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `einsatz_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `einsaetze_person` ON `einsaetze` (`betrieb_id`,`nutzer_id`,`beginn`);--> statement-breakpoint\nCREATE TABLE `rufdienste` (\n\t`betrieb_id` text NOT NULL,\n\t`rufdienst_id` text NOT NULL,\n\t`standort_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`tag` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer NOT NULL,\n\t`reaktion_minuten` integer,\n\t`veroeffentlicht_am` integer,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `rufdienst_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `rufdienste_woche` ON `rufdienste` (`betrieb_id`,`standort_id`,`tag`);--> statement-breakpoint\nCREATE INDEX `rufdienste_person` ON `rufdienste` (`betrieb_id`,`nutzer_id`,`tag`);--> statement-breakpoint\nCREATE TABLE `sollquellen` (\n\t`betrieb_id` text NOT NULL,\n\t`ab` text NOT NULL,\n\t`quelle` text NOT NULL,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `ab`)\n);\n"
   }
 ];

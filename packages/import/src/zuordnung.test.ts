@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { leer } from "./modell.ts";
-import { artenAus, artVorschlag, personenAus, personVorschlag, vorschlag } from "./zuordnung.ts";
+import {
+  artenAus,
+  artVorschlag,
+  kandidatVorschlag,
+  personenAus,
+  personVorschlag,
+  vorschlag,
+  zeitProjekteAus,
+  zeitTaetigkeitenAus,
+} from "./zuordnung.ts";
 
 const WEBER = [
   { nutzerId: "jonas", name: "Jonas Weber" },
@@ -84,5 +93,44 @@ describe("proposals for the mapping", () => {
       kunden: {},
       projekte: {},
     });
+  });
+});
+
+describe("projects and activities of the times of a spreadsheet (S-702)", () => {
+  const zeit = (projekt?: string, taetigkeit?: string) => ({
+    externalId: `${projekt}/${taetigkeit}`,
+    zeile: 2,
+    person: "Sandra",
+    tag: "2026-09-01",
+    beginn: 420,
+    ende: 930,
+    pauseMinuten: 30,
+    ...(projekt === undefined ? {} : { projekt }),
+    ...(taetigkeit === undefined ? {} : { taetigkeit }),
+  });
+
+  it('counts each project and activity, and times with a project but no activity under ""', () => {
+    const daten = {
+      ...leer(),
+      zeiten: [zeit("Bad Elbhof", "Montage"), zeit("Bad Elbhof"), zeit(undefined, "Fahrt"), zeit()],
+    };
+    expect(zeitProjekteAus(daten)).toEqual([{ wert: "Bad Elbhof", datensaetze: 2 }]);
+    expect(zeitTaetigkeitenAus(daten)).toEqual([
+      { wert: "", datensaetze: 1 },
+      { wert: "Fahrt", datensaetze: 1 },
+      { wert: "Montage", datensaetze: 1 },
+    ]);
+  });
+
+  it("proposes the one order or activity known by the value, by name or number", () => {
+    const auftraege = [
+      { id: "p1", woerter: ["Bad Elbhof", "A-17"] },
+      { id: "p2", woerter: ["Küche Hansen", "A-18"] },
+      { id: "p3", woerter: ["Küche Hansen", "A-19"] },
+    ];
+    expect(kandidatVorschlag("bad elbhof", auftraege)).toBe("p1");
+    expect(kandidatVorschlag("A 17", auftraege)).toBe("p1");
+    expect(kandidatVorschlag("Küche Hansen", auftraege)).toBeNull();
+    expect(kandidatVorschlag("", [{ id: "x", woerter: [""] }])).toBeNull();
   });
 });

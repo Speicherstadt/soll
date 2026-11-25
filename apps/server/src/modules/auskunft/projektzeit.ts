@@ -31,12 +31,16 @@ export const projektteil = (db: Db, betriebId: string, nutzerId: string) => ({
     .where(and(eq(projektzeiten.betriebId, betriebId), eq(projektzeiten.nutzerId, nutzerId)))
     .orderBy(projektzeiten.beginn)
     .all()
-    .map(({ betriebId: _b, ...z }) => ({
+    .map(({ betriebId: _b, importId, externQuelle, externId, ...z }) => ({
       ...z,
       beginn: iso(z.beginn),
       ende: z.ende === null ? null : iso(z.ende),
       abgerechnetAm: z.abgerechnetAm === null ? null : iso(z.abgerechnetAm),
       angelegtAm: iso(z.angelegtAm),
+      // made from a spreadsheet's time (S-702): the import, the tool and the id there, as for stamps
+      ...(externQuelle === null
+        ? {}
+        : { uebernommen: { importId, quelle: externQuelle, kennung: externId } }),
     })),
 });
 

@@ -27,8 +27,14 @@ export const Zeile = (props: {
         value={props.wert}
         onChange={(event) => props.aendern(event.currentTarget.value)}
       >
-        <For each={props.optionen}>
-          {(option) => <option value={option.wert}>{option.name}</option>}
+        <For each={props.optionen} keyed={(option) => option.wert}>
+          {(option) => (
+            // each option says whether it is the one chosen, so a select keeps its choice when the
+            // options are made anew after a new reading of the file
+            <option value={option().wert} selected={option().wert === props.wert}>
+              {option().name}
+            </option>
+          )}
         </For>
       </select>
     </div>

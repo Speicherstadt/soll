@@ -97,13 +97,18 @@ test("a picker reached by keyboard shows its focus @phone", async ({ page }) => 
 test("the chosen language stays after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
+  // choosing a language reloads the page (Paraglide's setLocale), and the settings load their
+  // data again: on a busy CI runner the heading takes longer than the default 5 s to return
+  const nachNeuladen = { timeout: 15_000 };
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     messagesOf("en").nav_einstellungen ?? "",
+    nachNeuladen,
   );
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     messagesOf("en").nav_einstellungen ?? "",
+    nachNeuladen,
   );
 });
 
@@ -129,9 +134,12 @@ test("the chosen language stays when the browser blocks local storage", async ({
   });
   await page.goto("/einstellungen");
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
-  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  // the same reload after setLocale as above: on a busy runner it takes longer than 5 s
+  const nachNeuladen = { timeout: 15_000 };
+  await expect(page.locator("html")).toHaveAttribute("lang", "en", nachNeuladen);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     messagesOf("en").nav_einstellungen ?? "",
+    nachNeuladen,
   );
 });

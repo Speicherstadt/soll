@@ -1,4 +1,5 @@
 import { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
+import { kopfZuLang, MAX_SPALTEN, nurFehler } from "./kopf.ts";
 import { type Gelesen, type LeseFehler, leer, MAX_DATENSAETZE } from "./modell.ts";
 import {
   artVon,
@@ -20,7 +21,7 @@ import { bereinigt, ohneBom, schluessel } from "./text.ts";
 export { SOLL_CSV_FELDER, type SollCsvFeld };
 
 /** Which header a field is read from, as the mapping of columns names it */
-export type Spaltenwahl = Partial<Record<SollCsvFeld, string>>;
+export type Spaltenwahl = Partial<Record<string, string>>;
 
 /** The headers each field is found under, German and English, compared by `schluessel` */
 const KOPFWOERTER: Record<SollCsvFeld, readonly string[]> = {
@@ -110,26 +111,6 @@ const spaltenVon = (kopfzeile: string[], kopf: Kopf): Gelesen["spalten"] =>
       return [feld, index === undefined ? null : bereinigt(kopfzeile[index] ?? "")];
     }),
   );
-
-const nurFehler = (kopf: string[], fehler: LeseFehler): Gelesen => ({
-  daten: leer(),
-  fehler: [fehler],
-  kopf,
-  spalten: {},
-});
-
-/**
- * The most columns and characters a header may have: a Soll-CSV has twelve columns, an export a few
- * dozen. A longer first line is no header, refused before it is split, so a file of millions of
- * separators is read in time (BAULISTE.md S-701: no file hangs the reader).
- */
-const MAX_SPALTEN = 200;
-const MAX_KOPFZEICHEN = 20_000;
-
-const kopfZuLang = (text: string): boolean => {
-  const ende = text.indexOf("\n");
-  return (ende === -1 ? text.length : ende) > MAX_KOPFZEICHEN;
-};
 
 /** Reads a Soll-CSV; `wahl` overrides the columns the header suggests */
 export const sollCsvLesen = (roh: string, wahl: Spaltenwahl = {}): Gelesen => {

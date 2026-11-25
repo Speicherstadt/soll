@@ -38,7 +38,10 @@ kann seine Datenbank und seinen Code ändern. Dagegen steht der **Prüfwert** in
 
 Jeder Betrieb hat seine eigene Kette. Der Inhalt selbst liegt getrennt vom Glied. Nach Ablauf der
 Aufbewahrungsfrist kann er entfernt werden, ohne dass die Kette bricht, denn das Glied enthält nur
-seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.).
+seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.). Die Aussonderung
+([Monatsabschluss](monatsabschluss.md#aufbewahrung-und-aussonderung)) löscht dafür die Zeile mit einem
+eigenen Glied und entfernt den gespeicherten Inhalt jedes Glieds, das sie geschrieben hat; die
+Glieder bleiben, und die Prüfung findet danach nichts.
 
 ## Was die Prüfung findet
 

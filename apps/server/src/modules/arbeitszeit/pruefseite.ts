@@ -1,11 +1,13 @@
-import type { Monat, Tag } from "@soll/arbeitszeit";
-import { and, eq } from "drizzle-orm";
+import { type Monat, type Tag, tagInBerlin } from "@soll/arbeitszeit";
+import { and, desc, eq } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
-import { auditGlieder, monatsabschluesse } from "../../db/schema.ts";
+import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch, sha256 } from "../audit/hash.ts";
-import { parsePruefwert, pruefwertPruefen } from "../audit/index.ts";
+import { formatPruefwert, parsePruefwert, pruefwertPruefen } from "../audit/index.ts";
+import { type Aufbewahrungsjahre, aufbewahrungsjahre, aussonderbarAb } from "./aufbewahrung.ts";
 import { aufzeichnungenJetzt, gegeneintraegeVon } from "./monat.ts";
 import { abweichendeTage, type Gegeneintrag, type Monatsinhalt } from "./monatsinhalt.ts";
+import { lohnmodelle } from "./zuordnungen.ts";
 
 /**
  * What the check page answers for a Prüfwert (S-306). `abweichung` names what no longer matches:
@@ -14,6 +16,14 @@ import { abweichendeTage, type Gegeneintrag, type Monatsinhalt } from "./monatsi
 export type Pruefung =
   | { ergebnis: "unlesbar" | "unbekannt" }
   | { ergebnis: "abweichung"; grund: "kette" | "abschluss" }
+  | {
+      /** the Prüfwert is genuine; the month's content was removed after its retention period */
+      ergebnis: "ausgesondert";
+      monat: Monat;
+      abgeschlossenAm: number;
+      ausgesondertAm: number;
+      jahre: number;
+    }
   | {
       ergebnis: "uebereinstimmend" | "abweichung";
       grund: "tage" | null;
@@ -38,13 +48,69 @@ const zeileVon = (db: Db, betriebId: string, abschlussId: string) =>
     )
     .get();
 
+type Glied = typeof auditGlieder.$inferSelect;
+
+/**
+ * The removal of a closing (S-901), if it went through the chain: its row matches its link, the
+ * chain up to that link is intact, it names the closing's link and came no sooner than the
+ * retention period the person's models give. Else a removal written past the chain could hide a
+ * changed month.
+ */
+const aussonderungVon = (
+  db: Db,
+  betriebId: string,
+  abschlussId: string,
+  abschluss: Glied,
+  jetzt: number,
+) => {
+  const zeile = db
+    .select()
+    .from(aussonderungen)
+    .where(
+      and(eq(aussonderungen.betriebId, betriebId), eq(aussonderungen.abschlussId, abschlussId)),
+    )
+    .get();
+  if (!zeile) return null;
+  const glied = db
+    .select()
+    .from(auditGlieder)
+    .where(
+      and(
+        eq(auditGlieder.betriebId, betriebId),
+        eq(auditGlieder.tabelle, "aussonderungen"),
+        eq(auditGlieder.zeile, JSON.stringify([zeile.aussonderungId])),
+      ),
+    )
+    .orderBy(desc(auditGlieder.seq))
+    .get();
+  // the least the month's own days ask for: counter-entries booked in it can only raise it (to 8),
+  // and their days went with the month, so the stored years count when they are not fewer
+  const mindestens = aufbewahrungsjahre(lohnmodelle(db, betriebId, zeile.nutzerId), zeile.monat);
+  const jahre: Aufbewahrungsjahre = zeile.jahre === 8 || mindestens === 8 ? 8 : 2;
+  const echt =
+    glied?.aktion === "einfuegen" &&
+    sha256(kanonisch(zeile)) === glied.inhaltHash &&
+    pruefwertPruefen(db, betriebId, formatPruefwert(glied)) === "gueltig" &&
+    zeile.abgeschlossenAm === abschluss.zeitpunkt &&
+    aussonderbarAb(abschluss.zeitpunkt, jahre) <= tagInBerlin(glied.zeitpunkt) &&
+    // a link dated after the check came from a clock set forward: no removal yet. Later links may
+    // carry earlier times (a writer takes its time before it awaits), so only now is compared.
+    glied.zeitpunkt <= jetzt;
+  return echt ? zeile : null;
+};
+
 /**
  * Checks a Prüfwert of a time sheet against the database of a business: the chain up to its link
  * must be intact (`pruefwertPruefen`, S-102), the link must have written a closing row that is still
  * as it was, and the records of the month now must be those the row closed. A change past the chain
  * shows here, and so does a chain computed anew: the link with the number then carries another hash.
  */
-export const pruefwertEinesMonats = (db: Db, betriebId: string, text: string): Pruefung => {
+export const pruefwertEinesMonats = (
+  db: Db,
+  betriebId: string,
+  text: string,
+  jetzt: number,
+): Pruefung => {
   const kette = pruefwertPruefen(db, betriebId, text);
   if (kette === "unlesbar" || kette === "unbekannt") return { ergebnis: kette };
   if (kette === "abweichend") return { ergebnis: "abweichung", grund: "kette" };
@@ -61,6 +127,15 @@ export const pruefwertEinesMonats = (db: Db, betriebId: string, text: string): P
     return { ergebnis: "unbekannt" };
   const [abschlussId] = JSON.parse(glied.zeile) as [string];
   const zeile = zeileVon(db, betriebId, abschlussId);
+  const entfernt = zeile ? null : aussonderungVon(db, betriebId, abschlussId, glied, jetzt);
+  if (entfernt)
+    return {
+      ergebnis: "ausgesondert",
+      monat: entfernt.monat,
+      abgeschlossenAm: entfernt.abgeschlossenAm,
+      ausgesondertAm: entfernt.ausgesondertAm,
+      jahre: entfernt.jahre,
+    };
   if (
     zeile?.schritt !== "abgeschlossen" ||
     sha256(kanonisch(zeile)) !== glied.inhaltHash ||

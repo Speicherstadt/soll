@@ -133,3 +133,23 @@ describe("aenderungGesperrt", () => {
     expect(fehler).toEqual([]);
   }, 60_000);
 });
+
+describe("aenderungGesperrt with months left out (S-901)", () => {
+  const stempel: Stempel[] = [
+    { art: "kommen", zeitpunkt: beginnInBerlin("2026-10-06") + 8 * STUNDE, stempelId: "k" },
+    { art: "gehen", zeitpunkt: beginnInBerlin("2026-10-06") + 16 * STUNDE, stempelId: "g" },
+  ];
+  const ohne = (ausser: ReadonlySet<string> = new Set()) =>
+    aenderungGesperrt(nurOktoberZu, "b", "n", {
+      zeitpunkte: stempel.map(({ zeitpunkt }) => zeitpunkt),
+      vorher: () => stempel,
+      nachher: () => [],
+      ausser,
+    });
+
+  it("does not compare a month the removal removes", () => {
+    expect(ohne()).toBe(true);
+    expect(ohne(new Set([MONAT]))).toBe(false);
+    expect(ohne(new Set(["2026-09"]))).toBe(true);
+  });
+});

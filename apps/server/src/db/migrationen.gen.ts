@@ -79,5 +79,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0019_haben",
     "sql": "CREATE TABLE `haben_uebergaben` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`leistung_id` text,\n\t`gesendet_am` integer,\n\t`fehler` text,\n\t`meldung` text,\n\t`versucht_am` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE TABLE `haben_zugaenge` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`adresse` text NOT NULL,\n\t`token` text NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
+  },
+  {
+    "tag": "0020_aussonderung",
+    "sql": "CREATE TABLE `aussonderungen` (\n\t`betrieb_id` text NOT NULL,\n\t`aussonderung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`monat` text NOT NULL,\n\t`abschluss_id` text NOT NULL,\n\t`jahre` integer NOT NULL,\n\t`abgeschlossen_am` integer NOT NULL,\n\t`ausgesondert_am` integer NOT NULL,\n\t`zeilen` integer NOT NULL,\n\t`inhalte` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `aussonderung_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_monat` ON `aussonderungen` (`betrieb_id`,`nutzer_id`,`monat`);--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_abschluss` ON `aussonderungen` (`betrieb_id`,`abschluss_id`);"
   }
 ];

@@ -29,4 +29,10 @@ describe("wrapping text in the PDF writer", () => {
     const s = await neuerSchreiber();
     expect(s.umbrechen("15\ufeffmm", 0, { breite: 500 })).toEqual(["15mm"]);
   });
+
+  it("leaves out variation selectors and other invisible marks a phone keyboard adds", async () => {
+    const s = await neuerSchreiber();
+    expect(s.umbrechen("\u00a9\ufe0f Weber", 0, { breite: 500 })).toEqual(["\u00a9 Weber"]);
+    expect(s.umbrechen("Bad\ufe0e\u034f fertig", 0, { breite: 500 })).toEqual(["Bad fertig"]);
+  });
 });

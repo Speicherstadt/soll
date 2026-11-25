@@ -12,7 +12,7 @@ export type Quelle = Zeile["quelle"];
 /**
  * A stamp in force as the API shows it; `korrigiert` when a person entered or changed it by hand,
  * `offline` when it came late from a device's queue (its instant is the device's), `nummer` its
- * number on the device (S-305)
+ * number on the device (S-305), `uebernommenAus` the tool an import took it over from (S-701)
  */
 export type Stempel = Pick<
   Zeile,
@@ -24,7 +24,7 @@ export type Stempel = Pick<
   | "quelle"
   | "offline"
   | "nummer"
-> & { korrigiert: boolean };
+> & { korrigiert: boolean; uebernommenAus?: string };
 
 const alsStempel = (zeile: Zeile): Stempel => ({
   stempelId: zeile.stempelId,
@@ -36,6 +36,8 @@ const alsStempel = (zeile: Zeile): Stempel => ({
   offline: zeile.offline,
   nummer: zeile.nummer,
   korrigiert: zeile.grund !== null,
+  // only the row taken over carries its tool; a correction of it is the person's own entry
+  ...(zeile.externQuelle === null ? {} : { uebernommenAus: zeile.externQuelle }),
 });
 
 const nachfolger = alias(stempelungen, "nachfolger");
@@ -92,7 +94,16 @@ export const stempelInKraft = (db: Db, betriebId: string, stempelId: string): Ze
     )
     .get()?.zeile;
 
-type Optional = "entfernt" | "geraetId" | "nummer" | "signatur" | "offline" | "terminalId";
+type Optional =
+  | "entfernt"
+  | "geraetId"
+  | "nummer"
+  | "signatur"
+  | "offline"
+  | "terminalId"
+  | "importId"
+  | "externQuelle"
+  | "externId";
 type Neu = Omit<Zeile, "betriebId" | "stempelId" | "erstelltVon" | "erstelltAm" | Optional> &
   Partial<Pick<Zeile, Optional>>;
 
@@ -134,6 +145,22 @@ const gesperrt = (
     ],
   });
 };
+
+/**
+ * Whether stamps taken over from another tool (S-701) would change the records of a month closed
+ * for the person, as a stamp entered by hand would (S-306)
+ */
+export const neueGesperrt = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  neue: readonly Stempelung[],
+): boolean =>
+  aenderungGesperrt(db, betriebId, nutzerId, {
+    zeitpunkte: neue.map((stempel) => stempel.zeitpunkt),
+    vorher: (von, bis) => stempelungenIn(db, betriebId, nutzerId, von, bis),
+    nachher: (vorher) => [...vorher, ...neue],
+  });
 
 export type StempelErgebnis =
   /** `vorhanden`: the same entry of a device's queue came again and changed nothing (S-305) */

@@ -6,6 +6,7 @@ export {
 } from "./benachrichtigen.ts";
 export {
   type AbwesenheitZeile,
+  AKTIV,
   abwesenheitenIn,
   abwesenheitLesen,
   type Status,
@@ -24,6 +25,7 @@ export {
   krankMelden,
   type Rechte,
 } from "./schreiben.ts";
+export { abwesenheitGesperrt } from "./sperre.ts";
 export {
   bescheinigungAbTagVon,
   bescheinigungVon,

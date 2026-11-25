@@ -104,6 +104,9 @@ const neueZeile = (
   entschiedenAm: null,
   erstelltVon: kontext.akteur,
   erstelltAm: kontext.jetzt,
+  importId: null,
+  externQuelle: null,
+  externId: null,
 });
 
 const einfuegen = (

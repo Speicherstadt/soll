@@ -176,6 +176,7 @@ const schrittEinfuegen = (
     schritt: Zeile["schritt"];
     inhalt: Monatsinhalt;
     grund: string | null;
+    importId?: string;
   },
 ) =>
   schreiben(schreibDb, kontext, (s) =>
@@ -189,10 +190,18 @@ const schrittEinfuegen = (
       inhaltHash: inhaltHash(angaben.inhalt),
       grund: angaben.grund,
       sperrt: angaben.schritt === "abgeschlossen" ? angaben.inhalt.monat : null,
+      importId: angaben.importId ?? null,
       erstelltVon: kontext.akteur,
       erstelltAm: kontext.jetzt,
     }),
   );
+
+/** Two closings at once: the unique index lets only the first through, the second is refused */
+const einmal = (fehler: unknown): SchrittErgebnis => {
+  if (/UNIQUE constraint failed: monatsabschluesse/.test(String(fehler)))
+    return { ok: false, grund: "abgeschlossen" };
+  throw fehler;
+};
 
 /** Why a month cannot take a step now, or null */
 const hindernis = (status: MonatStatus): AbschlussFehler | null => {
@@ -250,9 +259,41 @@ export const monatAbschliessen = (
       grund: status.bestaetigung?.gueltig ? null : angaben.grund,
     });
   } catch (fehler) {
-    if (/UNIQUE constraint failed: monatsabschluesse/.test(String(fehler)))
-      return { ok: false, grund: "abgeschlossen" };
-    throw fehler;
+    return einmal(fehler);
+  }
+  return {
+    ok: true,
+    status: monatStatus(db, kontext.betriebId, angaben.nutzerId, angaben.monat, kontext.jetzt),
+  };
+};
+
+/**
+ * Closes a month the old tool had closed, after an import took it over (S-701): no confirmation of
+ * the person, whose records the old tool kept; `grund` says where it came from and stands on the
+ * time sheet. Otherwise as any closing: only a past month without an open shift, only once, and its
+ * link is the Prüfwert.
+ */
+export const monatUebernehmen = (
+  db: Db,
+  schreibDb: SchreibDb,
+  kontext: Kontext,
+  angaben: { nutzerId: string; monat: Monat; grund: string; importId: string },
+): SchrittErgebnis => {
+  const status = monatStatus(db, kontext.betriebId, angaben.nutzerId, angaben.monat, kontext.jetzt);
+  const fehler = hindernis(status);
+  if (fehler) return { ok: false, grund: fehler };
+  if (status.abschliessbarAb !== null)
+    return { ok: false, grund: "schicht_kann_weiterlaufen", ab: status.abschliessbarAb };
+  try {
+    schrittEinfuegen(schreibDb, kontext, {
+      nutzerId: angaben.nutzerId,
+      schritt: "abgeschlossen",
+      inhalt: status.inhalt,
+      grund: angaben.grund,
+      importId: angaben.importId,
+    });
+  } catch (fehler) {
+    return einmal(fehler);
   }
   return {
     ok: true,

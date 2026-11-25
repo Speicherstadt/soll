@@ -50,7 +50,7 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | 🧾 Lohn und Prüfung | [DATEV-Lohnexport](https://soll.work/datev.html) für LODAS und Lohn und Gehalt aus abgeschlossenen Monaten: Stunden, Feiertagsstunden und Zuschläge nach § 3b EStG getrennt nach steuerfrei und steuerpflichtig, mit den Lohnarten des Betriebs; Prüfexport für Zoll und Arbeitsschutz als CSV und PDF mit Erfassungszeit, Änderungen mit Grund, Befunden und Prüfwert je Monat; Auskunft nach Art. 15 DSGVO als Datei für jede Person |
 | 🛠️ Projekte | Kunden und Aufträge mit Budget in Stunden und Euro und Warnung, feste interne Tätigkeiten (Fahrt, Werkstatt, Lager, Schulung), Stundensätze nach Kunde, Auftrag, Tätigkeit und Person; Stoppuhr unter Heute mit Wechsel per Tipp, Verweis auf die Stempelung und Hinweis bei mehr Projektzeit als Arbeitszeit, änderbar bis „abgerechnet“; Auslastung des Teams (anwesend gegen gebucht, abrechenbar und intern, ab drei Personen), je Person nur eingeschaltet und für alle sichtbar; Stundennachweis (Regiebericht), den der Kunde auf dem Handy unterschreibt, als PDF mit Prüfsumme, das die Buchungen darin sperrt; Übergabe an [Haben](https://haben.app/): Kunden aus Haben verbinden, abgerechnete Buchungen als Leistungen, wiederholbar ohne Doppel |
 | 🔌 Anbindung | [REST-API und MCP-Server](https://soll.work/api.html) für andere Programme und KI-Assistenten: persönliche Zugänge mit den Rechten der eigenen Rolle, einmal angezeigt und jederzeit widerrufbar; OpenAPI-Beschreibung; Werkzeuge zum Lesen von Tag, Monat, Aufträgen und Dienstplan und zum Stempeln |
-| 🔁 Umzug | Import aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister, Toggl, Clockify und Excel |
+| 🔁 Umzug | [Import](https://soll.work/umzug.html) in einem Assistenten: Werkzeug wählen, Datei hochladen, Personen, Spalten, Abwesenheitsarten, Kunden und Aufträge zuordnen, Vorschau mit den Befunden der Prüfregeln, Probelauf, Übernahme; die Originaldatei bleibt unter ihrem SHA-256 aufbewahrt, jeder Eintrag trägt „übernommen aus …“, ein zweiter Lauf legt nichts doppelt an, im alten Tool abgeschlossene Monate werden als übernommen abgeschlossen. Heute aus einer Soll-CSV (Vorlage zum Herunterladen); Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister, Toggl, Clockify und Excel folgen |
 | 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |
 
 ## Soll und die Alternativen
@@ -68,8 +68,9 @@ Ja. Seit dem Beschluss des Bundesarbeitsgerichts vom 13.09.2022 (1 ABR 22/21) gi
 jeden Betrieb, für Minijobs schon länger nach § 17 MiLoG.
 
 ### Kann ich von Clockodo, Personio oder Kimai umziehen?
-Ja. Soll übernimmt Mitarbeiter, Zeiten, Abwesenheiten, Salden und Projekte; die Originaldatei bleibt
-nachvollziehbar aufbewahrt.
+Der Umzug steht: Soll übernimmt Zeiten, Abwesenheiten, Kunden und Aufträge, prüft sie vorher und
+bewahrt die Originaldatei nachvollziehbar auf. Heute kommen die Daten als Soll-CSV; die Exporte von
+Clockodo, Personio, Kimai und den anderen Tools liest Soll mit den nächsten Versionen direkt.
 
 ### Brauche ich eine Stempeluhr?
 Nein. Ein Android-Tablet an der Wand reicht; gestempelt wird mit PIN, QR-Code oder NFC-Karte.

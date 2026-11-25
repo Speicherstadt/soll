@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1a1bfee6-8f6d-4c26-bc00-7e85b7c92224",
+  "id": "37de2da0-0b11-421d-81ac-c69148d549e8",
   "prevId": "b167bd0c-6583-4b1a-93e3-825657155e11",
   "tables": {
     "arbeitszeitmodelle": {
@@ -781,6 +781,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "erstellt_von": {
           "name": "erstellt_von",
           "type": "text",
@@ -1092,6 +1099,27 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_id": {
+          "name": "extern_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1118,6 +1146,15 @@
             "betrieb_id",
             "geraet_id",
             "nummer"
+          ],
+          "isUnique": true
+        },
+        "stempelungen_extern": {
+          "name": "stempelungen_extern",
+          "columns": [
+            "betrieb_id",
+            "extern_quelle",
+            "extern_id"
           ],
           "isUnique": true
         }
@@ -1251,6 +1288,27 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_id": {
+          "name": "extern_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -1262,6 +1320,15 @@
             "von"
           ],
           "isUnique": false
+        },
+        "abwesenheiten_extern": {
+          "name": "abwesenheiten_extern",
+          "columns": [
+            "betrieb_id",
+            "extern_quelle",
+            "extern_id"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {},
@@ -2257,6 +2324,101 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "importe": {
+      "name": "importe",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "quelle": {
+          "name": "quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "datei_sha256": {
+          "name": "datei_sha256",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "datei_name": {
+          "name": "datei_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "datei_bytes": {
+          "name": "datei_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "zuordnung": {
+          "name": "zuordnung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "abgeschlossen_bis": {
+          "name": "abgeschlossen_bis",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "zahlen": {
+          "name": "zahlen",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "erstellt_von": {
+          "name": "erstellt_von",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "erstellt_am": {
+          "name": "erstellt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "importe_betrieb_id_import_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "import_id"
+          ],
+          "name": "importe_betrieb_id_import_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "konto_anpassungen": {
       "name": "konto_anpassungen",
       "columns": {
@@ -2567,6 +2729,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -2680,6 +2849,13 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -3031,141 +3207,6 @@
           "name": "taetigkeiten_betrieb_id_taetigkeit_id_pk"
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "schichttausche": {
-      "name": "schichttausche",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tausch_id": {
-          "name": "tausch_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "schicht_id": {
-          "name": "schicht_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "anbieter_id": {
-          "name": "anbieter_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "an_nutzer_id": {
-          "name": "an_nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "uebernehmer_id": {
-          "name": "uebernehmer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "angeboten_am": {
-          "name": "angeboten_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "uebernommen_am": {
-          "name": "uebernommen_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "entschieden_von": {
-          "name": "entschieden_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "entschieden_am": {
-          "name": "entschieden_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "schichttausche_schicht": {
-          "name": "schichttausche_schicht",
-          "columns": [
-            "betrieb_id",
-            "schicht_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "schichttausche_betrieb_id_tausch_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "tausch_id"
-          ],
-          "name": "schichttausche_betrieb_id_tausch_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "tauschregeln": {
-      "name": "tauschregeln",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ohne_freigabe": {
-          "name": "ohne_freigabe",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

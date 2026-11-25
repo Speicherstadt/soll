@@ -180,8 +180,15 @@
     {
       "idx": 25,
       "version": "6",
-      "when": 1795616097777,
-      "tag": "0025_schichttausch",
+      "when": 1795615942024,
+      "tag": "0025_import",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1795617958382,
+      "tag": "0026_schichttausch",
       "breakpoints": true
     }
   ]

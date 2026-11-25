@@ -29,6 +29,8 @@ export const kunden = sqliteTable(
     externId: text("extern_id"),
     archiviertAm: integer("archiviert_am"),
     angelegtAm: integer("angelegt_am").notNull(),
+    // S-701: the import that created it
+    importId: text("import_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.kundeId] }),
@@ -56,6 +58,8 @@ export const projekte = sqliteTable(
     externId: text("extern_id"),
     archiviertAm: integer("archiviert_am"),
     angelegtAm: integer("angelegt_am").notNull(),
+    // S-701: the import that created it
+    importId: text("import_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.projektId] }),

@@ -52,4 +52,10 @@ export {
   taetigkeitenLesen,
 } from "./taetigkeiten.ts";
 export { type BuchungMitBezug, buchungenImAuftrag, buchungenMitBezug } from "./uebergabe.ts";
+export {
+  kundenUebernehmen,
+  projekteUebernehmen,
+  type UebernommenerKunde,
+  type UebernommenesProjekt,
+} from "./uebernahme.ts";
 export { type Verbrauch, verbrauchJeProjekt } from "./verbrauch.ts";

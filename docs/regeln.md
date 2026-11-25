@@ -520,6 +520,9 @@ ohne sie gilt der Fall „Pause“.
   nächste Schicht ist ein eigener Arbeitstag, wenn sie nicht binnen 9 h nach anderer Arbeit beginnt.
   Liegen weniger als 15 min zwischen einem Einsatz und anderer Arbeit, ist er ein Stück dieser Arbeit
   (§ 4 Satz 2 ArbZG); zwei Einsätze mit weniger als 15 min Abstand sind einer.
+  Für die Aufzeichnung und das Ist verschiebt ein Einsatz nie gestempelte Arbeit: Sie behält den
+  Arbeitstag ihrer Stempelungen, und was zugleich gestempelt ist, zählt einmal; die verbundene
+  Schicht gilt nur für die Prüfung (S-505).
 - **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
   anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05.
   Beginnt nach einem Einsatz eine eigene Schicht am selben Kalendertag, endet die Ruhezeit mit ihr.

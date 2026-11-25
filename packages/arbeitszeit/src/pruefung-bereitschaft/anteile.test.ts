@@ -54,10 +54,7 @@ describe("einsatzAnteile", () => {
 
   it("a call-out right before stamped work keeps its own day, the work stays on its own", () => {
     // 31.10. 23:30 – 23:50, stamped 1.11. from 0:00: the work is a day of 1 November
-    const gestempelt = tage(
-      schicht("2026-11-01T00:00+01:00", "2026-11-01T08:00+01:00"),
-      SPAETER,
-    );
+    const gestempelt = tage(schicht("2026-11-01T00:00+01:00", "2026-11-01T08:00+01:00"), SPAETER);
     expect(gestempelt.map((tag) => tag.tag)).toEqual(["2026-11-01"]);
     expect(
       einsatzAnteile(gestempelt, [einsatz("2026-10-31T23:30+01:00", "2026-10-31T23:50+01:00")]),

@@ -6,7 +6,7 @@ import {
 } from "@soll/arbeitszeit";
 import type { Stundenzettel } from "@soll/export";
 import type { MonatStatus } from "./monatsabschluss.ts";
-import { einsatzMinuten, type Tagesabwesenheit } from "./monatsinhalt.ts";
+import { einsatzMinutenDerTage, type Tagesabwesenheit } from "./monatsinhalt.ts";
 
 /** The words of the sheet for absences, German like the whole sheet */
 const ABWESENHEIT: Record<Abwesenheitsart | "abwesend", string> = {
@@ -38,14 +38,12 @@ const uhrzeit = new Intl.DateTimeFormat("de-DE", {
   timeZone: "Europe/Berlin",
 });
 
-/** The call-outs of a day as the sheet writes them and their minutes once ended (S-505, R-12) */
-const einsaetzeVon = (einsaetze: readonly [number, number | null][] = []) => ({
-  minuten: einsatzMinuten(einsaetze),
-  texte: einsaetze.map(
+/** The call-outs of a day as the sheet writes them (S-505, R-12) */
+const einsatzTexte = (einsaetze: readonly [number, number | null][] = []) =>
+  einsaetze.map(
     ([beginn, ende]) =>
       `Einsatz ${uhrzeit.format(beginn)}–${ende === null ? "offen" : uhrzeit.format(ende)}`,
-  ),
-});
+  );
 
 /**
  * The time sheet of a month (S-306) from its content: the closed content once closed, so the sheet
@@ -71,24 +69,25 @@ export const stundenzettelAus = (
   );
   const ergebnis = arbeitstage(stempel, status.abschluss?.am ?? angaben.jetzt);
   const tage = new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag]));
+  // what the call-outs add, without what is stamped at the same time: the sheet shows the Ist
+  const einsatzMinuten = einsatzMinutenDerTage(inhalt.tage, ergebnis.ok ? ergebnis.wert : []);
   return {
     betrieb: angaben.betrieb,
     person: angaben.person,
     monat: inhalt.monat,
     tage: inhalt.tage.map((aufzeichnung) => {
       const tag = tage.get(aufzeichnung.tag);
-      const einsatz = einsaetzeVon(aufzeichnung.einsaetze);
       return {
         tag: aufzeichnung.tag,
         beginn: tag?.beginn ?? null,
         ende: tag?.ende ?? null,
         pauseMinuten: tag?.pausenMinuten ?? 0,
-        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + einsatz.minuten,
+        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + (einsatzMinuten.get(aufzeichnung.tag) ?? 0),
         // on a day of the plan its Soll is the plan's (S-505)
         sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
         abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),
         hinweise: [
-          ...einsatz.texte,
+          ...einsatzTexte(aufzeichnung.einsaetze),
           ...befunde
             .filter((befund) => befund.tage.includes(aufzeichnung.tag))
             .map(

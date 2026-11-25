@@ -32,6 +32,7 @@ import {
   type Aufzeichnung,
   aufzeichnungen,
   type Einsatzspanne,
+  einsatzMinutenDerTage,
   type Gegeneintrag,
   lesefenster,
   type Monatsinhalt,
@@ -171,16 +172,6 @@ const befundeDesMonats = (
     ]),
   ].filter((befund) => befund.tage.some((tag) => monatVon(tag) === monat));
 
-/** The working days with the call-outs that have ended: working time on their day (R-12) */
-const mitEinsaetzen = (tage: readonly Arbeitstag[], einsaetze: readonly Einsatzspanne[]) => {
-  const geschlossen = einsaetze.flatMap(({ beginn, ende }) =>
-    ende === null ? [] : [{ beginn, ende }],
-  );
-  if (geschlossen.length === 0) return { tage: tage as readonly PruefTag[], geschlossen };
-  const ergebnis = bereitschaftstage(tage, { einsaetze: geschlossen });
-  return { tage: ergebnis.ok ? ergebnis.wert : tage, geschlossen };
-};
-
 /** Soll and Ist; null with the days that lack a model or the holidays ("nicht hinterlegt") */
 const summenDesMonats = (
   db: Db,
@@ -190,7 +181,7 @@ const summenDesMonats = (
   tage: readonly PruefTag[],
   aufzeichnung: readonly Aufzeichnung[],
   abwesenheiten: readonly Abwesenheit[],
-  plan: ReadonlyMap<Tag, number>,
+  weitere: { plan: ReadonlyMap<Tag, number>; einsatzMinuten: ReadonlyMap<Tag, number> },
 ): { summen: Summen | null; nichtHinterlegt: Tag[]; befunde: Befund[] } => {
   // a day of the plan needs no model: the plan is its Soll (S-505)
   const ohneModell = aufzeichnung
@@ -206,7 +197,7 @@ const summenDesMonats = (
     beschaeftigung,
     arbeitstage: tage,
     abwesenheiten,
-    plan,
+    ...weitere,
   });
   if (!stand.ok)
     return {
@@ -295,18 +286,13 @@ export const monatJetzt = (
     weitere,
   );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
-  const ist = mitEinsaetzen(alle, weitere.einsaetze);
+  // a call-out adds its own minutes on the day its record names; stamped work keeps its day
+  const einsatzMinuten = einsatzMinutenDerTage(tage, alle);
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
-  const stand = summenDesMonats(
-    db,
-    betriebId,
-    nutzerId,
-    monat,
-    ist.tage.filter((tag) => monatVon(tag.tag) === monat),
-    tage,
-    abwesenheiten,
-    weitere.plan,
-  );
+  const stand = summenDesMonats(db, betriebId, nutzerId, monat, imMonat, tage, abwesenheiten, {
+    plan: weitere.plan,
+    einsatzMinuten,
+  });
   const feiertageAmOrt = feiertageUm(standortVon(db, betriebId), monat);
   const { von, bis } = lesefenster(monat);
   const rufdienste = rufdiensteVon(db, betriebId, nutzerId, tagInBerlin(von), tagInBerlin(bis));
@@ -320,7 +306,9 @@ export const monatJetzt = (
       nichtHinterlegt: stand.nichtHinterlegt,
       befunde: [
         ...befundeDesMonats(alle, monat, optionen, {
-          einsaetze: ist.geschlossen,
+          einsaetze: weitere.einsaetze.flatMap(({ beginn, ende }) =>
+            ende === null ? [] : [{ beginn, ende }],
+          ),
           rufdienste: rufdienste.map(({ beginn, ende, reaktionMinuten }) => ({
             beginn,
             ende,

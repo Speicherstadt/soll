@@ -19,7 +19,7 @@ import { stempelungen } from "../../db/schema.ts";
 import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 import { gegeneintraegeVon } from "./monat.ts";
 import { type MonatStatus, monatStatus } from "./monatsabschluss.ts";
-import { einsatzMinuten } from "./monatsinhalt.ts";
+import { einsatzMinutenDerTage } from "./monatsinhalt.ts";
 
 /*
  * A person's working days in a period for the Prüfexport (S-309): the days of a closed month as
@@ -124,6 +124,7 @@ const tageDesMonats = (status: MonatStatus, angaben: Angaben, erfasst: Map<strin
   );
   const ergebnis = arbeitstage(stempel, status.abschluss?.am ?? angaben.jetzt);
   const tage = new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag]));
+  const einsatzMinuten = einsatzMinutenDerTage(inhalt.tage, ergebnis.ok ? ergebnis.wert : []);
   return inhalt.tage
     .filter((auf) => auf.tag >= angaben.von && auf.tag <= angaben.bis)
     .map((auf): PruefTag => {
@@ -137,7 +138,7 @@ const tageDesMonats = (status: MonatStatus, angaben: Angaben, erfasst: Map<strin
         ende: tag?.ende ?? null,
         pauseMinuten: tag?.pausenMinuten ?? 0,
         // with the call-outs of the day, working time from a Rufbereitschaft (S-505)
-        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + einsatzMinuten(auf.einsaetze),
+        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + (einsatzMinuten.get(auf.tag) ?? 0),
         erfasstAm: bekannt.length === 0 ? null : Math.max(...bekannt),
         aenderungen: [],
         befunde: inhalt.befunde

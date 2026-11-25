@@ -1,15 +1,16 @@
 import {
   type Abwesenheit,
   arbeitstage,
-  arbeitstagMit,
   type Befund,
   beginnInBerlin,
-  bereitschaftstage,
+  type Einsatzspanne,
+  einsatzAnteile,
   ersterTag,
   letzterTag,
   type Monat,
   type Monatsstand,
   monatVon,
+  type PruefTag,
   plusMonate,
   plusTage,
   type Stempelart,
@@ -18,7 +19,6 @@ import {
   stempeltage,
   type Tag,
   tageImMonat,
-  tagInBerlin,
 } from "@soll/arbeitszeit";
 import { kanonisch, sha256 } from "../audit/hash.ts";
 
@@ -51,8 +51,7 @@ export type Aufzeichnung = {
   planMinuten?: number;
 };
 
-/** A call-out from a Rufbereitschaft: from the call to the end of work, open while it runs */
-export type Einsatzspanne = { beginn: number; ende: number | null };
+export type { Einsatzspanne };
 
 /** What a month records besides stamps, model and absences (S-505) */
 export type Weitere = {
@@ -113,9 +112,10 @@ export const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabw
 };
 
 /**
- * The working day of each call-out (R-12): the day of the shift it joins, of stamped work within
- * 9 hours before it, else the day it begins on. The stamps are read up to the end of the month's
- * window, so closing, the check page and the lock assign them alike.
+ * The working day of each call-out (R-12, `einsatzAnteile`): the day of the stamped shift it lies in
+ * or follows within 9 hours, else the day it begins on; it never moves stamped work (review of
+ * S-505). The stamps are read up to the end of the month's window, so closing, the check page and
+ * the lock assign them alike.
  */
 export const einsatzTage = (
   monat: Monat,
@@ -123,20 +123,30 @@ export const einsatzTage = (
   einsaetze: readonly Einsatzspanne[],
 ): Tag[] => {
   const ergebnis = arbeitstage(stempelungen, lesefenster(monat).bis);
-  const geschlossen = einsaetze.flatMap(({ beginn, ende }) =>
-    ende === null ? [] : [{ beginn, ende }],
-  );
-  const mit = ergebnis.ok ? bereitschaftstage(ergebnis.wert, { einsaetze: geschlossen }) : null;
-  const tage = mit?.ok ? mit.wert : ergebnis.ok ? ergebnis.wert : [];
-  return einsaetze.map(({ beginn }) => arbeitstagMit(tage, beginn) ?? tagInBerlin(beginn));
+  return einsatzAnteile(ergebnis.ok ? ergebnis.wert : [], einsaetze).map(({ tag }) => tag);
 };
 
-/** The minutes of a day's call-outs that have ended: working time (R-12) */
-export const einsatzMinuten = (einsaetze: readonly [number, number | null][] = []): number =>
-  einsaetze.reduce(
-    (summe, [beginn, ende]) => summe + (ende === null ? 0 : Math.round((ende - beginn) / 60_000)),
-    0,
-  );
+/**
+ * The minutes the call-outs of a month's records add per working day (R-12): each on the day its
+ * record names, without what the stamped working days already count or an earlier call-out did, so
+ * the time sheet and the Prüfexport show the Ist (review of S-505)
+ */
+export const einsatzMinutenDerTage = (
+  aufzeichnung: readonly Pick<Aufzeichnung, "tag" | "einsaetze">[],
+  gestempelt: readonly PruefTag[],
+): Map<Tag, number> => {
+  const liste = aufzeichnung
+    .flatMap((tag) =>
+      (tag.einsaetze ?? []).map(([beginn, ende]) => ({ tag: tag.tag, beginn, ende })),
+    )
+    .sort((a, b) => a.beginn - b.beginn);
+  const anteile = einsatzAnteile(gestempelt, liste);
+  const jeTag = new Map<Tag, number>();
+  liste.forEach(({ tag }, index) => {
+    jeTag.set(tag, (jeTag.get(tag) ?? 0) + (anteile[index]?.minuten ?? 0));
+  });
+  return jeTag;
+};
 
 /** The call-outs of each working day, in time order */
 const einsaetzeJeTag = (

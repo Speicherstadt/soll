@@ -10,10 +10,14 @@ import {
 } from "./tagessoll.ts";
 import { ABWESENHEITSARTEN, type Abwesenheit } from "./typen.ts";
 
-/** A month's Soll and Ist: the absences and the working days (S-201) of the person */
+/**
+ * A month's Soll and Ist: the absences and the working days (S-201) of the person, and the minutes
+ * the call-outs from a Rufbereitschaft add per working day (S-505, `einsatzMinutenJeTag`)
+ */
 export type MonatsEingaben = SollGrundlagen & {
   abwesenheiten?: readonly Abwesenheit[];
   arbeitstage?: readonly PruefTag[];
+  einsatzMinuten?: ReadonlyMap<Tag, number>;
 };
 
 /**
@@ -52,7 +56,7 @@ const eingabenGueltig = (monat: Monat, eingaben: MonatsEingaben): boolean =>
     (spanne) => istTag(spanne.von) && (spanne.bis === null || istTag(spanne.bis)),
   ) &&
   (eingaben.abwesenheiten ?? []).every((a) => istTag(a.tag) && ARTEN.has(a.art)) &&
-  [...(eingaben.plan ?? new Map<Tag, number>())].every(
+  [...(eingaben.plan ?? []), ...(eingaben.einsatzMinuten ?? [])].every(
     ([tag, minuten]) => istTag(tag) && Number.isSafeInteger(minuten) && minuten >= 0,
   );
 
@@ -94,7 +98,11 @@ export const monatsstand = (monat: Monat, eingaben: MonatsEingaben): Monatsstand
   const arbeitstage = (eingaben.arbeitstage ?? []).filter((tag) => monatVon(tag.tag) === monat);
   const sollMinuten = summe(ergebnis.tage, (tag) => tag.sollMinuten);
   const gutschriftMinuten = summe(ergebnis.tage, (tag) => tag.gutschriftMinuten);
-  const gearbeitetMinuten = arbeitstage.reduce((teil, tag) => teil + arbeitsMinutenAm(tag), 0);
+  const einsaetze = [...(eingaben.einsatzMinuten ?? [])]
+    .filter(([tag]) => monatVon(tag) === monat)
+    .reduce((teil, [, minuten]) => teil + minuten, 0);
+  const gearbeitetMinuten =
+    arbeitstage.reduce((teil, tag) => teil + arbeitsMinutenAm(tag), 0) + einsaetze;
   const istMinuten = gearbeitetMinuten + gutschriftMinuten;
   return {
     ok: true,

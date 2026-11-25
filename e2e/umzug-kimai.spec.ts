@@ -38,8 +38,8 @@ const abrufen = async (page: Page, pruefen = false) => {
   await weiter(page);
   await page.getByLabel(t("umzug_abruf_instanz")).fill(INSTANZ);
   await page.getByLabel(t("umzug_abruf_token")).fill(TOKEN);
-  await page.getByLabel(t("umzug_abruf_von")).fill("2026-09-01");
-  await page.getByLabel(t("umzug_abruf_bis")).fill("2026-09-30");
+  await page.getByLabel(t("umzug_abruf_von"), { exact: true }).fill("2026-09-01");
+  await page.getByLabel(t("umzug_abruf_bis"), { exact: true }).fill("2026-09-30");
   if (pruefen) await axe(page);
   await page.getByRole("button", { name: t("umzug_abruf_los") }).click();
   // the timesheet still running is named with its line; the token is gone from the form

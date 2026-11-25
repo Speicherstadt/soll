@@ -2,9 +2,10 @@ import {
   eingabeInBerlin,
   type Monat,
   monatVon,
-  NEUE_SCHICHT_AB,
   plusTage,
+  type Rohstueck,
   type Stempelung,
+  schichtgruppen,
 } from "@soll/arbeitszeit";
 import type { ImportZeit } from "@soll/import";
 import type { NeueStempelung, PlanGrund, Stand } from "./plan-typen.ts";
@@ -81,20 +82,20 @@ type Teil = { nummer: number; zeit: ImportZeit; stempel: Stempelung[]; spanne: S
 export type Zeitplan = { stempel: NeueStempelung[]; monat: Monat } | PlanGrund;
 
 /**
- * The spans of one person as shifts: in time order, a span that begins less than 9 hours after the
- * end of the one before belongs to the same shift (`NEUE_SCHICHT_AB`, as Soll cuts shifts), so a
- * night shift that a break after midnight splits into two spans stays one
+ * The spans of one person as shifts, cut by Soll's own rule (`schichtgruppen` of
+ * @soll/arbeitszeit: a new shift 9 h after the stretch before or 24 h after the shift began), so a
+ * night shift that a break after midnight splits into two spans stays one, and the import and the
+ * month sheet agree by construction (review S-704)
  */
 const schichtenVon = (teile: readonly Teil[]): Teil[][] => {
-  const schichten: Teil[][] = [];
-  let ende = Number.NEGATIVE_INFINITY;
-  for (const teil of [...teile].sort((a, b) => a.spanne.kommen - b.spanne.kommen)) {
-    const letzte = schichten.at(-1);
-    if (letzte && teil.spanne.kommen - ende < NEUE_SCHICHT_AB) letzte.push(teil);
-    else schichten.push([teil]);
-    ende = Math.max(ende, teil.spanne.gehen);
-  }
-  return schichten;
+  const sortiert = [...teile].sort((a, b) => a.spanne.kommen - b.spanne.kommen);
+  const stuecke: Rohstueck[] = sortiert.map(({ spanne }) => ({
+    beginn: spanne.kommen,
+    ende: spanne.gehen,
+    endetMit: "gehen",
+    nachPause: false,
+  }));
+  return schichtgruppen(stuecke).map((gruppe) => gruppe.map((i) => sortiert[i] as Teil));
 };
 
 /** Why a span of a shift cannot be taken on its own terms, or null */

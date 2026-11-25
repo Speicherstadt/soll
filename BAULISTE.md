@@ -1200,11 +1200,12 @@ Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie 
   Befunden derselben Art: Ein Einsatz wurde anders behandelt als dieselben Zeiten gestempelt (R-29).
   Der Kern liest Einsätze inzwischen als Stempelpaare (Eigenschaftstests grün); offen ist die
   Prüfung des Plans: Eine Rufbereitschaft ab heute gruppiert Ist und Plan gemeinsam und bringt R-07
-  eines vergangenen Sonntags an eine geplante Schicht, und eine alte Ist-Schicht ohne Gehen gibt der
-  geplanten Schicht deren Tag, sodass ihre Befunde (auch R-04) wegfallen. Die fehlschlagenden Tests
-  liegen als `it.fails` auf dem Branch (`packages/arbeitszeit/src/planpruefung/`). Ansatz für den
-  nächsten Versuch: die Planprüfung gruppiert vergangenes Ist (mit Einsätzen) und den Plan nie
-  gemeinsam, auch nicht mit Rufbereitschaft ab heute.
+  eines vergangenen Sonntags an eine geplante Schicht, und eine alte Ist-Schicht ohne Gehen
+  zusammen mit einem Einsatz gibt der geplanten Schicht deren Tag, sodass ihre Befunde (auch R-04)
+  wegfallen. Die fehlschlagenden Tests liegen als `it.fails` auf dem Branch
+  (`packages/arbeitszeit/src/planpruefung/`). Ansatz für den nächsten Versuch: die Planprüfung
+  gruppiert vergangenes Ist (mit Einsätzen) und den Plan nie gemeinsam, auch nicht mit
+  Rufbereitschaft ab heute.
 
 ## Schritte für Menschen
 
@@ -1226,6 +1227,7 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
   Beschäftigte und Löschkonzept (`docs/betriebsvereinbarung.md`, `docs/infoblatt.md`,
   `docs/loeschkonzept.md`)
 - [ ] In den Repository-Einstellungen „Allow GitHub Actions to create and approve pull requests“
-  einschalten, damit „Update screenshots“ einen Pull Request öffnen kann (sonst nur das Artifact)
+  einschalten, damit „Update screenshots“ einen Pull Request öffnen kann (sonst nur das Artifact
+  und der Branch `screenshots/<run>`, der Lauf endet rot)
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

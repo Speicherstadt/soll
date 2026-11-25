@@ -1109,7 +1109,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 - **Rufbereitschaft**: Eine Pauschale für Rufbereitschaft ist kein Zuschlag „für tatsächlich
   geleistete Sonntags-, Feiertags- oder Nachtarbeit“ (§ 3b Abs. 1 EStG) und nicht steuerfrei; Soll
   rechnet sie nicht. Ein Einsatz ist geleistete Arbeit, seine Minuten bekommen die Zuschläge dieser
-  Regel (S-505).
+  Regel (S-505), nie weniger als dieselben Zeiten gestempelt: Für die Zuschläge ist er ein Block der
+  Schicht, der er nach R-12 angehört, mit dem Modell ihres Arbeitstags.
 
 | Fall | Lage (Grundlohn 20 €, gezahlt 25 % Nacht) | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1136,6 +1137,9 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Rundung | 13,90 € je Stunde, Mi 22:00 – 22:07, gezahlt 25 % | 0,41 € gezahlt (aufgerundet), 0,40 € steuerfrei (abgerundet), 0,01 € steuerpflichtig | CLAUDE.md, „Never“; § 3b Abs. 1 EStG („nicht übersteigen“) |
 | Rundung unter der Grenze | 13,90 € je Stunde, So 22:00 – 22:07, gezahlt 25 % Nacht; So 10:00 – 10:07, gezahlt 25 % Sonntag | je 0,41 € gezahlt und 0,41 € steuerfrei (Grenze 75 % bzw. 50 %) | § 3b Abs. 1 EStG („nicht übersteigen“) |
 | nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+| Einsatz nach Mitternacht | 20 € je Stunde, gezahlt 25 % Nacht und 40 % von 0 bis 4 Uhr; gestempelt Mi 3.6.2026 22:00 – 23:30, Einsatz Do 0:30 – 2:00 (dieselbe Schicht nach R-12) | dieselben Zuschläge wie gestempelt Do 0:30 – 2:00: die 40 %, denn die Schicht wurde vor 0 Uhr aufgenommen | § 3b Abs. 3 Nr. 1 EStG; R-12 (S-505) |
+| Einsatz vor gestempelter Arbeit | dieselben Sätze; Einsatz Mi 3.6.2026 22:00 – 23:50, gestempelt Do 0:00 – 3:00 | 300 min wie gestempelt (die 10 min dazwischen sind Arbeitszeit) und dieselben Zuschläge mit 40 % von 0 bis 3 Uhr | § 3b Abs. 3 Nr. 1 EStG; § 4 Satz 2 ArbZG; R-12 (S-505) |
+| Einsatz und Rufbereitschaft | Pauschale für Rufbereitschaft Mo 18:00 – Di 6:00, kein Einsatz | kein steuerfreier Teil, Soll rechnet keine Pauschale | § 3b Abs. 1 EStG („tatsächlich geleistete“ Arbeit) |
 
 ## Mitbestimmung und Datenschutz
 

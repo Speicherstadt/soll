@@ -19,6 +19,7 @@ import {
   stempeltage,
   type Tag,
   tageImMonat,
+  zusatzMinutenJeTag,
 } from "@soll/arbeitszeit";
 import { kanonisch, sha256 } from "../audit/hash.ts";
 
@@ -127,26 +128,23 @@ export const einsatzTage = (
 };
 
 /**
- * The minutes the call-outs of a month's records add per working day (R-12): each on the day its
- * record names, without what the stamped working days already count or an earlier call-out did, so
- * the time sheet and the Prüfexport show the Ist (review of S-505)
+ * The minutes the call-outs of a month's records add per working day (R-12, `zusatzMinutenJeTag`):
+ * each on the day its record names, without what the stamped working days already count, with a
+ * gap under 15 minutes to other work, so the Ist, the time sheet and the Prüfexport show what the
+ * same times would give stamped (review of S-505)
  */
 export const einsatzMinutenDerTage = (
   aufzeichnung: readonly Pick<Aufzeichnung, "tag" | "einsaetze">[],
   gestempelt: readonly PruefTag[],
-): Map<Tag, number> => {
-  const liste = aufzeichnung
-    .flatMap((tag) =>
-      (tag.einsaetze ?? []).map(([beginn, ende]) => ({ tag: tag.tag, beginn, ende })),
-    )
-    .sort((a, b) => a.beginn - b.beginn);
-  const anteile = einsatzAnteile(gestempelt, liste);
-  const jeTag = new Map<Tag, number>();
-  liste.forEach(({ tag }, index) => {
-    jeTag.set(tag, (jeTag.get(tag) ?? 0) + (anteile[index]?.minuten ?? 0));
-  });
-  return jeTag;
-};
+): Map<Tag, number> =>
+  zusatzMinutenJeTag(
+    gestempelt,
+    aufzeichnung
+      .flatMap((tag) =>
+        (tag.einsaetze ?? []).map(([beginn, ende]) => ({ tag: tag.tag, beginn, ende })),
+      )
+      .sort((a, b) => a.beginn - b.beginn),
+  );
 
 /** The call-outs of each working day, in time order */
 const einsaetzeJeTag = (

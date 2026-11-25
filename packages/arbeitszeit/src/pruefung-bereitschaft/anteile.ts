@@ -2,6 +2,7 @@ import { LAENGSTE_SCHICHT, NEUE_SCHICHT_AB } from "../arbeitstag/schichten.ts";
 import type { Tag } from "../kalender/tag.ts";
 import { tagInBerlin } from "../kalender/zeit.ts";
 import type { PruefSchicht, PruefTag } from "../pruefung/typen.ts";
+import { bereitschaftstage } from "./bereitschaftstage.ts";
 import { aufMinuten, minutenVon, ohne } from "./spannen.ts";
 import type { Spanne } from "./typen.ts";
 
@@ -72,6 +73,57 @@ export const einsatzAnteile = (
     gezaehlt.push(spanne);
     return { tag, minuten: minutenVon(teile), teile };
   });
+};
+
+/** A call-out with the working day its record names */
+export type Einsatzeintrag = Einsatzspanne & { tag: Tag };
+
+const innerhalb = (schicht: PruefSchicht, zeitpunkt: number): boolean =>
+  schicht.ende !== null && schicht.beginn <= zeitpunkt && zeitpunkt < schicht.ende;
+
+/**
+ * The minutes the call-outs add to the stamped working days, per working day (R-12, review of
+ * S-505): each call-out's own minutes on the day its record names (`einsatzAnteile`), and a gap under
+ * 15 minutes between a call-out and other work, which is working time within the joined shift (R-04,
+ * `bereitschaftstage`), on the day of the stamped work of that shift, else of its first call-out. So
+ * the day of the stamps never changes and the sum is what the same times would give stamped.
+ */
+export const zusatzMinutenJeTag = (
+  gestempelt: readonly PruefTag[],
+  einsaetze: readonly Einsatzeintrag[],
+): Map<Tag, number> => {
+  const anteile = einsatzAnteile(gestempelt, einsaetze);
+  const jeTag = new Map<Tag, number>();
+  const dazu = (tag: Tag, minuten: number) => {
+    if (minuten > 0) jeTag.set(tag, (jeTag.get(tag) ?? 0) + minuten);
+  };
+  einsaetze.forEach(({ tag }, index) => {
+    dazu(tag, anteile[index]?.minuten ?? 0);
+  });
+  const geschlossen = einsaetze.flatMap(({ beginn, ende }) =>
+    ende === null ? [] : [{ beginn, ende }],
+  );
+  const verbunden = bereitschaftstage(gestempelt, { einsaetze: geschlossen });
+  if (!verbunden.ok) return jeTag;
+  const stempelschichten = gestempelt.flatMap((tag) =>
+    tag.schichten.filter((s) => s.ende !== null).map((schicht) => ({ tag: tag.tag, schicht })),
+  );
+  for (const schicht of verbunden.wert.flatMap((tag) => tag.schichten)) {
+    const gestempeltDarin = stempelschichten.filter((s) => innerhalb(schicht, s.schicht.beginn));
+    const einsaetzeDarin = einsaetze.flatMap((einsatz, index) =>
+      innerhalb(schicht, einsatz.beginn)
+        ? [{ einsatz, minuten: anteile[index]?.minuten ?? 0 }]
+        : [],
+    );
+    if (einsaetzeDarin.length === 0) continue;
+    const luecke =
+      schicht.arbeitsMinuten -
+      gestempeltDarin.reduce((summe, s) => summe + s.schicht.arbeitsMinuten, 0) -
+      einsaetzeDarin.reduce((summe, e) => summe + e.minuten, 0);
+    const tag = gestempeltDarin[0]?.tag ?? einsaetzeDarin[0]?.einsatz.tag;
+    if (tag !== undefined) dazu(tag, luecke);
+  }
+  return jeTag;
 };
 
 /** The minutes of the call-outs per working day */

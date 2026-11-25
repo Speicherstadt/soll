@@ -14,7 +14,7 @@ import {
   type Zuschlagssaetze,
   zuschlaege,
 } from "@soll/arbeitszeit";
-import { type Lohntag, mitEinsaetzen } from "./einsaetze.ts";
+import { type Lohntag, stundentage, zuschlagstage } from "./einsaetze.ts";
 import {
   istStundenposten,
   type Lohnmonat,
@@ -94,20 +94,25 @@ const stundenpostenVon = (modell: Lohnmodell): Postenart | null =>
   modell.lohnArt === "monat" ? null : modell.minijob ? "minijob" : "stunden";
 
 /**
- * The working days of the month, rebuilt from the stamps it was closed with, and its call-outs that
- * ended (R-12) beside them as shifts of their own: a call-out never moves stamped work to its day or
- * model, and what is stamped at the same time counts once (S-505, review)
+ * The working days of the month, rebuilt from the stamps it was closed with, with its call-outs
+ * (R-12): for the hours stamped work keeps its day and model, for the surcharges a call-out is a
+ * block of the shift it joins; never less than the same times stamped (S-505, reviews)
  */
-const arbeitstageAus = (eingabe: LohnmonatEingabe): Arbeitstag[] => {
+const arbeitstageAus = (
+  eingabe: LohnmonatEingabe,
+): { stunden: Arbeitstag[]; zuschlag: Arbeitstag[] } => {
   const stempel = eingabe.tage.flatMap((tag) =>
     tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
   );
   const jetzt = Math.max(0, ...stempel.map((s) => s.zeitpunkt));
   const ergebnis = arbeitstage(stempel, jetzt);
   if (!ergebnis.ok) throw new Error("lohnmonat: stamps of a closed month are invalid");
-  return mitEinsaetzen(ergebnis.wert, eingabe.tage).filter(
-    (tag) => monatVon(tag.tag) === eingabe.monat,
-  );
+  const imMonat = (liste: Arbeitstag[]) =>
+    liste.filter((tag) => monatVon(tag.tag) === eingabe.monat);
+  return {
+    stunden: imMonat(stundentage(ergebnis.wert, eingabe.tage)),
+    zuschlag: imMonat(zuschlagstage(ergebnis.wert, eingabe.tage)),
+  };
 };
 
 /** Worked hours and counter-entries per hours item, by the model of each day */
@@ -242,12 +247,12 @@ const posten = (summen: Summen): Posten[] =>
  * data in payroll and is no item. Whatever is "nicht hinterlegt" is named, not guessed (CLAUDE.md).
  */
 export const lohnmonat = (eingabe: LohnmonatEingabe): LohnmonatErgebnis => {
-  const tage = arbeitstageAus(eingabe);
+  const { stunden, zuschlag } = arbeitstageAus(eingabe);
   const summen: Summen = new Map();
   const probleme = [
-    ...gearbeitet(eingabe, tage, summen),
-    ...feiertagsstunden(eingabe, tage, summen),
-    ...zuschlaegeDesMonats(eingabe, tage, summen),
+    ...gearbeitet(eingabe, stunden, summen),
+    ...feiertagsstunden(eingabe, stunden, summen),
+    ...zuschlaegeDesMonats(eingabe, zuschlag, summen),
   ];
   for (const abwesenheit of eingabe.abwesenheiten ?? [])
     dazu(summen, abwesenheit.art, abwesenheit.minuten);

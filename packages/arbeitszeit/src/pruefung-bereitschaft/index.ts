@@ -1,8 +1,10 @@
 export {
   type EinsatzAnteil,
+  type Einsatzeintrag,
   type Einsatzspanne,
   einsatzAnteile,
   einsatzMinutenJeTag,
+  zusatzMinutenJeTag,
 } from "./anteile.ts";
 export {
   type BereitschaftBefund,

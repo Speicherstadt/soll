@@ -9,7 +9,7 @@ import {
   kundenLesen,
   projekteLesen,
 } from "../projektzeit/index.ts";
-import { type HabenAnschluss, leistungSenden } from "./haben-api.ts";
+import { type HabenAnschluss, type Leistung, leistungSenden } from "./haben-api.ts";
 import { leistungAus } from "./leistung.ts";
 import { staendeVon, type UebergabeStand, uebergabenVon } from "./stand.ts";
 import { anschlussVon } from "./zugang.ts";
@@ -54,49 +54,72 @@ const pruefen = (
   return null;
 };
 
-/** Bills the bookings not billed yet and notes each for Haben, in one transaction */
-const abrechnenFuerHaben = (
-  deps: HabenDeps,
-  kontext: Kontext,
-  buchungen: readonly BuchungMitBezug[],
-) => {
-  const neue = buchungen
-    .filter((b) => b.zeile.abgerechnetAm === null)
-    .map((b) => b.zeile.buchungId);
-  if (neue.length === 0) return null;
-  const ergebnis = buchungenAbrechnen(deps.db, deps.schreibDb, kontext, neue, (s, ids) => {
-    for (const buchungId of ids)
-      s.einfuegen("habenUebergaben", {
-        betriebId: kontext.betriebId,
-        buchungId,
-        angelegtAm: kontext.jetzt,
-      });
-  });
-  return ergebnis.ok ? null : ergebnis.grund;
-};
-
-/** A failure that concerns every call, not this entry: the rest waits for the next try */
-const anHabenGescheitert = (fehler: string) => fehler !== "abgelehnt";
-
-/** Sends one billed booking and keeps Haben's answer; false when Haben cannot take any now */
-const senden = async (
-  deps: HabenDeps,
-  kontext: Kontext,
-  anschluss: HabenAnschluss,
-  b: BuchungMitBezug,
-): Promise<boolean> => {
-  const leistung = leistungAus({
+/** The Leistung of a booking as it is billed, with the rate it was billed with */
+const leistungVon = (b: BuchungMitBezug, centProStunde: number | null): Leistung =>
+  leistungAus({
     buchungId: b.zeile.buchungId,
     tag: b.zeile.tag,
     minuten: b.minuten,
     taetigkeit: b.taetigkeit,
     notiz: b.zeile.notiz,
     abrechenbar: b.abrechenbar,
-    centProStunde: b.zeile.centProStunde,
+    centProStunde,
     projekt: { name: b.projekt.name, nummer: b.projekt.nummer },
     kontaktId: b.kunde.externId ?? "",
     nachweisNummer: b.nachweisNummer,
   });
+
+/**
+ * Bills the bookings not billed yet and notes each for Haben with its Leistung as billed, in one
+ * transaction: every try sends that content, so a later change of an activity, an order or a rate
+ * changes nothing already billed (docs/plan.md, "Keine Leistung doppelt")
+ */
+const abrechnenFuerHaben = (
+  deps: HabenDeps,
+  kontext: Kontext,
+  buchungen: readonly BuchungMitBezug[],
+) => {
+  const neue = new Map(
+    buchungen.filter((b) => b.zeile.abgerechnetAm === null).map((b) => [b.zeile.buchungId, b]),
+  );
+  if (neue.size === 0) return null;
+  const ergebnis = buchungenAbrechnen(
+    deps.db,
+    deps.schreibDb,
+    kontext,
+    [...neue.keys()],
+    (s, abgerechnet) => {
+      for (const { buchungId, centProStunde } of abgerechnet)
+        s.einfuegen("habenUebergaben", {
+          betriebId: kontext.betriebId,
+          buchungId,
+          inhalt: kanonisch(leistungVon(neue.get(buchungId) as BuchungMitBezug, centProStunde)),
+          angelegtAm: kontext.jetzt,
+        });
+    },
+  );
+  return ergebnis.ok ? null : ergebnis.grund;
+};
+
+/** A failure that concerns every call, not this entry: the rest waits for the next try */
+const anHabenGescheitert = (fehler: string) => fehler !== "abgelehnt";
+
+/**
+ * Sends one billed booking and keeps Haben's answer; false when Haben cannot take any now. It sends
+ * the Leistung as billed; only the contact is the one the customer is linked to now, so a booking
+ * Haben refused for a wrong contact goes once the customer is linked right.
+ */
+const senden = async (
+  deps: HabenDeps,
+  kontext: Kontext,
+  anschluss: HabenAnschluss,
+  b: BuchungMitBezug,
+  inhalt: string | null,
+): Promise<boolean> => {
+  const leistung: Leistung = {
+    ...(inhalt === null ? leistungVon(b, b.zeile.centProStunde) : (JSON.parse(inhalt) as Leistung)),
+    contactId: b.kunde.externId ?? "",
+  };
   const antwort = await leistungSenden(anschluss, leistung);
   const werte = antwort.ok
     ? { leistungId: antwort.wert.id, gesendetAm: kontext.jetzt, fehler: null, meldung: null }
@@ -137,7 +160,15 @@ export const uebergeben = async (
   if (!frisch.ok) return frisch;
   const staende = staendeVon(deps.db, kontext.betriebId, frisch.wert);
   const offen = frisch.wert.filter((_, i) => staende[i]?.stand === "wartet");
-  for (const b of offen) if (!(await senden(deps, kontext, anschluss.wert, b))) break;
+  const notizen = uebergabenVon(
+    deps.db,
+    kontext.betriebId,
+    offen.map((b) => b.zeile.buchungId),
+  );
+  for (const b of offen) {
+    const inhalt = notizen.get(b.zeile.buchungId)?.inhalt ?? null;
+    if (!(await senden(deps, kontext, anschluss.wert, b, inhalt))) break;
+  }
   return { ok: true, wert: staendeVon(deps.db, kontext.betriebId, frisch.wert) };
 };
 

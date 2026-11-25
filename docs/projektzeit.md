@@ -228,7 +228,9 @@ Transaktion wie eine Notiz je Buchung für Haben, und sperrt sie damit. Dann geh
 nicht bestätigt hat, an Haben. Weil die Kennung der Buchung `externalId` ist, legt Haben bei einer
 Wiederholung nichts neu an, sondern antwortet mit dem vorhandenen Eintrag: nach einer verlorenen
 Antwort, einem zweiten Klick oder einem neuen Versuch nach einem Fehler. Was Haben schon bestätigt
-hat, schickt Soll nicht noch einmal.
+hat, schickt Soll nicht noch einmal. Eine Wiederholung schickt die Leistung so, wie sie abgerechnet
+wurde: Wird danach eine Tätigkeit abrechenbar oder ein Auftrag umbenannt, ändert das nichts mehr;
+nur den Kontakt nimmt Soll vom Kunden, wie er jetzt verbunden ist.
 
 **Fehler.** Antwortet Haben nicht, lehnt es das Token ab (abgelaufen, widerrufen, ohne Recht), kommen
 zu viele Aufrufe oder meldet Haben einen eigenen Fehler, hört Soll mit dem Senden auf; die übrigen

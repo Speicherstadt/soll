@@ -36,14 +36,17 @@ const abrechenbare = (db: Db, betriebId: string, ids: readonly string[]) => {
  * Marks bookings as billed (owner and planner by hand, or the transfer to Haben, S-606): from then on
  * they are locked, and each keeps the rate it was billed with, so a later change of the rates
  * changes no bill. One transaction: all named bookings or none, together with what `dazu` writes
- * (the transfer's own rows).
+ * (the transfer's own rows, given each booking with the rate it is billed with).
  */
 export const buchungenAbrechnen = (
   db: Db,
   schreibDb: SchreibDb,
   kontext: Kontext,
   ids: readonly string[],
-  dazu: (s: Schreiber, buchungIds: readonly string[]) => void = () => undefined,
+  dazu: (
+    s: Schreiber,
+    buchungen: readonly { buchungId: string; centProStunde: number | null }[],
+  ) => void = () => undefined,
 ): Ergebnis<Abgerechnet[]> => {
   const geprueft = abrechenbare(db, kontext.betriebId, ids);
   if (!geprueft.ok) return nein(geprueft.grund);
@@ -57,7 +60,7 @@ export const buchungenAbrechnen = (
       );
     dazu(
       s,
-      zeilen.map(({ zeile }) => zeile.buchungId),
+      zeilen.map(({ zeile, satz }) => ({ buchungId: zeile.buchungId, centProStunde: satz })),
     );
   });
   return ok(

@@ -20,6 +20,7 @@ export const ANLEITUNG: Record<string, () => string> = {
   clockodo: () => m.umzug_anleitung_clockodo(),
   tabelle: () => m.umzug_anleitung_tabelle(),
   kimai: () => m.umzug_anleitung_kimai(),
+  personio: () => m.umzug_anleitung_personio(),
 };
 
 const LESEGRUND: Record<LeseGrund, () => string> = {
@@ -111,14 +112,17 @@ export const FELD_NAMEN: Record<string, () => string> = {
   taetigkeit: () => m.umzug_feld_taetigkeit(),
 };
 
-/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-703, S-705), naming the tool */
+/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-703 to S-705), naming the tool */
 export const ABRUF_FEHLER: Record<string, (werkzeug: string) => string> = {
   adresse_ungueltig: () => m.umzug_abruf_adresse_ungueltig(),
   adresse_intern: () => m.umzug_abruf_adresse_intern(),
   weiterleitung: () => m.umzug_abruf_weiterleitung(),
   zugang_ungueltig: () => m.umzug_abruf_zugang_ungueltig(),
   zugang_abgelehnt: (werkzeug) => m.umzug_abruf_zugang_abgelehnt({ werkzeug }),
-  rechte_fehlen: () => m.umzug_abruf_rechte_fehlen(),
+  rechte_fehlen: (werkzeug) =>
+    werkzeug === "Personio"
+      ? m.umzug_abruf_rechte_fehlen_personio()
+      : m.umzug_abruf_rechte_fehlen(),
   zu_viele_anfragen: (werkzeug) => m.umzug_abruf_zu_viele_anfragen({ werkzeug }),
   nicht_erreichbar: (werkzeug) => m.umzug_abruf_nicht_erreichbar({ werkzeug }),
   antwort_ungueltig: (werkzeug) => m.umzug_abruf_antwort_ungueltig({ werkzeug }),

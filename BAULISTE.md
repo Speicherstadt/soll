@@ -838,7 +838,7 @@ S-701 und unabhängig voneinander.
     Playwright (desktop) geht den Abruf gegen den Ersatz bis zur Übernahme und zeigt, dass der
     zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
     `docs/umzug.md`, Entscheidungen im Projektplan.
-- [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
+- [x] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
   Fertig, wenn: Fixtures nach Personios API bestehen (Quelle im Test) und ein Playwright-Test den
   ganzen Ablauf zeigt. Genauer:
   - **Quellen**: developer.personio.de und api.personio.de sind über den Proxy nicht erreichbar;

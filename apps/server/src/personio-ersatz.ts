@@ -87,6 +87,7 @@ export const personioErsatz = (o: PersonioErsatzOptionen) => {
   const anfragen: Anfrage[] = [];
   const stoerungen: PersonioStoerung[] = [];
   const tokens = new Set<string>();
+  const widerrufen = new Set<string>();
   const app = new Hono();
   const naechsteStoerung = () => stoerungen.shift();
 
@@ -117,7 +118,7 @@ export const personioErsatz = (o: PersonioErsatzOptionen) => {
     return c.json({ access_token: token, expires_in: 86400, token_type: "Bearer", scope: "" });
   });
   app.post("/v2/auth/revoke", async (c) => {
-    tokens.delete(new URLSearchParams(await c.req.text()).get("token") ?? "");
+    widerrufen.add(new URLSearchParams(await c.req.text()).get("token") ?? "");
     return c.body(null, 200);
   });
   app.get("/v2/:liste", (c) => {
@@ -130,7 +131,7 @@ export const personioErsatz = (o: PersonioErsatzOptionen) => {
     if (stoerung === 429) return c.json({}, 429, { "Retry-After": "60" });
     if (typeof stoerung === "number") return problem(c, stoerung, "Error");
     const token = c.req.header("authorization")?.replace(/^Bearer /, "") ?? "";
-    if (!tokens.has(token)) return problem(c, 401, "Unauthorized");
+    if (!tokens.has(token) || widerrufen.has(token)) return problem(c, 401, "Unauthorized");
     if (o.rechte && !o.rechte.includes(liste.recht)) return problem(c, 403, "Forbidden");
     const abfrage = new URL(c.req.url).searchParams;
     const cursor = abfrage.get("cursor");
@@ -164,7 +165,7 @@ export const personioErsatz = (o: PersonioErsatzOptionen) => {
     fetch: (anfrage: Request) => app.fetch(anfrage),
     anfragen,
     /** tokens handed out and not revoked */
-    offeneTokens: () => tokens.size,
+    offeneTokens: () => [...tokens].filter((t) => !widerrufen.has(t)).length,
     /** the next calls of a list fail like this, one each */
     stoeren: (...folge: PersonioStoerung[]) => stoerungen.push(...folge),
   };

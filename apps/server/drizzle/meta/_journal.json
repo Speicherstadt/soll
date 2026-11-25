@@ -152,8 +152,15 @@
     {
       "idx": 21,
       "version": "6",
-      "when": 1795606470758,
-      "tag": "0021_terminal_offline",
+      "when": 1795606611527,
+      "tag": "0021_karten_neu_eintragen",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "6",
+      "when": 1795608507682,
+      "tag": "0022_terminal_offline",
       "breakpoints": true
     }
   ]

@@ -22,6 +22,12 @@ export const aufFlaeche = (
   begrenzt(Math.round((punkt.y / gezeichnet.hoehe) * FLAECHE.hoehe), FLAECHE.hoehe),
 ];
 
+/** A stroke is a line when it reaches a second, different point: a tap sent twice is no line */
+const istLinie = (strich: readonly Punkt[]) => {
+  const [erster] = strich;
+  return erster !== undefined && strich.some(([x, y]) => x !== erster[0] || y !== erster[1]);
+};
+
 const aufDerFlaeche = ([x, y]: Punkt) =>
   Number.isInteger(x) &&
   Number.isInteger(y) &&
@@ -32,7 +38,8 @@ const aufDerFlaeche = ([x, y]: Punkt) =>
 
 /**
  * Whether strokes make a signature: at most 100 strokes of 5,000 points in all, each point a whole
- * number on the surface, and at least one stroke that is a line (a single tap is no signature)
+ * number on the surface, and at least one stroke that is a line through two different points (a
+ * single tap is no signature, even when its point is sent twice)
  */
 export const unterschriftPruefen = (striche: Striche): boolean => {
   const punkte = striche.reduce((summe, strich) => summe + strich.length, 0);
@@ -41,6 +48,6 @@ export const unterschriftPruefen = (striche: Striche): boolean => {
     striche.length <= FLAECHE.striche &&
     punkte <= FLAECHE.punkte &&
     striche.every((strich) => strich.length > 0 && strich.every(aufDerFlaeche)) &&
-    striche.some((strich) => strich.length > 1)
+    striche.some(istLinie)
   );
 };

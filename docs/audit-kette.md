@@ -41,7 +41,9 @@ Aufbewahrungsfrist kann er entfernt werden, ohne dass die Kette bricht, denn das
 seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.). Die Aussonderung
 ([Monatsabschluss](monatsabschluss.md#aufbewahrung-und-aussonderung)) löscht dafür die Zeile mit einem
 eigenen Glied und entfernt den gespeicherten Inhalt jedes Glieds, das sie geschrieben hat; die
-Glieder bleiben, und die Prüfung findet danach nichts.
+Glieder bleiben, und die Prüfung findet danach nichts. Ebenso entfernt das Entziehen einer
+[NFC-Karte](terminal.md) die Inhalte ihrer Glieder, weil jeder die verschlüsselten Schlüssel der
+Karte enthält; die Zeile der Karte bleibt.
 
 ## Was die Prüfung findet
 

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6bea4af5-9998-492a-b98d-2085746b7fd4",
+  "id": "ee4fcd57-6d6c-4eb4-88e4-d1b761b964e5",
   "prevId": "bedd3757-82e7-4af8-bdf9-47bdd4cfd8d0",
   "tables": {
     "arbeitszeitmodelle": {
@@ -3088,13 +3088,14 @@
         }
       },
       "indexes": {
-        "karten_uid": {
-          "name": "karten_uid",
+        "karten_uid_aktiv": {
+          "name": "karten_uid_aktiv",
           "columns": [
             "betrieb_id",
             "uid_kennung"
           ],
-          "isUnique": true
+          "isUnique": true,
+          "where": "\"karten\".\"widerrufen_am\" is null"
         }
       },
       "foreignKeys": {},
@@ -3105,88 +3106,6 @@
             "karte_id"
           ],
           "name": "karten_betrieb_id_karte_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "terminal_eintraege": {
-      "name": "terminal_eintraege",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "terminal_id": {
-          "name": "terminal_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nummer": {
-          "name": "nummer",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt_hash": {
-          "name": "inhalt_hash",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "art": {
-          "name": "art",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "geraet_zeitpunkt": {
-          "name": "geraet_zeitpunkt",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "stempel_id": {
-          "name": "stempel_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "empfangen_am": {
-          "name": "empfangen_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "terminal_eintraege_betrieb_id_terminal_id_nummer_pk": {
-          "columns": [
-            "betrieb_id",
-            "terminal_id",
-            "nummer"
-          ],
-          "name": "terminal_eintraege_betrieb_id_terminal_id_nummer_pk"
         }
       },
       "uniqueConstraints": {},
@@ -3276,13 +3195,6 @@
         },
         "fehler_tag": {
           "name": "fehler_tag",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "schluessel": {
-          "name": "schluessel",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

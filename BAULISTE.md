@@ -900,6 +900,92 @@ S-701 und unabhängig voneinander.
     `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
   Abwesenheiten.
+  Fertig, wenn: Fixtures nach der API-Beschreibung jedes der drei Anbieter bestehen (Quelle im Test)
+  und ein Playwright-Test den ganzen Ablauf zeigt. Genauer:
+  - **Quellen**: developers.papershift.com, help.papershift.com, openapi.planday.com,
+    developer.planday.com, help.planday.com und crewmeister.com sind über den Proxy nicht
+    erreichbar. Gebaut wird nach öffentlichen Quellen, die die API der Anbieter beschreiben oder
+    benutzen, genannt in Code und Tests: **Papershift** nach Papershifts eigenem
+    github.com/Papershift/hosted_pages_template (`public_api/v1`, `api_token`, `/working_sessions`
+    mit `range_start`, `range_end`, `page`), github.com/maluramichael/papershift-cli (`breaks` mit
+    `starts_at`/`ends_at`, `next_page`), github.com/bestit/bamboohr-connector und dem Gist
+    younishd/e69f87e8 (`absences` mit `absence_type_id`, `starts_at`, `ends_at`, `full_day`),
+    github.com/HelpCode-ai/anythingmcp (`adapters/de/papershift.json`: 25 je Seite ab 1,
+    `interface_language`, Zeilen unter dem Namen der Ressource) und den Auszügen der Doku, die eine
+    Websuche zeigt (`confirmed_at`, `break_duration` in Sekunden); **Planday** nach
+    github.com/borgels/mcp-server-planday (Schemas nach Plandays OpenAPI-Dokumenten
+    `openapi.planday.com/{hr,scheduling,punchclock,absence}/swagger/v1.0/swagger.json`: `data` und
+    `paging` mit `offset`, `limit` höchstens 50, `total`; Token über
+    `id.planday.com/connect/token` mit `grant_type=refresh_token`, Kopfzeile `X-ClientId`) und
+    github.com/mindcloud-inc/universal-api-reference (`apis/p/planday`: Endpunkte und Filter);
+    **Crewmeister** nach github.com/mztechnik/hacs-crewmeister (`/api/v3/auth/user/`, Stempel und
+    Abwesenheiten mit ihren Feldern) und anythingmcp (`adapters/de/crewmeister.json`: RSQL-Filter,
+    Seiten ab 0 mit `pageSize` bis 100, `content` und `hasNextPage`, Mitglieder, Abwesenheitsarten,
+    Schichten, Arbeitsorte). Was keine Quelle belegt, steht als Annahme in `docs/umzug.md`.
+  - **Datei oder API**: keine der Quellen beschreibt die Spalten der CSV- oder Excel-Exporte der
+    drei Anbieter, alle drei beschreiben die API; also die API (Entscheidung im Projektplan). Wer
+    einen Export als Tabelle hat, nimmt „Excel und CSV“ (S-702), die Anleitung sagt das.
+  - **Zugang und Abruf**: Werkzeuge `papershift`, `planday` und `crewmeister` mit dem Weg
+    „API-Zugang“ und einem Zeitraum (höchstens ein Jahr; Ende bis 92 Tage in der Zukunft, für den
+    kommenden Dienstplan und genehmigte Abwesenheiten; Zeiten nur bis heute). Papershift: API-Token
+    (als `api_token` in der Abfrage, so verlangt es Papershift); Planday: App-ID und Token der App
+    (Refresh-Token) aus „API-Zugang“, gegen ein Zugriffstoken getauscht; Crewmeister: E-Mail und
+    Passwort eines Kontos mit Leserechten auf die Crew, gegen ein JWT getauscht. Die Adressen sind
+    fest (`app.papershift.com`, `id.planday.com` und `openapi.planday.com`, `api.crewmeister.com`,
+    für die Tests ein Ersatz, den nur der Betreiber setzt); ein Link auf die nächste Seite muss
+    Ursprung und Pfad der ersten haben und darf nicht auf eine gelesene zeigen. Anfragen
+    nacheinander, keine Weiterleitung, 30 s und 10 MiB je Antwort, 5 min je Abruf, 20.000
+    Datensätze. Zugang und Tokens werden nicht gespeichert, nicht geloggt und stehen in keiner
+    Antwort und keiner Datei (Test, auch für eine Adresse mit `api_token` in einer Fehlermeldung).
+    Fehler als Werte wie in S-705: Zugang abgelehnt, Rechte fehlen, zu viele Anfragen, nicht
+    erreichbar, Antwort ungültig oder zu groß, zu viele; kein Neuversuch.
+  - **Ein gemeinsamer Weg**: je Anbieter eine reine Funktion in `packages/import` macht aus den
+    Antworten der API dieselben flachen Sätze (Person, Schicht, Arbeitsstück, Abwesenheit), die
+    Antwort des Abrufs ist eine Datei aus JSON Lines mit genau diesen Feldern (keine E-Mail, keine
+    Notiz, kein Lohn), sortiert, sodass derselbe Stand dieselbe Datei und denselben SHA-256 ergibt;
+    ein Leser für alle drei liest sie, danach Vorschau, Probelauf und Übernahme wie bei einer Datei.
+  - **Mitarbeiter**: Personen der Zuordnung mit ihrem Namen beim Anbieter (zwei gleiche mit
+    Kennung); der Import legt keine Personen an.
+  - **Zeiten**: Papershift `working_sessions` (Pausen aus `breaks` mit Zeitpunkten, sonst
+    `break_duration` in Sekunden in der Mitte), Planday `punchclockshifts` mit ihren Pausen
+    (`/punchclockshifts/{id}/breaks`, Ortszeit ohne Versatz, gelesen in Europe/Berlin), Crewmeister
+    `stamps` (eine Kette nach `chainStartStampId`: Arbeit von `START_WORK` bis zum nächsten Stempel,
+    `INVALID` zählt nicht). Die Arbeitsstücke einer Person, die sich berühren oder überschneiden,
+    werden ein Block mit Kommen und Gehen, die Lücke ist die Pause, wie gestempelt (mit der
+    Blocklogik von S-703/S-704/S-705, nicht neu geschrieben), und die Blöcke einer Schicht werden
+    zusammen übernommen oder abgelehnt (S-704). Beginn ab-, Ende aufgerundet, Pausen nach innen; nie
+    zum Nachteil der Person. Abgelehnt mit Zeile: laufend (`laeuft_noch`), Block ab 24 Stunden,
+    eine Uhrzeit, die es wegen der Zeitumstellung nicht oder zweimal gibt.
+  - **Schichten** in den Dienstplan: Planday `shifts` (Position als Rolle, ohne Person offen),
+    Crewmeister `shiftplanner/shifts` (Arbeitsort als Rolle). Papershift nicht: seine Schichten sind
+    Plätze eines Arbeitsbereichs mit einer Zahl von Personen, und welche Person eingeplant ist,
+    belegt keine erreichbare Quelle (Entscheidung im Projektplan). Nur bei eingeschaltetem Modul
+    Dienstplan (sonst je Schicht `modul_aus`) und an dem Standort, den der Inhaber in der Zuordnung
+    wählt (ohne Standort `ausgelassen`); als Entwurf, den der Inhaber veröffentlicht (dann erst
+    Meldungen, S-503). Abgelehnt mit Zeile: Überschneidung mit einer Schicht derselben Person,
+    Pause nicht kürzer als die Schicht, Person kein Mitglied. Kennung, Werkzeug und Import an der
+    Schicht (neue Spalten `import_id`, `extern_quelle`, `extern_id` an `schichten`, neue Migration);
+    eine geänderte Schicht im alten Tool `geaendert_im_alten_tool`.
+  - **Abwesenheiten**: nur genehmigte (Papershift `confirmed_at` gesetzt, Planday `status`
+    `Approved`, Crewmeister `state` `APPROVED`); beantragte mit Zeile als `nicht_genehmigt`,
+    abgelehnte und zurückgezogene gar nicht. Halbe Tage in halben Tagen (Crewmeister `fromDayPart`
+    `AFTERNOON`, `toDayPart` `MORNING`), sonst ein Teil des Tages mit Zeile als `teil_tag`. Die Art
+    heißt wie beim Anbieter (Papershift und Crewmeister nach ihren Arten, Planday nach
+    `absenceType`), vorgeschlagen nach dem Wort; Krankheit wird nur „krank“, ohne Grund, Notiz oder
+    Bescheinigung (Art. 9 DSGVO).
+  - **Wiederholbar und abgeschlossen**: Kennungen sind die ids der Anbieter; ein zweiter Abruf
+    desselben Zeitraums legt nichts an, ein abgeschlossener Monat nimmt nichts an (Test über die
+    API).
+  - **Robust**: Fuzzing mit fast-check über den Leser (beliebiger Text, Zeilen mit falschen Typen,
+    kaputte Zeitpunkte) und über die drei Umformungen (zufällige Antworten): nie ein Wurf, nie
+    länger als 1 s; jeder Fehler nennt Zeile und Grund.
+  - **Ersatz** je Anbieter nach den Quellen (Zugang, Seiten, Fehler), in Vitest und für Playwright
+    als eigener Dienst. **Oberfläche und Doku**: die drei in der Liste der Werkzeuge mit Anleitung,
+    der Standort für Schichten in der Zuordnung, Schichten im Probelauf; Playwright (desktop) geht
+    den Abruf von Crewmeister gegen den Ersatz bis zur Übernahme (Schichten im Dienstplan, Zeiten,
+    Abwesenheiten) und zeigt, dass der zweite Lauf nichts anlegt (die beiden anderen teilen ab der
+    Datei denselben Weg); axe grün; Texte in allen sechs Sprachen; Doku `docs/umzug.md`, README,
+    Entscheidungen im Projektplan; Abdeckungstests (S-903) für die neuen Spalten.
 - [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
 - [ ] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
   oder aus dem Import, im Audit-Log.

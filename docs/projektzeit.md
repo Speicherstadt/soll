@@ -13,6 +13,9 @@ Tätigkeiten, dazu die Stundensätze. Der Bereich gehört zum Modul Projektzeit;
 der Navigation, und der Server lehnt jede seiner Routen ab (`403 modul_aus`). Die Daten bleiben
 dabei erhalten. Gebucht wird mit der [Stoppuhr](#stoppuhr) unter **Heute**.
 
+![„Projekte“ am Desktop: Kunden und Aufträge](assets/screenshots/projekte-light-desktop.png#only-light)
+![„Projekte“ am Desktop: Kunden und Aufträge](assets/screenshots/projekte-dark-desktop.png#only-dark)
+
 ## Wer was sieht
 
 | Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung | Stundennachweise | Haben |

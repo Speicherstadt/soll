@@ -18,6 +18,7 @@
     "test": "bun --bun vitest run",
     "build": "bun scripts/build-all.ts",
     "e2e": "playwright test --trace off",
+    "screenshots": "bun scripts/screenshots/main.ts",
     "gesetze": "bun scripts/gesetze/gesetze.ts",
     "lasttest": "BUN_CONFIG_MAX_HTTP_REQUESTS=4096 bun apps/server/src/lasttest/main.ts",
     "demo": "bun apps/server/src/demo/main.ts",

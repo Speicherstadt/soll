@@ -13,6 +13,9 @@ nach fünf. Jeder Schritt speichert beim Klick auf „Weiter“; wer zwischendur
 nächsten Mal dort weiter. Bis die Einrichtung abgeschlossen ist, führt Soll den Inhaber immer
 wieder hierher.
 
+![„Einstellungen“ des Inhabers am Desktop](assets/screenshots/einstellungen-light-desktop.png#only-light)
+![„Einstellungen“ des Inhabers am Desktop](assets/screenshots/einstellungen-dark-desktop.png#only-dark)
+
 ## Konto
 
 Unter „Konto anlegen“ gibst du deinen Namen, deine E-Mail-Adresse und ein Passwort mit mindestens

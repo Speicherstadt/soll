@@ -13,6 +13,9 @@ Tipp stempelt.
 Das Terminal ist ein Modul; der Inhaber schaltet es unter Einstellungen ein. Ist es aus, lehnt der
 Server jeden Aufruf des Terminals ab.
 
+![Das Terminal im Querformat: Uhr, Betrieb und das Feld für die PIN](assets/screenshots/terminal-light-terminal.png#only-light)
+![Das Terminal im Querformat: Uhr, Betrieb und das Feld für die PIN](assets/screenshots/terminal-dark-terminal.png#only-dark)
+
 ## Koppeln
 
 1. Unter **Einstellungen → Terminal** gibt der Inhaber dem Terminal einen Namen (etwa „Eingang“)

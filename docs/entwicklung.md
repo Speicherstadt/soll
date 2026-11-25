@@ -38,6 +38,7 @@ bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Wo
 bun run gesetze      # Gesetzeswächter: Normen abrufen und vergleichen, Bericht auf der Konsole
 bun run lasttest     # Lasttest: 50 Betriebe mit je 50 Personen stempeln gleichzeitig (Port 28300)
 bun run demo         # Demo-Daten: Weber Haustechnik und Café Elbblick mit drei Monaten (demo.md)
+bun run screenshots  # die Bilder für README und Doku unter docs/assets/screenshots/
 ```
 
 Die App ruft die API unter ihrer eigenen Adresse auf; Vite leitet `/api` an den Server weiter
@@ -77,6 +78,45 @@ Gemessen am 21.11.2026 in zwei Läufen auf 4 Kernen: 2.500 Stempelungen in 8,7 b
 je Sekunde), kein Fehler, p50 3,6 bis 5,2 s, p95 6,5 bis 8,6 s, die langsamste 8,7 bis 8,9 s; jede
 Stempelung genau einmal, alle 50 Ketten ohne Befund. Das Anlegen der Personen dauert zwei bis fünf
 Minuten, vor allem wegen scrypt für die Passwörter.
+
+## Screenshots
+
+Die Bilder in der README und in dieser Dokumentation erzeugt `bun run screenshots`, nie eine Hand.
+Das Skript baut die App, schreibt die [Demo-Daten](demo.md) in ein frisches temporäres Verzeichnis
+und startet darauf den Server (`apps/server/src/screenshots/`), mit dem statischen Build der App und
+einer Uhr, die auf 10:45 Uhr (Europe/Berlin) des Tags `--heute` steht, auf einem freien Port. Dann
+meldet sich Playwright für jedes Bild über die API als die passende Person an (Sandra, Anna und
+Jonas bei Weber Haustechnik, Lea im Café, das Terminal mit einem neuen Kopplungscode von Mia), öffnet
+die Seite und legt das Bild hell und dunkel ab:
+
+```sh
+bun run screenshots                           # alle Bilder, Tag 2026-11-25
+bun run screenshots --nur dienstplan --nur terminal
+bun run screenshots --heute 2027-03-10 --ohne-build
+```
+
+Welche Seiten, als wer, auf welchen Geräten und worauf vor dem Bild gewartet wird, steht in
+`scripts/screenshots/bildschirme.ts`; die Dateien heißen
+`docs/assets/screenshots/<name>-<light|dark>-<desktop|phone|terminal>.png`. Desktop und Terminal
+haben 1280 × 800, das Handy 412 × 915, alle mit doppelter Pixeldichte. Die Uhr steht auch im Browser
+(`clock.setFixedTime`), Zeitzone, Sprache (auch für Datumsfelder) und Thema sind fest, Animationen
+aus; zeigt eine Seite ihre Überschrift oder den erwarteten Text nicht, bricht der Lauf ab, statt ein
+falsches Bild zu schreiben. Bei gleichem `--heute` entstehen dieselben Bilder bis auf Kennungen und
+Prüfwerte, die Soll bei jedem Lauf neu vergibt (Monatsabschluss und Prüfseite).
+
+Ein Test (`scripts/screenshots/bildschirme.test.ts`) prüft die Liste: eindeutige Namen, das Schema
+der Dateinamen, jede Seite eine Route der App, jede Überschrift ein Text aus `messages/de.json`;
+jedes Bild, auf das README oder `docs/` verweisen, liegt vor und steht in der Liste, und unter
+`docs/assets/screenshots/` liegt nichts anderes. In der Doku stehen die Bilder paarweise mit
+`#only-light` und `#only-dark`, in der README in `<picture>`.
+
+Nach einer Änderung am Aussehen: **Actions → Update screenshots → Run workflow**
+(`.github/workflows/screenshots.yml`). Der Workflow erzeugt alle Bilder, lädt sie als Artefakt
+`screenshots` hoch und öffnet, wenn sich ein Bild geändert hat, einen Pull Request
+`docs: update screenshots` auf einem Zweig `screenshots/<lauf>`; ohne Änderung keinen. Bilder
+ansehen, dann mergen. Einen mit `GITHUB_TOKEN` geöffneten Pull Request startet GitHub keine CI;
+schließen und wieder öffnen startet sie. In den Einstellungen des Repositorys muss „Allow GitHub
+Actions to create and approve pull requests“ an sein, sonst bleibt es beim Artefakt.
 
 ## Komponenten
 

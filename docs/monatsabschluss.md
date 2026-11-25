@@ -12,6 +12,12 @@ Ab dann ist der Monat gesperrt, und die Person bekommt ihren **Stundenzettel** m
 **Prüfwert**. An ihm fällt jede spätere Änderung auf, auch eine, die der Betreiber des Servers an
 der Datenbank vorbei macht.
 
+![Monatsabschluss eines Monats mit Bestätigung, Abschluss, Soll, Ist, Saldo und den Tagen](assets/screenshots/monat-light-desktop.png#only-light)
+![Monatsabschluss eines Monats mit Bestätigung, Abschluss, Soll, Ist, Saldo und den Tagen](assets/screenshots/monat-dark-desktop.png#only-dark)
+
+![Die Prüfseite am Handy: ein Prüfwert stimmt mit dem Stand des Betriebs überein](assets/screenshots/pruefen-light-phone.png#only-light)
+![Die Prüfseite am Handy: ein Prüfwert stimmt mit dem Stand des Betriebs überein](assets/screenshots/pruefen-dark-phone.png#only-dark)
+
 ## Ablauf
 
 Unter **Zeiten → Monatsabschluss** steht der Vormonat: jeder Tag mit Beginn, Ende, Pause, Dauer und

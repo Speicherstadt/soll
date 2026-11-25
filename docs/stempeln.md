@@ -12,6 +12,12 @@ Unter **Heute** stempelt jede Person, die für den Betrieb arbeitet, ihre Arbeit
 Tablet oder im Browser. Externe und Geräte stempeln hier nicht; am Eingang stempelt man am
 [Terminal](terminal.md) mit PIN oder QR-Code.
 
+![„Heute“ am Desktop: eingestempelt seit 07:03, Soll, Ist, Pause und der Hinweis auf die fällige Pause nach § 4 ArbZG](assets/screenshots/heute-light-desktop.png#only-light)
+![„Heute“ am Desktop: eingestempelt seit 07:03, Soll, Ist, Pause und der Hinweis auf die fällige Pause nach § 4 ArbZG](assets/screenshots/heute-dark-desktop.png#only-dark)
+
+![„Zeiten“ am Desktop: ein Tag einer Person mit Beginn, Soll, Ist, Befunden und Stempelungen](assets/screenshots/zeiten-light-desktop.png#only-light)
+![„Zeiten“ am Desktop: ein Tag einer Person mit Beginn, Soll, Ist, Befunden und Stempelungen](assets/screenshots/zeiten-dark-desktop.png#only-dark)
+
 ## Der Knopf
 
 Der große Knopf zeigt immer den nächsten Schritt:

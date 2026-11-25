@@ -1,0 +1,86 @@
+name: Update screenshots
+
+# The pictures of README.md and docs/ (BAULISTE.md S-908, docs/entwicklung.md "Screenshots"):
+# `bun run screenshots` builds the app, writes the demo data (S-909) into a fresh temporary
+# directory, starts the server there on a fixed clock and takes every screen of
+# scripts/screenshots/bildschirme.ts light and dark on desktop, phone and the terminal. Only by
+# hand: Actions → Update screenshots → Run workflow. The pictures go up as an artifact and, when
+# any changed, into a pull request to look at before it is merged; never straight onto main.
+on:
+  workflow_dispatch:
+    inputs:
+      heute:
+        description: "Tag der Demo-Daten (JJJJ-MM-TT); leer: der feste Tag des Skripts"
+        required: false
+        default: ""
+
+permissions:
+  contents: write # the branch of the pull request
+  pull-requests: write # the pull request itself
+
+concurrency:
+  group: screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      # Chromium from the cache, per Playwright version, as in ci.yml
+      - id: playwright
+        run: |
+          set -euo pipefail
+          version="$(bun --bun playwright --version | awk '{print $2}')"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - id: browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}-chromium
+      - if: steps.browsers.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+      - if: steps.browsers.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+      - run: bun run generate
+      # The input reaches the script as an environment variable, never as text in the command
+      - name: bun run screenshots
+        env:
+          HEUTE: ${{ inputs.heute }}
+        run: |
+          set -euo pipefail
+          if [ -n "$HEUTE" ]; then bun run screenshots --heute "$HEUTE"; else bun run screenshots; fi
+      - uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: docs/assets/screenshots/
+          retention-days: 14
+      # A pull request made with GITHUB_TOKEN starts no CI of its own: close and reopen it to run it
+      - name: Pull request with the changed pictures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASIS: ${{ github.ref_name }}
+          ZWEIG: screenshots/${{ github.run_id }}
+          LAUF: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          git add --all docs/assets/screenshots
+          if git diff --cached --quiet; then
+            echo "Keine Änderung an den Screenshots, kein Pull Request." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --create "$ZWEIG"
+          git commit --quiet --message "docs: update screenshots"
+          git push --quiet origin "$ZWEIG"
+          url="$(gh pr create --base "$BASIS" --head "$ZWEIG" \
+            --title "docs: update screenshots" \
+            --body "Erzeugt von \`bun run screenshots\` in $LAUF. Bilder ansehen, dann mergen.")"
+          echo "Pull Request: $url" >> "$GITHUB_STEP_SUMMARY"

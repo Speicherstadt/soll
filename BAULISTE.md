@@ -1096,8 +1096,34 @@ Alle Punkte: nach S-305.
   gegen Fixtures, ohne Netz. Doku `docs/gesetzeswaechter.md` und `docs/entwicklung.md`.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
   README aktuell.
-- [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
+- [x] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
   Terminal.
+  Fertig, wenn: `bun run screenshots [--heute <JJJJ-MM-TT>] [--ziel <verzeichnis>] [--nur <name>]`
+  die Demo-Daten (S-909) in ein frisches temporäres Verzeichnis schreibt, nie in eines mit
+  vorhandenem `soll.db`, und den Server im selben Prozess auf dieser Datenbank startet, mit fester
+  Uhr (`--heute`, Vorgabe ein fester Tag im Skript, 10:45 Uhr in Europe/Berlin) und dem statischen
+  Build der App (`SOLL_WEB_DIR`-Weg, kein Vite), auf einem eigenen Port abseits der Dev- und
+  e2e-Ports; Playwright meldet sich je Bild über die API als die passende Person an (Inhaber, Planerin,
+  Mitarbeiterin; das Terminal gekoppelt mit einem Code der Inhaberin) und legt für eine feste Liste
+  von Bildschirmen (Heute, Zeiten, Monat, Abwesenheiten, Dienstplan, Projekte, Einstellungen, Prüfseite mit einem echten Prüfwert, Terminal) je hell und dunkel PNGs unter
+  `docs/assets/screenshots/<name>-<light|dark>-<desktop|phone|terminal>.png` ab: Desktop
+  1280 × 800, Handy 412 × 915, Terminal 1280 × 800 nur für das Terminal, alle mit
+  `deviceScaleFactor` 2. Die Bilder sind bei gleichem `--heute` gleich bis auf Kennungen: feste Uhr
+  im Browser (`page.clock`) und auf dem Server, Zeitzone Europe/Berlin, Sprache `de`, Geist aus dem
+  Build, keine Animationen und Übergänge, das Thema über die Einstellung der App (`soll-thema`) und
+  `prefers-color-scheme`; ein Bildschirm, der seine erwartete Überschrift nicht zeigt, lässt den Lauf
+  scheitern, statt ein falsches Bild zu schreiben. Ein Vitest prüft die Liste: eindeutige Namen,
+  Dateinamen nach dem Schema, jeder Pfad eine Route der App (`apps/web/src/routes/`), und
+  dass jedes Bild, auf das README oder `docs/` verweisen, in der Liste steht und umgekehrt jede
+  Datei unter `docs/assets/screenshots/` aus der Liste kommt. Der Workflow
+  `.github/workflows/screenshots.yml` („Update screenshots“, nur `workflow_dispatch`) baut die App,
+  erzeugt die Bilder, lädt sie als Artefakt hoch und öffnet mit `GITHUB_TOKEN` (`contents: write`,
+  `pull-requests: write`) einen Pull Request mit den geänderten Bildern, wenn sich etwas geändert
+  hat; ohne Änderung keinen. README (Startseite mit Bildern) und die Seiten in `docs/` zu Stempeln,
+  Monat, Abwesenheiten, Dienstplan, Projektzeit, Terminal und Prüfseite zeigen die Bilder;
+  `docs/entwicklung.md` beschreibt Skript und Workflow; Entscheidungen im Projektplan. Die
+  Bilder im Repository sind erzeugt, nicht von Hand, und klein gehalten (nur der sichtbare Bereich,
+  kein ganzseitiges Bild).
 - [x] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
   Fertig, wenn: `bun run demo [--ziel <verzeichnis>] [--heute <JJJJ-MM-TT>]` ein frisches

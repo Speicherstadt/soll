@@ -105,7 +105,9 @@ zwei Zeiten mit weniger als neun Stunden Abstand, sind sie wie beim Stempeln ein
   in Schichten wie Soll selbst (eine neue Schicht nach 9 Stunden Pause oder 24 Stunden nach dem
   Beginn), mit den Stempelungen, die schon in Soll sind; eine Schicht gehört zum Monat ihres
   Beginns: Eine Nachtschicht vom 30.9. auf den 1.10. mit einer Pause nach Mitternacht
-  übernimmt Soll ganz oder gar nicht, nie zur Hälfte.
+  übernimmt Soll ganz oder gar nicht, nie zur Hälfte. Ob ein Monat sich ändert, prüft der Import
+  wie eine Stempelung von Hand, mit allem, was derselbe Lauf schon übernimmt: Was Soll von Hand
+  annähme, nimmt der Import an, und was einen abgeschlossenen Monat ändern würde, nie.
 - Waren Monate **im alten Tool** schon abgeschlossen, trägt der Inhaber in der Zuordnung den letzten
   davon ein (höchstens den Vormonat). Nach der Übernahme schließt Soll für jede Person jeden dieser
   Monate ab, in den Zeiten oder Abwesenheiten fallen, die jetzt übernommen werden oder schon übernommen waren (ein abgelehnter Datensatz schließt keinen Monat): eine Zeile in

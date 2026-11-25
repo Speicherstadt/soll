@@ -116,20 +116,27 @@ const arbeitstageVon = (teile: readonly Teil[], vorhanden: readonly Stempelung[]
 };
 
 /**
- * The spans of one working day are decided together: whether a month is closed is asked once, for
- * the month of that day and for all their stamps, so a shift is never taken by halves
+ * The spans of one working day are decided together: whether they change a closed month is asked
+ * once, by Soll's own rule for a change by hand (`stempelGesperrt`, abschluss.ts
+ * `aenderungGesperrt`), for all their stamps with those the run already takes on earlier days
+ * (`genommen`), so a shift is never taken by halves, two days that each alone leave a closed month
+ * as it was cannot change it together, and the import refuses what Soll would refuse by hand and
+ * nothing more (CLAUDE.md: never change a closed month; GoBD Rz. 107 ff.; review S-704 round 5)
  */
 const tagPlanen = (
   tag: Tag,
   teile: readonly Teil[],
   nutzerId: string,
   stand: Stand,
+  genommen: readonly Stempelung[],
 ): Zeitplan[] => {
   const monat = monatVon(tag);
   // the stamps around are read only when the person has a closed month at all
   const geschlossen = stand.geschlossen(nutzerId);
-  const alle = teile.flatMap((t) => t.stempel).sort((a, b) => a.zeitpunkt - b.zeitpunkt);
-  if (geschlossen.has(monat) || (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle)))
+  const alle = [...genommen, ...teile.flatMap((t) => t.stempel)].sort(
+    (a, b) => a.zeitpunkt - b.zeitpunkt,
+  );
+  if (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle))
     return teile.map(() => "monat_abgeschlossen");
   return teile.map((teil) => ({
     monat,
@@ -173,13 +180,32 @@ export const zeitenEinerPerson = (
     else plaene.set(zeit, grund);
   }
   const genommeneSpannen = [...bisher];
-  for (const [tag, teile] of arbeitstageVon(bleiben, stand.stempelVon(nutzerId))) {
-    const ergebnisse = tagPlanen(tag, teile, nutzerId, stand);
-    teile.forEach((teil, i) => {
-      const plan = ergebnisse[i] as Zeitplan;
-      plaene.set(teil.zeit, plan);
-      if (typeof plan !== "string") genommeneSpannen.push(teil.spanne);
-    });
+  const genommeneStempel: Stempelung[] = [];
+  const vorhanden = stand.stempelVon(nutzerId);
+  // in the order of the days, each checked against the database and what the run took before it;
+  // a refused day takes its spans out of the cut, so the rest is cut again without them
+  let rest = bleiben;
+  while (rest.length > 0) {
+    const tage = [...arbeitstageVon(rest, [...vorhanden, ...genommeneStempel])].sort(([a], [b]) =>
+      a < b ? -1 : a > b ? 1 : 0,
+    );
+    const entschieden = new Set<Teil>();
+    for (const [tag, teile] of tage) {
+      const ergebnisse = tagPlanen(tag, teile, nutzerId, stand, genommeneStempel);
+      let abgelehnt = false;
+      teile.forEach((teil, i) => {
+        const plan = ergebnisse[i] as Zeitplan;
+        plaene.set(teil.zeit, plan);
+        entschieden.add(teil);
+        if (typeof plan === "string") abgelehnt = true;
+        else {
+          genommeneSpannen.push(teil.spanne);
+          genommeneStempel.push(...teil.stempel);
+        }
+      });
+      if (abgelehnt) break;
+    }
+    rest = rest.filter((teil) => !entschieden.has(teil));
   }
   genommen.set(nutzerId, genommeneSpannen);
   return plaene;

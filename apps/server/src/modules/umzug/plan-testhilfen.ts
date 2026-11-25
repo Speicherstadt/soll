@@ -1,4 +1,4 @@
-import type { Stempelung } from "@soll/arbeitszeit";
+import { monatVon, type Stempelung, tagInBerlin } from "@soll/arbeitszeit";
 import { type ImportDaten, type ImportZeit, leer, type Zuordnung } from "@soll/import";
 import type { Stand } from "./plan-typen.ts";
 import { stempelAus, stempelKennung } from "./plan-zeiten.ts";
@@ -35,8 +35,13 @@ export const gespeichert = (nutzerId: string, ...zeiten: ImportZeit[]) =>
     ),
   );
 
+/**
+ * A business with nothing in it; a stamp in a closed month is locked, as Soll's rule
+ * (`aenderungGesperrt`) finds for a new shift in it, unless a test gives its own
+ */
 export const stand = (aenderung: Partial<Stand> = {}): Stand => {
   let n = 0;
+  const geschlossen = aenderung.geschlossen ?? (() => new Set<string>());
   return {
     jetzt: um("2026-11-25T12:00:00+01:00"),
     module: { arbeitszeit: true, projektzeit: true, dienstplan: true },
@@ -58,7 +63,8 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
     taetigkeiten: new Set(["montage"]),
     geschlossen: () => new Set(),
     stempelVon: () => [],
-    stempelGesperrt: () => false,
+    stempelGesperrt: (nutzerId, neue) =>
+      neue.some((s) => geschlossen(nutzerId).has(monatVon(tagInBerlin(s.zeitpunkt)))),
     schichtenVon: () => [],
     abwesenheitenVon: () => [],
     abwesenheitGesperrt: () => false,

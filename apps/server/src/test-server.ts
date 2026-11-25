@@ -17,6 +17,19 @@ type Optionen = {
   habenFetch?: typeof fetch;
 };
 
+/**
+ * Passwords in tests: SHA-256 instead of scrypt, which takes tens of milliseconds per account and
+ * made the server tests run into their 5 s timeouts on a busy runner. Only for test databases.
+ */
+const testKennwort = {
+  hash: async (kennwort: string) =>
+    Buffer.from(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(kennwort))).toString(
+      "hex",
+    ),
+  verify: async ({ hash, password }: { hash: string; password: string }) =>
+    hash === (await testKennwort.hash(password)),
+};
+
 /** The app on a fresh test database, with its own key and the VAPID pair made on its first start */
 const testApp = (optionen: Optionen, jetzt: () => number) => {
   const datenbank = testDatenbank();
@@ -28,6 +41,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     geheimerSchluessel,
     url: TEST_URL,
     jetzt,
+    kennwort: testKennwort,
   });
   const app = createApp({
     log: optionen.log ?? (() => undefined),

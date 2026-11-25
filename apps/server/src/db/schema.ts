@@ -13,6 +13,7 @@ import {
  */
 
 export * from "./schema/abwesenheiten.ts";
+export * from "./schema/aussonderung.ts";
 export * from "./schema/datev.ts";
 export * from "./schema/dienstplan.ts";
 export * from "./schema/erinnerungen.ts";

@@ -170,14 +170,15 @@ Herunterladen bereit.
 | Datum | ja | `01.09.2026`, `1.9.2026`, `1.9.26` (20xx), `2026-09-01`, auch mit Uhrzeit dahinter; in Excel ein Datum oder eine Seriennummer mit fünf Ziffern |
 | Beginn | ja | `7:00`, `07:00`, `7:00:00`, `700`, `0700`, `7`; in Excel eine Uhrzeit (Bruchteil eines Tages) |
 | Ende | ja, oder Dauer | wie Beginn; ein Ende vor dem Beginn liegt am nächsten Tag |
-| Dauer | statt Ende | Stunden: `8`, `7,5`, `7.5` oder `7:30`; ohne Ende ist Ende = Beginn + Dauer + Pause, mit Ende muss sie dazu passen |
+| Dauer | statt Ende | Stunden: `8`, `7,5`, `7.5` oder `7:30`; ohne Ende ist Ende = Beginn + Dauer + Pause, mit Ende muss sie auf die halbe letzte Stelle genau dazu passen (`8:01` auf 30 Sekunden, `7,5` auf 3 Minuten) |
 | Pause | nein | Minuten (`30`), `0:30` oder Dezimalstunden (`0,5`); leer für keine |
 | Projekt | nein | Name oder Nummer des Auftrags im alten Tool |
 | Tätigkeit | nein | Name der Tätigkeit im alten Tool |
 | Kennung | nein | eine eindeutige Nummer je Zeile, wenn das alte Tool eine hat |
 
 Gerechnet wird in ganzen Minuten, nie mit Kommazahlen, und immer zugunsten der Person: Sekunden am
-Beginn fallen weg, am Ende zählen sie als volle Minute; eine Dauer wie `7,33` Stunden (439,8
+Beginn fallen weg, am Ende zählen sie als volle Minute (ein Ende wenige Sekunden vor dem Beginn in
+derselben Minute lehnt Soll ab, statt daraus eine Minute zu machen); eine Dauer wie `7,33` Stunden (439,8
 Minuten) ergibt ohne Ende 440 Minuten; eine Pause wie `0,33` Stunden zählt 19 Minuten.
 
 **Projekt und Tätigkeit**: Jeder Wert der Spalten Projekt und Tätigkeit wird in der Zuordnung einem

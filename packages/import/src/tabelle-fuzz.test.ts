@@ -5,6 +5,7 @@ import type { Gelesen } from "./modell.ts";
 import { tabelleLesen } from "./tabelle.ts";
 import { tabelleVorlageXlsx } from "./vorlage.ts";
 import { blattXml, mappe } from "./xlsx-testhilfen.ts";
+import { inZeit } from "./zeit-testhilfen.ts";
 
 /*
  * Fuzzing the reader of spreadsheets (BAULISTE.md S-702): no input makes it throw or take a second,
@@ -14,9 +15,7 @@ import { blattXml, mappe } from "./xlsx-testhilfen.ts";
  */
 
 const geprueft = (bytes: Uint8Array, wahl = {}): Gelesen => {
-  const start = performance.now();
-  const gelesen = tabelleLesen(bytes, wahl);
-  expect(performance.now() - start).toBeLessThan(1000);
+  const gelesen = inZeit(() => tabelleLesen(bytes, wahl));
   for (const fehler of gelesen.fehler) {
     expect(Number.isInteger(fehler.zeile) && fehler.zeile >= 1).toBe(true);
     if (fehler.feld !== undefined && fehler.grund !== "spalte_fehlt")

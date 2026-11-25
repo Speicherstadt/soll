@@ -1,7 +1,16 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { type ImportZeit, type LeseFehler, type LeseGrund, MAX_TEXT } from "./modell.ts";
-import { dauerFrei, pauseFrei, type Spanne, tagFrei, uhrzeitFrei } from "./tabelle-werte.ts";
+import {
+  dauerFrei,
+  dauerGenau,
+  dauerPasst,
+  minutenVon,
+  pauseFrei,
+  type Spanne,
+  tagFrei,
+  uhrSekunden,
+} from "./tabelle-werte.ts";
 
 /*
  * One line of a spreadsheet with free columns read into a time of the import model (BAULISTE.md
@@ -54,36 +63,45 @@ const MINUTEN_PRO_TAG = 24 * 60;
 const laenge = (beginn: number, ende: number): number =>
   ende > beginn ? ende - beginn : ende + MINUTEN_PRO_TAG - beginn;
 
-/**
- * Whether a duration agrees with the span from begin to end: with seconds, begin and end are
- * rounded outwards, so the span read lies between the one rounded inwards and the one rounded
- * outwards, and the duration must meet that range (review S-702)
- */
-const passt = (dauer: Spanne, spanne: { innen: number; aussen: number }): boolean =>
-  spanne.innen <= dauer.auf && spanne.aussen >= dauer.ab;
+const SEKUNDEN_PRO_TAG = 24 * 60 * 60;
 
-/** The begin of a line in whole minutes, rounded down (as read) and up (for the inner span) */
-type Beginn = { ab: number; auf: number };
+/** The span between two clock times in seconds; an end at or before the begin is the next day */
+const sekundenZwischen = (beginn: number, ende: number): number =>
+  ende > beginn ? ende - beginn : ende + SEKUNDEN_PRO_TAG - beginn;
+
+/**
+ * The end in whole minutes from its seconds: rounded up, unless that would put it on the begin's
+ * minute or past it while the end lies on the next day (`07:00:30` to `07:00:15`): such a span has
+ * no whole minutes that are neither longer by a phantom day nor shorter, so it is refused
+ */
+const endeInMinuten = (beginn: number, ende: number): number | null => {
+  if (ende === beginn) return null;
+  const minuten = minutenVon(ende, "auf");
+  const anfang = minutenVon(beginn, "ab");
+  const naechsterTag = ende < beginn;
+  return minuten === anfang || (naechsterTag && minuten > anfang) ? null : minuten;
+};
 
 /** The end from its column, or from begin, duration and break; both given must agree */
-const endeVon = (z: TabelleZeile, beginnen: Beginn, pause: number): number | Fehler => {
-  const beginn = beginnen.ab;
-  const dauer: Spanne | null = z.werte.dauer === "" ? null : dauerFrei(z.werte.dauer);
-  if (z.werte.dauer !== "" && (dauer === null || dauer.auf === 0))
+const endeVon = (z: TabelleZeile, beginn: number, pause: number): number | Fehler => {
+  const dauer = z.werte.dauer === "" ? null : dauerGenau(z.werte.dauer);
+  const spanne: Spanne | null = z.werte.dauer === "" ? null : dauerFrei(z.werte.dauer);
+  if (z.werte.dauer !== "" && (dauer === null || spanne === null || spanne.auf === 0))
     return fehler(z, "dauer", "dauer_ungueltig");
   if (z.werte.ende === "") {
-    if (dauer === null) return fehler(z, "ende", "zeit_ungueltig");
+    if (spanne === null) return fehler(z, "ende", "zeit_ungueltig");
     // the longer of the two whole minutes, in the person's favour
-    if (dauer.auf + pause >= MINUTEN_PRO_TAG) return fehler(z, "dauer", "dauer_ungueltig");
-    return (beginn + dauer.auf + pause) % MINUTEN_PRO_TAG;
+    const anfang = minutenVon(beginn, "ab");
+    if (spanne.auf + pause >= MINUTEN_PRO_TAG) return fehler(z, "dauer", "dauer_ungueltig");
+    return (anfang + spanne.auf + pause) % MINUTEN_PRO_TAG;
   }
-  const ende = uhrzeitFrei(z.werte.ende, "auf");
-  if (ende === null || ende === beginn) return fehler(z, "ende", "zeit_ungueltig");
-  const endeAb = uhrzeitFrei(z.werte.ende, "ab") as number;
-  const innen = beginnen.auf === endeAb ? 0 : laenge(beginnen.auf, endeAb);
-  const spanne = { innen: innen - pause, aussen: laenge(beginn, ende) - pause };
-  if (dauer !== null && !passt(dauer, spanne)) return fehler(z, "dauer", "dauer_abweichend");
-  return ende;
+  const ende = uhrSekunden(z.werte.ende);
+  const minuten = ende === null ? null : endeInMinuten(beginn, ende);
+  if (ende === null || minuten === null) return fehler(z, "ende", "zeit_ungueltig");
+  // compared in seconds, as written: a duration off by more than its own rounding is refused
+  if (dauer !== null && !dauerPasst(sekundenZwischen(beginn, ende) - pause * 60, dauer))
+    return fehler(z, "dauer", "dauer_abweichend");
+  return minuten;
 };
 
 /** The id of a line without an id column: the SHA-256 of what the time says, not where it stands */
@@ -101,11 +119,13 @@ const zeitteile = (z: TabelleZeile) => {
   if (istFehler(person)) return person;
   const tag = tagFrei(z.werte.datum);
   if (tag === null) return fehler(z, "datum", "datum_ungueltig");
-  const beginn = uhrzeitFrei(z.werte.beginn, "ab");
-  if (beginn === null) return fehler(z, "beginn", "zeit_ungueltig");
+  // begin and end in seconds as written, so durations and spans compare exactly
+  const sekunden = uhrSekunden(z.werte.beginn);
+  if (sekunden === null) return fehler(z, "beginn", "zeit_ungueltig");
+  const beginn = minutenVon(sekunden, "ab");
   const pause = pauseFrei(z.werte.pause);
   if (pause === null) return fehler(z, "pause", "pause_ungueltig");
-  const ende = endeVon(z, { ab: beginn, auf: uhrzeitFrei(z.werte.beginn, "auf") as number }, pause);
+  const ende = endeVon(z, sekunden, pause);
   if (istFehler(ende)) return ende;
   if (pause >= laenge(beginn, ende)) return fehler(z, "pause", "pause_ungueltig");
   return { person, tag, beginn, ende, pauseMinuten: pause };

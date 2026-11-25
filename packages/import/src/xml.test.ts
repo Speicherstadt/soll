@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { merkmaleAus, textAus, xmlDurchlaufen } from "./xml.ts";
+import { inZeit } from "./zeit-testhilfen.ts";
 
 /** Every event of a document as a line, for comparing */
 const ereignisse = (xml: string): string[] | null => {
@@ -60,10 +61,10 @@ describe("the small XML reader (S-702)", () => {
   });
 
   it("stays linear on long runs of what it searches for", () => {
-    const start = performance.now();
-    xmlDurchlaufen(`<t>${"&".repeat(2_000_000)}</t>`, { text: (roh) => void textAus(roh) });
-    xmlDurchlaufen(`<t ${"a".repeat(2_000_000)}>`, {});
-    xmlDurchlaufen("<".repeat(200_000), {});
-    expect(performance.now() - start).toBeLessThan(1000);
+    inZeit(() => {
+      xmlDurchlaufen(`<t>${"&".repeat(2_000_000)}</t>`, { text: (roh) => void textAus(roh) });
+      xmlDurchlaufen(`<t ${"a".repeat(2_000_000)}>`, {});
+      xmlDurchlaufen("<".repeat(200_000), {});
+    });
   });
 });

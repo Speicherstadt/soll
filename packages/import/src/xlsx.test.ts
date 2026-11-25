@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { tabelleVorlageXlsx } from "./vorlage.ts";
 import { istZip, MAX_ENTPACKT, xlsxLesen } from "./xlsx.ts";
 import { blattXml, mappe } from "./xlsx-testhilfen.ts";
+import { inZeit } from "./zeit-testhilfen.ts";
 import { zipEintraege } from "./zip.ts";
 
 const zeilenVon = (bytes: Uint8Array, max = 100) => {
@@ -83,11 +84,9 @@ describe("a workbook that would harm the server is refused (S-702)", () => {
       "xl/worksheets/sheet2.xml": [new Uint8Array(MAX_ENTPACKT + 1024 * 1024), { level: 1 }],
     });
     expect(bombe.length).toBeLessThan(1024 * 1024);
-    const start = performance.now();
-    expect(xlsxLesen(bombe, 100)).toEqual({ fehler: "unlesbar" });
     // inflating the budget itself takes about 0.6 s on a free core; a bomb read whole would take
     // its full size in memory and many times as long
-    expect(performance.now() - start).toBeLessThan(2000);
+    expect(inZeit(() => xlsxLesen(bombe, 100), 2000)).toEqual({ fehler: "unlesbar" });
   });
 
   it("counts the budget over all parts together", () => {

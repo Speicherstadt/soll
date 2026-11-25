@@ -138,6 +138,7 @@ const tabelle = (s: Schreiber, nachweis: Stundennachweis) => {
   spaltenKopf(s);
   for (const zeile of nachweis.zeilen) reihe(s, zeile);
   s.zeile(4);
+  s.platz(1);
   s.text(`Summe ${dauerText(nachweis.summeMinuten)}`, 0, { fett: true });
   s.zeile(18);
 };
@@ -162,8 +163,14 @@ const svgPfad = (striche: Striche): string =>
     })
     .join(" ");
 
+/**
+ * The lines the signature block needs: its title, the drawing and the two lines under it, kept on
+ * one page so none of them lands in the bottom margin
+ */
+const UNTERSCHRIFT_ZEILEN = Math.ceil((6 + UNTERSCHRIFT_HOEHE + 4 + 16) / ZEILE) + 1;
+
 const unterschrift = (s: Schreiber, nachweis: Stundennachweis, hash: string) => {
-  s.platz(3);
+  s.platz(UNTERSCHRIFT_ZEILEN);
   s.text("Unterschrift des Kunden", 0, { fett: true });
   s.zeile(6);
   s.bereich(UNTERSCHRIFT_HOEHE, (seite, x, oben) => {

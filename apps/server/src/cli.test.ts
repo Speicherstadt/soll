@@ -1,16 +1,12 @@
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { befehlAusfuehren, befehlLesen } from "./cli.ts";
 import { oeffneDatenbank } from "./db/oeffnen.ts";
 import { schreiben } from "./modules/audit/index.ts";
+import { temporaerOrdner } from "./test-ordner.ts";
 
-const ordner = () => {
-  const pfad = mkdtempSync(join(tmpdir(), "soll-cli-"));
-  afterEach(() => rmSync(pfad, { recursive: true, force: true }));
-  return pfad;
-};
+const ordner = () => temporaerOrdner("soll-cli-");
 
 const JETZT = Date.UTC(2026, 10, 20, 3, 15, 7);
 

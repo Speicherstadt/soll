@@ -1,14 +1,14 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Hono } from "hono";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
+import { temporaerOrdner } from "./test-ordner.ts";
 import { testServer } from "./test-server.ts";
 import { webAuslieferung } from "./web.ts";
 
 /** A small stand-in for the static build of apps/web, next to a secret that lies outside it */
 const testBuild = () => {
-  const ordner = mkdtempSync(join(tmpdir(), "soll-web-"));
+  const ordner = temporaerOrdner("soll-web-");
   const web = join(ordner, "web");
   mkdirSync(join(web, "assets"), { recursive: true });
   writeFileSync(join(web, "index.html"), "<!doctype html><title>Soll</title>");
@@ -16,7 +16,6 @@ const testBuild = () => {
   writeFileSync(join(web, "manifest.webmanifest"), '{"name":"Soll"}');
   writeFileSync(join(web, "assets", "index-AbC123.js"), "console.log('soll');");
   writeFileSync(join(ordner, "soll.db"), "geheime Daten");
-  afterEach(() => rmSync(ordner, { recursive: true, force: true }));
   return web;
 };
 

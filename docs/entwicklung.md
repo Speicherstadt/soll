@@ -207,7 +207,11 @@ Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header
 Das Schema steht in `apps/server/src/db/schema.ts`, größere Bereiche in Dateien unter
 `apps/server/src/db/schema/`, die `schema.ts` weitergibt. Nach einer Änderung erzeugt
 `bun run db:generate` die Migration und die Datei, die sie ins Programm einbettet; eine schon
-eingecheckte Migration wird nie geändert. Tests laufen gegen SQLite in einer temporären Datei.
+eingecheckte Migration wird nie geändert. Tests laufen gegen SQLite in einer temporären Datei:
+`testDatenbank()` legt sie in einem eigenen Verzeichnis unter dem temporären Verzeichnis des
+Systems an und löscht es nach dem Test wieder, auch wenn der Test scheitert oder in seine Zeitgrenze
+läuft. Andere Tests holen sich ein temporäres Verzeichnis ebenso mit `temporaerOrdner()` aus
+`apps/server/src/test-ordner.ts`.
 
 ## Sprachen
 

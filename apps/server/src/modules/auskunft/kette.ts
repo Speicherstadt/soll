@@ -46,6 +46,15 @@ export const pruefwerteJeAbschluss = (glieder: readonly Glied[]): Map<string, st
       .map((g) => [JSON.parse(g.zeile)[0] as string, formatPruefwert(g)]),
   );
 
+/**
+ * Tables whose rows the person shares with another person: a swap (S-504) has whoever offered, whoever
+ * took it and whoever decided. Their links name only the person; who else wrote one is withheld
+ * (Art. 15 Abs. 4 DSGVO).
+ */
+const GETEILT: ReadonlySet<string> = new Set<TabellenName>(["schichttausche"]);
+
+export const ANDERE_PERSON = "eine andere Person";
+
 export const kettenteil = (
   db: Db,
   betriebId: string,
@@ -61,7 +70,7 @@ export const kettenteil = (
       zuDeinenDaten: zu.map((g) => ({
         nr: g.seq,
         zeitpunkt: iso(g.zeitpunkt),
-        von: name(g.akteur),
+        von: GETEILT.has(g.tabelle) && g.akteur !== nutzerId ? ANDERE_PERSON : name(g.akteur),
         tabelle: g.tabelle,
         zeile: JSON.parse(g.zeile) as unknown,
         aktion: g.aktion,

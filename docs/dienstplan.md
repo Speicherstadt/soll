@@ -166,8 +166,9 @@ Plan an; eine Kollegin übernimmt sie, und Inhaber oder Planer geben den Tausch 
   Person, in einem Schritt mit dem Tausch in der [Audit-Kette](audit-kette.md); „Ablehnen“ verlangt
   einen Grund, den beide lesen.
 - **Ohne Freigabe**: Der Inhaber kann einstellen, dass eine Übernahme sofort gilt. Das gilt nur,
-  solange die Prüfung für die übernehmende Person keinen Verstoß findet; sonst wartet auch dann der
-  Tausch auf die Freigabe.
+  solange die Prüfung für die übernehmende Person keinen Verstoß findet und sie zur selben Zeit
+  keinen Entwurf hat; sonst wartet auch dann der Tausch auf die Freigabe, und wer plant, sieht den
+  Grund.
 - **Zurückziehen, Ablauf, Änderung**: Wer anbietet, zieht das Angebot zurück, solange es nicht
   entschieden ist. Ein Angebot läuft ab, wenn die Schicht beginnt, und verschwindet aus der Liste.
   Ändert oder entfernt der Planer die Schicht, ist ein offenes Angebot hinfällig: Wer übernommen
@@ -183,7 +184,9 @@ Plan an; eine Kollegin übernimmt sie, und Inhaber oder Planer geben den Tausch 
 - **Kalender**: Nach der Freigabe verschwindet die Schicht aus dem Kalender der bisherigen Person
   und steht im Kalender der neuen, mit höherer `SEQUENCE`.
 - **Auskunft**: Die [Auskunft](pruefexport.md#auskunft-nach-art-15-dsgvo) nennt jeden Tausch, den jemand angeboten, an ihn
-  gerichtet bekommen oder übernommen hat, ohne die andere Person und ohne den, der entschied.
+  gerichtet bekommen oder übernommen hat, ohne die andere Person und ohne den, der entschied; auch
+  in der Audit-Kette steht bei einem Tausch, was jemand anderes schrieb, nur als „eine andere
+  Person“.
 
 ## Prüfung beim Einplanen
 

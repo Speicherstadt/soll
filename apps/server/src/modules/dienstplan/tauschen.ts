@@ -164,8 +164,11 @@ export const tauschUebernehmen = (
   const { tausch, schicht } = offen;
   if (tausch.status !== "offen") return fehler("nicht_offen");
   if (belegt(db, kontext, akteur, schicht)) return fehler("ueberschneidung");
+  // a draft at the same time would make approval refuse: such a takeover waits for whoever plans,
+  // who sees the draft, and the taker learns nothing of it (review of S-504)
   const sofort =
     ohneFreigabe(db, betriebId) &&
+    !belegt(db, kontext, akteur, schicht, true) &&
     !hatVerstoss(tauschBefunde(db, betriebId, schicht, akteur, jetzt));
   if (sofort) {
     const getauscht = umschreiben(schreibDb, kontext, tausch, akteur, null);

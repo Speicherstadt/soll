@@ -96,7 +96,7 @@ lit. b und c DSGVO).
 | `personalnummer` | die Personalnummer im Lohnprogramm für den DATEV-Export (S-308), sonst `null` |
 | `stundensaetze` | Stundensätze, die der Betrieb für die Person festgelegt hat (Projektzeit, S-601), nicht die Sätze für alle |
 | `projektzeiten` | die Buchungen der Stoppuhr und von Hand mit Auftrag, Tätigkeit, Beginn, Ende, Arbeitstag und Notiz, abgerechnete mit dem Satz der Abrechnung (S-602) |
-| `auditKette` | die Glieder der Kette zu den eigenen Zeilen (wer, wann, Hash) und die Glieder, die die Person selbst geschrieben hat, nur mit Tabelle, Aktion und Zeitpunkt |
+| `auditKette` | die Glieder der Kette zu den eigenen Zeilen (wer, wann, Hash; bei einem Schichttausch steht für jeden, der nicht die Person selbst ist, „eine andere Person“) und die Glieder, die die Person selbst geschrieben hat, nur mit Tabelle, Aktion und Zeitpunkt |
 
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und
 der Einladung (sie schützen das Konto) und Daten anderer Personen: Von den Gliedern, die die Person

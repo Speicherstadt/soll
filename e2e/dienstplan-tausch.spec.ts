@@ -125,6 +125,9 @@ for (const theme of ["light", "dark"] as const) {
     page,
     browser,
   }) => {
+    // three people in three browser contexts and an axe scan of the plan for each: on a busy
+    // CI runner this takes longer than the default 30 s, with nothing wrong (main, run 45641622216)
+    test.slow();
     const c = await mitVeroeffentlichterSchicht(page, browser);
     for (const p of [page, c.tom, c.yusuf]) await p.emulateMedia({ colorScheme: theme });
     await c.tom.goto(`/dienstplan?tag=${ab(0)}`);

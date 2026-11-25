@@ -81,3 +81,22 @@ export const elbblick: DokuStandDaten = {
   angaben: { ...LEERE_ANGABEN, rechtsform: "GmbH", anschrift: "# Elbstraße 5 <b>" },
   angabenAenderungen: [],
 };
+
+/** A freelancer with project time only: working time, shift plan and terminal are off */
+export const solo: DokuStandDaten = {
+  ...weber,
+  betrieb: { name: "Max Klempner", land: "HH" },
+  module: { arbeitszeit: false, dienstplan: false, projektzeit: true, terminal: false },
+  standorte: [],
+  rollen: [
+    rolle("inhaber", 1, ["betrieb:lesen", "stempeln", "projekte:verwalten", "terminal:verwalten"]),
+    rolle("geraet", 0, ["pin:pruefen"]),
+  ],
+  apiZugaenge: 0,
+  kette: { pruefwert: PRUEFWERT.replace("4711", "37"), glieder: 37, befunde: 0 },
+  aufbewahrung: { abgeschlossen: 0, ausgesondert: { zweiJahre: 0, achtJahre: 0 } },
+  datev: { eingerichtet: false, nummern: false, lohnarten: 0, personalnummern: 0 },
+  haben: null,
+  angaben: { ...weber.angaben, eigene: [] },
+  angabenAenderungen: [],
+};

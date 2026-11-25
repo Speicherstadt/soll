@@ -75,5 +75,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0018_pruefung",
     "sql": "CREATE TABLE `personenangaben` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`geburtsdatum` text,\n\t`wechselschicht` integer DEFAULT false NOT NULL,\n\t`abruf` integer DEFAULT false NOT NULL,\n\t`mutterschutz` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `branche` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `sonntagsausnahme` integer;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleichszeitraum` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleich_beginn` text;"
+  },
+  {
+    "tag": "0019_karten_neu_eintragen",
+    "sql": "DROP INDEX `karten_uid`;--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid_aktiv` ON `karten` (`betrieb_id`,`uid_kennung`) WHERE \"karten\".\"widerrufen_am\" is null;"
   }
 ];

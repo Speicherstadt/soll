@@ -279,6 +279,10 @@ Der Loop entscheidet danach und trägt neue Entscheidungen hier mit Grund ein.
 | Erfasst bei übernommenen Stempelungen | `erstellt_am` ist der Zeitpunkt der Übernahme, so steht es auch im Prüfexport; wann das alte Tool sie erfasst hat, belegt die aufbewahrte Originaldatei | Soll kennt nur, wann es selbst erfasst hat; eine Zeit aus einer Datei zu übernehmen, die niemand prüfen kann, wäre keine Aufzeichnung |
 | Importe in der Auskunft | `importe` steht nicht in der Auskunft: ein Vorgang des Betriebs, dessen Datei Daten anderer Personen enthält (Art. 15 Abs. 4); jede übernommene Stempelung und Abwesenheit der Person nennt dort Import, Werkzeug und Kennung | was über die Person übernommen wurde, steht bei ihren eigenen Zeilen |
 | Lizenz | AGPL-3.0 mit Namensnennung nach § 7(b) und kommerzieller Lizenz wie bei Haben | |
+| Datenschutz-Vorlagen | Infoblatt nach Art. 13 DSGVO, Betriebsvereinbarung nach § 87 Abs. 1 Nr. 6 BetrVG und Löschkonzept nach DIN 66398 als Seiten der Doku mit Platzhaltern in eckigen Klammern, jede als Vorlage gekennzeichnet, die juristisch zu prüfen ist (S-903); das Infoblatt kommt nicht als PDF aus der App | was nur der Betrieb weiß (Datenschutzbeauftragter, Lohnbüro, Hoster, Aufsichtsbehörde, ob ein Betriebsrat zugestimmt hat), kennt Soll nicht; ein PDF aus der App gäbe einen ungeprüften Rechtstext als Erklärung des Betriebs aus, bevor ihn jemand geprüft hat (Schritte für Menschen); eine Seite kann der Betrieb kopieren, anpassen und drucken; gesetze-im-internet.de und eur-lex.europa.eu waren aus der Umgebung des Loops nicht erreichbar, die Normen folgen dem Stand dieses Plans |
+| Löschkonzept beschreibt den Code | jede Tabelle von `db/schema.ts` und `db/auth-schema.ts` steht genau einmal mit Löschklasse, Inhalt und dem, was Soll heute tut, in `docs/loeschkonzept.md`; ein Test vergleicht sie mit den Tabellen aller Dateien, die `drizzle.config.ts` nennt, und mit dem neuesten Snapshot der Migrationen; ebenso hält ein Test die Rollen und Rechte der Betriebsvereinbarung (§ 5, Anlage 3) gleich mit `auth/rollen.ts`; wo Soll nichts löscht, steht es als offener Punkt auf der Seite und unter „Offene Nacharbeiten“, statt dass das Konzept eine Löschung verspricht, die es nicht gibt | ein Löschkonzept, das vom Code abweicht, täuscht den Betrieb über seine Pflicht nach Art. 5 Abs. 1 lit. e DSGVO; die Löschungen selbst zu bauen sind eigene Punkte, nicht Teil einer Doku-Seite (ein Punkt je Pull Request) |
+| Glieder der Kette nach dem Austritt | Glieder und Köpfe der Audit-Kette bleiben für die Lebensdauer der Instanz (Löschklasse A), gelöscht werden nur gespeicherte Inhalte | ein Glied hält nur Kennung, Zeit und Hashes; ohne Glieder ließe sich kein Prüfwert eines aufbewahrten Monats mehr nachprüfen (GoBD Rz. 107 ff., Art. 17 Abs. 3 lit. b DSGVO) |
+| Rechtsgrundlage im Infoblatt | Art. 6 Abs. 1 lit. b und c DSGVO zuerst, § 26 BDSG und Art. 88 DSGVO daneben, mit Hinweis auf EuGH C-34/21 für den Betrieb | nach EuGH, Urteil vom 30.03.2023, C-34/21, trägt eine Regel wie § 26 Abs. 1 Satz 1 BDSG womöglich nicht als spezifischere Vorschrift nach Art. 88; die Pflicht zur Erfassung und der Arbeitsvertrag tragen die Verarbeitung auch ohne sie |
 
 ## Technologie
 
@@ -490,8 +494,8 @@ Exporte als Fixtures, Pilotbetriebe, gehostete Variante.
 
 Zensical in `docs/`, auf GitHub Pages unter soll.work, nur Deutsch; die Startseite ist zugleich die
 Produktseite. Seiten: Überblick, Installation, Einrichtung, Stempeln, Terminal, Abwesenheiten,
-Dienstplan, Projektzeit, Umzug aus anderen Tools, DATEV, Haben, Regeln, Datenschutz und
-Betriebsvereinbarung, Verfahrensdokumentation, FAQ.
+Dienstplan, Projektzeit, Umzug aus anderen Tools, DATEV, Haben, Regeln, Datenschutz (Infoblatt,
+Betriebsvereinbarung, Löschkonzept, S-903), Verfahrensdokumentation, FAQ.
 
 ## Offene Fragen
 

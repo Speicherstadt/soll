@@ -199,3 +199,37 @@ describe("review of S-702", () => {
     ).toContainEqual({ zeile: 1, grund: "spalte_fehlt", feld: "pause" });
   });
 });
+
+describe("review of S-702, round 2: seconds", () => {
+  const zeile = (beginn: string, ende: string, dauer = "") =>
+    lesen(["Person;Datum;Beginn;Ende;Dauer", `Max;01.09.2026;${beginn};${ende};${dauer}`]);
+
+  it("refuses a duration two minutes off, compared in seconds", () => {
+    // the span is 7:59:02; 8:01 is two minutes more
+    expect(zeile("07:00:59", "15:00:01", "8:01").fehler).toEqual([
+      { zeile: 2, grund: "dauer_abweichend", feld: "dauer", spalte: "Dauer", wert: "8:01" },
+    ]);
+  });
+
+  it("accepts a duration within the rounding of its own last digit", () => {
+    expect(zeile("07:00:30", "15:00:30", "8:00:00").fehler).toEqual([]);
+    // 8:00:20 written to the minute, 7:28 written to a tenth of an hour (six minutes)
+    expect(zeile("07:00:00", "15:00:20", "8:00").fehler).toEqual([]);
+    expect(zeile("07:00", "14:28", "7,5").fehler).toEqual([]);
+    expect(zeile("07:00", "14:20", "7,5").fehler.map((f) => f.grund)).toEqual(["dauer_abweichend"]);
+    // whole hours count as written to the minute
+    expect(zeile("07:00", "14:35", "8").fehler.map((f) => f.grund)).toEqual(["dauer_abweichend"]);
+  });
+
+  it("makes no minute of work from an end at or seconds before the begin", () => {
+    for (const ende of ["07:00:15", "07:00:30"])
+      expect(zeile("07:00:30", ende).fehler).toEqual([
+        { zeile: 2, grund: "zeit_ungueltig", feld: "ende", spalte: "Ende", wert: ende },
+      ]);
+    // an end before the begin on another minute lies on the next day, as without seconds
+    expect(zeile("22:00:30", "06:00:15").daten.zeiten[0]).toMatchObject({
+      beginn: 1320,
+      ende: 361,
+    });
+  });
+});

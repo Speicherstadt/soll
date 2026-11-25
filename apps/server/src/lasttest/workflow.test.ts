@@ -12,10 +12,8 @@ describe("lasttest.yml", () => {
     const yml = readFileSync(".github/workflows/lasttest.yml", "utf8");
     const zeile = yml.split("\n").find((z) => z.includes("bun run lasttest"));
     if (!zeile) throw new Error("no lasttest step");
-    const befehl = zeile.replace(/^\s*-\s*run:\s*/, "");
-    const shell = /shell:\s*bash/.test(yml)
-      ? ["--noprofile", "--norc", "-eo", "pipefail"]
-      : ["-e"];
+    const befehl = zeile.replace(/^\s*(-\s*)?run:\s*/, "");
+    const shell = /shell:\s*bash/.test(yml) ? ["--noprofile", "--norc", "-eo", "pipefail"] : ["-e"];
     const bin = mkdtempSync(join(tmpdir(), "fake-bun-"));
     writeFileSync(join(bin, "bun"), "#!/bin/sh\necho FAILED\nexit 1\n");
     chmodSync(join(bin, "bun"), 0o755);

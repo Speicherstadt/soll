@@ -32,7 +32,9 @@ jobs:
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
-      - run: bun run lasttest | tee lasttest.txt
+      # bash with pipefail: the exit code of the load test, not that of tee, decides the job
+      - shell: bash
+        run: bun run lasttest | tee lasttest.txt
       - if: always() && hashFiles('lasttest.txt') != ''
         run: |
           { echo '```'; grep -v '^{' lasttest.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

@@ -839,7 +839,7 @@ S-701 und unabhängig voneinander.
     zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
     `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
-- [ ] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
+- [x] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
   Fertig, wenn: Fixtures nach Kimais API bestehen (Quelle im Test) und ein Playwright-Test den
   ganzen Ablauf zeigt. Genauer:
   - **Quellen**: kimai.org ist über den Proxy nicht erreichbar; gebaut wird nach dem Quelltext von

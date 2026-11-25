@@ -83,13 +83,19 @@ const arbeitszeit = (module: Module): string[] =>
         "Das Modul Arbeitszeit ist ausgeschaltet: Der Betrieb hat keine Beschäftigten, deren Arbeitszeit Soll aufzeichnet. Sobald eine beschäftigte Person Mitglied wird, schaltet Soll es wieder ein, weil die Pflicht zur Aufzeichnung dann gilt.",
       ];
 
-const weitere = (module: Module): string[] => [
+/** The shift swap (S-504) as the owner set it: with approval, or a clean takeover at once */
+const tauschText = (ohneFreigabe: boolean): string =>
+  `Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können, oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; ${
+    ohneFreigabe
+      ? "weil der Inhaber Tausch ohne Freigabe eingeschaltet hat, gilt die Übernahme sofort, solange die Prüfung für die übernehmende Person keinen Verstoß findet und sie zur selben Zeit keinen Entwurf hat; sonst geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab"
+      : "danach geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab"
+  }. Bis dahin bleibt die Schicht bei der bisherigen Person; der Tausch ändert die veröffentlichte Schicht in einem Schritt mit seinem Glied in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG. Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert.`;
+
+const weitere = (module: Module, ohneFreigabe: boolean): string[] => [
   module.dienstplan
     ? `Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft.${module.arbeitszeit ? " Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung." : ""}`
     : "",
-  module.dienstplan
-    ? "Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können, oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; danach geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab. Bis zur Freigabe bleibt die Schicht bei der bisherigen Person; die Freigabe ändert die veröffentlichte Schicht in einem Schritt mit dem Tausch in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG. Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert."
-    : "",
+  module.dienstplan ? tauschText(ohneFreigabe) : "",
   module.projektzeit
     ? "Projektzeit: Buchungen auf Kunden, Aufträge und Tätigkeiten stehen getrennt von der Arbeitszeit; sie bleiben änderbar, bis sie abgerechnet oder in einem unterschriebenen Stundennachweis sind, danach sind sie gesperrt."
     : "",
@@ -97,5 +103,5 @@ const weitere = (module: Module): string[] => [
 
 export const anwender = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
   abschnitt("2. Anwenderdokumentation: Erfassung und Verarbeitung", {
-    absaetze: [...arbeitszeit(s.module), ...weitere(s.module)],
+    absaetze: [...arbeitszeit(s.module), ...weitere(s.module, s.tausch.ohneFreigabe)],
   });

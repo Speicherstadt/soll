@@ -40,7 +40,7 @@ Monatsabschluss: Die Person bestätigt ihren Monat, der Inhaber schließt ihn ab
 
 Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft. Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung.
 
-Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können, oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; danach geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab. Bis zur Freigabe bleibt die Schicht bei der bisherigen Person; die Freigabe ändert die veröffentlichte Schicht in einem Schritt mit dem Tausch in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG. Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert.
+Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können, oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; danach geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab. Bis dahin bleibt die Schicht bei der bisherigen Person; der Tausch ändert die veröffentlichte Schicht in einem Schritt mit seinem Glied in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG. Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert.
 
 ## 3\. Anwenderdokumentation: Terminal
 

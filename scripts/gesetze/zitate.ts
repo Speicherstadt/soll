@@ -18,10 +18,18 @@ const ZAHL = /^\d+[a-z]?$/;
 const istGesetz = (wort: string) =>
   GESETZ.test(wort) && (wort.match(/[A-ZÄÖÜ]/g)?.length ?? 0) >= 2;
 
-/** "15 bis 18" → 15, 16, 17, 18; only plain numbers form a range */
+/**
+ * The widest range of paragraphs read as one: the ranges docs/regeln.md cites span a few ("§§ 15
+ * bis 18 JArbSchG"); a wider or reversed one ("§ 8 bis 2026 SGB IV", a year) is no range of
+ * paragraphs
+ */
+const LAENGSTER_BEREICH = 20;
+
+/** "15 bis 18" → 15, 16, 17, 18; "3a bis 3c" → both; otherwise only the first paragraph */
 const bereich = (von: string, bis: string): string[] => {
+  if (!/^\d+$/.test(von) || !/^\d+$/.test(bis)) return [von, bis];
   const [a, b] = [Number(von), Number(bis)];
-  if (!/^\d+$/.test(von) || !/^\d+$/.test(bis) || b < a) return [von, bis];
+  if (b <= a || b - a + 1 > LAENGSTER_BEREICH) return [von];
   return Array.from({ length: b - a + 1 }, (_, i) => String(a + i));
 };
 
@@ -60,14 +68,6 @@ const trenner = (z: Zustand): void => {
   }
 };
 
-/** "§" or "§§" inside a chain: a new paragraph follows, the law named at the end is shared */
-const zeichen = (z: Zustand, wort: string): void => {
-  z.mehrere = wort === "§§";
-  z.teil = false;
-  z.neu = true;
-  z.bis = false;
-};
-
 /** The law of a word, "SGB" with its book ("SGB IV"), or null */
 const gesetzVon = (wort: string, naechstes = ""): string | null => {
   const name = wort.replace(/\.$/, "");
@@ -78,8 +78,7 @@ const gesetzVon = (wort: string, naechstes = ""): string | null => {
 
 /** Reads one word that is neither number nor law; false ends the citation */
 const sonstiges = (z: Zustand, wort: string): boolean => {
-  if (wort === "§" || wort === "§§") zeichen(z, wort);
-  else if (QUALIFIER.has(wort)) {
+  if (QUALIFIER.has(wort)) {
     // "§§ 15, 16 Abs. 2, Abs. 3": after "Abs." the next number is a part, not a paragraph
     z.teil = true;
     z.neu = false;
@@ -90,13 +89,21 @@ const sonstiges = (z: Zustand, wort: string): boolean => {
   return true;
 };
 
+/** What one citation gives: its paragraphs with their law, and those still waiting for one */
+type Lesung = { gefunden: Fundstelle[]; offen: string[] };
+
 /**
- * The paragraphs and laws of the words after "§" or "§§" (`mehrere`); a chain of several citations
- * ("§ 3 ArbZG, § 4 ArbZG", "§ 4 Abs. 2, § 12 JArbSchG") gives each of them, paragraphs without a law
- * none
+ * The paragraphs and laws of the words after "§" or "§§" (`mehrere`), up to the first word that is
+ * no part of a citation. `offen` holds paragraphs a citation before it left without a law ("§ 4
+ * Abs. 2, " before "§ 12 JArbSchG"); paragraphs still without a law come back in `offen` only when
+ * every word was read and the last is "," or "und", so the next "§" may name their law.
  */
-export const fundstelle = (mehrere: boolean, woerter: readonly string[]): Fundstelle[] => {
-  const z: Zustand = { offen: [], mehrere, teil: false, neu: true, bis: false };
+export const fundstelle = (
+  mehrere: boolean,
+  woerter: readonly string[],
+  offen: readonly string[] = [],
+): Lesung => {
+  const z: Zustand = { offen: [...offen], mehrere, teil: false, neu: true, bis: false };
   const gefunden: Fundstelle[] = [];
   for (const [i, wort] of woerter.entries()) {
     const gesetz = z.offen.length > 0 ? gesetzVon(wort, woerter[i + 1]) : null;
@@ -105,23 +112,41 @@ export const fundstelle = (mehrere: boolean, woerter: readonly string[]): Fundst
       z.offen = [];
       z.neu = false;
     } else if (ZAHL.test(wort) && (z.offen.length > 0 || z.neu)) zahl(z, wort);
-    else if (!sonstiges(z, wort)) break;
+    else if (!sonstiges(z, wort)) return { gefunden, offen: [] };
   }
-  return gefunden;
+  const weiter = woerter.at(-1) === "," || woerter.at(-1) === "und";
+  return { gefunden, offen: weiter ? z.offen : [] };
 };
 
-const WORT = /§§?|\d+[a-z]?|,|[A-Za-zÄÖÜäöüß]+\.?|\S/g;
+const WORT = /\d+[a-z]?|,|[A-Za-zÄÖÜäöüß]+\.?|\S/g;
 
 /** "§ 3 ArbZG": how a citation is written, and the key of the watch list */
 export const zitierweise = ({ gesetz, paragraf }: Fundstelle): string => `§ ${paragraf} ${gesetz}`;
 
-/** A citation runs to the next ";", quote, bracket or table cell; a "§" continues it after "," or "und" */
-const ZITAT = /(§§?) ((?:[^;:„“"()|§*\]]|(?<=, |und )§§?)*)/g;
+/** A citation runs to the next "§", ";", quote, bracket or table cell */
+const ZITAT = /(§§?) ([^;:„“"()|§*\]]*)/g;
 
-const alleFundstellen = (text: string): Fundstelle[] =>
-  [...text.replace(/\s+/g, " ").matchAll(ZITAT)].flatMap(([, zeichen, rest = ""]) =>
-    fundstelle(zeichen === "§§", rest.match(WORT) ?? []),
-  );
+/**
+ * Each citation on its own, so prose in one ("§ 5 Abs. 2 wie oben, § 7 ArbZG") never hides the
+ * next; paragraphs left without a law pass on to a "§" right after them, which shares its law
+ */
+const alleFundstellen = (text: string): Fundstelle[] => {
+  const gefunden: Fundstelle[] = [];
+  let offen: string[] = [];
+  let ende = -1;
+  for (const treffer of text.replace(/\s+/g, " ").matchAll(ZITAT)) {
+    const [ganz, zeichen, rest = ""] = treffer;
+    const lesung = fundstelle(
+      zeichen === "§§",
+      rest.match(WORT) ?? [],
+      treffer.index === ende ? offen : [],
+    );
+    gefunden.push(...lesung.gefunden);
+    offen = lesung.offen;
+    ende = treffer.index + ganz.length;
+  }
+  return gefunden;
+};
 
 /** Every cited paragraph, once, in the order of first appearance */
 export const zitierteNormen = (text: string): Fundstelle[] => {

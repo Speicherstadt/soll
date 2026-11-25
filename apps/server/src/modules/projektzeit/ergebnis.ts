@@ -18,7 +18,9 @@ export type Grund =
   // S-605: the Stundennachweis
   | "unterschrieben"
   | "abweichung"
-  | "leer";
+  | "leer"
+  // S-606: the transfer to Haben
+  | "ohne_auftrag";
 
 export type Ergebnis<T> = { ok: true; wert: T } | { ok: false; grund: Grund };
 

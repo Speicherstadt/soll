@@ -20,5 +20,16 @@ const server = Bun.spawn(["bun", "apps/server/src/main.ts"], {
   stdout: "inherit",
   stderr: "inherit",
 });
-for (const signal of ["SIGINT", "SIGTERM"] as const) process.on(signal, () => server.kill(signal));
-process.exit(await server.exited);
+// the stand-in for Haben the tests connect a business to (S-606), on its own port
+const haben = Bun.spawn(["bun", "apps/server/src/haben-ersatz-dienst.ts"], {
+  stdout: "inherit",
+  stderr: "inherit",
+});
+for (const signal of ["SIGINT", "SIGTERM"] as const)
+  process.on(signal, () => {
+    haben.kill(signal);
+    server.kill(signal);
+  });
+const code = await server.exited;
+haben.kill();
+process.exit(code);

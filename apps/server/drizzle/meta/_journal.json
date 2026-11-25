@@ -138,8 +138,15 @@
     {
       "idx": 19,
       "version": "6",
-      "when": 1795602639668,
-      "tag": "0019_aussonderung",
+      "when": 1795603538905,
+      "tag": "0019_haben",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1795605228521,
+      "tag": "0020_aussonderung",
       "breakpoints": true
     }
   ]

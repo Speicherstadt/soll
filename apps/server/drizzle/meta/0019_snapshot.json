@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "432128aa-f766-4e61-bac0-e14c8815c2f3",
+  "id": "97d88359-f804-403b-b1bb-db11f7a6f7e8",
   "prevId": "99e9eee8-c9f2-48d5-bda4-eb287aa36f1c",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1277,112 +1277,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "aussonderungen": {
-      "name": "aussonderungen",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "aussonderung_id": {
-          "name": "aussonderung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nutzer_id": {
-          "name": "nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "monat": {
-          "name": "monat",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "abschluss_id": {
-          "name": "abschluss_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "jahre": {
-          "name": "jahre",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "abgeschlossen_am": {
-          "name": "abgeschlossen_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "ausgesondert_am": {
-          "name": "ausgesondert_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "zeilen": {
-          "name": "zeilen",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalte": {
-          "name": "inhalte",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "aussonderungen_monat": {
-          "name": "aussonderungen_monat",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "monat"
-          ],
-          "isUnique": true
-        },
-        "aussonderungen_abschluss": {
-          "name": "aussonderungen_abschluss",
-          "columns": [
-            "betrieb_id",
-            "abschluss_id"
-          ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "aussonderungen_betrieb_id_aussonderung_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "aussonderung_id"
-          ],
-          "name": "aussonderungen_betrieb_id_aussonderung_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "datev_einstellungen": {
       "name": "datev_einstellungen",
       "columns": {
@@ -2074,6 +1968,125 @@
           "name": "push_abos_betrieb_id_abo_id_pk"
         }
       },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "haben_uebergaben": {
+      "name": "haben_uebergaben",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "buchung_id": {
+          "name": "buchung_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inhalt": {
+          "name": "inhalt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leistung_id": {
+          "name": "leistung_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gesendet_am": {
+          "name": "gesendet_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fehler": {
+          "name": "fehler",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "meldung": {
+          "name": "meldung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "versucht_am": {
+          "name": "versucht_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "haben_uebergaben_betrieb_id_buchung_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "buchung_id"
+          ],
+          "name": "haben_uebergaben_betrieb_id_buchung_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "haben_zugaenge": {
+      "name": "haben_zugaenge",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adresse": {
+          "name": "adresse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "geaendert_am": {
+          "name": "geaendert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

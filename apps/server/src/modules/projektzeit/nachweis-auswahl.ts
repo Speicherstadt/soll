@@ -30,7 +30,7 @@ export type Vorschau = {
   stand: string;
 };
 
-/** The fixed activities in German, as the PDF writes them (docs/plan.md, "Sprache des Stundenzettels") */
+/** The fixed activities in German, as the PDF and the text for Haben write them (docs/plan.md, "Sprache des Stundenzettels") */
 const FESTE_NAMEN: Record<FesteTaetigkeit, string> = {
   fahrt: "Fahrt",
   werkstatt: "Werkstatt",
@@ -38,7 +38,7 @@ const FESTE_NAMEN: Record<FesteTaetigkeit, string> = {
   schulung: "Schulung",
 };
 
-const taetigkeitsNamen = (db: Db, betriebId: string): Map<string, string> =>
+export const taetigkeitsNamen = (db: Db, betriebId: string): Map<string, string> =>
   new Map(
     taetigkeitenLesen(db, betriebId).map((t) => [
       t.taetigkeitId,

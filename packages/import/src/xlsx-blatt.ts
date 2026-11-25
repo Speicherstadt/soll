@@ -46,7 +46,9 @@ export const ortAus = (r: string | undefined): { spalte?: number; zeile?: number
 };
 
 const zellwert = (zelle: Zelle, k: BlattKontext): string => {
-  if (zelle.typ === "s") return k.texte[Number(zelle.wert)] ?? "";
+  // a shared string without its index is empty, not the first string (Number("") is 0)
+  if (zelle.typ === "s")
+    return /^\d+$/.test(zelle.wert.trim()) ? (k.texte[Number(zelle.wert)] ?? "") : "";
   if (zelle.typ === "inlineStr") return zelle.inline;
   if (zelle.typ !== "n") return zelle.wert;
   return zellText(zelle.wert.trim(), k.stile[zelle.stil] ?? "zahl", k.system1904);

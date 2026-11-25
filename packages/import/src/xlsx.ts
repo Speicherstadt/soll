@@ -54,17 +54,17 @@ const mappeLesen = (xml: string) => {
   return ok ? { id: id as string | null, system1904 } : null;
 };
 
-/** The targets of a workbook's relationships by id, as paths in the ZIP */
-const beziehungen = (xml: string | null): Map<string, string> => {
+/** The targets of a workbook's relationships by id, as paths in the ZIP; null when unreadable */
+const beziehungen = (xml: string | null): Map<string, string> | null => {
   const ziele = new Map<string, string>();
   if (xml === null) return ziele;
-  xmlDurchlaufen(xml, {
+  const ok = xmlDurchlaufen(xml, {
     start: (name, m) => {
       if (name !== "Relationship" || !m.Id || !m.Target) return;
       ziele.set(m.Id, m.Target.startsWith("/") ? m.Target.slice(1) : `xl/${m.Target}`);
     },
   });
-  return ziele;
+  return ok ? ziele : null;
 };
 
 /** The shared strings in order; rich text runs joined, phonetic hints (`rPh`) left out */
@@ -93,13 +93,13 @@ const geteilteTexte = (xml: string | null): string[] | null => {
   return ok ? texte : null;
 };
 
-/** The kind of number format of each cell style (`cellXfs`), by the style's index */
-const formate = (xml: string | null): Zahlformat[] => {
+/** The kind of number format of each cell style (`cellXfs`), by the style's index; null when unreadable */
+const formate = (xml: string | null): Zahlformat[] | null => {
   if (xml === null) return [];
   const codes = new Map<number, string>();
   const stile: Zahlformat[] = [];
   let inZellstilen = false;
-  xmlDurchlaufen(xml, {
+  const ok = xmlDurchlaufen(xml, {
     start: (name, m) => {
       if (name === "numFmt") codes.set(Number(m.numFmtId), m.formatCode ?? "");
       else if (name === "cellXfs") inZellstilen = true;
@@ -112,7 +112,7 @@ const formate = (xml: string | null): Zahlformat[] => {
       if (name === "cellXfs") inZellstilen = false;
     },
   });
-  return stile;
+  return ok ? stile : null;
 };
 
 /** Reads the first sheet of a workbook; `maxZeilen` lines at most, more set `zuViele` */
@@ -122,13 +122,15 @@ export const xlsxLesen = (b: Uint8Array, maxZeilen: number, budget = MAX_ENTPACK
   const t: Teile = { b, eintraege, budget: { rest: budget }, kaputt: false };
   const mappe = mappeLesen(teil(t, "xl/workbook.xml") ?? "");
   if (!mappe) return UNLESBAR;
+  // every part is read as XML without a DTD: one with a DTD makes the workbook unreadable
   const ziele = beziehungen(teil(t, "xl/_rels/workbook.xml.rels"));
+  if (!ziele) return UNLESBAR;
   const pfad = (mappe.id && ziele.get(mappe.id)) || "xl/worksheets/sheet1.xml";
   const texte = geteilteTexte(teil(t, "xl/sharedStrings.xml"));
   const blatt = teil(t, pfad);
   if (texte === null || blatt === null) return UNLESBAR;
   const stile = formate(teil(t, "xl/styles.xml"));
-  if (t.kaputt) return UNLESBAR;
+  if (t.kaputt || stile === null) return UNLESBAR;
   return xlsxBlatt(blatt, { texte, stile, system1904: mappe.system1904, maxZeilen }) ?? UNLESBAR;
 };
 

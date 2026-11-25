@@ -52,6 +52,10 @@ const kopfAus = (titel: string[], wahl: Spaltenwahl): Kopf => {
   return kopf;
 };
 
+/** The fields the owner chose a column for that the file does not have (review S-702) */
+const nichtGefunden = (kopf: Kopf, wahl: Spaltenwahl): TabelleFeld[] =>
+  TABELLE_FELDER.filter((feld) => (wahl[feld] ?? "") !== "" && kopf[feld] === undefined);
+
 const zeileVon = (zeile: CsvZeile, kopf: Kopf, titel: string[]): TabelleZeile => {
   const werte = {} as Record<TabelleFeld, string>;
   const spalten: TabelleZeile["spalten"] = {};
@@ -65,11 +69,21 @@ const zeileVon = (zeile: CsvZeile, kopf: Kopf, titel: string[]): TabelleZeile =>
   return { zeile: zeile.zeile, werte, spalten };
 };
 
-/** The fields without which no line is a time: person, day, begin, and end or duration */
-const fehlendeSpalten = (kopf: Kopf): LeseFehler[] =>
-  (["person", "datum", "beginn", "ende"] as const)
-    .filter((feld) => kopf[feld] === undefined && (feld !== "ende" || kopf.dauer === undefined))
-    .map((feld) => ({ zeile: 1, grund: "spalte_fehlt", feld }));
+/**
+ * The columns missing: those without which no line is a time (person, day, begin, and end or
+ * duration), and every one the owner chose that the file does not have
+ */
+const fehlendeSpalten = (kopf: Kopf, wahl: Spaltenwahl): LeseFehler[] => {
+  const noetig = (["person", "datum", "beginn", "ende"] as const).filter(
+    (feld) => kopf[feld] === undefined && (feld !== "ende" || kopf.dauer === undefined),
+  );
+  const felder = new Set<TabelleFeld>([...noetig, ...nichtGefunden(kopf, wahl)]);
+  return TABELLE_FELDER.filter((feld) => felder.has(feld)).map((feld) => ({
+    zeile: 1,
+    grund: "spalte_fehlt",
+    feld,
+  }));
+};
 
 const zeitenLesen = (zeilen: CsvZeile[], kopf: Kopf, titel: string[]) => {
   const daten = leer();
@@ -127,7 +141,7 @@ export const tabelleLesen = (bytes: Uint8Array, wahl: Spaltenwahl = {}): Gelesen
       kopf[feld] === undefined ? null : (titel[kopf[feld]] ?? null),
     ]),
   );
-  const fehlend = fehlendeSpalten(kopf);
+  const fehlend = fehlendeSpalten(kopf, wahl);
   if (fehlend.length > 0) return { daten: leer(), fehler: fehlend, kopf: titel, spalten };
   if (gelesen?.zuViele || zeilen.length > MAX_DATENSAETZE) {
     const zeile = (zeilen[MAX_DATENSAETZE] ?? zeilen.at(-1))?.zeile ?? 1;

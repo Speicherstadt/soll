@@ -70,16 +70,20 @@ export const uebernahmeSchema = vorschauSchema
   .strict();
 
 /** The templates of a spreadsheet of times (S-702), by file name: the same bytes on every call */
-const VORLAGEN: Record<string, { typ: string; bytes: () => Uint8Array }> = {
-  "soll-zeiten.csv": {
-    typ: "text/csv; charset=utf-8",
-    bytes: () => new TextEncoder().encode(TABELLE_VORLAGE_CSV),
-  },
-  "soll-zeiten.xlsx": {
-    typ: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    bytes: tabelleVorlageXlsx,
-  },
-};
+// a Map, so a name like "constructor" or "__proto__" finds nothing (review S-702)
+const VORLAGEN = new Map<string, { typ: string; bytes: () => Uint8Array }>([
+  [
+    "soll-zeiten.csv",
+    { typ: "text/csv; charset=utf-8", bytes: () => new TextEncoder().encode(TABELLE_VORLAGE_CSV) },
+  ],
+  [
+    "soll-zeiten.xlsx",
+    {
+      typ: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      bytes: tabelleVorlageXlsx,
+    },
+  ],
+]);
 
 /** base64 of 5 MiB with the JSON around it */
 const MAX_KOERPER = Math.ceil((MAX_BYTES * 4) / 3) + 64 * 1024;
@@ -170,7 +174,7 @@ export const importRouten = (
     })
     .get("/vorlagen/:datei", (c) => {
       const name = c.req.param("datei");
-      const vorlage = VORLAGEN[name];
+      const vorlage = VORLAGEN.get(name);
       if (!vorlage) return c.json({ fehler: "unbekannt" }, 404);
       c.header("content-type", vorlage.typ);
       c.header("content-disposition", `attachment; filename="${name}"`);

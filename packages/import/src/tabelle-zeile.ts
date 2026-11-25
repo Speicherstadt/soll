@@ -54,8 +54,20 @@ const MINUTEN_PRO_TAG = 24 * 60;
 const laenge = (beginn: number, ende: number): number =>
   ende > beginn ? ende - beginn : ende + MINUTEN_PRO_TAG - beginn;
 
+/**
+ * Whether a duration agrees with the span from begin to end: with seconds, begin and end are
+ * rounded outwards, so the span read lies between the one rounded inwards and the one rounded
+ * outwards, and the duration must meet that range (review S-702)
+ */
+const passt = (dauer: Spanne, spanne: { innen: number; aussen: number }): boolean =>
+  spanne.innen <= dauer.auf && spanne.aussen >= dauer.ab;
+
+/** The begin of a line in whole minutes, rounded down (as read) and up (for the inner span) */
+type Beginn = { ab: number; auf: number };
+
 /** The end from its column, or from begin, duration and break; both given must agree */
-const endeVon = (z: TabelleZeile, beginn: number, pause: number): number | Fehler => {
+const endeVon = (z: TabelleZeile, beginnen: Beginn, pause: number): number | Fehler => {
+  const beginn = beginnen.ab;
   const dauer: Spanne | null = z.werte.dauer === "" ? null : dauerFrei(z.werte.dauer);
   if (z.werte.dauer !== "" && (dauer === null || dauer.auf === 0))
     return fehler(z, "dauer", "dauer_ungueltig");
@@ -67,9 +79,10 @@ const endeVon = (z: TabelleZeile, beginn: number, pause: number): number | Fehle
   }
   const ende = uhrzeitFrei(z.werte.ende, "auf");
   if (ende === null || ende === beginn) return fehler(z, "ende", "zeit_ungueltig");
-  const netto = laenge(beginn, ende) - pause;
-  if (dauer !== null && (netto < dauer.ab || netto > dauer.auf))
-    return fehler(z, "dauer", "dauer_abweichend");
+  const endeAb = uhrzeitFrei(z.werte.ende, "ab") as number;
+  const innen = beginnen.auf === endeAb ? 0 : laenge(beginnen.auf, endeAb);
+  const spanne = { innen: innen - pause, aussen: laenge(beginn, ende) - pause };
+  if (dauer !== null && !passt(dauer, spanne)) return fehler(z, "dauer", "dauer_abweichend");
   return ende;
 };
 
@@ -92,7 +105,7 @@ const zeitteile = (z: TabelleZeile) => {
   if (beginn === null) return fehler(z, "beginn", "zeit_ungueltig");
   const pause = pauseFrei(z.werte.pause);
   if (pause === null) return fehler(z, "pause", "pause_ungueltig");
-  const ende = endeVon(z, beginn, pause);
+  const ende = endeVon(z, { ab: beginn, auf: uhrzeitFrei(z.werte.beginn, "auf") as number }, pause);
   if (istFehler(ende)) return ende;
   if (pause >= laenge(beginn, ende)) return fehler(z, "pause", "pause_ungueltig");
   return { person, tag, beginn, ende, pauseMinuten: pause };

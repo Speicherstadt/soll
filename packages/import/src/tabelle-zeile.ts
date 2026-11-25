@@ -76,10 +76,11 @@ const sekundenZwischen = (beginn: number, ende: number): number =>
  */
 const endeInMinuten = (beginn: number, ende: number): number | null => {
   if (ende === beginn) return null;
-  const minuten = minutenVon(ende, "auf");
-  const anfang = minutenVon(beginn, "ab");
-  const naechsterTag = ende < beginn;
-  return minuten === anfang || (naechsterTag && minuten > anfang) ? null : minuten;
+  // compared before the day wraps: 23:59:40 rounded up is 1440, not the 0 it is stored as
+  const aufgerundet = Math.ceil(ende / 60);
+  const anfang = Math.floor(beginn / 60);
+  if (aufgerundet === anfang || (ende < beginn && aufgerundet >= anfang)) return null;
+  return minutenVon(ende, "auf");
 };
 
 /** The end from its column, or from begin, duration and break; both given must agree */

@@ -24,4 +24,9 @@ describe("wrapping text in the PDF writer", () => {
       "verlegt",
     ]);
   });
+
+  it("leaves out a byte order mark (U+FEFF) instead of making it a space", async () => {
+    const s = await neuerSchreiber();
+    expect(s.umbrechen("15\ufeffmm", 0, { breite: 500 })).toEqual(["15mm"]);
+  });
 });

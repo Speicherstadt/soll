@@ -22,8 +22,8 @@ export const UNTERSCHRIFT = [
  * Weber at 18:00 on 20.11.2026: Sandra booked Montage 8:00–11:30 on "Bad Elbhof", Jonas Fahrt
  * 12:00–12:45 there; besides, Sandra's internal Werkstatt and a booking on 18.11. outside the span
  */
-export const baustelle = async () => {
-  const w = await werkstatt();
+export const baustelle = async (optionen: Parameters<typeof werkstatt>[0] = {}) => {
+  const w = await werkstatt(optionen);
   w.server.stelleUhr(um("18:00"));
   const auftrag = { projektId: w.projekt.projektId };
   const sandraMontage = await buchen(w.sandra, {

@@ -555,7 +555,7 @@ Alle Punkte: nach S-306.
   unterschreibt; Playwright zeichnet die Unterschrift mit Pointer Events, unterschreibt und lädt das
   PDF (desktop und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
   `docs/projektzeit.md`.
-- [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
+- [x] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
@@ -744,7 +744,6 @@ neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (sie
 requests“).
 
 - [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
-- [ ] S-606 Haben – #48; offen: Doku in `docs/projektzeit.md`, Entscheidungen, Haken
 - [ ] S-904 Lasttest – #49; offen: Zeitüberschreitungen in den Tests klären, Schwelle festlegen
   und als Entscheidung eintragen, Doku, Haken
 - [ ] S-803 Terminal offline – noch nicht begonnen

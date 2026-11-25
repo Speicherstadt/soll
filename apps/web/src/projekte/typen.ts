@@ -1,7 +1,14 @@
 import type { BudgetZeile } from "@soll/arbeitszeit";
 
 /** The rows of the module Projektzeit as /api/v1/projektzeit returns them (S-601) */
-export type Kunde = { kundeId: string; name: string; nummer: string; archiviertAm: number | null };
+export type Kunde = {
+  kundeId: string;
+  name: string;
+  nummer: string;
+  archiviertAm: number | null;
+  /** the row in another source it is linked to, e.g. "haben" (S-606); null for none */
+  externQuelle?: string | null;
+};
 
 export type Projekt = {
   projektId: string;

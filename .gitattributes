@@ -1,2 +1,4 @@
 # The golden files of the DATEV export are compared byte for byte: CR LF stays
 packages/export/src/datev/golden/*.txt -text
+# The golden files of the ICS feed (S-503) likewise: RFC 5545 ends every line with CR LF
+packages/export/src/ics/golden/*.ics -text

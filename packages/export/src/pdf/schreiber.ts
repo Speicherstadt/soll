@@ -37,13 +37,51 @@ export const druckbar = (font: PDFFont, text: string): string =>
     })
     .join("");
 
+/**
+ * One paragraph (no line breaks) broken into lines that fit `breite` points at size `groesse`: at
+ * spaces, and inside a word only when the word alone is wider
+ */
+const absatzUmbrechen = (
+  text: string,
+  font: PDFFont,
+  masse: { groesse: number; breite: number },
+): string[] => {
+  const passt = (probe: string) => font.widthOfTextAtSize(probe, masse.groesse) <= masse.breite;
+  const zeilen: string[] = [];
+  let teil = "";
+  for (const wort of text.split(" ")) {
+    const probe = teil ? `${teil} ${wort}` : wort;
+    if (passt(probe) || !teil) teil = probe;
+    else {
+      zeilen.push(teil);
+      teil = wort;
+    }
+    while (teil.length > 1 && !passt(teil)) {
+      const laenge = Math.max(
+        1,
+        [...teil].findIndex((_, ende) => !passt(teil.slice(0, ende + 1))),
+      );
+      zeilen.push(teil.slice(0, laenge));
+      teil = teil.slice(laenge);
+    }
+  }
+  return [...zeilen, teil];
+};
+
 /** Helvetica and Helvetica Bold, embedded in the document */
 export const schriften = async (doc: PDFDocument): Promise<Schrift> => ({
   normal: await doc.embedFont(StandardFonts.Helvetica),
   fett: await doc.embedFont(StandardFonts.HelveticaBold),
 });
 
-export type TextOptionen = { fett?: boolean; groesse?: number; breite?: number; grau?: boolean };
+export type TextOptionen = {
+  fett?: boolean;
+  groesse?: number;
+  breite?: number;
+  grau?: boolean;
+  /** Points below the current line, for the further lines of a wrapped table cell */
+  unten?: number;
+};
 
 /** A writer over pages: starts a new page when the next line does not fit */
 export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A4) => {
@@ -56,6 +94,9 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
   const platz = (zeilen: number) => {
     if (y - zeilen * ZEILE < RAND) neueSeite();
   };
+  /** How many lines still fit on this page; `jeSeite` is how many fit on a new one */
+  const frei = () => Math.max(0, Math.floor((y - RAND) / ZEILE));
+  const jeSeite = Math.floor((format.hoehe - 2 * RAND) / ZEILE);
   const text = (inhalt: string, x: number, optionen: TextOptionen = {}) => {
     const font = optionen.fett ? schrift.fett : schrift.normal;
     const groesse = optionen.groesse ?? 9;
@@ -65,7 +106,7 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
       sicher = `${sicher.slice(0, -2)}…`;
     seite.drawText(sicher, {
       x: RAND + x,
-      y,
+      y: y - (optionen.unten ?? 0),
       size: groesse,
       font,
       color: optionen.grau ? rgb(0.44, 0.44, 0.48) : rgb(0.04, 0.04, 0.04),
@@ -75,33 +116,26 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
     y -= abstand;
   };
   /**
-   * Text broken into lines that fit `breite` points (the rest of the page by default): at spaces,
-   * and inside a word only when the word alone is wider, so nothing is cut off
+   * Text broken into lines that fit `breite` points (the rest of the page by default): at its line
+   * breaks (also U+0085, U+2028, U+2029), at spaces (any blank space counts as one, a no-break
+   * space such as U+202F stays one, an invisible character such as U+200B or a variation selector
+   * is left out), and inside a word only when the word alone is wider, so nothing is cut off
    */
   const umbrechen = (inhalt: string, x = 0, optionen: TextOptionen = {}): string[] => {
     const font = optionen.fett ? schrift.fett : schrift.normal;
-    const groesse = optionen.groesse ?? 9;
-    const breite = optionen.breite ?? format.breite - 2 * RAND - x;
-    const passt = (probe: string) => font.widthOfTextAtSize(probe, groesse) <= breite;
-    const zeilen: string[] = [];
-    let teil = "";
-    for (const wort of druckbar(font, inhalt).split(" ")) {
-      const probe = teil ? `${teil} ${wort}` : wort;
-      if (passt(probe) || !teil) teil = probe;
-      else {
-        zeilen.push(teil);
-        teil = wort;
-      }
-      while (teil.length > 1 && !passt(teil)) {
-        const laenge = Math.max(
-          1,
-          [...teil].findIndex((_, ende) => !passt(teil.slice(0, ende + 1))),
-        );
-        zeilen.push(teil.slice(0, laenge));
-        teil = teil.slice(laenge);
-      }
-    }
-    return [...zeilen, teil];
+    const masse = {
+      groesse: optionen.groesse ?? 9,
+      breite: optionen.breite ?? format.breite - 2 * RAND - x,
+    };
+    return inhalt
+      .split(/\r\n|[\r\n\u0085\u2028\u2029]/)
+      .map((teil) =>
+        teil
+          .replace(/[\p{Cf}\p{Default_Ignorable_Code_Point}]/gu, "")
+          .replace(/[\u202f\u2007]/gu, "\u00a0")
+          .replace(/(?!\u00a0)\s/gu, " "),
+      )
+      .flatMap((teil) => absatzUmbrechen(druckbar(font, teil), font, masse));
   };
   /** A paragraph wrapped at the width of the page */
   const absatz = (inhalt: string, optionen: { fett?: boolean; grau?: boolean } = {}) => {
@@ -120,7 +154,7 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
     zeichnen(seite, RAND, y);
     y -= hoehe;
   };
-  return { text, zeile, umbrechen, absatz, platz, neueSeite, bereich };
+  return { text, zeile, umbrechen, absatz, platz, frei, jeSeite, neueSeite, bereich };
 };
 
 export type Schreiber = ReturnType<typeof schreiber>;

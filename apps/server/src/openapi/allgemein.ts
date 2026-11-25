@@ -35,6 +35,13 @@ export const ALLGEMEIN: readonly Operation[] = [
     oeffentlich: true,
   },
   {
+    methode: "get",
+    pfad: `${V1}/ics/:datei`,
+    zusammenfassung: "Der Kalender-Feed einer Person (iCalendar), mit ihrem geheimen Token",
+    bereich: "Öffentlich",
+    oeffentlich: true,
+  },
+  {
     methode: "post",
     pfad: `${V1}/pruefen`,
     zusammenfassung: "Einen Prüfwert von einem Stundenzettel prüfen",

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3757675c-6826-49ec-8fac-fbbafc6bcfb4",
+  "id": "f1902243-1ae8-43aa-889a-20613d84e364",
   "prevId": "ee4fcd57-6d6c-4eb4-88e4-d1b761b964e5",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1558,6 +1558,67 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "kalender_abos": {
+      "name": "kalender_abos",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sprache": {
+          "name": "sprache",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "kalender_abos_token_hash_unique": {
+          "name": "kalender_abos_token_hash_unique",
+          "columns": [
+            "token_hash"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "kalender_abos_betrieb_id_nutzer_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "nutzer_id"
+          ],
+          "name": "kalender_abos_betrieb_id_nutzer_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "schichten": {
       "name": "schichten",
       "columns": {
@@ -2193,187 +2254,6 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "konto_anpassungen": {
-      "name": "konto_anpassungen",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "anpassung_id": {
-          "name": "anpassung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nutzer_id": {
-          "name": "nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "art": {
-          "name": "art",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "monat": {
-          "name": "monat",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "jahr": {
-          "name": "jahr",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "minuten": {
-          "name": "minuten",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "halbtage": {
-          "name": "halbtage",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "grund": {
-          "name": "grund",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_von": {
-          "name": "erstellt_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_am": {
-          "name": "erstellt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "konto_anpassungen_person": {
-          "name": "konto_anpassungen_person",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "konto_anpassungen_betrieb_id_anpassung_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "anpassung_id"
-          ],
-          "name": "konto_anpassungen_betrieb_id_anpassung_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "urlaubshinweise": {
-      "name": "urlaubshinweise",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "hinweis_id": {
-          "name": "hinweis_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "nutzer_id": {
-          "name": "nutzer_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "tag": {
-          "name": "tag",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt": {
-          "name": "inhalt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_von": {
-          "name": "erstellt_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_am": {
-          "name": "erstellt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "urlaubshinweise_person": {
-          "name": "urlaubshinweise_person",
-          "columns": [
-            "betrieb_id",
-            "nutzer_id",
-            "tag"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "urlaubshinweise_betrieb_id_hinweis_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "hinweis_id"
-          ],
-          "name": "urlaubshinweise_betrieb_id_hinweis_id_pk"
-        }
-      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

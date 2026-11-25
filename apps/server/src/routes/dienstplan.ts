@@ -8,6 +8,7 @@ import {
   bedarfEntfernen,
   bedarfeLesen,
   planerWoche,
+  planMelden,
   type SchichtErgebnis,
   schichtAendern,
   schichtAnlegen,
@@ -19,7 +20,10 @@ import {
   vorlageAnlegen,
   vorlageEntfernen,
   vorlagenLesen,
+  wocheVeroeffentlichen,
 } from "../modules/dienstplan/index.ts";
+import type { ZustellDeps } from "../modules/erinnerungen/index.ts";
+import { kalenderRouten } from "./dienstplan-kalender.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon } from "./stempel-antwort.ts";
 
@@ -95,6 +99,9 @@ export const aenderungSchema = z.object(schichtFelder).partial().strict();
 export const wocheSchema = z
   .object({ standortId: id, tag: z.string().refine(istTag).optional() })
   .strict();
+export const veroeffentlichenSchema = z
+  .object({ standortId: id, tag: z.string().refine(istTag) })
+  .strict();
 export const standortFrage = z.object({ standortId: id }).strict();
 
 const STATUS = {
@@ -168,8 +175,16 @@ const bedarfRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
         : c.json({ fehler: "unbekannt" }, 404),
     );
 
-/** Planned shifts: whoever plans adds, moves, changes and removes them, all as a draft */
-const schichtRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
+/**
+ * Planned shifts: whoever plans adds, moves, changes and removes them; a new shift is a draft, a
+ * change to a published one is told to the people it concerns (S-503)
+ */
+const schichtRouten = (
+  db: Db,
+  schreibDb: SchreibDb,
+  jetzt: () => number,
+  zustellung: ZustellDeps | null,
+) =>
   new Hono<Anfrage>()
     .use(recht("plan:planen"))
     .post("/", async (c) => {
@@ -192,19 +207,31 @@ const schichtRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
         c.req.param("schichtId"),
         eingabe.data,
       );
+      if (ergebnis.ok) await planMelden(zustellung, kontext, ergebnis.meldungen);
       return schichtAntwort(c, ergebnis, 200);
     })
-    .delete("/:schichtId", (c) =>
-      schichtEntfernen(db, schreibDb, kontextVon(c, jetzt), c.req.param("schichtId"))
-        ? c.body(null, 204)
-        : c.json({ fehler: "unbekannt" }, 404),
-    );
+    .delete("/:schichtId", async (c) => {
+      const kontext = kontextVon(c, jetzt);
+      const meldungen = schichtEntfernen(db, schreibDb, kontext, c.req.param("schichtId"));
+      if (meldungen === null) return c.json({ fehler: "unbekannt" }, 404);
+      await planMelden(zustellung, kontext, meldungen);
+      return c.body(null, 204);
+    });
+
+/** What the plan needs besides the database: the way to tell people, the instance's address */
+export type PlanDeps = { zustellung: ZustellDeps | null; url: string };
 
 /**
  * The plan, below /api/v1/dienstplan (S-501): refused while the module is off. Owner and planner
- * plan the draft; everyone else who works for the business reads only what is published (S-503).
+ * plan the draft and publish a week; everyone else who works for the business reads only what is
+ * published and subscribes to their own shifts as a calendar (S-503).
  */
-export const dienstplanRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
+export const dienstplanRouten = (
+  db: Db,
+  schreibDb: SchreibDb,
+  jetzt: () => number,
+  deps: PlanDeps,
+) =>
   new Hono<Anfrage>()
     .get("/woche", recht("plan:lesen"), (c) => {
       const frage = wocheSchema.safeParse(c.req.query());
@@ -219,6 +246,26 @@ export const dienstplanRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => numb
           : veroeffentlichteWoche(db, betriebId, standortId, tag),
       );
     })
+    .post("/veroeffentlichen", recht("plan:planen"), async (c) => {
+      const eingabe = await koerper(c, veroeffentlichenSchema);
+      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      if (!standortVorhanden(db, c.get("betriebId"), eingabe.data.standortId))
+        return c.json({ fehler: "standort_unbekannt" }, 404);
+      const kontext = kontextVon(c, jetzt);
+      const { anzahl, meldungen } = wocheVeroeffentlichen(
+        db,
+        schreibDb,
+        kontext,
+        eingabe.data.standortId,
+        eingabe.data.tag,
+      );
+      const gemeldet = await planMelden(deps.zustellung, kontext, meldungen);
+      return c.json({
+        anzahl,
+        benachrichtigt: gemeldet.filter((g) => g.kanal !== "keiner").length,
+      });
+    })
     .route("/vorlagen", vorlagenRouten(db, schreibDb, jetzt))
     .route("/bedarf", bedarfRouten(db, schreibDb, jetzt))
-    .route("/schichten", schichtRouten(db, schreibDb, jetzt));
+    .route("/schichten", schichtRouten(db, schreibDb, jetzt, deps.zustellung))
+    .route("/kalender", kalenderRouten(db, schreibDb, jetzt, deps.url));

@@ -27,6 +27,17 @@ describe("redactUrl", () => {
   });
 });
 
+describe("redactUrl with a secret in the path", () => {
+  it("leaves out the token of a calendar feed (S-503), also with an encoded segment", () => {
+    expect(redactUrl("http://x.test/api/v1/ics/soll_ics_geheim.ics")).toBe("/api/v1/ics/…");
+    expect(redactUrl("/api/v1/%69cs/soll_ics_geheim.ics")).toBe("/api/v1/%69cs/…");
+  });
+
+  it("leaves out the token of an invitation link", () => {
+    expect(redactUrl("/api/v1/einladung/geheim/annehmen")).toBe("/api/v1/einladung/…/annehmen");
+  });
+});
+
 describe("redactUrl with a padded base64 token", () => {
   it("leaves out a bare token that ends in base64 padding", () => {
     expect(redactUrl("/feed.ics?c2stZ2VoZWltLTEyMw==")).toBe("/feed.ics?…");

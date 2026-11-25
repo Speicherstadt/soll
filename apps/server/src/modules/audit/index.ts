@@ -4,3 +4,4 @@ export { aktuellerPruefwert, kettePruefen, pruefwertPruefen } from "./pruefen.ts
 export { formatPruefwert, parsePruefwert } from "./pruefwert.ts";
 export { type Kontext, type Schreiber, schreiben } from "./schreiben.ts";
 export { kettenTabellen, type TabellenName, zeilenId } from "./tabellen.ts";
+export { type Verlauf, verlaufVon } from "./verlauf.ts";

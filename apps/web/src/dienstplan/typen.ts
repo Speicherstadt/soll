@@ -52,3 +52,6 @@ export type Standort = { standortId: string; name: string };
 
 /** Where a shift goes: a person (null for open) on a day */
 export type Ziel = { nutzerId: string | null; tag: Tag };
+
+/** The own calendar feed (S-503): when it was issued and in which language, never the link */
+export type KalenderAbo = { angelegtAm: number; sprache: string };

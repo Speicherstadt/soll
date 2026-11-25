@@ -42,6 +42,7 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
+  kalender_abos: "kalender (wann ausgestellt und in welcher Sprache, ohne Hash des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
   ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
   haben_zugaenge: "ausgenommen: Adresse und Token des Betriebs für Haben, keine Daten der Person",
@@ -122,6 +123,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
   ),
   api_zugaenge: aus("Zugänge der Person zur API sieht der Inhaber sonst nirgends"),
+  kalender_abos: aus("ob die Person ihre Schichten abonniert, sieht der Inhaber sonst nirgends"),
   terminals: aus("keine Daten der Person (Tablets des Betriebs)"),
   ausweise: frei(
     "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",

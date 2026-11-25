@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { account, passkey, session, user } from "../../db/auth-schema.ts";
 import type { Db } from "../../db/oeffnen.ts";
-import { apiZugaenge, einladungen, mitgliedschaften, pins } from "../../db/schema.ts";
+import { apiZugaenge, einladungen, kalenderAbos, mitgliedschaften, pins } from "../../db/schema.ts";
 import { iso } from "./zeit.ts";
 
 /*
@@ -107,6 +107,16 @@ const zugaengeVon = (db: Db, betriebId: string, nutzerId: string) =>
       zuletztGenutzt: zeile.zuletztGenutzt,
     }));
 
+/** The person's calendar feed (S-503): when it was issued and its language, never the hash */
+const kalenderVon = (db: Db, betriebId: string, nutzerId: string) => {
+  const zeile = db
+    .select()
+    .from(kalenderAbos)
+    .where(and(eq(kalenderAbos.betriebId, betriebId), eq(kalenderAbos.nutzerId, nutzerId)))
+    .get();
+  return zeile ? { angelegtAm: iso(zeile.angelegtAm), sprache: zeile.sprache } : null;
+};
+
 /** The account in the person's own copy; the owner's copy picks from it (inhaber.ts) */
 export const kontoteil = (db: Db, betriebId: string, nutzerId: string) => ({
   konto: kontoVon(db, nutzerId),
@@ -116,4 +126,5 @@ export const kontoteil = (db: Db, betriebId: string, nutzerId: string) => ({
   pin: pinVon(db, betriebId, nutzerId),
   einladungen: einladungenVon(db, betriebId, nutzerId),
   zugaenge: zugaengeVon(db, betriebId, nutzerId),
+  kalender: kalenderVon(db, betriebId, nutzerId),
 });

@@ -72,10 +72,11 @@ export const kioskWarteschlange = (kopplung: () => Kopplung | null, entkoppelt: 
   const aufnehmen = async (
     ausweis: OfflineAusweis,
     art: Stempelart,
+    getippt?: number,
   ): Promise<KioskEintrag | null> => {
     const k = kopplung();
     if (!schlange || !k) return null;
-    const eintrag = await schlange.aufnehmen(k.terminalId, ausweis, art).catch(() => null);
+    const eintrag = await schlange.aufnehmen(k.terminalId, ausweis, art, getippt).catch(() => null);
     await auffrischen();
     void senden();
     return eintrag;

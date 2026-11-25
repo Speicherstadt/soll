@@ -174,14 +174,15 @@ const kioskAufrufe = (z: Zustand) => {
       const aktuell = z.ansicht();
       if (aktuell.art === "offline") return offline.speichern(aktuell.ausweis, art);
       if (aktuell.art !== "erkannt") return;
+      const getippt = Date.now();
       const antwort = await kioskAnfrage<Gestempelt>(token, "/stempeln", {
         ausweis: aktuell.ausweis,
         art,
-        geraetZeitpunkt: Date.now(),
+        geraetZeitpunkt: getippt,
       });
       z.schlange.netz(antwort.status);
       if (!antwort.ok && antwort.status === 0)
-        return offline.stempelnOhneAntwort(aktuell.ausweis, art);
+        return offline.stempelnOhneAntwort(aktuell.ausweis, art, getippt);
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setAnsicht({ art: "gestempelt", daten: antwort.daten, bis: Date.now() + GESTEMPELT_MS });
     });
@@ -203,8 +204,8 @@ const ohneNetzAufrufe = (z: Zustand) => {
     z.setAnsicht({ art: "offline", ausweis: wartet, bis: Date.now() + ERKANNT_MS });
   };
   /** keeps the stamp in the queue and confirms it as saved */
-  const speichern = async (ausweis: OfflineAusweis, art: Stempelart) => {
-    const eintrag = await z.schlange.aufnehmen(ausweis, art);
+  const speichern = async (ausweis: OfflineAusweis, art: Stempelart, getippt?: number) => {
+    const eintrag = await z.schlange.aufnehmen(ausweis, art, getippt);
     if (!eintrag) {
       z.zurueck();
       z.setMeldung({ art: "fehler" });
@@ -235,10 +236,11 @@ const ohneNetzAufrufe = (z: Zustand) => {
      * /stempeln went unanswered (the network went between recognising and stamping, or the server
      * is silent): the stamp waits, the person learns it is unclear, or there is no network
      */
-    stempelnOhneAntwort: (ausweis: Ausweis, art: Stempelart) => {
+    stempelnOhneAntwort: (ausweis: Ausweis, art: Stempelart, getippt: number) => {
       const weiter = nachStempelnOhneAntwort(ausweis, z.schlange.bereit());
       const wartet = offlineAusweis(ausweis);
-      if (weiter === "warteschlange" && wartet) return speichern(wartet, art);
+      // the entry keeps the time of the tap, so the server finds the live stamp if it was made
+      if (weiter === "warteschlange" && wartet) return speichern(wartet, art, getippt);
       melden(weiter === "unklar" ? { art: "unklar" } : { art: "netz" });
     },
   };

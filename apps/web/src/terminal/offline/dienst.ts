@@ -127,8 +127,14 @@ export const kioskSchlange = (abh: KioskAbhaengigkeiten) => {
    * Takes a stamp into the queue: the time of the tap, the next number, the credential encrypted to
    * the server for this terminal, the signature over all of it; null where the queue cannot
    */
-  const aufnehmen = (terminalId: string, ausweis: OfflineAusweis, art: Stempelart) => {
-    const geraetZeitpunkt = abh.jetzt();
+  const aufnehmen = (
+    terminalId: string,
+    ausweis: OfflineAusweis,
+    art: Stempelart,
+    // the tap of an online /stempeln that timed out, so the server finds its live stamp (review
+    // of S-803, round 5); else now, before waiting for the lock
+    geraetZeitpunkt = abh.jetzt(),
+  ) => {
     return abh.sperre(async (): Promise<KioskEintrag | null> => {
       const geraet = await abh.ablage.geraet(terminalId);
       if (!geraet?.server || geraet.angemeldet === "vergeben") return null;

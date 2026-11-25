@@ -58,7 +58,8 @@ Person ein. Es gibt zwei Arten:
 - **NTAG 424 DNA**: Diese Karte erzeugt bei jedem Lesen eine neue, signierte Nachricht (SUN, „Secure
   Unique NFC“) in ihrer Adresse, etwa `https://…?e=…&c=…`. Soll prüft sie mit den Schlüsseln der
   Karte und erkennt die Person **allein**, ohne PIN. Der Inhaber gibt dafür UID, SDMMetaReadKey und
-  SDMFileReadKey ein, mit denen die Karte eingerichtet wurde.
+  SDMFileReadKey ein, mit denen die Karte eingerichtet wurde. Die UID einer NTAG 424 DNA hat immer
+  7 Bytes; nur diese Länge steht in der SUN-Nachricht, eine andere lehnt Soll beim Eintragen ab.
 
 Die UID speichert Soll nur als Kennung mit einem geheimen Schlüssel (wie die PIN), die beiden
 Schlüssel einer NTAG 424 DNA nur verschlüsselt; die Liste zeigt Name, Art und Datum, nie UID oder

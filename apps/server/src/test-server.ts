@@ -1,9 +1,11 @@
+import { dirname, join } from "node:path";
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { type PushSenden, vapidKontakt, vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
+import { dateispeicher } from "./modules/umzug/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
 
@@ -62,6 +64,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     push: optionen.push
       ? { vapid, kontakt: vapidKontakt(TEST_URL, undefined), senden: optionen.push }
       : null,
+    dateien: dateispeicher(() => join(dirname(datenbank.pfad), "dateien")),
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

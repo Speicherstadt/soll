@@ -10,6 +10,7 @@ import {
   datevEinstellungen,
   datevPersonalnummern,
   habenZugaenge,
+  importe,
   karten,
   mitgliedschaften,
   monatsabschluesse,
@@ -141,6 +142,17 @@ const gueltigeZugaenge = (db: Db, betriebId: string, jetzt: number): number =>
     )
     .get()?.n ?? 0;
 
+/** How many imports the business took over and from which tools (S-701), sorted */
+const importeVon = (db: Db, betriebId: string): DokuStandDaten["importe"] => {
+  const quellen = db
+    .select({ quelle: importe.quelle })
+    .from(importe)
+    .where(eq(importe.betriebId, betriebId))
+    .all()
+    .map(({ quelle }) => quelle);
+  return { anzahl: quellen.length, werkzeuge: [...new Set(quellen)].sort() };
+};
+
 const kette = (db: Db, betriebId: string): DokuStandDaten["kette"] => ({
   pruefwert: aktuellerPruefwert(db, betriebId),
   glieder:
@@ -176,6 +188,7 @@ export const standLesen = (
     terminal: terminalStand(db, betriebId),
     datev: datev(db, betriebId),
     haben: haben ? { adresse: haben.adresse } : null,
+    importe: importeVon(db, betriebId),
     angaben: angabenLesen(db, betriebId),
     angabenAenderungen: angabenAenderungen(db, betriebId),
   };

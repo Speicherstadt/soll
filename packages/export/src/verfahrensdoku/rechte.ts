@@ -46,6 +46,7 @@ export const RECHTE_TEXTE: Record<string, string> = {
   "lohn:datev": "den DATEV-Export einrichten und herunterladen",
   "auskunft:erteilen": "Auskunft nach Art. 15 DSGVO erteilen",
   "api:zugang": "eigene API-Zugänge anlegen",
+  "umzug:importieren": "Daten aus anderen Programmen übernehmen",
   "verfahrensdoku:verwalten": "die Verfahrensdokumentation pflegen und herunterladen",
 };
 

@@ -32,6 +32,7 @@ export const weber: DokuStandDaten = {
   terminal: { terminals: [], karten: { uid: 0, ntag424: 0 }, ausweise: 0, pins: 0 },
   datev: { eingerichtet: true, nummern: true, lohnarten: 4, personalnummern: 5 },
   haben: { adresse: "https://haben.weber-haustechnik.test" },
+  importe: { anzahl: 0, werkzeuge: [] },
   angaben: {
     rechtsform: "Einzelunternehmen",
     anschrift: "Wandsbeker Chaussee 1\n22089 Hamburg",
@@ -78,6 +79,7 @@ export const elbblick: DokuStandDaten = {
   },
   datev: { eingerichtet: false, nummern: false, lohnarten: 0, personalnummern: 0 },
   haben: null,
+  importe: { anzahl: 2, werkzeuge: ["soll-csv"] },
   angaben: { ...LEERE_ANGABEN, rechtsform: "GmbH", anschrift: "# Elbstraße 5 <b>" },
   angabenAenderungen: [],
 };

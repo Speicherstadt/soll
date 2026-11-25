@@ -32,6 +32,8 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
+  // the move from other tools writes everyone's records (S-701), and the Verfahrensdokumentation
+  // describes the business's procedure (S-902): both the owner's
   const inhaber = () => {
     const betrieb = aktuellerBetrieb();
     return betrieb ? istInhaber(betrieb) : false;
@@ -55,6 +57,12 @@ const Einstellungen = () => {
       </Show>
       <DatevZuordnung />
       <Show when={inhaber()}>
+        <section class="flex max-w-sm flex-col items-start gap-3">
+          <h2 class="font-semibold">{m.umzug_titel()}</h2>
+          <Link to="/umzug" class={knopfLink}>
+            {m.umzug_link()}
+          </Link>
+        </section>
         <section class="flex max-w-lg flex-col items-start gap-3">
           <h2 class="font-semibold">{m.verfahrensdoku_titel()}</h2>
           <p class="text-muted-foreground">{m.verfahrensdoku_link_text()}</p>

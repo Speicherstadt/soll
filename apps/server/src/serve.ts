@@ -13,6 +13,7 @@ import {
 } from "./modules/erinnerungen/index.ts";
 import { smtpMailer } from "./modules/mail/index.ts";
 import { DATENBANK } from "./modules/sicherung/index.ts";
+import { dateispeicher } from "./modules/umzug/index.ts";
 
 const lesen = () => {
   try {
@@ -62,6 +63,8 @@ export const serverStarten = () => {
     webVerzeichnis: env.webDir,
     // messages about the plan go the same way as the reminders (S-503)
     push: { vapid, kontakt, senden: pushPerFetch },
+    // the original files of imports beside the database (S-701)
+    dateien: dateispeicher(() => join(env.dataDir, "dateien")),
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)

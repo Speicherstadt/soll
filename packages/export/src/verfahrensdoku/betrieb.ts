@@ -85,6 +85,9 @@ export const sicherung = (s: DokuStandDaten): VerfahrensdokuAbschnitt => {
     absaetze: [
       `Der Befehl soll backup schreibt eine in sich stimmige Kopie der Datenbank, auch während der Server schreibt (SQLite VACUUM INTO), prüft sie mit PRAGMA integrity_check und überschreibt nie eine vorhandene Datei. Verschlüsseln, Auslagern und Wegräumen alter Sicherungen übernimmt das Backup des Rechners; Soll tut das nicht selbst.${s.module.arbeitszeit ? " Sicherungen sollen so lange erreichbar bleiben wie die Fristen oben." : ""}`,
       "soll restore legt eine Sicherung nur in ein leeres Datenverzeichnis, prüft danach die Audit-Kette jedes Betriebs und nennt das Ergebnis. Der Server startet nur mit demselben SOLL_SECRET_KEY wie zur Zeit der Sicherung; der Schlüssel gehört deshalb getrennt von den Sicherungen verwahrt.",
+      s.importe.anzahl
+        ? "Die Originaldateien der Importe liegen im Datenverzeichnis unter dateien/; soll backup sichert nur die Datenbank, das Verzeichnis gehört deshalb mit in das Backup des Rechners."
+        : "",
       ...angaben.absaetze,
     ],
     luecken: angaben.luecken,

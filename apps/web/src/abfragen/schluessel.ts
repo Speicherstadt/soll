@@ -54,6 +54,8 @@ export const PFAD = {
   habenUebergabe: `${PZ}/haben/uebergabe`,
   // the Verfahrensdokumentation with the business's statements, for the owner (S-902)
   verfahrensdoku: "/api/v1/verfahrensdoku",
+  // imports from other tools, for the owner (S-701)
+  importe: "/api/v1/importe",
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -121,6 +123,7 @@ export const ressourcen = {
   habenBuchungen: (parameter: { projektId: string; von: string; bis: string }) =>
     mitParametern(PFAD.habenBuchungen, parameter),
   verfahrensdoku: () => einfach(PFAD.verfahrensdoku),
+  importe: () => einfach(PFAD.importe),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

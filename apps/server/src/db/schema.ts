@@ -18,6 +18,7 @@ export * from "./schema/datev.ts";
 export * from "./schema/dienstplan.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/haben.ts";
+export * from "./schema/importe.ts";
 export * from "./schema/konten.ts";
 export * from "./schema/personenangaben.ts";
 export * from "./schema/projektzeit.ts";
@@ -138,8 +139,8 @@ export const stempelungen = sqliteTable(
     }).notNull(),
     zeitpunkt: integer("zeitpunkt").notNull(),
     geraetZeitpunkt: integer("geraet_zeitpunkt"),
-    // "api": stamped with a personal access token (S-607)
-    quelle: text("quelle", { enum: ["app", "terminal", "api"] }).notNull(),
+    // "api": stamped with a personal access token (S-607); "import": taken over from a tool (S-701)
+    quelle: text("quelle", { enum: ["app", "terminal", "api", "import"] }).notNull(),
     ersetzt: text("ersetzt"),
     entfernt: integer("entfernt", { mode: "boolean" }).notNull().default(false),
     // required for every row a person entered by hand: an addition, a change, a removal
@@ -154,6 +155,11 @@ export const stempelungen = sqliteTable(
     offline: integer("offline", { mode: "boolean" }).notNull().default(false),
     // S-801: the terminal a person stamped at, with the PIN or the QR code
     terminalId: text("terminal_id"),
+    // S-701: the import a stamp was taken over in, the tool and its id there ("<id>/kommen" for
+    // the Kommen of a span); only the row taken over carries them, never a correction of it
+    importId: text("import_id"),
+    externQuelle: text("extern_quelle"),
+    externId: text("extern_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.stempelId] }),
@@ -162,6 +168,8 @@ export const stempelungen = sqliteTable(
     uniqueIndex("stempelungen_ersetzt").on(t.betriebId, t.ersetzt),
     // a number of a device is taken once (rows without a device have NULL and do not collide)
     uniqueIndex("stempelungen_geraet_nummer").on(t.betriebId, t.geraetId, t.nummer),
+    // a stamp of another tool is taken over once (S-701)
+    uniqueIndex("stempelungen_extern").on(t.betriebId, t.externQuelle, t.externId),
   ],
 );
 
@@ -188,6 +196,8 @@ export const monatsabschluesse = sqliteTable(
     inhaltHash: text("inhalt_hash").notNull(),
     grund: text("grund"),
     sperrt: text("sperrt"),
+    // S-701: a month the old tool had closed, closed by the import that took it over
+    importId: text("import_id"),
     erstelltVon: text("erstellt_von").notNull(),
     erstelltAm: integer("erstellt_am").notNull(),
   },

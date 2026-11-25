@@ -7,12 +7,14 @@ export type Stempel = {
   art: Stempelart;
   zeitpunkt: number;
   geraetZeitpunkt: number | null;
-  quelle: "app" | "terminal";
+  quelle: "app" | "terminal" | "api" | "import";
   /** came late from a device's offline queue: the instant is the device's (S-305) */
   offline: boolean;
   /** the number on the device that signed it */
   nummer: number | null;
   korrigiert: boolean;
+  /** the tool an import took it over from (its id in packages/import, S-701) */
+  uebernommenAus?: string;
   /** still in this device's queue, not on the server yet */
   wartend?: true;
 };

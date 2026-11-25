@@ -82,3 +82,14 @@ describe("entity references", () => {
     expect(markdownText("Weber &amp; Söhne")).toBe("Weber \\&amp; Söhne");
   });
 });
+
+describe("imports (S-701)", () => {
+  it("names how many imports came from which tools, and where their files lie", () => {
+    const cafe = alsMarkdown(verfahrensdokuAus(elbblick, TAG));
+    expect(cafe).toContain("Bisher übernommen: 2 Importe aus soll-csv.");
+    expect(cafe).toContain("Datenverzeichnis unter dateien/");
+    const ohne = alsMarkdown(verfahrensdokuAus(weber, TAG));
+    expect(ohne).toContain("Bisher hat der Betrieb nichts aus anderen Programmen übernommen.");
+    expect(ohne).not.toContain("unter dateien/");
+  });
+});

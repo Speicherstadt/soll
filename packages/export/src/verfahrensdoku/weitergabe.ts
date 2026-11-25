@@ -46,6 +46,14 @@ const haben = (s: DokuStandDaten): string => {
     : "Haben: Eine Übergabe der Projektzeit an eine Buchhaltung ist nicht eingerichtet.";
 };
 
+/** The takeover from other tools (S-701, docs/umzug.md) and how often the business used it */
+const importe = (i: DokuStandDaten["importe"]): string[] => [
+  "Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau mit den Befunden der Regeln und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Ein in Soll abgeschlossener Monat nimmt nichts an; was im alten Programm abgeschlossen war, schließt Soll mit Grund ab. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.",
+  i.anzahl
+    ? `Bisher übernommen: ${anzahl(i.anzahl, "Import", "Importe")} aus ${i.werkzeuge.join(", ")}.`
+    : "Bisher hat der Betrieb nichts aus anderen Programmen übernommen.",
+];
+
 export const weitergabe = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
   abschnitt("4. Anwenderdokumentation: Weitergabe und Übernahme von Daten", {
     absaetze: [
@@ -54,7 +62,7 @@ export const weitergabe = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
         ? "Prüfexport: Für Zoll und Arbeitsschutz gibt Soll die Arbeitstage von Personen in einem Zeitraum als CSV und PDF aus, mit Änderungen von Hand, Gegeneinträgen und dem Prüfwert jedes abgeschlossenen Monats (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG)."
         : "",
       haben(s),
-      "Importe: Diese Version von Soll übernimmt keine Daten aus anderen Programmen. Was vor Soll aufgezeichnet wurde, bleibt im bisherigen Verfahren und wird dort aufbewahrt; es gehört in einen eigenen Abschnitt am Ende.",
+      ...importe(s.importe),
       "Auskunft: Jede Person kann ihre Daten nach Art. 15 DSGVO abrufen; der Inhaber erteilt sie auch für Personen, die ausgeschieden sind.",
     ],
   });

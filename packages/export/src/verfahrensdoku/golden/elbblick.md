@@ -59,7 +59,9 @@ DATEV: Der Export für das Lohnbüro ist nicht eingerichtet.
 
 Prüfexport: Für Zoll und Arbeitsschutz gibt Soll die Arbeitstage von Personen in einem Zeitraum als CSV und PDF aus, mit Änderungen von Hand, Gegeneinträgen und dem Prüfwert jedes abgeschlossenen Monats (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG).
 
-Importe: Diese Version von Soll übernimmt keine Daten aus anderen Programmen. Was vor Soll aufgezeichnet wurde, bleibt im bisherigen Verfahren und wird dort aufbewahrt; es gehört in einen eigenen Abschnitt am Ende.
+Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau mit den Befunden der Regeln und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Ein in Soll abgeschlossener Monat nimmt nichts an; was im alten Programm abgeschlossen war, schließt Soll mit Grund ab. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.
+
+Bisher übernommen: 2 Importe aus soll-csv.
 
 Auskunft: Jede Person kann ihre Daten nach Art. 15 DSGVO abrufen; der Inhaber erteilt sie auch für Personen, die ausgeschieden sind.
 
@@ -118,6 +120,8 @@ Beim Erzeugen: 1 abgeschlossene Monat von Personen aufbewahrt, nach Ablauf der F
 Der Befehl soll backup schreibt eine in sich stimmige Kopie der Datenbank, auch während der Server schreibt (SQLite VACUUM INTO), prüft sie mit PRAGMA integrity\_check und überschreibt nie eine vorhandene Datei. Verschlüsseln, Auslagern und Wegräumen alter Sicherungen übernimmt das Backup des Rechners; Soll tut das nicht selbst. Sicherungen sollen so lange erreichbar bleiben wie die Fristen oben.
 
 soll restore legt eine Sicherung nur in ein leeres Datenverzeichnis, prüft danach die Audit-Kette jedes Betriebs und nennt das Ergebnis. Der Server startet nur mit demselben SOLL\_SECRET\_KEY wie zur Zeit der Sicherung; der Schlüssel gehört deshalb getrennt von den Sicherungen verwahrt.
+
+Die Originaldateien der Importe liegen im Datenverzeichnis unter dateien/; soll backup sichert nur die Datenbank, das Verzeichnis gehört deshalb mit in das Backup des Rechners.
 
 > **Fehlt:** wer den Server betreibt und Updates einspielt
 >

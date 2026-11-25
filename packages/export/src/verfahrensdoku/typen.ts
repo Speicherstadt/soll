@@ -61,6 +61,8 @@ export type DokuStandDaten = {
   datev: { eingerichtet: boolean; nummern: boolean; lohnarten: number; personalnummern: number };
   /** The address of the business's Haben (S-606), never its token; null without one */
   haben: { adresse: string } | null;
+  /** Imports from other tools taken over (S-701): how many and the ids of their tools */
+  importe: { anzahl: number; werkzeuge: string[] };
   angaben: Angaben;
   /** Each saved change of the statements: its link in the chain and when */
   angabenAenderungen: { seq: number; zeitpunkt: number }[];

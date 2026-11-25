@@ -116,6 +116,16 @@ daneben, keine Farbe allein. Darunter der Schalter „Auswertung je Person“ un
 Tabelle je Person (am Handy ohne Intern und Ohne Buchung). Ist die Auswertung je Person an, steht
 unter dem Titel jeder Seite eine ruhige Zeile mit Auge-Icon, Zeitpunkt und Norm.
 
+**Umzug** (kein Screen im Mockup, nur Inhaber, erreichbar unter Einstellungen): in der Seite mit
+Seitenleiste die Schritte als nummerierte Pillen wie in der Einrichtung (Werkzeug, Datei, Zuordnung,
+Vorschau, Übernahme), der Schritt in einer Karte mit „Schritt n von 5“, Zurück und Weiter; Weiter
+erst, wenn die Datei gelesen ist. Eine Zeile, die Soll nicht lesen kann, steht mit Nummer und Grund
+in `--danger`. Die Zuordnung ist eine Liste aus Wert der Datei (mit der Zahl der Datensätze als
+Nebentext) und einer Auswahl daneben, am Handy untereinander. Die Vorschau zeigt die Befunde wie
+überall mit Badge, Person, Tagen und Norm. Im letzten Schritt ist „Probelauf“ umrandet und
+„Übernehmen“ die Hauptaktion, die erst nach einem Probelauf erscheint; jede Änderung der Zuordnung
+verwirft den Probelauf. Darunter die bisherigen Importe mit der Originaldatei als Link.
+
 ## Komponenten
 
 Eigene Komponenten in `packages/ui`, ohne Bibliothek, auf nativen Elementen, wie in Kennwort:

@@ -42,6 +42,7 @@ export const RECHTE = [
   "terminal:verwalten",
   "lohn:datev",
   "auskunft:erteilen",
+  "umzug:importieren",
   "api:zugang",
   "verfahrensdoku:verwalten",
 ] as const;
@@ -92,6 +93,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     "auskunft:erteilen",
     // the Verfahrensdokumentation: the business answers for its procedure (GoBD Rz. 151 ff., S-902)
     "verfahrensdoku:verwalten",
+    // imports from other tools write times, absences and closings of everyone (S-701): the owner,
+    // who answers for the records and closes the months
+    "umzug:importieren",
   ],
   // the member list with e-mail addresses: for managing people, payroll and the works council
   // (BetrVG § 80 Abs. 2); employees and external staff see their own data (docs/plan.md)

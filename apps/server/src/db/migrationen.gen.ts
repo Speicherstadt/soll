@@ -101,7 +101,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `terminal_eintraege` (\n\t`betrieb_id` text NOT NULL,\n\t`terminal_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`art` text NOT NULL,\n\t`geraet_zeitpunkt` integer NOT NULL,\n\t`stempel_id` text,\n\t`grund` text,\n\t`empfangen_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `terminal_id`, `nummer`)\n);\n--> statement-breakpoint\nALTER TABLE `terminals` ADD `schluessel` text;"
   },
   {
-    "tag": "0025_verfahrensdoku",
+    "tag": "0025_import",
+    "sql": "CREATE TABLE `importe` (\n\t`betrieb_id` text NOT NULL,\n\t`import_id` text NOT NULL,\n\t`quelle` text NOT NULL,\n\t`datei_sha256` text NOT NULL,\n\t`datei_name` text NOT NULL,\n\t`datei_bytes` integer NOT NULL,\n\t`zuordnung` text NOT NULL,\n\t`abgeschlossen_bis` text,\n\t`zahlen` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `import_id`)\n);\n--> statement-breakpoint\nALTER TABLE `monatsabschluesse` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `stempelungen_extern` ON `stempelungen` (`betrieb_id`,`extern_quelle`,`extern_id`);--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `abwesenheiten_extern` ON `abwesenheiten` (`betrieb_id`,`extern_quelle`,`extern_id`);--> statement-breakpoint\nALTER TABLE `kunden` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projekte` ADD `import_id` text;"
+  },
+  {
+    "tag": "0026_verfahrensdoku",
     "sql": "CREATE TABLE `verfahrensdoku_angaben` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`rechtsform` text DEFAULT '' NOT NULL,\n\t`anschrift` text DEFAULT '' NOT NULL,\n\t`verantwortlich` text DEFAULT '' NOT NULL,\n\t`aufbewahrungsort` text DEFAULT '' NOT NULL,\n\t`serverbetrieb` text DEFAULT '' NOT NULL,\n\t`datensicherung` text DEFAULT '' NOT NULL,\n\t`schluesselablage` text DEFAULT '' NOT NULL,\n\t`eigene` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
   }
 ];

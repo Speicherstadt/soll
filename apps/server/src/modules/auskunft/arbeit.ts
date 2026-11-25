@@ -42,6 +42,10 @@ const stempelVon = (db: Db, betriebId: string, nutzerId: string, name: Name) =>
       nummer: z.nummer,
       signiert: z.signatur !== null,
       offline: z.offline,
+      // taken over from another tool (S-701): the import, the tool and the id there
+      ...(z.externQuelle === null
+        ? {}
+        : { uebernommen: { importId: z.importId, quelle: z.externQuelle, kennung: z.externId } }),
     }));
 
 const gegeneintraegeVon = (db: Db, betriebId: string, nutzerId: string, name: Name) =>

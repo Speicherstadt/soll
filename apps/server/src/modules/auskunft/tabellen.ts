@@ -59,6 +59,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   urlaubshinweise: "urlaubshinweise (Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub)",
   verfahrensdoku_angaben:
     "ausgenommen: Angaben des Betriebs zu seiner Verfahrensdokumentation; die Person steht darin nur, wenn der Inhaber sie selbst als Verantwortliche einträgt, und die Glieder ihres Schreibens stehen unter auditKette",
+  importe:
+    "ausgenommen: Vorgang des Betriebs; jede übernommene Zeile der Person steht mit Import, Werkzeug und Kennung unter stempelungen und abwesenheiten, die Originaldatei enthält Daten anderer Personen (Art. 15 Abs. 4)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -149,6 +151,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ),
   urlaubshinweise: frei("Hinweise auf den Verfall, die der Inhaber selbst gibt (konten:pflegen)"),
   verfahrensdoku_angaben: aus("keine Daten der Person (Angaben des Betriebs, S-902)"),
+  importe: aus(
+    "Vorgang des Betriebs; die übernommenen Zeilen stehen unter stempelungen und abwesenheiten",
+  ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

@@ -14,6 +14,12 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/betrieb",
   "PATCH /api/v1/betrieb/module",
   "DELETE /api/v1/betrieb/hinweis",
+  // the settings of the checks and what the rules need of a person hold for every rule of the
+  // business, in the plan and in the working time alike (S-502)
+  "GET /api/v1/betrieb/pruefung",
+  "PUT /api/v1/betrieb/pruefung",
+  "GET /api/v1/personen/:nutzerId/angaben",
+  "PUT /api/v1/personen/:nutzerId/angaben",
   "PUT /api/v1/einrichtung/betrieb",
   "POST /api/v1/einrichtung/abschliessen",
   "GET /api/v1/standorte",

@@ -1,4 +1,4 @@
-/** DATEV, CSV and PDF exports (S-306, S-308, S-309). */
+/** DATEV, CSV and PDF exports (S-306, S-308, S-309, S-605). */
 
 export { type CsvWert, csvDatei, csvZelle } from "./csv.ts";
 export * from "./datev/index.ts";
@@ -13,11 +13,16 @@ export type {
   PruefPerson,
   PruefTag,
 } from "./pruefexport/typen.ts";
-export { monatText } from "./stundenzettel/format.ts";
+export {
+  type NachweisZeile,
+  type Stundennachweis,
+  stundennachweisPdf,
+} from "./stundennachweis/pdf.ts";
+export { datumText, monatText, uhrzeitText } from "./stundenzettel/format.ts";
 export {
   type Stundenzettel,
   stundenzettelPdf,
   type ZettelBefund,
   type ZettelTag,
 } from "./stundenzettel/pdf.ts";
-export { pdfText } from "./stundenzettel/text.ts";
+export { pdfInhalt, pdfText } from "./stundenzettel/text.ts";

@@ -12,6 +12,8 @@ export type ZettelTag = {
   arbeitsMinuten: number;
   /** null: no model on the day ("nicht hinterlegt") */
   sollMinuten: number | null;
+  /** the day's approved absences in words, e.g. „Urlaub“ (S-401); null without one */
+  abwesenheit?: string | null;
   hinweise: string[];
 };
 
@@ -97,7 +99,7 @@ const tabelle = (s: Schreiber, zettel: Stundenzettel) => {
       tag.beginn === null ? "" : dauerText(tag.pauseMinuten),
       tag.beginn === null ? "" : dauerText(tag.arbeitsMinuten),
       tag.sollMinuten === null ? "–" : dauerText(tag.sollMinuten),
-      tag.hinweise.join(" · "),
+      [tag.abwesenheit ?? "", ...tag.hinweise].filter((teil) => teil !== "").join(" · "),
     ];
     werte.forEach((wert, index) => {
       const spalte = SPALTEN[index];

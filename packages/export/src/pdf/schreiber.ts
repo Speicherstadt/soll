@@ -1,8 +1,9 @@
 import { type PDFDocument, type PDFFont, type PDFPage, rgb, StandardFonts } from "pdf-lib";
 
 /*
- * Writing text onto pages with pdf-lib, shared by the time sheet (S-306) and the Prüfexport (S-309):
- * the standard fonts, lines that start a new page when they do not fit, wrapped paragraphs.
+ * Writing text onto pages with pdf-lib, shared by the time sheet (S-306), the Prüfexport (S-309) and
+ * the Stundennachweis (S-605): the standard fonts, lines that start a new page when they do not fit,
+ * wrapped paragraphs, room for a drawing.
  */
 
 export const RAND = 40;
@@ -93,7 +94,16 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
       zeile();
     }
   };
-  return { text, zeile, absatz, platz, neueSeite };
+  /**
+   * Room of `hoehe` points for a drawing (a signature), on a new page when it does not fit; the
+   * drawing gets the page and the top left corner of its room
+   */
+  const bereich = (hoehe: number, zeichnen: (seite: PDFPage, x: number, oben: number) => void) => {
+    if (y - hoehe < RAND) neueSeite();
+    zeichnen(seite, RAND, y);
+    y -= hoehe;
+  };
+  return { text, zeile, absatz, platz, neueSeite, bereich };
 };
 
 export type Schreiber = ReturnType<typeof schreiber>;

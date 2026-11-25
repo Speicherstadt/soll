@@ -24,7 +24,12 @@ describe("zeilenDesMonats", () => {
           ],
           modellMinuten: 480,
         },
-        { tag: "2026-10-07", stempel: [], modellMinuten: null },
+        {
+          tag: "2026-10-07",
+          stempel: [],
+          modellMinuten: null,
+          abwesenheiten: [{ art: "urlaub", halb: true }],
+        },
         {
           tag: "2026-10-31",
           stempel: [
@@ -47,12 +52,14 @@ describe("zeilenDesMonats", () => {
       sollMinuten: 480,
       befunde: [],
       geaendert: true,
+      abwesenheiten: [],
     });
     expect(zeilen[1]).toMatchObject({
       beginn: null,
       ende: null,
       sollMinuten: null,
       geaendert: false,
+      abwesenheiten: [{ art: "urlaub", halb: true }],
     });
     expect(zeilen[2]).toMatchObject({ arbeitsMinuten: 480, befunde: [befund] });
   });

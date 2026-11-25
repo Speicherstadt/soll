@@ -32,12 +32,21 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   taetigkeiten: "ausgenommen: Tätigkeiten des Betriebs, keine Daten der Person",
   stundensaetze: "stundensaetze (nur die Sätze mit der Person, nicht die für alle)",
   projektzeiten: "projektzeiten",
+  stundennachweise:
+    "ausgenommen: Nachweis des Betriebs an seinen Kunden; die Buchungen der Person darin stehen unter projektzeiten, Name und Unterschrift des Kunden sind Daten eines Dritten (Art. 15 Abs. 4)",
+  stundennachweis_buchungen:
+    "ausgenommen: welche Buchungen ein Nachweis sperrt, die Buchungen selbst stehen unter projektzeiten",
   datev_einstellungen:
     "ausgenommen: Berater, Mandant und Lohnarten des Betriebs, keine Daten der Person",
   datev_personalnummern: "personalnummer",
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
   ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
+  karten: "karten (Art, wann und von wem eingetragen, widerrufen; ohne UID, Schlüssel und Zähler)",
+  abwesenheiten:
+    "abwesenheiten (Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer; keine Diagnose)",
+  personenangaben:
+    "personenangaben (Geburtsdatum, Wechselschicht, Arbeit auf Abruf, Zeiträume des Mutterschutzes)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -96,6 +105,8 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   taetigkeiten: aus("keine Daten der Person (Tätigkeiten des Betriebs)"),
   stundensaetze: frei("Sätze der Person, die der Inhaber unter Projekte festlegt und sieht"),
   projektzeiten: frei("Buchungen der Person, die Inhaber und Planer sehen, ändern und abrechnen"),
+  stundennachweise: aus("Nachweis an den Kunden mit dessen Unterschrift, Daten eines Dritten"),
+  stundennachweis_buchungen: aus("keine eigenen Daten: die Buchungen stehen unter projektzeiten"),
   datev_einstellungen: aus("keine Daten der Person (Einstellungen des Betriebs für DATEV)"),
   datev_personalnummern: frei(
     "Personalnummer, die der Inhaber in den Einstellungen für DATEV festlegt",
@@ -104,6 +115,15 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   terminals: aus("keine Daten der Person (Tablets des Betriebs)"),
   ausweise: frei(
     "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",
+  ),
+  karten: frei(
+    "welche Karten der Inhaber der Person eingetragen hat, wie die Einstellungen es zeigen",
+  ),
+  abwesenheiten: frei(
+    "Abwesenheiten mit Art, die der Inhaber freigibt und sieht (abwesenheiten:gesundheit)",
+  ),
+  personenangaben: frei(
+    "Angaben für die Prüfung, die der Inhaber selbst einträgt und liest (personen:angaben)",
   ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),

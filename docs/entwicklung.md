@@ -45,6 +45,10 @@ eine einzige Adresse. Für Playwright startet `scripts/e2e-server.ts` den Server
 einer leeren Datenbank in einem temporären Verzeichnis und einem Schlüssel nur für diesen Lauf;
 `e2e/betrieb.ts` legt je Test ein eigenes Konto mit Betrieb an.
 
+In der CI laufen die Ende-zu-Ende-Tests in vier Teilen parallel (`--shard`, Job `e2e-teil`), jeder
+mit eigenen Servern und vier Workern; der Job `e2e` fasst sie zu einem Ergebnis zusammen. Chromium
+kommt aus dem Cache. Einen Teil lokal nachstellen: `bun run e2e --shard=2/4`.
+
 `bun run check` muss vor jedem Push grün sein. Die gemeinsamen Checks aus `firsttris/workflows`
 (Dateigröße, Funktionslänge, Importringe, Übersetzungen, Seiten im Barrierefreiheitstest) laufen in
 der CI.
@@ -123,6 +127,14 @@ Ladern aus Effekt und Signal:
   einem Betrieb; beim Abmelden oder Wechsel leert ihn `sitzung.ts`.
 - Die Offline-Warteschlange von Heute (S-305, `apps/web/src/offline/`) bleibt eigen; nach dem
   Senden macht sie den Tag ungültig.
+- Das Terminal fragt seinen Stand mit dem Token des Geräts statt einer Sitzung ab, als Abfrage je
+  Terminal; gesperrt fragt es alle 15 Sekunden nach (`refetchInterval`), und jede Antwort zählt,
+  auch eine wie die vorige (`terminal/ablauf.ts`).
+- Eigen bleiben auch die Sitzung (`sitzung/sitzung.ts`: sie entscheidet, wem der Cache gehört, und
+  leert ihn, gilt offline aus dem Gerät und wird vor jeder Route geprüft) und die einmaligen Schritte
+  ohne Daten im Cache: Anmelden, Registrieren, Abmelden, eine Einladung annehmen, die Prüfseite und
+  die Schritte der Einrichtung. Was sie ändern, steht in der Sitzung; danach fragen sie sie neu
+  (`sitzungNeu()`).
 
 ## Server
 

@@ -50,6 +50,9 @@ const STATUS: Record<Grund, 404 | 409 | 422> = {
   ueberschneidung: 409,
   abgerechnet: 409,
   spanne: 422,
+  unterschrieben: 409,
+  abweichung: 409,
+  leer: 422,
 };
 
 /** The answer to a write: the row, 204 for a removal, or the reason with its status */

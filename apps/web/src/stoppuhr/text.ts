@@ -38,6 +38,7 @@ const FEHLER: Record<string, () => string> = {
   ueberschneidung: m.buchung_fehler_ueberschneidung,
   spanne: m.buchung_fehler_spanne,
   abgerechnet: m.buchung_fehler_abgerechnet,
+  unterschrieben: m.buchung_fehler_unterschrieben,
   laeuft: m.buchung_fehler_laeuft,
   archiviert: m.fehler_archiviert,
   netz: m.fehler_netz,

@@ -59,5 +59,21 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0014_auslastung",
     "sql": "ALTER TABLE `betriebe` ADD `auswertung_je_person_seit` integer;"
+  },
+  {
+    "tag": "0015_stundennachweis",
+    "sql": "CREATE TABLE `stundennachweis_buchungen` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `stundennachweis_buchungen_nachweis` ON `stundennachweis_buchungen` (`betrieb_id`,`nachweis_id`);--> statement-breakpoint\nCREATE TABLE `stundennachweise` (\n\t`betrieb_id` text NOT NULL,\n\t`nachweis_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`projekt_id` text NOT NULL,\n\t`nutzer_id` text,\n\t`von` text NOT NULL,\n\t`bis` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`unterschrieben_am` integer NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nachweis_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `stundennachweise_nummer` ON `stundennachweise` (`betrieb_id`,`nummer`);--> statement-breakpoint\nCREATE INDEX `stundennachweise_projekt` ON `stundennachweise` (`betrieb_id`,`projekt_id`);"
+  },
+  {
+    "tag": "0016_karten",
+    "sql": "CREATE TABLE `karten` (\n\t`betrieb_id` text NOT NULL,\n\t`karte_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`uid_kennung` text NOT NULL,\n\t`schluessel` text,\n\t`zaehler` integer,\n\t`widerrufen_am` integer,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `karte_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid` ON `karten` (`betrieb_id`,`uid_kennung`);"
+  },
+  {
+    "tag": "0017_abwesenheiten",
+    "sql": "CREATE TABLE `abwesenheiten` (\n\t`betrieb_id` text NOT NULL,\n\t`abwesenheit_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`von` text NOT NULL,\n\t`bis` text,\n\t`erster_halb` integer DEFAULT false NOT NULL,\n\t`letzter_halb` integer DEFAULT false NOT NULL,\n\t`status` text NOT NULL,\n\t`kind` text,\n\t`bescheinigung` text,\n\t`grund` text,\n\t`entschieden_von` text,\n\t`entschieden_am` integer,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `abwesenheit_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `abwesenheiten_person` ON `abwesenheiten` (`betrieb_id`,`nutzer_id`,`von`);--> statement-breakpoint\nALTER TABLE `betriebe` ADD `bescheinigung_ab_tag` integer DEFAULT 4 NOT NULL;"
+  },
+  {
+    "tag": "0018_pruefung",
+    "sql": "CREATE TABLE `personenangaben` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`geburtsdatum` text,\n\t`wechselschicht` integer DEFAULT false NOT NULL,\n\t`abruf` integer DEFAULT false NOT NULL,\n\t`mutterschutz` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `branche` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `sonntagsausnahme` integer;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleichszeitraum` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleich_beginn` text;"
   }
 ];

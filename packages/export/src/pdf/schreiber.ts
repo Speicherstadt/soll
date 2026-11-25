@@ -131,9 +131,9 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
       .split(/\r\n|[\r\n\u0085\u2028\u2029]/)
       .map((teil) =>
         teil
+          .replace(/\p{Cf}/gu, "")
           .replace(/[\u202f\u2007]/gu, "\u00a0")
-          .replace(/(?!\u00a0)\s/gu, " ")
-          .replace(/\p{Cf}/gu, ""),
+          .replace(/(?!\u00a0)\s/gu, " "),
       )
       .flatMap((teil) => absatzUmbrechen(druckbar(font, teil), font, masse));
   };

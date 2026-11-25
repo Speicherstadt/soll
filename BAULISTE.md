@@ -663,6 +663,25 @@ Alle Punkte: nach S-305.
   und Schlüssel; ein abgeschaltetes Modul Terminal wird abgelehnt; axe in hell und dunkel; Texte in
   allen sechs Sprachen.
 - [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
+  Fertig, wenn: ein Tablet ohne Netz weiter Stempelungen per PIN, QR-Code und NFC-Karte annimmt,
+  sie in einer Warteschlange auf dem Gerät hält und nach der Rückkehr des Netzes überträgt
+  (Playwright `@terminal` mit `context.setOffline`), und die Ansicht den Stand zeigt (online oder
+  ohne Netz, Zahl der wartenden Einträge, zuletzt übertragen). Dazu: das Tablet erzeugt beim Koppeln
+  einen nicht exportierbaren ECDSA-P-256-Schlüssel (WebCrypto, IndexedDB) und meldet den
+  öffentlichen beim Server an (neue Migration, Audit-Kette); jeder Eintrag trägt eine fortlaufende
+  Nummer je Terminal, Art, Zeit des Geräts und das Erkennungsmerkmal (PIN, QR-Wert, Karte mit PIN
+  oder SUN-Nachricht) nur verschlüsselt mit einem öffentlichen Schlüssel des Servers, so dass auf dem
+  Tablet keine PIN im Klartext liegt; der Server prüft beim Übertragen Signatur, Terminal, Nummer und
+  erkennt die Person wie online (Sperre und Audit-Kette für Fehlversuche, Wiederholung der
+  SUN-Nachricht abgelehnt), derselbe Eintrag zweimal ergibt eine Stempelung, eine schon vergebene
+  Nummer mit anderem Inhalt wird abgelehnt, eine Lücke in den Nummern sieht der Inhaber beim
+  Terminal; die Stempelung trägt Quelle `terminal`, das Terminal, die Zeit des Geräts (verschoben um
+  die Abweichung seiner Uhr wie in S-305) und `offline`; ohne Netz sieht die Person „gespeichert,
+  wird übertragen“ statt ihres Stands und die Knöpfe Kommen, Pause, Gehen; ein abgelehnter Eintrag
+  steht beim Inhaber mit Grund; ein widerrufenes Terminal überträgt nichts mehr; Warteschlange und
+  Verschlüsselung als reine Funktionen mit Vitest (IndexedDB und WebCrypto im Speicher ersetzt); ein
+  Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert; abgeschaltetes
+  Modul Terminal abgelehnt; axe in hell und dunkel; Texte in allen sechs Sprachen; Doku.
 
 ## Phase 9 – Härtung und Betrieb
 

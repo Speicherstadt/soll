@@ -76,6 +76,14 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(text).not.toContain("?");
   });
 
+  it("prints thin and narrow spaces as a space and leaves out invisible format characters", async () => {
+    // Word and macOS put U+202F between a number and its unit; U+200B and U+FEFF are invisible
+    const notiz = "Rohr 15\u202fmm,\u2009gek\u00fcrzt\u200b\ufeff";
+    const text = pdfText(await stundennachweisPdf(nachweis([buchung(notiz)]), HASH));
+    expect(text).toContain("Rohr 15 mm, gek\u00fcrzt");
+    expect(text).not.toContain("?");
+  });
+
   it(
     "keeps a note of many lines out of the bottom margin",
     async () => {

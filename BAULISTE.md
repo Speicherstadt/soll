@@ -1238,8 +1238,6 @@ requests“).
 - [ ] Hinweis auf Verfall zusätzlich per Mail an die Person (S-402)
 - [ ] Gesetzeswächter: Workflow einmal von Hand starten und die Prüfsummen in
   `scripts/gesetze/normen.json` übernehmen
-- [ ] Datenbanktests räumen ihre temporären Dateien unter `/tmp/soll-test-*` nicht weg; nach vielen
-  Läufen ist die Platte voll (`SQLITE_FULL`)
 
 ## Zurückgestellt
 

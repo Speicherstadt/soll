@@ -9,6 +9,9 @@ const API_PORT = 28200;
 // A preinstalled Chromium of another Playwright version (cloud sandboxes); CI installs its own
 const executablePath = process.env.PLAYWRIGHT_CHROMIUM_PATH;
 const launchOptions = executablePath ? { executablePath } : {};
+// Without it Playwright ends each server with SIGKILL, and scripts/e2e-server.ts could not remove its
+// temporary data directory (soll-e2e-*); with SIGTERM it stops its stand-ins and cleans up
+const gracefulShutdown = { signal: "SIGTERM", timeout: 5000 } as const;
 
 /**
  * Three projects (BAULISTE.md S-101): `desktop` runs every test outside e2e/terminal/ (the kiosk
@@ -57,18 +60,21 @@ export default defineConfig({
       command: `bun scripts/e2e-server.ts`,
       url: `http://127.0.0.1:${API_PORT}/health`,
       reuseExistingServer: !process.env.CI,
+      gracefulShutdown,
     },
     {
       command: `bun run --cwd apps/web build && bun run --cwd apps/web preview --port ${PREVIEW_PORT}`,
       env: { SOLL_API_PORT: String(API_PORT) },
       url: `http://localhost:${PREVIEW_PORT}`,
       reuseExistingServer: !process.env.CI,
+      gracefulShutdown,
     },
     {
       command: `bun run --cwd apps/web dev --port ${WEB_PORT}`,
       env: { SOLL_API_PORT: String(API_PORT) },
       url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: !process.env.CI,
+      gracefulShutdown,
     },
   ],
 });

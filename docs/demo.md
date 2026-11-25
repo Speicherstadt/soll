@@ -1,3 +1,10 @@
+---
+title: Demo-Daten
+description: >-
+  bun run demo legt Weber Haustechnik und Café Elbblick mit drei Monaten Stempelungen,
+  Abwesenheiten, Dienstplänen, Projektzeit und abgeschlossenen Monaten an, nur zum Ausprobieren.
+---
+
 # Demo-Daten
 
 `bun run demo` legt die beiden Testbetriebe „Weber Haustechnik“ und „Café Elbblick“ mit drei Monaten

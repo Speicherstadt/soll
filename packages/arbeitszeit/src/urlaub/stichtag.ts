@@ -46,6 +46,9 @@ export const urlaubAbStichtag = (
       ),
       genommen: eingaben.genommen.filter((g) => g.tag >= stichtag.tag),
       hinweise: (eingaben.hinweise ?? []).filter((tag) => tag >= stichtag.tag),
+      ...(eingaben.benannt === undefined
+        ? {}
+        : { benannt: eingaben.benannt.filter((h) => h.tag >= stichtag.tag) }),
     },
   };
 };

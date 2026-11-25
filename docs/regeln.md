@@ -934,7 +934,9 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
   verlangt den Hinweis drei Monate vor dem Verfall, also bis 31. Dezember (beim übertragenen
   Teilurlaub bis 30. September des Folgejahres); ein späterer Hinweis lässt den Urlaub erst mit dem
   31. März nach dem Jahr des Hinweises verfallen, ohne Hinweis verfällt er nicht (BAG, 20.12.2022,
-  9 AZR 266/20). Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
+  9 AZR 266/20). Es verfällt nur, was ein Hinweis bis zum Tag des Verfalls für das Jahr nannte;
+  Urlaub, der danach dazukam (etwa durch eine Korrektur), bleibt, bis ein Hinweis ihn nennt.
+  Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
 - **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
   übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
 
@@ -959,6 +961,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Hinweis verspätet | Resturlaub 2026 3 Tage, Hinweis erst am 15.1.2027 | verfällt nicht zum 31.3.2027, sondern mit Ablauf des 31.3.2028 | BAG, 19.02.2019, 9 AZR 423/16 |
 | Hinweis fällig | Resturlaub 2026, noch kein Hinweis, Stand 20.11.2026 | Hinweis „Hinweis auf Verfall fällig bis 31.12.2026“ | docs/plan.md, „Verfall von Urlaub“ |
 | Teilurlaub übertragen | Eintritt 1.8.2026, 8,5 Tage, Übertragung verlangt, Hinweis am 1.9.2026 | verfällt mit Ablauf des 31.12.2027 | § 7 Abs. 3 Satz 4 BUrlG |
+| Hinweis nennt weniger | Resturlaub 2026 3 Tage, der Hinweis am 1.10.2026 nannte 2 (ein Tag kam danach durch eine Korrektur dazu), Stand 1.4.2027 | 2 Tage verfallen, 1 Tag bleibt mit „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 (der Hinweis muss den Urlaub konkret nennen) |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).
@@ -1255,7 +1258,10 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   des Stichtagsjahres, auch ein Rest aus dem Vorjahr: Er verfällt frühestens mit Ablauf des
   31. März des Folgejahres und nur nach einem Hinweis (R-23). Das ist die für die Person günstigere
   Lesart; Soll weiß nicht, welcher Teil aus dem Vorjahr stammt und ob dafür ein Hinweis kam.
-  Negativer Resturlaub und ein Stichtag, der kein Monatserster ist, sind ungültig.
+  Negativer Resturlaub und ein Stichtag, der kein Monatserster ist, sind ungültig. Nach einem
+  Hinweis auf Verfall nimmt Soll keinen Resturlaub zum Stichtag mehr an, gleich für welchen Tag:
+  der Hinweis nannte anderen Urlaub, als das Konto danach hielte. Ohnehin verfällt nur, was ein
+  Hinweis nannte (R-23).
 - **Schwere**: kein Befund; eine Berechnung.
 
 | Fall | Lage (Modell Mo–Fr, 25 Urlaubstage) | Erwartet | Quelle |
@@ -1267,6 +1273,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | mit Hinweis | wie oben, Hinweis am 2.11.2026, Stand 1.4.2027 | die 8,5 Tage sind mit Ablauf des 31.3.2027 verfallen | § 7 Abs. 3 Satz 3 BUrlG; BAG, 19.02.2019, 9 AZR 423/16 |
 | Rest aus dem Vorjahr | Stichtag 1.2.2026, 30 Tage (davon 5 aus 2025), kein Hinweis, Stand 1.4.2026 | alle 30 Tage offen; sie zählen als Urlaub 2026 und verfallen frühestens mit Ablauf des 31.3.2027 | § 7 Abs. 3 BUrlG; zugunsten der Person |
 | Hinweis vor dem Stichtag | Hinweis am 15.9.2026, Stichtag 1.10.2026, Stand 1.4.2027 | der Hinweis zählt nicht, die 8,5 Tage verfallen nicht | EuGH C-684/16 (ein Hinweis nennt den Urlaub, den er nennt) |
+| Hinweis vor dem Eintrag | Hinweis am 15.10.2026 (nannte 5 Tage), danach Resturlaub zum Stichtag 1.10.2026 mit 20 Tagen eingetragen | abgelehnt (`409 widerspruch`); auch sonst verfiele nur, was ein Hinweis nannte (R-23) | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 |
 | Grenze | Stichtag 1.10.2026, Resturlaub 0 Tage | gültig, Rest 0 Tage | § 5 Abs. 3 BUrlG |
 | Verstoß | Resturlaub −2 Tage | ungültig (zu viel gewährter Urlaub wird nicht zurückgefordert) | § 5 Abs. 3 BUrlG |
 | kein Monatserster | Stichtag 15.10.2026 | ungültig | Projektplan, „Salden zum Stichtag“ |

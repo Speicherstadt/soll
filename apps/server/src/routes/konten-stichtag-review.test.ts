@@ -30,6 +30,30 @@ describe("review S-708: notice and cut-off date", () => {
     // the notice named `benannt` half days; at most those may expire (EuGH C-684/16)
     expect(topf2026.verfallenHalbtage as number).toBeLessThanOrEqual(benannt);
   });
+
+  it("refuses leave on a cut-off date once any notice was given, whatever its day", async () => {
+    const w = await weberMitAbwesenheiten();
+    expect((await hinweis(w.jonas, w.sandra, "2026-10-15")).status).toBe(201);
+    const antwort = await anpassen(w.jonas, w.sandra, {
+      art: "urlaub_stichtag",
+      monat: "2026-10",
+      halbtage: 40,
+    });
+    expect(antwort.status).toBe(409);
+    expect(await json(antwort)).toEqual({ fehler: "widerspruch" });
+  });
+
+  it("lets expire only what the notice named: leave added by a correction after it stays", async () => {
+    const w = await weberMitAbwesenheiten();
+    const h = await json(await hinweis(w.jonas, w.sandra, "2026-11-20"));
+    expect(h.inhalt).toEqual([{ jahr: 2026, halbtage: 10, verfaelltAm: "2027-12-31" }]);
+    const korrektur = { art: "urlaub_korrektur", jahr: 2026, halbtage: 4 };
+    expect((await anpassen(w.jonas, w.sandra, korrektur)).status).toBe(201);
+    w.server.stelleUhr(um("2028-01-03T09:00:00+01:00"));
+    const k = urlaub(await konten(w.sandra));
+    const topf2026 = (k.toepfe as Json[]).find((t) => t.jahr === 2026) as Json;
+    expect(topf2026).toMatchObject({ verfallenHalbtage: 10, restHalbtage: 4 });
+  });
 });
 
 describe("review S-708: closed months and their Prüfwert", () => {
@@ -79,7 +103,7 @@ describe("review S-708: closed months and their Prüfwert", () => {
       { art: "startsaldo", monat: "2026-11", minuten: 1.5 },
       { art: "urlaub_stichtag", monat: "2026-11", halbtage: 2.5 },
       { art: "urlaub_stichtag", monat: "2026-11", halbtage: 1e300 },
-      { art: "startsaldo", monat: "2026-11", minuten: 9007199254740993 },
+      { art: "startsaldo", monat: "2026-11", minuten: 2 ** 53 },
     ])
       expect((await anpassen(w.jonas, w.sandra, body)).status, JSON.stringify(body)).toBe(400);
   });

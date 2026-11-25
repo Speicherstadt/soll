@@ -29,7 +29,19 @@ export type UrlaubskontoEingaben = {
    * 19.02.2019, 9 AZR 423/16; EuGH C-684/16). A notice names all leave open on its day.
    */
   hinweise?: readonly Tag[];
+  /**
+   * What each notice named, per year (`verfallHinweis`, review S-708): where given, leave expires
+   * only as far as a notice up to its day of expiry named it; leave no notice named stays. Without
+   * it a notice names all leave open on its day.
+   */
+  benannt?: readonly BenannterHinweis[];
   heute: Tag;
+};
+
+/** A notice with the half days it named per year */
+export type BenannterHinweis = {
+  tag: Tag;
+  posten: readonly { jahr: number; halbtage: Halbtage }[];
 };
 
 export type Urlaubstopf = {
@@ -184,9 +196,29 @@ const befund = (
   halbtage: art === "verfallen" ? topf.verfallenHalbtage : topf.restHalbtage,
 });
 
+/**
+ * The most half days of a year any notice up to `bis` named (EuGH C-684/16: only leave the person
+ * was told of expires); all of it when the inputs carry no named amounts
+ */
+const benanntBis = (e: UrlaubskontoEingaben, jahr: number, bis: Tag): number =>
+  e.benannt === undefined
+    ? Number.MAX_SAFE_INTEGER
+    : Math.max(
+        0,
+        ...e.benannt
+          .filter((h) => h.tag <= bis)
+          .flatMap((h) => h.posten.filter((p) => p.jahr === jahr).map((p) => p.halbtage)),
+      );
+
 const befundeFuer = (topf: Urlaubstopf, heute: Tag, teilurlaub: boolean): VerfallBefund[] => {
   if (topf.verfallenHalbtage > 0)
-    return [befund(topf, "verfallen", topf.verfaelltAm as Tag, teilurlaub)];
+    return [
+      befund(topf, "verfallen", topf.verfaelltAm as Tag, teilurlaub),
+      // leave no notice named stays, and its notice is still missing (review S-708)
+      ...(topf.restHalbtage > 0
+        ? [befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub)]
+        : []),
+    ];
   if (topf.restHalbtage <= 0) return [];
   if (topf.verfaelltAm !== null)
     return [befund(topf, "verfall_droht", topf.verfaelltAm, teilurlaub)];
@@ -210,8 +242,9 @@ export const urlaubskonto = (e: UrlaubskontoEingaben): UrlaubskontoErgebnis => {
   );
   for (const topf of toepfe)
     if (topf.verfaelltAm !== null && e.heute > topf.verfaelltAm && topf.restHalbtage > 0) {
-      topf.verfallenHalbtage = topf.restHalbtage;
-      topf.restHalbtage = 0;
+      const teil = Math.min(topf.restHalbtage, benanntBis(e, topf.jahr, topf.verfaelltAm));
+      topf.verfallenHalbtage = teil;
+      topf.restHalbtage -= teil;
     }
   const teilurlaub = (jahr: number) =>
     e.jahre.some((j) => j.jahr === jahr && uebertragenBisJahresende(j));

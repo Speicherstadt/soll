@@ -161,3 +161,37 @@ describe("Urlaubskonto", () => {
     ).toBe(false);
   });
 });
+
+/* docs/regeln.md, R-23 „Hinweis nennt weniger“ (review S-708) */
+describe("R-23: a notice makes expire only the leave it named", () => {
+  it("3 days of 2026 open, the notice on 1.10.2026 named 2: on 1.4.2027 2 expired, 1 stays with „Hinweis auf Verfall fehlt“", () => {
+    const wert = konto({
+      hinweise: ["2026-10-01"],
+      benannt: [{ tag: "2026-10-01", posten: [{ jahr: 2026, halbtage: tage(2) }] }],
+      heute: "2027-04-01",
+    });
+    expect(wert.toepfe[0]).toMatchObject({ verfallenHalbtage: tage(2), restHalbtage: tage(1) });
+    expect(wert.befunde.map((b) => [b.art, b.halbtage])).toEqual([
+      ["verfallen", tage(2)],
+      ["hinweis_fehlt", tage(1)],
+    ]);
+  });
+
+  it("a notice that named no leave of the year makes none of it expire", () => {
+    const wert = konto({
+      hinweise: ["2026-10-01"],
+      benannt: [{ tag: "2026-10-01", posten: [] }],
+      heute: "2027-04-01",
+    });
+    expect(wert.toepfe[0]).toMatchObject({ verfallenHalbtage: 0, restHalbtage: tage(3) });
+  });
+
+  it("the notice naming all open leave lets all of it expire, as without named amounts", () => {
+    const wert = konto({
+      hinweise: ["2026-10-01"],
+      benannt: [{ tag: "2026-10-01", posten: [{ jahr: 2026, halbtage: tage(3) }] }],
+      heute: "2027-04-01",
+    });
+    expect(wert.toepfe[0]).toMatchObject({ verfallenHalbtage: tage(3), restHalbtage: 0 });
+  });
+});

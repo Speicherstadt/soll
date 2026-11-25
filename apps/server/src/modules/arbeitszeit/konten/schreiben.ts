@@ -90,16 +90,15 @@ const zeitPasst = (
 
 /**
  * Leave brought in from a year after a notice already given would move the account's start past
- * that notice, and the notice would name leave the account no longer holds (review S-402); so would
- * a cut-off date after a notice (S-708)
+ * that notice, and the notice would name leave the account no longer holds (review S-402). Leave on
+ * a cut-off date is refused once any notice was given (review S-708): the notice named other leave
+ * than the account would then hold, whatever its day.
  */
 const nachHinweis = (db: Db, kontext: Kontext, nutzerId: string, anpassung: Anpassung) => {
   if (anpassung.art !== "urlaub_start" && anpassung.art !== "urlaub_stichtag") return false;
   const [erster] = hinweiseVon(db, kontext.betriebId, nutzerId);
   if (erster === undefined) return false;
-  return "jahr" in anpassung
-    ? anpassung.jahr > jahrVon(erster.tag as Tag)
-    : `${anpassung.monat}-01` > erster.tag;
+  return "jahr" in anpassung ? anpassung.jahr > jahrVon(erster.tag as Tag) : true;
 };
 
 /** A second start of the same account: of the overtime, or of the leave in either form */

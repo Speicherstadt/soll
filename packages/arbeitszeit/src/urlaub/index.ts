@@ -29,6 +29,7 @@ export {
   urlaubAbStichtag,
 } from "./stichtag.ts";
 export {
+  type BenannterHinweis,
   type GenommenerUrlaub,
   type Urlaubsanpassung,
   type Urlaubsjahr,

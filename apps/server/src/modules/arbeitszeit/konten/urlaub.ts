@@ -132,12 +132,15 @@ export const urlaubsGrundlage = (
   const jahre = jahreVon(grundlagen, startJahr, jahrVon(heute));
   const genommen = genommenAb(db, grundlagen, { betriebId, nutzerId }, ab, heute);
   if (jahre === null || genommen === null) return NICHT_HINTERLEGT;
+  const hinweise = hinweiseVon(db, betriebId, nutzerId);
   const eingaben = abStichtag(
     {
       jahre,
       genommen: genommen.filter((g) => g.tag <= heute),
       anpassungen: urlaubsAnpassungen(anpassungen),
-      hinweise: hinweiseVon(db, betriebId, nutzerId).map((h) => h.tag as Tag),
+      hinweise: hinweise.map((h) => h.tag as Tag),
+      // a notice makes expire only what it named (review S-708; EuGH C-684/16)
+      benannt: hinweise.map((h) => ({ tag: h.tag as Tag, posten: h.inhalt })),
       heute,
     },
     beginn,

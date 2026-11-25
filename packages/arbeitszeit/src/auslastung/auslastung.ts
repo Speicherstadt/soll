@@ -1,3 +1,4 @@
+import { arbeitstage } from "../arbeitstag/arbeitstag.ts";
 import type { Stempelung } from "../arbeitstag/stempelungen.ts";
 import { tagesstand } from "../heute/tagesstand.ts";
 import { letzterTag, type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
@@ -57,20 +58,47 @@ export const anteilProzent = (teil: number, ganz: number): number | null =>
 export const monatVorbei = (monat: Monat, heute: Tag): boolean => letzterTag(monat) < heute;
 
 /**
- * The stamped working time of each working day of a month with any, as `tagesstand` counts it (a
- * shift running now up to now, a night shift on the day it starts). Pass the stamps from two days
- * before the month to two days after it.
+ * The working time of the closed shifts of each working day: an open shift counts once it is
+ * closed, so two calls about an ended month give the same numbers (docs/plan.md, "Laufende
+ * Buchung und Schicht in der Auslastung")
+ */
+const geschlosseneMinuten = (
+  stempelungen: readonly Stempelung[],
+  jetzt: number,
+): Map<Tag, number> => {
+  const ergebnis = arbeitstage(stempelungen, jetzt);
+  const minuten = new Map<Tag, number>();
+  for (const tag of ergebnis.ok ? ergebnis.wert : [])
+    for (const schicht of tag.schichten)
+      if (schicht.offen === null)
+        minuten.set(schicht.tag, (minuten.get(schicht.tag) ?? 0) + schicht.arbeitsMinuten);
+  return minuten;
+};
+
+/**
+ * The stamped working time of each working day of a month with any, a night shift on the day it
+ * starts: while the month runs as `tagesstand` counts it (a shift running now up to now), once it
+ * has ended only its closed shifts. Pass the stamps from two days before the month to two days
+ * after it.
  */
 export const anwesenheitImMonat = (
   stempelungen: readonly Stempelung[],
   jetzt: number,
   monat: Monat,
-): { tag: Tag; minuten: number }[] =>
-  tageImMonat(monat).flatMap((tag) => {
+): { tag: Tag; minuten: number }[] => {
+  const geschlossen = monatVorbei(monat, tagInBerlin(jetzt))
+    ? geschlosseneMinuten(stempelungen, jetzt)
+    : null;
+  const minutenAm = (tag: Tag): number => {
+    if (geschlossen !== null) return geschlossen.get(tag) ?? 0;
     const stand = tagesstand(stempelungen, jetzt, tag);
-    const minuten = stand.ok ? stand.wert.istMinuten : 0;
+    return stand.ok ? stand.wert.istMinuten : 0;
+  };
+  return tageImMonat(monat).flatMap((tag) => {
+    const minuten = minutenAm(tag);
     return minuten > 0 ? [{ tag, minuten }] : [];
   });
+};
 
 type Summe = Pick<Auslastung, "anwesendMinuten" | "abrechenbarMinuten" | "internMinuten">;
 const LEER: Summe = { anwesendMinuten: 0, abrechenbarMinuten: 0, internMinuten: 0 };
@@ -87,7 +115,7 @@ const mitAnteilen = (summe: Summe): Auslastung => ({
 /**
  * The minutes a booking adds to its month: a running one up to now while the month runs, none once
  * it has ended, so two calls about an ended month give the same numbers (docs/plan.md, "Laufende
- * Buchung in der Auslastung")
+ * Buchung und Schicht in der Auslastung")
  */
 const gezaehlteMinuten = (buchung: AuslastungBuchung, monatLaeuft: boolean, jetzt: number) =>
   buchung.ende === null && !monatLaeuft ? 0 : buchungsMinuten(buchung.beginn, buchung.ende, jetzt);

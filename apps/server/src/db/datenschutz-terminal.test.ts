@@ -25,8 +25,11 @@ describe("data protection pages match the terminal and access code (S-903)", () 
       );
     const pinLoeschbar = quellen("../").some((q) => /loeschen\(\s*"pins"/.test(q));
     expect(pinLoeschbar).toBe(false);
-    const zeile = infoblatt.split("\n").find((z) => z.startsWith("- Zugangsmittel ("));
-    expect(zeile).toBeDefined();
-    expect(zeile, "promises the PIN is deleted when revoked").not.toMatch(/\(PIN,/);
+    // the paragraph on access means must not promise to delete the PIN, and must say what happens
+    const absatz = infoblatt.split("\n\n").find((a) => a.includes("Zugänge zur API")) ?? "";
+    expect(absatz, "says what happens to the PIN").toMatch(/PIN lässt sich nur ersetzen/);
+    expect(infoblatt, "promises the PIN is deleted when revoked").not.toMatch(
+      /\(PIN,[^)]*\)\s+löschen wir/,
+    );
   });
 });

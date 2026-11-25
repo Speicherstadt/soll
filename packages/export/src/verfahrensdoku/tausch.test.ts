@@ -25,6 +25,13 @@ describe("shift swap", () => {
     expect(text).toContain("keinen Verstoß");
   });
 
+  it("says in section 2 too that a clean takeover holds at once without approval", () => {
+    const text = md({ ...elbblick, tausch: { ohneFreigabe: true } });
+    const abschnitt2 = text.slice(text.indexOf("## 2"), text.indexOf("## 3"));
+    expect(abschnitt2).toMatch(/ohne Freigabe/);
+    expect(abschnitt2).not.toContain("danach geben Inhaber oder Planer den Tausch frei");
+  });
+
   it("names the owner's setting of the swap among the rights only while the plan is on", () => {
     const rollen = [{ rolle: "inhaber", mitglieder: 1, rechte: ["betrieb:einrichten"] }];
     const setzen = "festlegen, ob ein Schichttausch ohne Freigabe gilt";

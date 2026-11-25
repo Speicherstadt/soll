@@ -58,27 +58,22 @@ export const anteilProzent = (teil: number, ganz: number): number | null =>
 export const monatVorbei = (monat: Monat, heute: Tag): boolean => letzterTag(monat) < heute;
 
 /**
- * The working time of the closed shifts of each working day: an open shift counts once it is
- * closed, so two calls about an ended month give the same numbers (docs/plan.md, "Laufende
- * Buchung und Schicht in der Auslastung")
+ * The working time of the closed stretches of each working day, without counting an open one up to
+ * now: the numbers change only when a stamp ends a stretch, and a Kommen joining a closed stretch
+ * into an open shift keeps it (docs/plan.md, "Laufende Buchung und Schicht in der Auslastung")
  */
 const geschlosseneMinuten = (
   stempelungen: readonly Stempelung[],
   jetzt: number,
 ): Map<Tag, number> => {
   const ergebnis = arbeitstage(stempelungen, jetzt);
-  const minuten = new Map<Tag, number>();
-  for (const tag of ergebnis.ok ? ergebnis.wert : [])
-    for (const schicht of tag.schichten)
-      if (schicht.offen === null)
-        minuten.set(schicht.tag, (minuten.get(schicht.tag) ?? 0) + schicht.arbeitsMinuten);
-  return minuten;
+  return new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag.arbeitsMinuten]));
 };
 
 /**
  * The stamped working time of each working day of a month with any, a night shift on the day it
  * starts: while the month runs as `tagesstand` counts it (a shift running now up to now), once it
- * has ended only its closed shifts. Pass the stamps from two days before the month to two days
+ * has ended only its closed stretches. Pass the stamps from two days before the month to two days
  * after it.
  */
 export const anwesenheitImMonat = (

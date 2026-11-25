@@ -898,7 +898,7 @@ S-701 und unabhängig voneinander.
     Anleitung; Playwright (desktop) geht den Abruf gegen den Ersatz bis zur Übernahme und zeigt, dass
     der zweite Lauf nichts anlegt; axe grün; Texte in allen Sprachen der Umzugsseite; Doku
     `docs/umzug.md`, Entscheidungen im Projektplan.
-- [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
+- [x] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
   Abwesenheiten.
   Fertig, wenn: Fixtures nach der API-Beschreibung jedes der drei Anbieter bestehen (Quelle im Test)
   und ein Playwright-Test den ganzen Ablauf zeigt. Genauer:

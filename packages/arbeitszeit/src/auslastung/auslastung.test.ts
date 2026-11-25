@@ -322,6 +322,19 @@ describe("an ended month with a shift still open (review S-604, round 2)", () =>
     ]);
   });
 
+  it("keeps a closed stretch when a Kommen of the next month joins its shift (round 3)", () => {
+    // under 9 h between Gehen and Kommen: one shift (schichtgruppen), open again from 06:00
+    const spaet = [s("kommen", um("14:00", "2026-11-30")), s("gehen", um("22:00", "2026-11-30"))];
+    const vorher = anwesenheitImMonat(spaet, um("05:00", "2026-12-01"), "2026-11");
+    const nachher = anwesenheitImMonat(
+      [...spaet, s("kommen", um("06:00", "2026-12-01"))],
+      um("07:00", "2026-12-01"),
+      "2026-11",
+    );
+    expect(vorher).toEqual([{ tag: "2026-11-30", minuten: 480 }]);
+    expect(nachher).toEqual(vorher);
+  });
+
   it("still counts a shift running in a running month up to now", () => {
     expect(anwesenheitImMonat(offen, um("23:00", "2026-11-30"), "2026-11")).toEqual([
       { tag: "2026-11-30", minuten: 60 },

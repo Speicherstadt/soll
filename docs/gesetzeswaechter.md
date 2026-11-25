@@ -23,7 +23,10 @@ gesetze-im-internet.de, wofür Soll sie braucht, und dem SHA-256 ihres Textes:
   MiLoDokV, SchwarzArbG, JArbSchG, MuSchG, TzBfG, BUrlG, SGB IX, BEEG, EntgFG, SGB IV, SGB V, EStG,
   BetrVG, BGB, SvEV); ein Test liest die Fundstellen aus dem Regelwerk und verlangt jede in der
   Liste, ein neu zitiertes Gesetz lässt ihn scheitern, bis es beobachtet oder mit Grund
-  ausgenommen ist;
+  ausgenommen ist; er liest auch Bereiche („§§ 15 bis 18 JArbSchG“, „§ 2 Abs. 3 bis 5 ArbZG“ als
+  § 2; ein Bereich von mehr als 20 Paragrafen wie „§ 8 bis 2026 SGB IV“ zählt nur als § 8) und
+  Ketten, die ein Gesetz am Ende teilen („§ 4 Abs. 2, § 12 JArbSchG“ als § 4 und § 12); steht
+  zwischen zwei Paragrafen anderer Text („§ 5 Abs. 2 wie oben, § 7 ArbZG“), zählt nur der zweite;
 - die Grundlagen der Jahreswerte: § 1 MiLoG mit § 1 MiLoV4 und § 1 MiLoV5 (Mindestlohn), § 8
   SGB IV (Minijob-Grenze), § 45 SGB V (Kinderkrankentage); ein Test verlangt jede Quelle aus
   `packages/arbeitszeit/src/jahreswerte/werte.ts` in der Liste.

@@ -8,6 +8,7 @@ import type { Push } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import type { Dateispeicher } from "./modules/umzug/index.ts";
+import { CLOCKODO_API, type ClockodoDeps } from "./modules/umzug/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
@@ -77,6 +78,8 @@ export type AppDeps = {
   push?: Push | null;
   /** The content-addressed store of the original files of imports (S-701) */
   dateien: Dateispeicher;
+  /** How the server calls Clockodo's API for an import (S-703); a stand-in in tests */
+  clockodo?: ClockodoDeps;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -96,6 +99,7 @@ export const createApp = ({
   habenFetch = fetch,
   push = null,
   dateien,
+  clockodo = { fetch, basis: CLOCKODO_API },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -141,7 +145,7 @@ export const createApp = ({
     .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
-    .route("/importe", importRouten(db, schreibDb, now, dateien))
+    .route("/importe", importRouten(db, schreibDb, now, dateien, clockodo))
     .route(
       "/",
       modulRouten(db, {

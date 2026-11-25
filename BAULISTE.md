@@ -786,8 +786,58 @@ S-701 und unabhängig voneinander.
     (desktop) lädt eine `.xlsx` hoch, ordnet die Spalten zu, übernimmt und zeigt, dass der zweite Lauf
     nichts anlegt; axe grün; Texte in allen Sprachen der Umzugsseite; Doku `docs/umzug.md`, README,
     Entscheidungen im Projektplan.
-- [ ] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
+- [x] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
   Projekte, Leistungen.
+  Fertig, wenn: Fixtures nach Clockodos Beschreibung bestehen (Quelle im Test) und ein Playwright-Test
+  den ganzen Ablauf zeigt. Genauer:
+  - **Quellen**: docs.clockodo.com und my.clockodo.com sind über den Proxy nicht erreichbar; gebaut
+    wird nach dem öffentlichen SDK `clockodo` (npm, github.com/peerigon/clockodo, Modelle,
+    Endpunkte, Kopfzeilen und die CSV-Datensicherung der Einträge in `src/models/entry.csv.ts`), die
+    Quelle steht in Code und Tests; die Fixtures folgen diesen Modellen.
+  - **Ein Werkzeug, zwei Wege**: `clockodo` in `packages/import` liest die CSV-Datensicherung der
+    Einträge (27 Spalten, Kopf auf Englisch nach dem SDK) und den Abruf über die API; beide tragen
+    dieselbe Kennung (`extern_quelle` `clockodo`, die Kennungen von Clockodo), ein Lauf über die
+    Datei findet, was ein Lauf über die API übernommen hat, und umgekehrt.
+  - **Abruf**: `POST /api/v1/importe/abruf` (nur Inhaber) holt mit E-Mail und API-Schlüssel
+    (`X-ClockodoApiUser`, `X-ClockodoApiKey`, `X-Clockodo-External-Application`,
+    `X-ClockodoEnableIsoUtcDateTimes`) für einen Zeitraum (höchstens ein Jahr, nicht in der Zukunft)
+    `/v3/users`, `/v3/customers`, `/v4/projects`, `/v4/services`, `/v2/entries` (Seite für Seite
+    nach `paging.count_pages`, nacheinander) und `/v4/absences` (je Jahr) und gibt eine Datei zurück:
+    JSON Lines mit genau den Feldern, die Soll liest (keine Notizen, keine E-Mail, kein
+    Stundensatz, keine Krankmeldung), sortiert, sodass derselbe Stand dieselbe Datei und denselben
+    SHA-256 ergibt. Danach läuft alles wie bei einer Datei (Vorschau, Probelauf, Übernahme, Ablage).
+    Der Schlüssel wird nicht gespeichert, nicht geloggt und steht in keiner Antwort und keiner Datei
+    (Test). Fehler als Werte mit eigenem Status: Zugang abgelehnt (401/403), zu viele Anfragen (429
+    mit `Retry-After`), nicht erreichbar (Netz, Zeitüberschreitung, 5xx), Antwort ungültig, zu viele
+    Datensätze (über 20.000); kein automatischer Neuversuch. Getestet gegen einen Ersatz der API nach
+    dem SDK (Kopfzeilen, Seiten, Fehler), in Vitest und für Playwright als eigener Dienst.
+  - **Mitarbeiter**: Personen der Zuordnung mit ihrem Namen aus Clockodo (zwei gleiche Namen mit
+    Kennung); der Import legt weiter keine Personen an.
+  - **Zeiten**: Zeiteinträge (`type` 1) werden je Person zu Blöcken zusammengefasst, die sich
+    berühren oder überschneiden; jeder Block wird Kommen und Gehen, die Lücke zwischen zwei Blöcken
+    ist die Pause, wie sie gestempelt war. Beginn auf die Minute abgerundet, Ende aufgerundet (nie zum
+    Nachteil der Person). Abgelehnt mit Zeile: ein laufender Eintrag (`laeuft_noch`), ein Eintrag
+    mit Korrektur der Dauer (`offset`, `korrektur`), ein Block von 24 Stunden oder mehr, eine Uhrzeit
+    in der doppelten Stunde, die Soll nicht eindeutig nennen kann. Pauschalen (`type` 2 und 3) sind
+    keine Arbeitszeit und werden nicht gelesen.
+  - **Abwesenheiten**: nur genehmigte (`status` 1); beantragte mit Zeile als `nicht_genehmigt`,
+    abgelehnte und zurückgezogene nicht; halbe Tage und Stunden (Überstundenabbau nach Stunden) mit
+    Zeile als `teil_tag`; die 15 Arten von Clockodo mit Namen, Vorschlag für Urlaub, Sonderurlaub,
+    Überstundenabbau, Krankheit und Krankheit Kind, die übrigen wählt der Inhaber.
+  - **Kunden, Projekte, Leistungen**: Kunden und Projekte wie in S-701, Leistungen als Tätigkeiten
+    (neu, einer vorhandenen zuordnen oder nicht übernehmen), mit Import und Kennung (neue Spalte
+    `import_id` an `taetigkeiten`, neue Migration). Aus der Datei kommen sie aus den Spalten der
+    Einträge (Kennung und Name). Projektzeit-Buchungen aus den Einträgen übernimmt S-703 nicht
+    (Entscheidung im Projektplan).
+  - **Robust**: Fuzzing mit fast-check über beide Formate (beliebiger Text, Zeilen aus gültigen und
+    kaputten Feldern, JSON mit falschen Typen) findet keine Eingabe, bei der der Leser wirft oder
+    länger als 1 s braucht; jeder Fehler nennt Zeile und Grund; ein zweiter Lauf legt nichts doppelt
+    an (Test über Datei und API).
+  - **Oberfläche und Doku**: Clockodo in der Liste der Werkzeuge mit Anleitung; Weg „Datei“ oder
+    „API-Zugang“ (E-Mail, Schlüssel als Passwortfeld, Zeitraum), Leistungen in der Zuordnung;
+    Playwright (desktop) geht den Abruf gegen den Ersatz bis zur Übernahme und zeigt, dass der
+    zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
+    `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
 - [ ] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
 - [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,

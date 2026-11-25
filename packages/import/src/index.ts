@@ -1,4 +1,14 @@
 /** Parsers for the exports of other tools and for spreadsheets, pure functions (S-303, S-701 and later). */
+export {
+  ABWESENHEITSTYPEN,
+  ABZUG_ARTEN,
+  ABZUG_FELDER,
+  ABZUG_FORMAT,
+  type Abzug,
+  type AbzugArt,
+  abzugText,
+  clockodoLesen,
+} from "./clockodo/index.ts";
 export { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
 export {
   CSV_ROLLEN,
@@ -16,6 +26,7 @@ export {
   type ImportDaten,
   type ImportKunde,
   type ImportProjekt,
+  type ImportTaetigkeit,
   type ImportZeit,
   LESE_GRUENDE,
   type LeseFehler,

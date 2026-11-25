@@ -47,10 +47,12 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
       kunden: new Map(),
       projekte: new Set(),
       buchungen: new Set(),
+      taetigkeiten: new Map(),
     },
     buchungUeberschneidet: () => false,
     kunden: new Set(["elbhof"]),
     projekte: new Set(["bad"]),
+    taetigkeiten: new Set(["montage"]),
     geschlossen: () => new Set(),
     stempelVon: () => [],
     stempelGesperrt: () => false,
@@ -66,6 +68,7 @@ export const ZUORDNUNG: Zuordnung = {
   arten: { Urlaub: "urlaub", Krank: "krank" },
   kunden: {},
   projekte: {},
+  taetigkeiten: {},
 };
 
 export const mitZeiten = (...zeiten: ImportDaten["zeiten"]): ImportDaten => ({ ...leer(), zeiten });

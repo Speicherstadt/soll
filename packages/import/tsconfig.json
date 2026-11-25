@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "../../node_modules/.tsbuild/import" },
+  // runs in the browser and on the server; `types` lets tests read their fixtures with node:fs
+  "compilerOptions": { "outDir": "../../node_modules/.tsbuild/import", "types": ["bun"] },
   "include": ["src"]
 }

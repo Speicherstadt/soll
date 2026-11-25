@@ -91,9 +91,5 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0022_terminal_offline",
     "sql": "CREATE TABLE `terminal_eintraege` (\n\t`betrieb_id` text NOT NULL,\n\t`terminal_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`art` text NOT NULL,\n\t`geraet_zeitpunkt` integer NOT NULL,\n\t`stempel_id` text,\n\t`grund` text,\n\t`empfangen_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `terminal_id`, `nummer`)\n);\n--> statement-breakpoint\nALTER TABLE `terminals` ADD `schluessel` text;"
-  },
-  {
-    "tag": "0023_karten_lesungen",
-    "sql": "CREATE TABLE `karten_lesungen` (\n\t`betrieb_id` text NOT NULL,\n\t`karte_id` text NOT NULL,\n\t`zaehler` integer NOT NULL,\n\t`gelesen_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `karte_id`, `zaehler`)\n);\n"
   }
 ];

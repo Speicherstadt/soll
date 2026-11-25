@@ -6,8 +6,7 @@ import { personVonPin } from "../pin/index.ts";
 import { personVonAusweis } from "./ausweise.ts";
 import { belegPruefen } from "./beleg.ts";
 import { pinKennung, type TerminalSchluessel, uidNormalisieren } from "./geheimnis.ts";
-import { karteVonSun, karteVonUid } from "./karten.ts";
-import { lesungMerken, wiederholt } from "./lesungen.ts";
+import { karteLesen, karteVonSun, karteVonUid } from "./karten.ts";
 import { istGesperrt, nachFehlversuch, offlineGesperrt, type Sperrstand } from "./sperre.ts";
 import type { Sun } from "./sun.ts";
 import { type Terminal, terminalAkteur, terminalLesen } from "./terminals.ts";
@@ -87,6 +86,17 @@ const trefferVon = (
 };
 
 /**
+ * A SUN message whose read counter is not above the last one seen was read before: a replay, also
+ * from the offline queue, whatever time the tablet claims (docs/plan.md, "SUN-Nachricht aus der
+ * Warteschlange")
+ */
+const wiederholt = (db: Db, betriebId: string, zaehler: Treffer["zaehler"]): boolean => {
+  if (!zaehler) return false;
+  const zuletzt = karteLesen(db, betriebId, zaehler.karteId)?.zaehler ?? null;
+  return zuletzt !== null && zaehler.wert <= zuletzt;
+};
+
+/**
  * Whether the terminal's lock stops this try: online any lock; for an entry of the offline queue
  * only the lock until midnight, and only for a credential that can be guessed (sperre.ts)
  */
@@ -102,8 +112,8 @@ const gesperrt = (stand: Sperrstand, jetzt: number, ausweis: Ausweis, offline?: 
  * nothing, so one's own PIN between guesses does not reset the count. The count and a card's read
  * counter are read again inside the write transaction, which holds the write lock, so parallel
  * tries are not lost and one SUN message cannot count twice (as in modules/pin). `offline` is the
- * instant of an entry from the tablet's offline queue (S-803): it changes how the lock and an older
- * SUN counter count (sperre.ts, lesungen.ts).
+ * instant of an entry from the tablet's offline queue (S-803): it changes how the lock counts
+ * (sperre.ts).
  */
 export const erkennen = (
   db: Db,
@@ -128,9 +138,13 @@ export const erkennen = (
     const stand = sperrstand(aktuell);
     if (gesperrt(stand, jetzt, ausweis, offline))
       return { ok: false, grund: "gesperrt", gesperrtBis: stand.gesperrtBis ?? jetzt };
-    if (erkannt && !wiederholt(db, terminal.betriebId, treffer.zaehler, offline)) {
+    if (erkannt && !wiederholt(db, terminal.betriebId, treffer.zaehler)) {
       if (treffer.zaehler)
-        lesungMerken(db, s, terminal.betriebId, treffer.zaehler, offline ?? jetzt);
+        s.aendern(
+          "karten",
+          { karteId: treffer.zaehler.karteId },
+          { zaehler: treffer.zaehler.wert },
+        );
       return { ok: true, nutzerId: treffer.nutzerId as string };
     }
     const neu = nachFehlversuch(stand, jetzt);

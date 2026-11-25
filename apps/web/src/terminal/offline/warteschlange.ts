@@ -96,6 +96,10 @@ export const kioskWarteschlange = (kopplung: () => Kopplung | null, entkoppelt: 
     };
   });
   return {
+    /** sends what waits before an online call that would overtake it, unless there is no network */
+    zuerstSenden: async () => {
+      if (wartend() > 0 && !ohneNetz()) await senden();
+    },
     wartend,
     zuletzt,
     ohneNetz,

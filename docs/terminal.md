@@ -164,9 +164,10 @@ Was dabei auf dem Tablet liegt und wie der Server es prüft:
   halten Einträge ohne Netz nicht auf; nach dem zwanzigsten falschen Versuch des Tages lehnt der
   Server eine PIN (auch mit Karte) ungeprüft als „gesperrt“ ab, QR-Code und NTAG 424 DNA prüft er
   weiter. So hält niemand mit Rateversuchen ohne Netz die echten Stempelungen dahinter auf.
-- **SUN-Nachricht**: Jede zählt nur einmal. Eine Nachricht aus der Warteschlange darf einen
-  kleineren Lesezähler haben als die Karte inzwischen mit Netz gezeigt hat, wenn sie vor diesem
-  Lesen getippt wurde; Soll merkt sich dafür jeden Lesezähler mit seiner Zeit.
+- **SUN-Nachricht**: Jede zählt nur einmal, auch aus der Warteschlange. Wurde die Karte
+  inzwischen mit Netz gelesen, gilt die ältere Nachricht als Wiederholung; der Inhaber sieht den
+  Eintrag als abgelehnt und trägt die Stempelung nach. Damit das am selben Tablet nicht passiert,
+  überträgt es zuerst, was wartet, bevor es eine Karte mit Netz erkennt.
 - **Ausweis an seinen Eintrag gebunden**: Ein verschlüsselter Ausweis öffnet sich nur in dem
   Eintrag (Terminal, Nummer, Art, Zeit), für den er getippt wurde; aus der Ablage des Tablets lässt
   er sich nicht in einen neuen Eintrag übernehmen.

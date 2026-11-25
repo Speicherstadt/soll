@@ -127,6 +127,10 @@ const kioskAufrufe = (z: Zustand) => {
   const offline = ohneNetzAufrufe(z);
   const erkennen = (ausweis: Ausweis) =>
     einmal(async (token) => {
+      // a card's older SUN message waiting on the tablet goes first: once the card is read online
+      // with a higher counter, the server refuses it (docs/plan.md, "SUN-Nachricht aus der
+      // Warteschlange")
+      if ("sun" in ausweis) await z.schlange.zuerstSenden();
       const antwort = await kioskAnfrage<Erkannt>(token, "/erkennen", ausweis);
       z.schlange.netz(antwort.status);
       if (!antwort.ok && antwort.status === 0 && offline.ohneStand(ausweis)) return;

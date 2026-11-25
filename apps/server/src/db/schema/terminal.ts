@@ -83,23 +83,6 @@ export const karten = sqliteTable(
 );
 
 /**
- * Every read counter of an NTAG 424 DNA the terminal took (S-803), with when it was read: an entry
- * of an offline queue may bring a counter below the highest one seen, read before a later online
- * read; it counts once, and only if it fits before the first later read (docs/plan.md, "SUN-Nachricht
- * aus der Warteschlange")
- */
-export const kartenLesungen = sqliteTable(
-  "karten_lesungen",
-  {
-    betriebId: text("betrieb_id").notNull(),
-    karteId: text("karte_id").notNull(),
-    zaehler: integer("zaehler").notNull(),
-    gelesenAm: integer("gelesen_am").notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.betriebId, t.karteId, t.zaehler] })],
-);
-
-/**
  * Every entry of a terminal's offline queue the server received with a valid signature (S-803), by
  * its running number: the SHA-256 of the signed text (`inhalt_hash`) and what came of it, the stamp
  * made (`stempel_id`) or why it was refused (`grund`). The same entry again gives the same answer;

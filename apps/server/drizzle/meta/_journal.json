@@ -162,13 +162,6 @@
       "when": 1795608507682,
       "tag": "0022_terminal_offline",
       "breakpoints": true
-    },
-    {
-      "idx": 23,
-      "version": "6",
-      "when": 1795609512566,
-      "tag": "0023_karten_lesungen",
-      "breakpoints": true
     }
   ]
 }

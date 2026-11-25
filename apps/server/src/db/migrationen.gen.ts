@@ -75,5 +75,17 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0018_pruefung",
     "sql": "CREATE TABLE `personenangaben` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`geburtsdatum` text,\n\t`wechselschicht` integer DEFAULT false NOT NULL,\n\t`abruf` integer DEFAULT false NOT NULL,\n\t`mutterschutz` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nALTER TABLE `betriebe` ADD `branche` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `sonntagsausnahme` integer;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleichszeitraum` text;--> statement-breakpoint\nALTER TABLE `betriebe` ADD `ausgleich_beginn` text;"
+  },
+  {
+    "tag": "0019_haben",
+    "sql": "CREATE TABLE `haben_uebergaben` (\n\t`betrieb_id` text NOT NULL,\n\t`buchung_id` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`leistung_id` text,\n\t`gesendet_am` integer,\n\t`fehler` text,\n\t`meldung` text,\n\t`versucht_am` integer,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `buchung_id`)\n);\n--> statement-breakpoint\nCREATE TABLE `haben_zugaenge` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`adresse` text NOT NULL,\n\t`token` text NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
+  },
+  {
+    "tag": "0020_aussonderung",
+    "sql": "CREATE TABLE `aussonderungen` (\n\t`betrieb_id` text NOT NULL,\n\t`aussonderung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`monat` text NOT NULL,\n\t`abschluss_id` text NOT NULL,\n\t`jahre` integer NOT NULL,\n\t`abgeschlossen_am` integer NOT NULL,\n\t`ausgesondert_am` integer NOT NULL,\n\t`zeilen` integer NOT NULL,\n\t`inhalte` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `aussonderung_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_monat` ON `aussonderungen` (`betrieb_id`,`nutzer_id`,`monat`);--> statement-breakpoint\nCREATE UNIQUE INDEX `aussonderungen_abschluss` ON `aussonderungen` (`betrieb_id`,`abschluss_id`);"
+  },
+  {
+    "tag": "0021_karten_neu_eintragen",
+    "sql": "DROP INDEX `karten_uid`;--> statement-breakpoint\nCREATE UNIQUE INDEX `karten_uid_aktiv` ON `karten` (`betrieb_id`,`uid_kennung`) WHERE \"karten\".\"widerrufen_am\" is null;"
   }
 ];

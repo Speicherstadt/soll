@@ -17,6 +17,7 @@ import { dienstplanRouten } from "./routes/dienstplan.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
+import { habenRouten } from "./routes/haben.ts";
 import { kartenRouten } from "./routes/karten.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
@@ -64,6 +65,8 @@ export type AppDeps = {
   vapidOeffentlich: string;
   /** The static build of apps/web (SOLL_WEB_DIR); absent, the server serves the API only */
   webVerzeichnis?: string | null;
+  /** How the server calls a business's Haben (S-606); a stand-in in tests, never the network */
+  habenFetch?: typeof fetch;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -80,6 +83,7 @@ export const createApp = ({
   geheimerSchluessel,
   vapidOeffentlich,
   webVerzeichnis = null,
+  habenFetch = fetch,
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -101,7 +105,7 @@ export const createApp = ({
   app.get("/health", (c) => c.json({ status: "ok", version }));
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
-  app.route("/api/v1/pruefen", pruefRouten(db));
+  app.route("/api/v1/pruefen", pruefRouten(db, now));
   app.route("/api/v1/openapi.json", openapiRouten({ version, url }));
 
   // one limit per token for the REST API and the MCP server together (S-607)
@@ -150,6 +154,10 @@ export const createApp = ({
           "/buchungen": buchungRouten(db, schreibDb, now),
           "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
           "/auslastung": auslastungRouten(db, schreibDb, now),
+          "/haben": habenRouten(db, schreibDb, now, {
+            schluessel: geheimerSchluessel,
+            holen: habenFetch,
+          }),
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
         terminal: {

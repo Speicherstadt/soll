@@ -59,6 +59,17 @@ export const oeffneDatenbank = (pfad: string, jetzt: number): Datenbank => {
   };
 };
 
+/**
+ * Opens an existing database read-only, without migrating, for a check from outside the server (the
+ * load test, S-904): it reads while the server writes in WAL mode and can change nothing
+ */
+export const nurLesendOeffnen = (pfad: string): { db: Db; schliessen: () => void } => {
+  const lesend = new Database(pfad, { readonly: true, strict: true });
+  lesend.run("PRAGMA busy_timeout = 5000");
+  lesend.run("PRAGMA query_only = ON");
+  return { db: alsDrizzle(lesend), schliessen: () => lesend.close() };
+};
+
 /** What a file holds, before it is copied or restored */
 export type Bestand = "soll" | "fremd" | "kaputt";
 

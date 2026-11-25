@@ -1,0 +1,40 @@
+name: Lasttest
+
+# The full load test (BAULISTE.md S-904; docs/plan.md, "Entscheidungen", "Lasttest"): 50 businesses
+# with 50 people each stamp at the same moment against the server on a fresh database. Not part of
+# ci.yml: it takes minutes and measures times on a shared runner, so it runs for pull requests that
+# change the server, weekly and by hand, and is no required check. The small version (5 x 10, without
+# times) runs with every `bun run test`.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      ["apps/server/**", "packages/arbeitszeit/**", "bun.lock", ".github/workflows/lasttest.yml"]
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: lasttest-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  lasttest:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - run: bun install --frozen-lockfile
+      # bash with pipefail: the exit code of the load test, not that of tee, decides the job
+      - shell: bash
+        run: bun run lasttest | tee lasttest.txt
+      - if: always() && hashFiles('lasttest.txt') != ''
+        run: |
+          { echo '```'; grep -v '^{' lasttest.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

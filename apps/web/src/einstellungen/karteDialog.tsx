@@ -105,7 +105,11 @@ export const KarteDialog = (props: {
         />
         <Input
           label={m.terminal_karte_uid()}
-          hinweis={m.terminal_karte_uid_hinweis()}
+          hinweis={
+            art() === "ntag424"
+              ? m.terminal_karte_uid_hinweis_ntag()
+              : m.terminal_karte_uid_hinweis()
+          }
           value={uid()}
           onInput={(event) => setUid(event.currentTarget.value)}
           autocomplete="off"

@@ -12,8 +12,8 @@ export type Person = Pick<Weber["weber"], "anfrage" | "nutzerId">;
  * Weber Haustechnik at 7:00 on 20.11.2026 with the order "Bad Elbhof", the own activity Montage and
  * Sandra, a fitter
  */
-export const werkstatt = async () => {
-  const weber = await weberMitAuftrag();
+export const werkstatt = async (optionen: Parameters<typeof weberMitAuftrag>[0] = {}) => {
+  const weber = await weberMitAuftrag(optionen);
   weber.server.stelleUhr(um("07:00"));
   const montage = await anlegen(weber.weber, "/taetigkeiten", { name: "Montage" });
   const sandra = await weber.server.eingeladen(weber.weber, "mitarbeiter", "sandra");

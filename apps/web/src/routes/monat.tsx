@@ -9,7 +9,7 @@ import { Pruefwert } from "../monat/pruefwert.tsx";
 import { monatQuelle } from "../monat/quelle.ts";
 import { Stand } from "../monat/stand.tsx";
 import { Gegeneintraege, Summen, TageTabelle } from "../monat/tabelle.tsx";
-import { monatText, tageText, zeitpunktText } from "../monat/text.ts";
+import { datumText, monatText, tageText, zeitpunktText } from "../monat/text.ts";
 import type { MonatAnsicht } from "../monat/typen.ts";
 import { zeilenDesMonats } from "../monat/zeilen.ts";
 import { m } from "../paraglide/messages.js";
@@ -20,8 +20,8 @@ import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
 const hatRolle = (...rollen: string[]) =>
   (aktuellerBetrieb()?.rolle ?? "").split(",").some((rolle) => rollen.includes(rolle.trim()));
 
-/** A month that has ended and is not closed yet */
-const offen = (a: MonatAnsicht) => a.vorbei && a.abschluss === null;
+/** A month that has ended and is not closed yet (a removed month was closed, S-901) */
+const offen = (a: MonatAnsicht) => a.vorbei && a.abschluss === null && a.ausgesondert === null;
 
 /**
  * The actions of a month: the time sheet, a counter-entry once closed, and the one main action,
@@ -38,13 +38,15 @@ const Aktionen = (props: {
     offen(props.ansicht) && props.ansicht.eigen && !props.ansicht.bestaetigung?.gueltig;
   return (
     <div class="flex flex-wrap gap-2">
-      <a
-        href={`/api/v1/arbeitszeit/monat/stundenzettel?${props.abfrage}`}
-        download
-        class={knopfLink}
-      >
-        {m.monat_stundenzettel()}
-      </a>
+      <Show when={!props.ansicht.ausgesondert}>
+        <a
+          href={`/api/v1/arbeitszeit/monat/stundenzettel?${props.abfrage}`}
+          download
+          class={knopfLink}
+        >
+          {m.monat_stundenzettel()}
+        </a>
+      </Show>
       <Show when={props.ansicht.abschluss && hatRolle("inhaber", "planer")}>
         <Button variant="outline" onClick={props.onGegeneintrag}>
           {m.monat_gegeneintrag()}
@@ -61,6 +63,27 @@ const Aktionen = (props: {
     </div>
   );
 };
+
+/** The records of a month: sums, days, counter-entries and the Prüfwert */
+const Inhalt = (props: { ansicht: MonatAnsicht }) => (
+  <>
+    <Summen inhalt={props.ansicht.inhalt} />
+    <TageTabelle
+      zeilen={zeilenDesMonats(
+        props.ansicht.inhalt.tage,
+        props.ansicht.inhalt.befunde,
+        props.ansicht.geaenderteTage,
+        props.ansicht.abschluss?.am ?? Date.now(),
+      )}
+    />
+    <Gegeneintraege eintraege={props.ansicht.inhalt.gegeneintraege} />
+    <Pruefwert
+      name={props.ansicht.name}
+      pruefwert={props.ansicht.abschluss?.pruefwert ?? null}
+      betriebId={aktuellerBetrieb()?.betriebId ?? ""}
+    />
+  </>
+);
 
 /**
  * Monatsabschluss (S-306): the days of a month with Soll and Ist, confirmed by the person and closed
@@ -133,21 +156,17 @@ const MonatSeite = () => {
                   {m.monat_offene_tage({ tage: tageText(a().offeneTage) })}
                 </p>
               </Show>
-              <Summen inhalt={a().inhalt} />
-              <TageTabelle
-                zeilen={zeilenDesMonats(
-                  a().inhalt.tage,
-                  a().inhalt.befunde,
-                  a().geaenderteTage,
-                  a().abschluss?.am ?? Date.now(),
+              <Show when={a().ausgesondert} fallback={<Inhalt ansicht={a()} />}>
+                {(ausgesondert) => (
+                  <p class="text-muted-foreground">
+                    {m.monat_ausgesondert_text({
+                      abgeschlossen: datumText(ausgesondert().abgeschlossenAm),
+                      datum: datumText(ausgesondert().am),
+                      jahre: ausgesondert().jahre,
+                    })}
+                  </p>
                 )}
-              />
-              <Gegeneintraege eintraege={a().inhalt.gegeneintraege} />
-              <Pruefwert
-                name={a().name}
-                pruefwert={a().abschluss?.pruefwert ?? null}
-                betriebId={aktuellerBetrieb()?.betriebId ?? ""}
-              />
+              </Show>
               <Show when={dialog() === "ohne"}>
                 <OhneBestaetigungDialog
                   monat={a().monat}

@@ -134,6 +134,27 @@
       "when": 1795339300123,
       "tag": "0018_pruefung",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1795603538905,
+      "tag": "0019_haben",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1795605228521,
+      "tag": "0020_aussonderung",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1795606611527,
+      "tag": "0021_karten_neu_eintragen",
+      "breakpoints": true
     }
   ]
 }

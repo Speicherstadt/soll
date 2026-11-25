@@ -15,6 +15,7 @@ export {
   kundeAnlegen,
   kundeEntfernen,
   kundenLesen,
+  kundeVerbinden,
 } from "./kunden.ts";
 export {
   type Nachweis,
@@ -50,4 +51,5 @@ export {
   taetigkeitEntfernen,
   taetigkeitenLesen,
 } from "./taetigkeiten.ts";
+export { type BuchungMitBezug, buchungenImAuftrag, buchungenMitBezug } from "./uebergabe.ts";
 export { type Verbrauch, verbrauchJeProjekt } from "./verbrauch.ts";

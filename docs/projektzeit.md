@@ -2,11 +2,11 @@
 description: >-
   Kunden, Aufträge, Tätigkeiten, Stundensätze und die Stoppuhr im Modul Projektzeit von Soll: die vier
   festen internen Tätigkeiten, welcher Stundensatz gilt, Budgets mit Warnung, Buchungen mit Verweis auf
-  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“, die Auslastung
-  und der Stundennachweis, den der Kunde auf dem Handy unterschreibt.
+  die Stempelung, der Hinweis bei mehr Projektzeit als Arbeitszeit, „abgerechnet“, die Auslastung,
+  der Stundennachweis, den der Kunde auf dem Handy unterschreibt, und die Übergabe an Haben.
 ---
 
-# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Auslastung, Stundennachweis
+# Projektzeit: Kunden, Aufträge, Tätigkeiten, Stoppuhr, Auslastung, Stundennachweis, Haben
 
 Unter **Projekte** legt der Betrieb an, worauf seine Leute Zeit buchen: Kunden, Aufträge und
 Tätigkeiten, dazu die Stundensätze. Der Bereich gehört zum Modul Projektzeit; ist es aus, fehlt er in
@@ -15,11 +15,11 @@ dabei erhalten. Gebucht wird mit der [Stoppuhr](#stoppuhr) unter **Heute**.
 
 ## Wer was sieht
 
-| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung | Stundennachweise |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | Team; je Person, wenn eingeschaltet (schalten: nur Inhaber) | alle |
-| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene, wenn eingeschaltet | eigene |
-| Gerät (Terminal) | nein | nein | nein | nein | nein | nein | nein |
+| Rolle | Aufträge und Tätigkeiten | Kunden | Budget in Euro | Stundensätze | Buchungen | Auslastung | Stundennachweise | Haben |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Inhaber, Planer | lesen und ändern | lesen und ändern | ja | lesen und ändern | alle; abrechnen | Team; je Person, wenn eingeschaltet (schalten: nur Inhaber) | alle | Kunden verbinden, übergeben; Zugang: nur Inhaber |
+| Mitarbeiter, Lohnbüro, Betriebsrat, Externe | lesen | lesen (über die API) | nein | nein | eigene | eigene, wenn eingeschaltet | eigene | nein |
+| Gerät (Terminal) | nein | nein | nein | nein | nein | nein | nein | nein |
 
 Wer bucht, muss Aufträge und Tätigkeiten sehen. Geld (Budget in Euro, Stundensätze) braucht nur, wer
 die Aufträge führt.
@@ -138,7 +138,7 @@ und höchstens 24 Stunden danach (`422 spanne`). Buchungen derselben Person übe
 (`409 ueberschneidung`); aneinander anschließen dürfen sie. Eine laufende Buchung behält ihr offenes
 Ende; beendet wird sie mit Stoppen (`409 laeuft`).
 
-**Abgerechnet** markieren Inhaber und Planer, später die Übergabe an Haben (S-606). Danach ist die
+**Abgerechnet** markieren Inhaber und Planer, von Hand oder mit der [Übergabe an Haben](#ubergabe-an-haben). Danach ist die
 Buchung gesperrt (`409 abgerechnet`), und sie behält den Satz, mit dem sie abgerechnet wurde: den Satz,
 der an ihrem Arbeitstag gilt, für eine abrechenbare Tätigkeit, sonst keinen. Eine spätere Änderung der
 Sätze ändert keine Rechnung. Abgerechnet werden alle genannten Buchungen oder keine; eine laufende
@@ -176,11 +176,79 @@ Auftrag und die Tage, zeigt dem Kunden auf dem Handy die Buchungen und lässt ih
   Der Hash steht auch im Glied der [Audit-Kette](audit-kette.md), das den Nachweis schreibt: Ändert
   später jemand den gespeicherten Nachweis, passt er nicht mehr zu dem PDF, das der Kunde hat.
 - **An den Kunden.** Das PDF lädt man herunter oder teilt es vom Handy aus (Mail, Messenger), ohne
-  öffentlichen Link. Die Übergabe an [Haben](https://haben.app/) hängt es später an die Leistungen
-  (S-606).
+  öffentlichen Link. Die [Übergabe an Haben](#ubergabe-an-haben) nennt die Nummer des Nachweises im
+  Text jeder Leistung; das PDF hängt man in Haben selbst an die Rechnung, weil die API von Haben
+  keine Anlagen annimmt.
 
 Den Nachweis gibt es auf Deutsch wie den Stundenzettel; ein Buchstabe außerhalb der Standardschrift
 wird ohne Akzent oder als „?“ geschrieben.
+
+## Übergabe an Haben
+
+Unter **Projekte → Haben** übergeben Inhaber und Planer abgerechnete Projektzeit an die
+Buchhaltung in [Haben](https://haben.app/). Sie steht dort unter **Zeiteinträge** und wird in Haben
+zur Rechnung. Soll spricht dafür die dokumentierte REST-API von Haben an (`docs/api.md` in Haben);
+eine andere Verbindung zwischen den Programmen gibt es nicht.
+
+1. **Zugang.** In Haben unter **Einstellungen → KI-Assistenten und API** ein Token mit den Rechten
+   „Kontakte lesen“ (`kontakte:lesen`) und „Leistungen anlegen“ (`leistungen:schreiben`) anlegen. In
+   Soll trägt der Inhaber die Adresse von Haben (etwa `https://haben.example.de`, mit oder ohne
+   `/api/v1`) und das Token ein. Soll speichert das Token mit `SOLL_SECRET_KEY` verschlüsselt und
+   zeigt es nie wieder; ändert man nur die Adresse, bleibt das Token. Erreicht man Haben über das
+   Internet, dann nur über `https`.
+2. **Kunden lesen.** Soll liest die Kontakte aus Haben (ohne archivierte). Jeden verbindet man mit
+   einem Kunden in Soll oder übernimmt ihn als neuen Kunden mit Name und Kundennummer. Ein Kontakt
+   gehört zu höchstens einem Kunden. Nur die Buchungen verbundener Kunden gehen an Haben.
+3. **Übergeben.** Auftrag und Tage wählen: Soll zeigt die beendeten Buchungen mit ihrem Stand und
+   übergibt auf Knopfdruck alle, die noch fehlen, höchstens 100 auf einmal (Haben nimmt 120 Aufrufe
+   in der Minute je Token an).
+
+| Stand | Bedeutung |
+| --- | --- |
+| offen | noch nicht abgerechnet, änderbar |
+| wartet auf Haben | abgerechnet und gesperrt, Haben hat den Eintrag noch nicht bestätigt; der Grund steht daneben |
+| in Haben | Haben hat den Eintrag angelegt oder wiedererkannt |
+| abgerechnet ohne Haben | von Hand abgerechnet, bevor es Haben gab; geht nicht noch einmal in eine Rechnung |
+
+**Was übergeben wird.** Je Buchung eine Leistung (`POST /api/v1/leistungen`):
+
+| Feld bei Haben | aus Soll |
+| --- | --- |
+| `contactId` | der Kontakt, mit dem der Kunde des Auftrags verbunden ist |
+| `workedOn` | der Arbeitstag der Buchung |
+| `minutes` | die ganzen Minuten der Buchung |
+| `description` | Tätigkeit und Notiz, dazu „Stundennachweis Nr. …“, wenn die Buchung in einem unterschriebenen Nachweis steht; kein Name der Person |
+| `hourlyRateCents` | der Satz, mit dem die Buchung abgerechnet wurde; ohne Satz („nicht hinterlegt“) fehlt das Feld, und Haben nimmt den Satz des Kunden |
+| `nonBillable` | `true` für eine Tätigkeit, die der Betrieb nicht abrechnet: Haben führt sie, rechnet sie aber nie ab |
+| `project` | Auftragsnummer und Name |
+| `source`, `externalId` | `soll` und die Kennung der Buchung |
+
+**Wiederholbar, nichts doppelt.** Die Übergabe rechnet die Buchungen zuerst ab, in derselben
+Transaktion wie eine Notiz je Buchung für Haben, und sperrt sie damit. Dann geht jede, die Haben noch
+nicht bestätigt hat, an Haben. Weil die Kennung der Buchung `externalId` ist, legt Haben bei einer
+Wiederholung nichts neu an, sondern antwortet mit dem vorhandenen Eintrag: nach einer verlorenen
+Antwort, einem zweiten Klick oder einem neuen Versuch nach einem Fehler. Was Haben schon bestätigt
+hat, schickt Soll nicht noch einmal. Eine Wiederholung schickt die Leistung so, wie sie abgerechnet
+wurde: Wird danach eine Tätigkeit abrechenbar oder ein Auftrag umbenannt, ändert das nichts mehr;
+nur den Kontakt nimmt Soll vom Kunden, wie er jetzt verbunden ist, und den Stundennachweis, wenn er
+inzwischen unterschrieben ist. Eine Buchung über 24 Stunden (eine vergessene Stoppuhr) nimmt Haben
+nicht an; Soll lehnt sie vor dem Abrechnen ab (`422 zu_lang`), man korrigiert sie zuerst.
+
+**Fehler.** Antwortet Haben nicht, lehnt es das Token ab (abgelaufen, widerrufen, ohne Recht), kommen
+zu viele Aufrufe oder meldet Haben einen eigenen Fehler, hört Soll mit dem Senden auf; die übrigen
+Buchungen bleiben „wartet auf Haben“ und gehen mit der nächsten Übergabe. Lehnt Haben eine einzelne
+Leistung ab (etwa weil der Kontakt kein Kunde oder archiviert ist), steht seine Meldung an der
+Buchung, und Soll macht mit den anderen weiter. Ist der Fehler behoben, etwa der Kunde mit dem
+richtigen Kontakt verbunden, übergibt man noch einmal.
+
+**Korrekturen.** Eine übergebene Buchung ist abgerechnet und bleibt gesperrt (`409 abgerechnet`).
+Eine Korrektur ist eine neue Buchung oder eine Änderung in Haben, solange der Eintrag dort auf keiner
+Rechnung steht. Ein abgeschlossener Monat ändert sich dabei nie: Die Übergabe liest nur Projektzeit,
+die der Monatsabschluss nicht sperrt.
+
+**Stundennachweis.** Die API von Haben nimmt zu Leistungen und Rechnungen keine Anlagen an (Belege
+sind dort Eingangsrechnungen). Deshalb nennt jede Leistung ihren Nachweis, und das PDF lädt man unter
+**Projekte → Nachweise** herunter und hängt es in Haben an die Rechnung.
 
 ## Archivieren statt Löschen
 
@@ -265,6 +333,13 @@ Alle Routen liegen unter `/api/v1/projektzeit` und verlangen eine Sitzung im Bet
 | `GET /auslastung/personen?monat=JJJJ-MM` | Inhaber, Planer, nur eingeschaltet | `personen` mit `nutzerId`, `name` und den Werten; sonst `403 auswertung_aus` |
 | `GET /auslastung/ich?monat=JJJJ-MM` | alle außer Geräten, nur eingeschaltet | `eigene`: die Werte der Person selbst; sonst `403 auswertung_aus` |
 | `PUT /auslastung/einstellung` | Inhaber | `{ jePerson }`: schaltet die Auswertung je Person ein oder aus, Antwort `{ jePersonSeit }` (`null`: aus) |
+| `GET /haben/zugang` | Inhaber, Planer | `zugang`: `adresse`, `tokenGesetzt`, `geaendertAm`, oder `null`; nie das Token |
+| `PUT /haben/zugang` | Inhaber | `{ adresse, token? }`: hinterlegt den Zugang; ohne `token` bleibt das hinterlegte (`422 token_fehlt` beim ersten Mal) |
+| `DELETE /haben/zugang` | Inhaber | entfernt den Zugang; Übergebenes bleibt |
+| `GET /haben/kontakte` | Inhaber, Planer | `kontakte` aus Haben mit `id`, `name`, `kundennummer` und `kundeId` des verbundenen Kunden |
+| `POST /haben/kontakte/{kontaktId}` | Inhaber, Planer | `{ kundeId? }`: verbindet den Kunden (`200`) oder legt einen neuen an (`201`) |
+| `GET /haben/buchungen?projektId=&von=&bis=` | Inhaber, Planer | `kontaktId` des Kunden (`null`: nicht verbunden) und `buchungen` mit `stand` (`offen`, `wartet`, `gesendet`, `abgerechnet`), `fehler`, `meldung`, `leistungId` |
+| `POST /haben/uebergabe` | Inhaber, Planer | `{ buchungIds }` (1 bis 100): rechnet ab und übergibt; Antwort `buchungen` mit dem Stand jeder |
 
 `GET /projekte` nennt je Auftrag `budget`: eine Zeile je gesetztem Budget mit `verbraucht`, `rest`
 und `stufe` (`ok`, `warnung`, `aufgebraucht`), die Zeile in Cent nur für Inhaber und Planer.
@@ -279,3 +354,9 @@ dazu), `409` mit `verwendet`, `archiviert`, `fest` (feste Tätigkeit), `doppelt`
 `abgerechnet`, `laeuft`, `laeuft_nicht`, `unterschrieben` oder `abweichung`, `422` mit
 `kunde_unbekannt`, `projekt_unbekannt`, `taetigkeit_unbekannt`, `person_unbekannt`, `spanne` oder
 `leer` (nichts zu unterschreiben).
+
+Haben antwortet unter `/haben` mit `409 haben_fehlt` (kein Zugang) oder `schluessel_falsch` (das Token
+lässt sich mit dem jetzigen `SOLL_SECRET_KEY` nicht entschlüsseln), `422 kunde_ohne_haben`,
+`kontakt_unbekannt`, `ohne_auftrag` (interne Zeit hat keinen Kunden) oder `zu_lang` (über 1.440 Minuten), und `502` mit `fehler`
+(`nicht_erreichbar`, `zugang_abgelehnt`, `recht_fehlt`, `abgelehnt`, `zu_viele`, `haben_fehler`) und
+`meldung`, dem Text von Haben, wenn Haben die Kontakte nicht liefert.

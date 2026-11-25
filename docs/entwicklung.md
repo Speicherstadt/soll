@@ -36,6 +36,7 @@ bun run check        # Typen, Lint, Solid-2-Prüfung, Tests, Build
 bun run solid2       # nur die Prüfung auf Formen aus Solid 1.x
 bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
 bun run gesetze      # Gesetzeswächter: Normen abrufen und vergleichen, Bericht auf der Konsole
+bun run lasttest     # Lasttest: 50 Betriebe mit je 50 Personen stempeln gleichzeitig (Port 28300)
 ```
 
 Die App ruft die API unter ihrer eigenen Adresse auf; Vite leitet `/api` an den Server weiter
@@ -51,6 +52,30 @@ kommt aus dem Cache. Einen Teil lokal nachstellen: `bun run e2e --shard=2/4`.
 `bun run check` muss vor jedem Push grün sein. Die gemeinsamen Checks aus `firsttris/workflows`
 (Dateigröße, Funktionslänge, Importringe, Übersetzungen, Seiten im Barrierefreiheitstest) laufen in
 der CI.
+
+## Lasttest
+
+`bun run lasttest` startet den Server auf Port 28300 mit einer leeren Datenbank in einem temporären
+Verzeichnis und einem Schlüssel nur für diesen Lauf, nie gegen echte Daten. Über die HTTP-API legt
+er 50 Betriebe an, je mit Inhaber, Einladungsliste und 50 Beschäftigten, die ihre Einladung annehmen
+und sich mit Benutzername und Passwort anmelden, so wie im Browser. Dann stempeln alle 2.500 im
+selben Augenblick „Kommen“. Der Lauf misst je Anfrage die Zeit bis zur ganzen Antwort und zählt jede
+Antwort ohne 201 als Fehler. Danach prüft er in der Datenbank, dass jede Person genau eine Stempelung
+hat und die Audit-Kette jedes Betriebs ohne Befund prüft. Er endet mit Code 0 nur, wenn kein Fehler
+auftrat, p95 höchstens 15 s und die langsamste Anfrage höchstens 30 s brauchte; die Gründe stehen im
+[Projektplan](plan.md#entscheidungen). Mit `--betriebe`, `--personen` und `--port` läuft er kleiner
+oder auf einem anderen Port; ist der Port belegt, bricht er ab, statt einen fremden Server zu messen.
+
+Eine kleine Fassung mit 5 Betrieben zu je 10 Personen läuft mit jedem `bun run test`, mit demselben
+Code, aber gegen die App im selben Prozess und ohne Zeitgrenze
+(`apps/server/src/lasttest/lasttest.test.ts`). Den vollen Lauf startet der Workflow `Lasttest` für
+Pull Requests, die den Server ändern, jeden Montag und von Hand; er ist keine Pflichtprüfung, weil
+Zeiten auf einem geteilten Runner schwanken.
+
+Gemessen am 21.11.2026 in zwei Läufen auf 4 Kernen: 2.500 Stempelungen in 8,7 bis 8,9 s (rund 280
+je Sekunde), kein Fehler, p50 3,6 bis 5,2 s, p95 6,5 bis 8,6 s, die langsamste 8,7 bis 8,9 s; jede
+Stempelung genau einmal, alle 50 Ketten ohne Befund. Das Anlegen der Personen dauert zwei bis fünf
+Minuten, vor allem wegen scrypt für die Passwörter.
 
 ## Komponenten
 

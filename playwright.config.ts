@@ -47,8 +47,9 @@ export default defineConfig({
     },
   ],
   // Playwright starts these one after another, each once the one before answers. The build comes
-  // before the dev server: both let Paraglide write apps/web/src/paraglide (runtime.js differs in
-  // `isDevelopment`), and a build under a running dev server reloads it and stamps every module anew
+  // before the dev server: both let Paraglide write apps/web/src/paraglide (the dev server one module
+  // of texts per language, the build one per message; apps/web/vite.config.ts), and a build under a
+  // running dev server reloads it and stamps every module anew
   // (e2e/dev-server.spec.ts; docs/plan.md, "Entscheidungen").
   webServer: [
     {

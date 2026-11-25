@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import * as dienstplan from "../routes/dienstplan.ts";
 import * as kalender from "../routes/dienstplan-kalender.ts";
+import * as tausch from "../routes/dienstplan-tausch.ts";
 import * as kunden from "../routes/kunden.ts";
 import * as projekte from "../routes/projekte.ts";
 import * as saetze from "../routes/saetze.ts";
@@ -106,6 +107,40 @@ export const DIENSTPLAN: readonly Operation[] = unter("/api/v1/dienstplan", "Die
     methode: "delete",
     pfad: "/kalender",
     zusammenfassung: "Den eigenen Kalender-Feed widerrufen, nur mit Sitzung",
+  },
+  { methode: "get", pfad: "/tausch", zusammenfassung: "Die Tausche von Schichten, die man sieht" },
+  {
+    methode: "post",
+    pfad: "/tausch",
+    zusammenfassung: "Eine eigene veröffentlichte Schicht zum Tausch anbieten",
+    koerper: tausch.angebotSchema,
+  },
+  {
+    methode: "put",
+    pfad: "/tausch/regel",
+    zusammenfassung: "Ob ein Tausch ohne Freigabe gilt (Inhaber)",
+    koerper: tausch.tauschregelSchema,
+  },
+  {
+    methode: "post",
+    pfad: "/tausch/:tauschId/uebernehmen",
+    zusammenfassung: "Ein Angebot übernehmen",
+  },
+  {
+    methode: "post",
+    pfad: "/tausch/:tauschId/freigeben",
+    zusammenfassung: "Einen übernommenen Tausch freigeben",
+  },
+  {
+    methode: "post",
+    pfad: "/tausch/:tauschId/ablehnen",
+    zusammenfassung: "Einen offenen Tausch mit Grund ablehnen",
+    koerper: tausch.ablehnungSchema,
+  },
+  {
+    methode: "delete",
+    pfad: "/tausch/:tauschId",
+    zusammenfassung: "Ein eigenes Angebot zurückziehen",
   },
 ]);
 

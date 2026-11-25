@@ -1,6 +1,13 @@
 import type { Striche } from "@soll/arbeitszeit";
 import { PDFDocument, rgb } from "pdf-lib";
-import { druckbar, metadaten, type Schreiber, schreiber, schriften } from "../pdf/schreiber.ts";
+import {
+  druckbar,
+  metadaten,
+  type Schreiber,
+  schreiber,
+  schriften,
+  ZEILE,
+} from "../pdf/schreiber.ts";
 import {
   datumText,
   dauerText,
@@ -71,26 +78,38 @@ const kopf = (s: Schreiber, nachweis: Stundennachweis) => {
   s.zeile(8);
 };
 
+/**
+ * A booking as a row of the table: each cell wraps over as many lines as it needs, so the customer
+ * signs every word of activity and note (S-605); the row stays on one page and grows with its
+ * tallest cell
+ */
+const reihe = (s: Schreiber, zeile: NachweisZeile) => {
+  const werte = [
+    tagText(zeile.tag),
+    zeile.person,
+    `${uhrzeitText(zeile.beginn)}–${uhrzeitText(zeile.ende)}`,
+    dauerText(zeile.minuten),
+    zeile.taetigkeit,
+    zeile.notiz,
+  ];
+  const zellen = SPALTEN.map((spalte, index) => {
+    const naechste = SPALTEN[index + 1];
+    const optionen = naechste ? { breite: naechste.x - spalte.x - 4 } : {};
+    return { x: spalte.x, optionen, teile: s.umbrechen(werte[index] ?? "", spalte.x, optionen) };
+  });
+  const hoehe = Math.max(...zellen.map((zelle) => zelle.teile.length));
+  s.platz(hoehe);
+  for (const zelle of zellen)
+    zelle.teile.forEach((teil, nummer) => {
+      s.text(teil, zelle.x, { ...zelle.optionen, unten: nummer * ZEILE });
+    });
+  s.zeile(hoehe * ZEILE);
+};
+
 const tabelle = (s: Schreiber, nachweis: Stundennachweis) => {
   for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
   s.zeile();
-  for (const zeile of nachweis.zeilen) {
-    s.platz(1);
-    const werte = [
-      tagText(zeile.tag),
-      zeile.person,
-      `${uhrzeitText(zeile.beginn)}–${uhrzeitText(zeile.ende)}`,
-      dauerText(zeile.minuten),
-      zeile.taetigkeit,
-      zeile.notiz,
-    ];
-    werte.forEach((wert, index) => {
-      const spalte = SPALTEN[index];
-      const naechste = SPALTEN[index + 1];
-      if (spalte) s.text(wert, spalte.x, naechste ? { breite: naechste.x - spalte.x - 4 } : {});
-    });
-    s.zeile();
-  }
+  for (const zeile of nachweis.zeilen) reihe(s, zeile);
   s.zeile(4);
   s.text(`Summe ${dauerText(nachweis.summeMinuten)}`, 0, { fett: true });
   s.zeile(18);

@@ -223,7 +223,7 @@ Terminal prüft nur PINs (`pin:pruefen`) und ist keine Person.
 
 | Rolle | Rechte in Soll |
 | --- | --- |
-| Inhaber | `betrieb:lesen`, `betrieb:module`, `betrieb:einrichten`, `modelle:lesen`, `mitglieder:lesen`, `mitglieder:einladen`, `mitglieder:rolle`, `pin:setzen`, `stempeln`, `zeiten:alle`, `zeiten:korrigieren`, `modelle:zuordnen`, `monat:abschliessen`, `abwesenheiten:freigeben`, `abwesenheiten:gesundheit`, `abwesenheiten:einstellen`, `konten:pflegen`, `projekte:lesen`, `projekte:verwalten`, `erinnerungen:regeln`, `plan:lesen`, `plan:planen`, `personen:angaben`, `terminal:verwalten`, `lohn:datev`, `auskunft:erteilen`, `umzug:importieren`, `api:zugang` |
+| Inhaber | `betrieb:lesen`, `betrieb:module`, `betrieb:einrichten`, `modelle:lesen`, `mitglieder:lesen`, `mitglieder:einladen`, `mitglieder:rolle`, `pin:setzen`, `stempeln`, `zeiten:alle`, `zeiten:korrigieren`, `modelle:zuordnen`, `monat:abschliessen`, `abwesenheiten:freigeben`, `abwesenheiten:gesundheit`, `abwesenheiten:einstellen`, `konten:pflegen`, `projekte:lesen`, `projekte:verwalten`, `erinnerungen:regeln`, `plan:lesen`, `plan:planen`, `personen:angaben`, `terminal:verwalten`, `lohn:datev`, `auskunft:erteilen`, `verfahrensdoku:verwalten`, `umzug:importieren`, `api:zugang` |
 | Planer | `betrieb:lesen`, `mitglieder:lesen`, `mitglieder:einladen`, `stempeln`, `zeiten:alle`, `zeiten:korrigieren`, `abwesenheiten:freigeben`, `projekte:lesen`, `projekte:verwalten`, `plan:lesen`, `plan:planen`, `api:zugang` |
 | Mitarbeiter | `betrieb:lesen`, `stempeln`, `projekte:lesen`, `plan:lesen`, `api:zugang` |
 | Lohnbüro | `betrieb:lesen`, `modelle:lesen`, `mitglieder:lesen`, `stempeln`, `zeiten:alle`, `abwesenheiten:gesundheit`, `projekte:lesen`, `plan:lesen`, `lohn:datev`, `api:zugang` |
@@ -261,6 +261,7 @@ Was die Rechte bedeuten:
 | `terminal:verwalten` | Terminals koppeln, QR-Codes ausstellen, NFC-Karten eintragen |
 | `lohn:datev` | den DATEV-Export einstellen und laden |
 | `auskunft:erteilen` | die Auskunft nach Art. 15 DSGVO für eine andere Person erteilen |
+| `verfahrensdoku:verwalten` | die Verfahrensdokumentation nach den GoBD ansehen, die Angaben des Betriebs dazu pflegen und sie herunterladen; sie nennt Rollen nur mit der Zahl ihrer Mitglieder, keine Namen |
 | `umzug:importieren` | Daten aus einem anderen Programm übernehmen |
 | `api:zugang` | eigene Zugänge zur API anlegen, mit den Rechten der eigenen Rolle |
 

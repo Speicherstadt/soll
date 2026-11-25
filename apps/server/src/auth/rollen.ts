@@ -44,6 +44,7 @@ export const RECHTE = [
   "auskunft:erteilen",
   "umzug:importieren",
   "api:zugang",
+  "verfahrensdoku:verwalten",
 ] as const;
 
 export type Recht = (typeof RECHTE)[number];
@@ -90,6 +91,8 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
     // the business answers an Art. 15 request, also of someone who left and has no access any more;
     // the Auskunft holds health data, which only the owner and payroll see (R-31)
     "auskunft:erteilen",
+    // the Verfahrensdokumentation: the business answers for its procedure (GoBD Rz. 151 ff., S-902)
+    "verfahrensdoku:verwalten",
     // imports from other tools write times, absences and closings of everyone (S-701): the owner,
     // who answers for the records and closes the months
     "umzug:importieren",
@@ -145,6 +148,9 @@ const RECHTE_JE_ROLLE: Record<Rolle, readonly Recht[]> = {
   // the terminal checks PINs and nothing else (S-801); a device has no tokens (S-607)
   geraet: ["pin:pruefen"],
 };
+
+/** The rights of one role, for the Verfahrensdokumentation (S-902) */
+export const rechteDerRolle = (rolle: Rolle): readonly Recht[] => RECHTE_JE_ROLLE[rolle];
 
 export const istRolle = (wert: unknown): wert is Rolle => ROLLEN.includes(wert as Rolle);
 

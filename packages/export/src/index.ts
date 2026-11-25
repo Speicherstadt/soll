@@ -1,4 +1,7 @@
-/** DATEV, CSV and PDF exports (S-306, S-308, S-309, S-605) and the ICS feed of the plan (S-503). */
+/**
+ * DATEV, CSV and PDF exports (S-306, S-308, S-309, S-605), the ICS feed of the plan (S-503) and the
+ * Verfahrensdokumentation (S-902).
+ */
 
 export { type CsvWert, csvDatei, csvZelle } from "./csv.ts";
 export * from "./datev/index.ts";
@@ -27,3 +30,4 @@ export {
   type ZettelTag,
 } from "./stundenzettel/pdf.ts";
 export { pdfInhalt, pdfText } from "./stundenzettel/text.ts";
+export * from "./verfahrensdoku/index.ts";

@@ -124,6 +124,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `datev_einstellungen` | B | Berater, Mandant, Lohnarten | bleibt, wird geändert |
 | `haben_zugaenge` | B | Adresse und Token für Haben, verschlüsselt | löscht beim Trennen |
 | `tauschregeln` | B | ob ein Tausch eine Freigabe braucht | bleibt, wird geändert |
+| `verfahrensdoku_angaben` | B | Angaben des Betriebs zu seiner [Verfahrensdokumentation](verfahrensdokumentation.md): Rechtsform, Anschrift, Verantwortliche, Ort der Aufbewahrung, Betrieb des Servers, Datensicherung, Ort der Schlüssel und eigene Abschnitte; ein Name nur, wenn der Inhaber ihn einträgt | bleibt, der Inhaber ändert oder leert die Felder; frühere Fassungen bleiben als gespeicherte Inhalte ihrer Kettenglieder (Klasse A) |
 | `erinnerungsregeln` | B | Zeiten des Betriebs für Erinnerungen | bleibt, wird geändert |
 | `terminals` | B | Tablet mit Name, Hash des Tokens, Schlüssel, Sperren | Entkoppeln sperrt es, die Zeile bleibt |
 | `terminal_eintraege` | B | Nummer und Ergebnis jedes Eintrags eines Tablets ohne Netz, nie der Ausweis | bleibt (offener Punkt) |

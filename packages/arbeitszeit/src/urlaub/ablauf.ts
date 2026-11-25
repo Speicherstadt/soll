@@ -126,14 +126,17 @@ const vorausrechnen = (lauf: Lauf): { tag: Tag; halbtage: number }[] => {
 };
 
 /**
- * Takes one day of leave off the pots, the oldest first: it expires first, so the person keeps the
- * most (docs/plan.md, "Verfall von Urlaub"). More leave than open is charged to its own year.
+ * Takes one day of leave off the pots in the order of years: the oldest first, as it expires first
+ * and the person keeps the most (docs/plan.md, "Verfall von Urlaub"); beyond its own year's leave it
+ * counts against the following years, as leave granted in advance (R-23, § 7 Abs. 3 BUrlG: only
+ * leave still open can expire). Leave beyond every year Soll knows stays in its own year, below
+ * zero, until the entitlement of the next year is known.
  */
 const entnehmen = (laeufe: readonly Lauf[], eintrag: GenommenerUrlaub) => {
   let offen = eintrag.halbtage;
   for (const lauf of laeufe) {
     const { topf } = lauf;
-    if (offen === 0 || topf.jahr > jahrVon(eintrag.tag) || topf.restHalbtage <= 0) continue;
+    if (offen === 0 || topf.restHalbtage <= 0) continue;
     const teil = Math.min(offen, topf.restHalbtage);
     topf.restHalbtage -= teil;
     topf.genommenHalbtage += teil;

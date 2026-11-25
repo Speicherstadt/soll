@@ -48,5 +48,48 @@ describe("R-23: leave taken in advance", () => {
     });
     // 40 days in all, 22 taken: 18 were open and named at most; the balance must not go below 0
     expect(w.restHalbtage).toBeGreaterThanOrEqual(0);
+    // docs/regeln.md R-23 „Vorgriff“: 2 days of 2027 were taken in 2026, 18 expire, nothing left
+    expect(
+      w.toepfe.map((t) => [t.jahr, t.genommenHalbtage, t.verfallenHalbtage, t.restHalbtage]),
+    ).toEqual([
+      [2026, tage(20), 0, 0],
+      [2027, tage(2), tage(18), 0],
+    ]);
+  });
+
+  it("Vorgriff ohne Folgejahr: 22 days taken in 2026, only 2026 known – 2026 shows −2 days until 2027 is known", () => {
+    const e: UrlaubskontoEingaben = {
+      jahre: [{ jahr: 2026, anspruchHalbtage: tage(20) }],
+      genommen: [{ tag: "2026-06-01", halbtage: tage(22) }],
+      heute: "2026-12-01",
+    };
+    expect(rechne(e).toepfe).toMatchObject([{ jahr: 2026, restHalbtage: tage(-2) }]);
+    const danach = rechne({
+      ...e,
+      jahre: [...e.jahre, { jahr: 2027, anspruchHalbtage: tage(20) }],
+      heute: "2027-01-04",
+    });
+    expect(danach.toepfe.map((t) => [t.jahr, t.restHalbtage])).toEqual([
+      [2026, 0],
+      [2027, tage(18)],
+    ]);
+    expect(danach.restHalbtage).toBe(tage(18));
+  });
+
+  it("older leave first: 2025 leave left is taken before 2026's, the excess then from 2027", () => {
+    const w = rechne({
+      jahre: [
+        { jahr: 2025, anspruchHalbtage: tage(3) },
+        { jahr: 2026, anspruchHalbtage: tage(20) },
+        { jahr: 2027, anspruchHalbtage: tage(20) },
+      ],
+      genommen: [{ tag: "2026-03-02", halbtage: tage(25) }],
+      heute: "2027-01-04",
+    });
+    expect(w.toepfe.map((t) => [t.jahr, t.genommenHalbtage, t.restHalbtage])).toEqual([
+      [2025, tage(3), 0],
+      [2026, tage(20), 0],
+      [2027, tage(2), tage(18)],
+    ]);
   });
 });

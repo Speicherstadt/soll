@@ -128,7 +128,10 @@ Soll führt Urlaub in halben Tagen und rechnet den Anspruch eines Jahres so:
 Urlaub soll im Kalenderjahr genommen werden; Soll überträgt den Rest bis 31. März des Folgejahres
 (§ 7 Abs. 3 BUrlG), Teilurlaub nach § 5 Abs. 1 Buchst. a auf Verlangen der Person bis 31. Dezember
 des Folgejahres (§ 7 Abs. 3 Satz 4). Genommener Urlaub zählt zuerst gegen den ältesten offenen
-Urlaub.
+Urlaub. Wer mehr nimmt, als sein Jahr hergibt (Vorgriff), dem zählt der Rest gegen den Urlaub des
+Folgejahres: 22 Tage im Jahr 2026 bei je 20 Tagen ergeben 2026 genommen 20, 2027 genommen 2 und
+offen 18, und nur diese 18 können verfallen. Ist das Folgejahr noch nicht bekannt, zeigt das Konto
+den Rest des Jahres unter null (−2 Tage), bis der Urlaub des Folgejahres feststeht.
 
 Urlaub verfällt nur, wenn der Betrieb die Person **rechtzeitig** auf den offenen Urlaub und den
 Verfall hingewiesen hat (EuGH C-684/16, Max-Planck; BAG, 19.02.2019, 9 AZR 423/16). Soll verlangt

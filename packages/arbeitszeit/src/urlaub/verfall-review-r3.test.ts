@@ -78,6 +78,13 @@ describe("review r3: invariants over random inputs", () => {
         benannt: mischen(r, e.benannt ?? []),
       });
       expect(gemischt, `seed ${seed}`).toEqual(w);
+      // no pot below zero by leave taken unless it was taken beyond all leave Soll knows: then
+      // none is open (a correction below zero leaves its own pot below zero, it was not taken)
+      if (w.toepfe.some((t) => t.restHalbtage < Math.min(0, t.anspruchHalbtage)))
+        expect(
+          w.toepfe.filter((t) => t.restHalbtage > 0),
+          `seed ${seed}`,
+        ).toEqual([]);
       for (const t of w.toepfe) {
         expect(t.genommenHalbtage + t.verfallenHalbtage + t.restHalbtage, `seed ${seed}`).toBe(
           t.anspruchHalbtage,

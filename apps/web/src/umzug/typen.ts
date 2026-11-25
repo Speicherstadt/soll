@@ -3,8 +3,14 @@ import type { LeseFehler, Ziel } from "@soll/import";
 
 /* What the API of imports answers (apps/server, routes/importe.ts; S-701) */
 
-export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte";
-export const ARTEN: readonly Art[] = ["zeiten", "abwesenheiten", "kunden", "projekte"];
+export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte" | "taetigkeiten";
+export const ARTEN: readonly Art[] = [
+  "zeiten",
+  "abwesenheiten",
+  "kunden",
+  "projekte",
+  "taetigkeiten",
+];
 
 /** What a dry run and a takeover count: the records, and the bookings made from times (S-702) */
 export type PlanArt = Art | "buchungen";
@@ -37,6 +43,8 @@ export type Vorschau = {
   projekte: { externalId: string; name: string; nummer: string; kunde: string }[];
   vorhandeneKunden: { kundeId: string; name: string }[];
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
+  taetigkeiten: { externalId: string; name: string }[];
+  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: Liste<Vorschaubefund>;
   buchung: {
@@ -80,5 +88,12 @@ export type ImportEintrag = {
 
 /** The file as the API takes it: its name and its bytes in base64 */
 export type Datei = { name: string; inhalt: string };
+
+/** What POST /importe/abruf takes (S-703): the access for this one fetch and the period */
+export type Abruf = {
+  zugang: { nutzer: string; schluessel: string };
+  von: string;
+  bis: string;
+};
 
 export type { Ziel };

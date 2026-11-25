@@ -1,9 +1,9 @@
 ---
 title: Umzug aus anderen Tools
 description: >-
-  Wie Soll Zeiten, Abwesenheiten, Kunden und Aufträge aus einem anderen Tool oder einer
-  Excel-Tabelle übernimmt – mit Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und
-  mit den im alten Tool abgeschlossenen Monaten.
+  Wie Soll Zeiten, Abwesenheiten, Kunden, Aufträge und Tätigkeiten aus einem anderen Tool oder einer
+  Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo), mit Vorschau, Probelauf,
+  aufbewahrter Originaldatei, ohne Dubletten und mit den im alten Tool abgeschlossenen Monaten.
 ---
 
 # Umzug aus anderen Tools
@@ -13,7 +13,8 @@ Aus anderem Tool übernehmen** (`/umzug`). Jeder Import läuft gleich ab, egal a
 
 1. **Werkzeug**: das bisherige Tool wählen; Soll sagt, wie man dort die Daten exportiert.
 2. **Datei**: die Exportdatei hochladen (höchstens 5 MB und 20.000 Datensätze, die Kopfzeile
-   höchstens 200 Spalten). Soll liest sie und
+   höchstens 200 Spalten), oder bei einem Werkzeug mit API die Daten eines Zeitraums **über die API
+   abrufen** (siehe [Clockodo](#clockodo)). Soll liest sie und
    nennt jede Zeile, die es nicht lesen kann, mit dem Grund.
 3. **Zuordnung**: welche Spalte welche Angabe enthält, welche Person der Datei welche Person in
    Soll ist, welche Abwesenheitsart welcher Art in Soll entspricht, ob Kunden und Aufträge neu
@@ -35,6 +36,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | Abwesenheit (Art, von, bis) | Abwesenheit mit der zugeordneten Art, **genehmigt** (sie wurde im alten Tool gewährt oder fand statt) |
 | Kunde, Auftrag | Kunde und Auftrag des Moduls Projektzeit, mit Name und Nummer |
 | Projekt und Tätigkeit einer Zeit (Excel und CSV) | Buchungen der Projektzeit auf einem vorhandenen Auftrag und einer Tätigkeit, je Arbeitsstück vor und nach der Pause |
+| Tätigkeit (bei Clockodo: Leistung) | Tätigkeit des Moduls Projektzeit, nicht abrechenbar, bis der Inhaber es ändert |
 
 Personen legt der Import nicht an: Sie werden vorher eingeladen ([Einrichtung](einrichtung.md)) und
 in der Zuordnung gewählt. Eine Person, die auf „nicht übernehmen“ steht, und eine Abwesenheitsart
@@ -110,8 +112,9 @@ Den Umzug sieht und nutzt nur der **Inhaber**; der Server lehnt jede andere Roll
 Zuordnung zu einer Person, einem Kunden oder einem Auftrag eines anderen Betriebs lehnt er ab
 (`422`); ein Betrieb sieht weder die Importe noch die Dateien eines anderen.
 
-Ein **API-Zugang** zu einem anderen Tool (für die Werkzeuge, die ihn brauchen) wird nicht
-gespeichert: Er gilt nur für den einen Lauf. Diesen Weg bringen die einzelnen Werkzeuge mit.
+Ein **API-Zugang** zu einem anderen Tool wird nicht gespeichert: Er geht mit dem einen Abruf zum
+Server, der damit die Daten holt, und steht danach nirgends, weder in der Datenbank noch im Log,
+in einer Antwort oder in der Datei.
 
 ## Werkzeuge
 
@@ -119,7 +122,8 @@ gespeichert: Er gilt nur für den einen Lauf. Diesen Weg bringen die einzelnen W
 | --- | --- | --- |
 | Soll-CSV | Datei | verfügbar |
 | Excel/CSV mit freien Spalten | Datei | verfügbar |
-| Clockodo, Personio, Kimai | Datei und API | folgt |
+| Clockodo | Datei und API | verfügbar |
+| Personio, Kimai | Datei und API | folgt |
 | Papershift, Planday, Crewmeister | Datei | folgt |
 | Toggl, Clockify | Datei und API | folgt |
 
@@ -204,3 +208,42 @@ der Probelauf lehnt sie ab.
 Formel zählt mit ihrem gespeicherten Wert). Eine Mappe, die beim Entpacken größer als 50 MB würde,
 eine mit Verweisen auf andere Dateien oder Entitäten (DTD) und eine verschlüsselte lehnt Soll als
 „nicht lesbar“ ab; es gelten dieselben Grenzen wie oben (5 MB, 20.000 Zeilen, 200 Spalten).
+### Clockodo
+
+Zwei Wege, ein Werkzeug: Was über den einen übernommen wurde, findet der andere wieder, denn beide
+tragen die Kennungen von Clockodo.
+
+**Über die API** gibt der Inhaber die E-Mail und den API-Schlüssel aus Clockodo ein (in Clockodo
+unter *Mein Bereich*, laut dem SDK `my.clockodo.com/en/users/editself`) und einen Zeitraum von höchstens einem Jahr, der nicht in
+der Zukunft liegt. Soll holt nacheinander Mitarbeiter, Kunden, Projekte, Leistungen, die Einträge des
+Zeitraums (Seite für Seite) und die Abwesenheiten seiner Jahre. Daraus wird eine Datei
+(`clockodo-<von>-<bis>.jsonl`), die durch Vorschau, Probelauf und Übernahme geht wie eine
+hochgeladene und bei der Übernahme unter ihrem SHA-256 aufbewahrt wird. Sie enthält nur, was Soll
+liest: keine Notizen (sie können eine Diagnose enthalten), keine Angabe zur Krankmeldung, keine
+E-Mail, keinen Stundensatz und keinen Umsatz. Ein zweiter Abruf desselben Stands ergibt dieselbe
+Datei. Lehnt Clockodo ab, sagt Soll warum: Zugang abgelehnt, zu viele Anfragen (dann in ein paar
+Minuten noch einmal), nicht erreichbar, unlesbare Antwort oder mehr als 20.000 Datensätze (dann
+einen kürzeren Zeitraum wählen). Soll versucht es nicht von selbst noch einmal.
+
+**Als Datei** liest Soll die CSV-Datensicherung der Einträge aus Clockodo (eine Zeile je Eintrag,
+Kopfzeile auf Englisch wie `Id`, `Co-worker Id`, `Begin (UTC)`, `End (UTC)`). Kunden, Projekte und
+Leistungen nimmt Soll aus den Spalten der Einträge; Abwesenheiten stehen nicht in dieser Datei.
+
+| Aus Clockodo | In Soll |
+| --- | --- |
+| Mitarbeiter | Personen der Zuordnung, mit ihrem Namen; zwei gleiche Namen mit der Kennung in Klammern |
+| Zeiteinträge | Einträge einer Person, die sich berühren oder überschneiden, werden ein Block mit Kommen und Gehen; die Lücke zwischen zwei Blöcken bleibt die Pause, wie gestempelt. Der Beginn wird auf die Minute ab-, das Ende aufgerundet, die Zeit also nie kürzer. |
+| Pauschalen | keine Arbeitszeit, werden nicht gelesen |
+| Abwesenheiten | nur genehmigte, als ganze Tage; die Art heißt wie in Clockodos API („Regular holiday“, „Sick day“ …), Soll schlägt Urlaub, Sonderurlaub, Überstundenabbau, Krankheit und Krankheit Kind vor |
+| Kunden, Projekte | Kunden und Aufträge mit Name und Nummer |
+| Leistungen | Tätigkeiten |
+
+Abgelehnt werden mit Zeile: ein Eintrag, der noch läuft; ein Eintrag, dessen Dauer in Clockodo von
+Hand korrigiert wurde (er hat keine Zeitpunkte, die Soll stempeln könnte: bitte mit Beginn und Ende
+nachtragen); ein Block von 24 Stunden oder mehr; eine Uhrzeit in der zweiten Stunde von 2 bis 3 Uhr
+in der Nacht der Zeitumstellung im Oktober; eine beantragte, nicht genehmigte Abwesenheit; ein
+halber Tag und Überstundenabbau nach Stunden (als ganzer Tag kostete er die Person mehr, als Clockodo
+gebucht hatte: bitte in Soll eintragen).
+
+Welcher Eintrag zu welchem Kunden, Projekt und welcher Leistung gehörte, bucht Soll nicht als
+Projektzeit; übernommen wird die Arbeitszeit.

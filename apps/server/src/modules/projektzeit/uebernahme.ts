@@ -42,6 +42,31 @@ export const kundenUebernehmen = (
     });
 };
 
+export type UebernommeneTaetigkeit = { taetigkeitId: string; name: string; externId: string };
+
+/**
+ * Activities from another tool (services in Clockodo, S-703), not billed: whether a service was
+ * billed in Clockodo is decided per customer and project there, so the owner sets it here
+ */
+export const taetigkeitenUebernehmen = (
+  s: Schreiber,
+  kontext: Kontext,
+  herkunft: Herkunft,
+  neue: readonly UebernommeneTaetigkeit[],
+): void => {
+  for (const taetigkeit of neue)
+    s.einfuegen("taetigkeiten", {
+      betriebId: kontext.betriebId,
+      taetigkeitId: taetigkeit.taetigkeitId,
+      name: taetigkeit.name,
+      abrechenbar: false,
+      externQuelle: herkunft.quelle,
+      externId: taetigkeit.externId,
+      angelegtAm: kontext.jetzt,
+      importId: herkunft.importId,
+    });
+};
+
 export const projekteUebernehmen = (
   s: Schreiber,
   kontext: Kontext,

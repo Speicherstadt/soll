@@ -1,3 +1,4 @@
+import { clockodoLesen } from "./clockodo/index.ts";
 import type { Gelesen } from "./modell.ts";
 import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 import { tabelleLesen } from "./tabelle.ts";
@@ -7,6 +8,7 @@ import { WERKZEUGE, type Werkzeug } from "./werkzeuge.ts";
 /*
  * The tools Soll imports from (BAULISTE.md S-701) with their readers into the common model: each
  * reads the bytes of the file as uploaded, so a reader may take a workbook as well as a CSV (S-702).
+ * A fetch over a tool's API becomes a file the same reader reads (S-703).
  */
 
 export type Quelle = Werkzeug & { lesen: (bytes: Uint8Array, spalten: Spaltenwahl) => Gelesen };
@@ -24,6 +26,7 @@ export const SOLL_CSV_VORLAGE = [
 const LESER: Record<string, Quelle["lesen"]> = {
   "soll-csv": (bytes, spalten) => sollCsvLesen(ohneBom(textAusBytes(bytes)), spalten),
   tabelle: tabelleLesen,
+  clockodo: (bytes) => clockodoLesen(textAusBytes(bytes)),
 };
 
 export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({

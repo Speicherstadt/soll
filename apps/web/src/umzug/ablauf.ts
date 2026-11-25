@@ -5,13 +5,13 @@ import { aenderung } from "../abfragen/abfrage.ts";
 import { alle, PFAD } from "../abfragen/schluessel.ts";
 import { type Antwort, api } from "../api.ts";
 import { m } from "../paraglide/messages.js";
-import type { Datei, Probelauf, Uebernahme, Vorschau } from "./typen.ts";
+import type { Abruf, Datei, Probelauf, Uebernahme, Vorschau } from "./typen.ts";
 import type { Aendern } from "./zuordnung.tsx";
 import { koerperVon, letzterAbschliessbarer, spaltenwahl, zuordnungAus } from "./zustand.ts";
 
 /*
  * The state of the move page and its calls (S-701): the file is sent with each call, the server
- * reads it again every time; a change of the mapping drops the dry run, so the takeover always
+ * reads it again every time; a fetch over a tool's API becomes such a file (S-703); a change of the mapping drops the dry run, so the takeover always
  * follows a dry run of the mapping it takes over with.
  */
 
@@ -24,19 +24,32 @@ const AENDERT = () => [
   alle(PFAD.abwesenheitenTeam),
   alle(PFAD.kunden),
   alle(PFAD.projekte),
+  alle(PFAD.taetigkeiten),
 ];
+
+/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-703) */
+const ABRUF_FEHLER: Record<string, () => string> = {
+  zugang_abgelehnt: () => m.umzug_abruf_zugang_abgelehnt(),
+  zu_viele_anfragen: () => m.umzug_abruf_zu_viele_anfragen(),
+  nicht_erreichbar: () => m.umzug_abruf_nicht_erreichbar(),
+  antwort_ungueltig: () => m.umzug_abruf_antwort_ungueltig(),
+  zu_viele: () => m.umzug_abruf_zu_viele(),
+  zeitraum: () => m.umzug_abruf_zeitraum(),
+};
 
 const fehlerText = (antwort: Antwort<unknown>): string => {
   if (antwort.ok) return "";
   if (antwort.status === 0) return m.fehler_netz();
   if (antwort.status === 413) return m.umzug_fehler_zu_gross();
   if (antwort.fehler === "gleichzeitig") return m.umzug_fehler_gleichzeitig();
-  return m.fehler_speichern();
+  return ABRUF_FEHLER[antwort.fehler ?? ""]?.() ?? m.fehler_speichern();
 };
 
 const zustand = () => {
   const [schritt, setSchritt] = createSignal(0);
   const [quelle, setQuelle] = createSignal("soll-csv");
+  // the way in of a tool with an API as well as a file (S-703)
+  const [weg, setWeg] = createSignal<"datei" | "api">("datei");
   const [datei, setDatei] = createSignal<Datei | null>(null);
   const [vorschau, setVorschau] = createSignal<Vorschau | null>(null);
   const [spalten, setSpalten] = createSignal<Record<string, string | null>>({});
@@ -45,6 +58,7 @@ const zustand = () => {
     arten: {},
     kunden: {},
     projekte: {},
+    taetigkeiten: {},
     buchung: { projekte: {}, taetigkeiten: {} },
   });
   const [bis, setBis] = createSignal<string | null>(null);
@@ -59,7 +73,8 @@ const zustand = () => {
   const lesungen = { zahl: 0, wahl: {} as Record<string, string | null> };
   return {
     lesungen,
-    ...{ schritt, setSchritt, quelle, setQuelle, datei, setDatei, vorschau, setVorschau },
+    ...{ schritt, setSchritt, quelle, setQuelle, weg, setWeg, datei, setDatei },
+    ...{ vorschau, setVorschau },
     ...{ spalten, setSpalten, zuordnung, setZuordnung, bis, setBis, probelauf, setProbelauf },
     ...{ uebernahme, setUebernahme, fehler, setFehler },
   };
@@ -77,6 +92,10 @@ const aufrufe = () => ({
     () => [],
   ),
   nehmen: aenderung((body: unknown) => api<Uebernahme>(PFAD.importe, { body }), AENDERT),
+  abruf: aenderung(
+    (body: unknown) => api<{ datei: Datei }>(`${PFAD.importe}/abruf`, { body }),
+    () => [],
+  ),
 });
 
 type Aufrufe = ReturnType<typeof aufrufe>;
@@ -151,6 +170,10 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
       geaendert((e) => {
         e.projekte[id] = ziel;
       }),
+    taetigkeit: (id, ziel) =>
+      geaendert((e) => {
+        e.taetigkeiten[id] = ziel;
+      }),
     buchungProjekt: (wert, projektId) =>
       geaendert((e) => {
         if (e.buchung) e.buchung.projekte[wert] = projektId;
@@ -160,6 +183,18 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
         if (e.buchung) e.buchung.taetigkeiten[wert] = taetigkeitId;
       }),
   };
+};
+
+/**
+ * Fetches the data over the tool's API; the file it becomes is read like an uploaded one. The access
+ * goes with this one call and is kept nowhere here (docs/plan.md, "API-Zugang eines Werkzeugs").
+ */
+const abrufen = async (z: Zustand, a: Aufrufe, abruf: Abruf): Promise<boolean> => {
+  const antwort = await a.abruf.mutate({ quelle: z.quelle(), ...abruf });
+  z.setFehler(fehlerText(antwort));
+  if (!antwort.ok) return false;
+  await vorschauLaden(z, a, antwort.daten.datei, {});
+  return true;
 };
 
 const probieren = async (z: Zustand, a: Aufrufe) => {
@@ -183,6 +218,7 @@ const uebernehmen = async (z: Zustand, a: Aufrufe) => {
 const werkzeugWaehlen = (z: Zustand, quelle: string) => {
   if (quelle === z.quelle()) return;
   z.setQuelle(quelle);
+  z.setWeg("datei");
   z.setDatei(null);
   z.setVorschau(null);
   z.setSpalten({});
@@ -211,8 +247,10 @@ export const umzugAblauf = () => {
       z.setProbelauf(null);
     },
     hoechstens: () => letzterAbschliessbarer(tagInBerlin(Date.now())),
-    arbeitet: () => a.lesen.isPending || a.probe.isPending || a.nehmen.isPending,
+    arbeitet: () =>
+      a.lesen.isPending || a.probe.isPending || a.nehmen.isPending || a.abruf.isPending,
     dateiGewaehlt: (datei: Datei) => vorschauLaden(z, a, datei, {}),
+    abrufen: (abruf: Abruf) => abrufen(z, a, abruf),
     probieren: () => probieren(z, a),
     uebernehmen: () => uebernehmen(z, a),
     neu: () => vonVorn(z),

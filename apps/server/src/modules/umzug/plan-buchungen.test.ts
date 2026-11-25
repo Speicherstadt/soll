@@ -117,6 +117,7 @@ describe("bookings from the project and activity of a time (S-702)", () => {
           kunden: new Map(),
           projekte: new Set(),
           buchungen: new Set(buchungen),
+          taetigkeiten: new Map(),
         },
       });
     const wieder = planen(

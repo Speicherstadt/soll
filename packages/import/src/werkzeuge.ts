@@ -12,7 +12,8 @@ export type Werkzeug = {
   id: string;
   /** the tool's own name, the same in every language */
   name: string;
-  weg: "datei";
+  /** a file the owner exports; for some tools also an API with an access for one fetch (S-703) */
+  wege: readonly ("datei" | "api")[];
   /** the fields of the file, for the mapping of columns */
   felder: readonly string[];
   /** the endings of the files it reads, for the file picker */
@@ -25,7 +26,7 @@ export const WERKZEUGE: readonly Werkzeug[] = [
   {
     id: "soll-csv",
     name: "Soll-CSV",
-    weg: "datei",
+    wege: ["datei"],
     felder: SOLL_CSV_FELDER,
     endungen: [".csv"],
     vorlagen: [],
@@ -33,9 +34,18 @@ export const WERKZEUGE: readonly Werkzeug[] = [
   {
     id: "tabelle",
     name: "Excel/CSV",
-    weg: "datei",
+    wege: ["datei"],
     felder: TABELLE_FELDER,
     endungen: [".xlsx", ".csv"],
     vorlagen: ["soll-zeiten.xlsx", "soll-zeiten.csv"],
+  },
+  {
+    id: "clockodo",
+    name: "Clockodo",
+    wege: ["datei", "api"],
+    // the reader knows its columns: the CSV backup of entries or the file of a fetch (S-703)
+    felder: [],
+    endungen: [".csv", ".jsonl"],
+    vorlagen: [],
   },
 ];

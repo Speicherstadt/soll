@@ -119,5 +119,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0029_import_taetigkeiten",
     "sql": "ALTER TABLE `taetigkeiten` ADD `import_id` text;"
+  },
+  {
+    "tag": "0030_rufbereitschaft",
+    "sql": "CREATE TABLE `einsaetze` (\n\t`betrieb_id` text NOT NULL,\n\t`einsatz_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`rufdienst_id` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer,\n\t`grund` text,\n\t`entfernt` integer DEFAULT false NOT NULL,\n\t`entfernt_grund` text,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `einsatz_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `einsaetze_person` ON `einsaetze` (`betrieb_id`,`nutzer_id`,`beginn`);--> statement-breakpoint\nCREATE TABLE `rufdienste` (\n\t`betrieb_id` text NOT NULL,\n\t`rufdienst_id` text NOT NULL,\n\t`standort_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`tag` text NOT NULL,\n\t`beginn` integer NOT NULL,\n\t`ende` integer NOT NULL,\n\t`reaktion_minuten` integer,\n\t`veroeffentlicht_am` integer,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `rufdienst_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `rufdienste_woche` ON `rufdienste` (`betrieb_id`,`standort_id`,`tag`);--> statement-breakpoint\nCREATE INDEX `rufdienste_person` ON `rufdienste` (`betrieb_id`,`nutzer_id`,`tag`);--> statement-breakpoint\nCREATE TABLE `sollquellen` (\n\t`betrieb_id` text NOT NULL,\n\t`ab` text NOT NULL,\n\t`quelle` text NOT NULL,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `ab`)\n);\n"
   }
 ];

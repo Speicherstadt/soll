@@ -17,6 +17,8 @@ type Optionen = {
   webVerzeichnis?: string | null;
   /** The stand-in for Haben the server calls (S-606) */
   habenFetch?: typeof fetch;
+  /** The stand-in for Clockodo's API an import fetches from (S-703) */
+  clockodoFetch?: (anfrage: Request) => Promise<Response>;
   /** The stand-in for the push service of messages about the plan (S-503) */
   push?: PushSenden;
 };
@@ -61,6 +63,14 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     vapidOeffentlich: vapid.oeffentlich,
     webVerzeichnis: optionen.webVerzeichnis ?? null,
     ...(optionen.habenFetch ? { habenFetch: optionen.habenFetch } : {}),
+    // never the network: without a stand-in, a fetch from Clockodo finds nothing there
+    clockodo: {
+      fetch: (url, init) =>
+        optionen.clockodoFetch
+          ? optionen.clockodoFetch(new Request(url, init))
+          : Promise.reject(new TypeError("no network in tests")),
+      basis: "https://clockodo.test/api",
+    },
     push: optionen.push
       ? { vapid, kontakt: vapidKontakt(TEST_URL, undefined), senden: optionen.push }
       : null,

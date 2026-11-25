@@ -1,6 +1,5 @@
 import {
   type ImportAbwesenheit,
-  type ImportDaten,
   type ImportKunde,
   type ImportProjekt,
   type ImportZeit,
@@ -39,7 +38,9 @@ export type Satz =
   | { art: "projekte"; wert: ImportProjekt };
 
 /** The words of the column `Typ`, German and English */
-const TYPEN: Record<string, keyof ImportDaten> = {
+type SatzArt = Satz["art"];
+
+const TYPEN: Record<string, SatzArt> = {
   zeit: "zeiten",
   arbeitszeit: "zeiten",
   time: "zeiten",
@@ -150,7 +151,7 @@ const LESER = {
 } as const;
 
 /** The list of the model a line goes to by its column `Typ`, or undefined */
-export const artVon = (typ: string): keyof ImportDaten | undefined => TYPEN[schluessel(typ)];
+export const artVon = (typ: string): SatzArt | undefined => TYPEN[schluessel(typ)];
 
 /** One line as a record of its kind, or the first reason it cannot be read */
 export const datensatzLesen = (zeile: number, felder: Felder): Satz | LeseFehler => {

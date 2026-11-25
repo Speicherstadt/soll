@@ -231,7 +231,9 @@ describe("who reads whose accounts", () => {
     const planer = await konten(w.anna, w.sandra.nutzerId);
     expect(planer.urlaub).toEqual({ ok: true, restHalbtage: 10, geplantHalbtage: 0 });
     expect(planer).toMatchObject({ hinweise: [], anpassungen: [] });
-    expect(planer.ueberstunden).toEqual(eigen.ueberstunden);
+    // of the overtime only the balance: the months would show the payout (review S-402)
+    const u = eigen.ueberstunden as Json;
+    expect(planer.ueberstunden).toEqual({ ok: true, saldoMinuten: u.saldoMinuten, luecken: [] });
   });
 
   it("refuses another person's accounts to an employee", async () => {

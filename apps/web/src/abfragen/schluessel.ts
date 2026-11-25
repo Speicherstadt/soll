@@ -23,6 +23,9 @@ export const PFAD = {
   abwesenheitenOffen: `${ABW}/offen`,
   abwesenheitenTeam: `${ABW}/team`,
   konten: `${AZ}/konten`,
+  // call-outs from a Rufbereitschaft and where the Soll comes from (S-505)
+  einsaetze: `${AZ}/einsaetze`,
+  sollquellen: `${AZ}/sollquellen`,
   standorte: "/api/v1/standorte",
   pruefung: "/api/v1/betrieb/pruefung",
   // the key of every person's data for the rules; each is loaded from /personen/:nutzerId/angaben
@@ -87,6 +90,9 @@ export const ressourcen = {
   abwesenheitenTeam: (parameter: { von: string; bis: string; standortId?: string | undefined }) =>
     mitParametern(PFAD.abwesenheitenTeam, parameter),
   konten: (parameter: { nutzerId?: string | undefined }) => mitParametern(PFAD.konten, parameter),
+  einsaetze: (parameter: { monat?: string | undefined }) =>
+    mitParametern(PFAD.einsaetze, parameter),
+  sollquellen: () => einfach(PFAD.sollquellen),
   standorte: () => einfach(PFAD.standorte),
   pruefung: () => einfach(PFAD.pruefung),
   angaben: (nutzerId: string): Ressource => ({

@@ -1,5 +1,5 @@
 import { Button, Icon } from "@soll/ui";
-import { CalendarPlus, ChevronLeft, ChevronRight } from "lucide";
+import { CalendarPlus, ChevronLeft, ChevronRight, PhoneCall } from "lucide";
 import { For, Show } from "solid-js";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
@@ -9,7 +9,9 @@ import type { Standort, Woche } from "./typen.ts";
 
 /** Whether the week shows a draft, which publishing makes visible to the people (S-503) */
 export const hatEntwurf = (woche: Woche | null): boolean =>
-  woche?.schichten.some((s) => s.veroeffentlichtAm === null) ?? false;
+  [...(woche?.schichten ?? []), ...(woche?.rufdienste ?? [])].some(
+    (s) => s.veroeffentlichtAm === null,
+  );
 
 /**
  * The head of the plan (design/mockup/Dienstplan.dc.html): the week with its calendar week and
@@ -30,6 +32,8 @@ export const PlanKopf = (props: {
   onBedarf: () => void;
   onAngaben: () => void;
   onKalender: () => void;
+  /** plans a Rufbereitschaft (S-505) */
+  onRuf: () => void;
   onVeroeffentlichen: () => void;
   /** while a publish is on its way */
   veroeffentlicht: boolean;
@@ -93,6 +97,10 @@ export const PlanKopf = (props: {
         </Button>
         <Button variant="outline" onClick={() => props.onBedarf()}>
           {m.plan_bedarf()}
+        </Button>
+        <Button variant="outline" onClick={() => props.onRuf()}>
+          <Icon icon={PhoneCall} />
+          {m.oncall_add()}
         </Button>
       </Show>
       <Show when={props.inhaber}>

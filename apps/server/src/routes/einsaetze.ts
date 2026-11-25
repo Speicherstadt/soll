@@ -67,7 +67,7 @@ const antwort = (c: Context<Anfrage>, ergebnis: EinsatzErgebnis, status: 200 | 2
 /** The routes that write need the plan: a call-out begins in one of its duties */
 const mitPlan = (db: Db) => async (c: Context<Anfrage>, next: () => Promise<void>) => {
   if (!modulAktiv(db, c.get("betriebId"), "dienstplan"))
-    return c.json({ fehler: "modul_aus", modul: "dienstplan" }, 403);
+    return c.json({ fehler: "dienstplan_aus" }, 403);
   await next();
 };
 
@@ -152,6 +152,6 @@ export const sollquellenRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => num
       const ergebnis = sollquelleSetzen(db, schreibDb, kontextVon(c, jetzt), eingabe.data);
       if (ergebnis.ok) return c.json({ quellen: ergebnis.quellen });
       return ergebnis.grund === "modul_aus"
-        ? c.json({ fehler: "modul_aus", modul: "dienstplan" }, 403)
+        ? c.json({ fehler: "dienstplan_aus" }, 403)
         : c.json({ fehler: ergebnis.grund }, 409);
     });

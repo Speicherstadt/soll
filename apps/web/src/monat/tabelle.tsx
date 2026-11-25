@@ -47,13 +47,17 @@ const zeit = (ms: number | null) => (ms === null ? "" : uhrzeitText(ms));
  * shows what counts.
  */
 export const TageTabelle = (props: { zeilen: Zeile[] }) => {
+  // the Soll of each day shows once it comes from the plan (S-505), so Soll and Ist stand side by side
+  const mitPlan = () => props.zeilen.some((zeile) => zeile.ausPlan);
   const gezeigt = () =>
     props.zeilen.filter(
       (zeile) =>
         zeile.beginn !== null ||
         zeile.befunde.length > 0 ||
         zeile.geaendert ||
-        zeile.abwesenheiten.length > 0,
+        zeile.abwesenheiten.length > 0 ||
+        zeile.einsaetze.length > 0 ||
+        (zeile.ausPlan && (zeile.sollMinuten ?? 0) > 0),
     );
   return (
     <Show
@@ -68,6 +72,9 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
             <Th>{m.monat_spalte_ende()}</Th>
             <Th class="max-md:hidden">{m.monat_spalte_pause()}</Th>
             <Th>{m.monat_spalte_dauer()}</Th>
+            <Show when={mitPlan()}>
+              <Th>{m.month_column_target()}</Th>
+            </Show>
             <Th>{m.monat_spalte_hinweis()}</Th>
           </Tr>
         </Thead>
@@ -88,10 +95,29 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                   {zeile.beginn === null ? "" : dauerText(zeile.pauseMinuten)}
                 </Td>
                 <Td class="font-mono" dir="ltr">
-                  {zeile.beginn === null ? "" : dauerText(zeile.arbeitsMinuten)}
+                  {zeile.beginn === null && zeile.arbeitsMinuten === 0
+                    ? ""
+                    : dauerText(zeile.arbeitsMinuten)}
                 </Td>
+                <Show when={mitPlan()}>
+                  <Td class="font-mono" dir="ltr">
+                    {zeile.ausPlan ? dauerText(zeile.sollMinuten ?? 0) : ""}
+                  </Td>
+                </Show>
                 <Td>
                   <div class="flex flex-col items-start gap-1">
+                    <For each={zeile.einsaetze}>
+                      {([beginn, ende]) => (
+                        <span>
+                          {ende === null
+                            ? m.callout_open({ zeit: uhrzeitText(beginn) })
+                            : m.callout_line({
+                                zeit: `${uhrzeitText(beginn)}–${uhrzeitText(ende)}`,
+                                dauer: dauerText(Math.round((ende - beginn) / 60_000)),
+                              })}
+                        </span>
+                      )}
+                    </For>
                     <Show when={zeile.geaendert}>
                       <Badge>{m.monat_geaendert()}</Badge>
                     </Show>

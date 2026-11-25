@@ -59,7 +59,7 @@ describe("Soll aus dem Plan", () => {
     });
     const aus = await setzen(w.jonas, body);
     expect(aus.status).toBe(403);
-    expect(await json(aus)).toEqual({ fehler: "modul_aus", modul: "dienstplan" });
+    expect(await json(aus)).toEqual({ fehler: "dienstplan_aus" });
     expect((await setzen(w.jonas, { ...body, quelle: "modell" })).status).toBe(200);
   });
 

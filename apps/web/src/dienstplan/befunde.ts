@@ -7,6 +7,8 @@ import type { PlanBefund } from "./typen.ts";
  */
 
 const REGEL_TITEL: Record<string, () => string> = {
+  "R-11": m.plan_regel_r11,
+  "R-12": m.plan_regel_r12,
   "R-02": m.plan_regel_r02,
   "R-03": m.plan_regel_r03,
   "R-04": m.plan_regel_r04,

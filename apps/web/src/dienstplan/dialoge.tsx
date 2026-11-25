@@ -2,6 +2,7 @@ import { Match, Switch } from "solid-js";
 import { AngabenDialog } from "./angabenDialog.tsx";
 import { BedarfDialog } from "./bedarfDialog.tsx";
 import { KalenderDialog } from "./kalenderDialog.tsx";
+import { RufDialog, type RufModus } from "./rufDialog.tsx";
 import { SchichtDialog, type SchichtModus } from "./schichtDialog.tsx";
 import type { Planperson, Vorlage } from "./typen.ts";
 import { VorlagenDialog } from "./vorlagenDialog.tsx";
@@ -13,6 +14,7 @@ export type OffenerDialog =
   | { art: "bedarf" }
   | { art: "angaben" }
   | { art: "kalender" }
+  | { art: "ruf"; modus: RufModus }
   | null;
 
 /**
@@ -28,6 +30,7 @@ export const PlanDialoge = (props: {
   onSchliessen: () => void;
 }) => {
   const modus = () => (props.offen?.art === "schicht" ? props.offen.modus : null);
+  const ruf = () => (props.offen?.art === "ruf" ? props.offen.modus : null);
   return (
     <Switch>
       <Match when={modus()}>
@@ -57,6 +60,16 @@ export const PlanDialoge = (props: {
       </Match>
       <Match when={props.offen?.art === "kalender"}>
         <KalenderDialog onSchliessen={props.onSchliessen} />
+      </Match>
+      <Match when={ruf()}>
+        {(gewaehlt) => (
+          <RufDialog
+            modus={gewaehlt()}
+            standortId={props.standortId}
+            personen={props.personen}
+            onSchliessen={props.onSchliessen}
+          />
+        )}
       </Match>
     </Switch>
   );

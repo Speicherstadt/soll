@@ -5,8 +5,9 @@ import { createMemo, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { befundeDer } from "./befunde.ts";
 import { BefundIcon, befundeText, blockText } from "./block.tsx";
+import { RufBlock } from "./rufBlock.tsx";
 import { spanneText, tagDerZahl, tagLang, wochentagKurz } from "./text.ts";
-import type { PlanBefund, Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
+import type { PlanBefund, Rufdienst, Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
 import { planzeilen } from "./zeilen.ts";
 
 /**
@@ -21,6 +22,7 @@ export const TagListe = (props: {
   onTag: (tag: Tag) => void;
   onOeffnen: (schicht: Schicht) => void;
   onNeu: (ziel: Ziel) => void;
+  onRuf: (rufdienst: Rufdienst) => void;
 }) => {
   const spalte = () => Math.max(0, props.woche.tage.indexOf(props.tag));
   const eintraege = createMemo(() =>
@@ -28,6 +30,10 @@ export const TagListe = (props: {
       (zeile.zellen[spalte()] ?? []).map((schicht) => ({ zeile, schicht })),
     ),
   );
+  const namen = createMemo(
+    () => new Map(props.woche.personen.map((person) => [person.nutzerId, person.name])),
+  );
+  const rufdienste = () => props.woche.rufdienste.filter((dienst) => dienst.tag === props.tag);
   return (
     <div class="flex flex-col gap-4">
       <fieldset class="m-0 grid grid-cols-7 gap-1 border-0 p-0">
@@ -52,6 +58,23 @@ export const TagListe = (props: {
         </For>
       </fieldset>
       <h2 class="font-semibold text-[17px]">{tagLang(props.tag)}</h2>
+      <Show when={rufdienste().length > 0}>
+        <ul class="m-0 flex list-none flex-col gap-2 p-0">
+          <For each={rufdienste()}>
+            {(dienst) => (
+              <li class="flex flex-col gap-1">
+                <span class="font-medium">{namen().get(dienst.nutzerId) ?? ""}</span>
+                <RufBlock
+                  rufdienst={dienst}
+                  befunde={befundeDer(props.woche.befunde, dienst.rufdienstId)}
+                  planer={props.planer}
+                  onOeffnen={() => props.onRuf(dienst)}
+                />
+              </li>
+            )}
+          </For>
+        </ul>
+      </Show>
       <Show
         when={eintraege().length > 0}
         fallback={<p class="text-muted-foreground">{m.plan_tag_leer()}</p>}

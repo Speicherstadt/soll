@@ -15,7 +15,12 @@ export const planzeilen = (woche: Woche, planer: boolean): Planzeile[] => {
     woche.personen.map((person) => person.nutzerId),
     woche.schichten,
   )
-    .filter((zeile) => planer || zeile.zellen.some((zelle) => zelle.length > 0))
+    .filter(
+      (zeile) =>
+        planer ||
+        zeile.zellen.some((zelle) => zelle.length > 0) ||
+        woche.rufdienste.some((dienst) => dienst.nutzerId === zeile.nutzerId),
+    )
     .map((zeile) => ({
       ...zeile,
       name: zeile.nutzerId === null ? m.plan_offen() : (namen.get(zeile.nutzerId) ?? ""),

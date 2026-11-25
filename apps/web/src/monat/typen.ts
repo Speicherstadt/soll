@@ -9,6 +9,10 @@ export type Aufzeichnung = {
   stempel: [Stempelart, number][];
   modellMinuten: number | null;
   abwesenheiten?: { art: SichtbareArt; halb?: boolean }[];
+  /** the call-outs of the working day, beginning and end, null while one runs (S-505) */
+  einsaetze?: [number, number | null][];
+  /** on a day whose Soll comes from the plan, its published minutes (S-505) */
+  planMinuten?: number;
 };
 
 export type Blattbefund = {

@@ -5,9 +5,10 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { befundeDer } from "./befunde.ts";
 import { Block, GRIFF_HINWEIS } from "./block.tsx";
+import { RufBlock } from "./rufBlock.tsx";
 import { type Zelle, zielNach } from "./tastatur.ts";
 import { spanneText, tagDerZahl, tagLang, wochentagKurz } from "./text.ts";
-import type { Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
+import type { Rufdienst, Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
 import { type Planzeile, planzeilen } from "./zeilen.ts";
 import { type Abgelegt, abgelegt, ziehbar, zielSchluessel } from "./ziehen.ts";
 
@@ -17,6 +18,8 @@ export type RasterProps = {
   planer: boolean;
   onOeffnen: (schicht: Schicht) => void;
   onNeu: (ziel: Ziel) => void;
+  /** opens a Rufbereitschaft (S-505) */
+  onRuf: (rufdienst: Rufdienst) => void;
   onAblegen: (was: Abgelegt, ziel: Ziel) => void;
   /** a polite announcement for screen readers (picked up, target, dropped) */
   ansagen: (text: string) => void;
@@ -200,6 +203,21 @@ const Zeile = (props: {
                     onGriff={() => props.onGriff(schicht(), zelle())}
                     onGriffTaste={props.onTaste}
                     onGriffVerlassen={props.onVerlassen}
+                  />
+                )}
+              </For>
+              <For
+                each={props.raster.woche.rufdienste.filter(
+                  (dienst) => dienst.nutzerId === props.zeile.nutzerId && dienst.tag === ziel().tag,
+                )}
+                keyed={(dienst) => dienst.rufdienstId}
+              >
+                {(dienst) => (
+                  <RufBlock
+                    rufdienst={dienst()}
+                    befunde={befundeDer(props.raster.woche.befunde, dienst().rufdienstId)}
+                    planer={props.raster.planer}
+                    onOeffnen={() => props.raster.onRuf(dienst())}
                   />
                 )}
               </For>

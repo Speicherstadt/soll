@@ -21,7 +21,20 @@ export type Zeile = {
   geaendert: boolean;
   /** the day's approved absences (S-401) */
   abwesenheiten: ZeilenAbwesenheit[];
+  /** the call-outs of the day (S-505); `arbeitsMinuten` includes the ended ones */
+  einsaetze: [number, number | null][];
+  /** whether the day's Soll comes from the plan (S-505) */
+  ausPlan: boolean;
 };
+
+const MINUTE = 60_000;
+
+/** The minutes of the call-outs that have ended (R-12: working time) */
+const einsatzMinuten = (einsaetze: readonly [number, number | null][]): number =>
+  einsaetze.reduce(
+    (summe, [beginn, ende]) => summe + (ende === null ? 0 : Math.round((ende - beginn) / MINUTE)),
+    0,
+  );
 
 /**
  * The rows of a month from its records, with the same functions as the server (S-201): a night
@@ -40,13 +53,16 @@ export const zeilenDesMonats = (
   const arbeit = new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag]));
   return tage.map((aufzeichnung) => {
     const tag = arbeit.get(aufzeichnung.tag);
+    const einsaetze = aufzeichnung.einsaetze ?? [];
     return {
       tag: aufzeichnung.tag,
       beginn: tag?.beginn ?? null,
       ende: tag?.ende ?? null,
       pauseMinuten: tag?.pausenMinuten ?? 0,
-      arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
-      sollMinuten: aufzeichnung.modellMinuten,
+      arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + einsatzMinuten(einsaetze),
+      sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
+      einsaetze,
+      ausPlan: aufzeichnung.planMinuten !== undefined,
       befunde: befunde.filter((befund) => befund.tage.includes(aufzeichnung.tag)),
       geaendert: geaendert.includes(aufzeichnung.tag),
       abwesenheiten: aufzeichnung.abwesenheiten ?? [],

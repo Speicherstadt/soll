@@ -7,6 +7,7 @@ import { knopfLink } from "../einrichtung/stil.ts";
 import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { PruefungEinstellungen } from "../einstellungen/pruefung.tsx";
+import { SollquelleEinstellung } from "../einstellungen/sollquelle.tsx";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
 import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
 import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
@@ -48,6 +49,7 @@ const Einstellungen = () => {
       <ModuleSchalter />
       <PruefungEinstellungen />
       <BescheinigungEinstellung />
+      <SollquelleEinstellung />
       <Erinnerungen />
       <Show when={terminal()}>
         <TerminalGeraete />

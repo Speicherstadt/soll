@@ -165,3 +165,25 @@ for (const theme of ["light", "dark"] as const) {
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 }
+
+test("R-12: a Rufbereitschaft without reaction time counts fully, R-02 at the duty (Matzak)", async ({
+  page,
+}) => {
+  const ort = await betriebMitPlan(page);
+  await senden(page, "POST", "/api/v1/dienstplan/rufdienste", {
+    standortId: ort.standortId,
+    nutzerId: ort.nutzerId,
+    tag: ab(1),
+    beginnMinute: 18 * 60,
+    endeMinute: 6 * 60,
+    reaktionMinuten: null,
+  });
+  await page.goto(`/dienstplan?tag=${ab(1)}`);
+  const eintrag = hinweise(page).locator('[data-regel="R-02"]').first();
+  await expect(eintrag).toContainText(t("plan_regel_r02"));
+  await expect(eintrag).toContainText("Jonas Weber");
+  const zelle = page.locator(`[data-zelle="${ort.nutzerId}:${ab(1)}"]`);
+  await expect(zelle.getByRole("button").filter({ hasText: t("oncall_title") })).toContainText(
+    t("plan_regel_r02"),
+  );
+});

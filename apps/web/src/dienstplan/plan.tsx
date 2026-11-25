@@ -89,6 +89,7 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
         onBedarf={() => setOffen({ art: "bedarf" })}
         onAngaben={() => setOffen({ art: "angaben" })}
         onKalender={() => setOffen({ art: "kalender" })}
+        onRuf={() => setOffen({ art: "ruf", modus: { art: "neu", tag: tag() } })}
         onVeroeffentlichen={() => void veroeffentlichen.veroeffentlichen(dieseWoche())}
         veroeffentlicht={veroeffentlichen.laeuft()}
       />
@@ -108,6 +109,7 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
               setOffen({ art: "schicht", modus: { art: "bearbeiten", schicht } })
             }
             onNeu={(ziel) => setOffen({ art: "schicht", modus: { art: "neu", ziel } })}
+            onRuf={(rufdienst) => setOffen({ art: "ruf", modus: { art: "bearbeiten", rufdienst } })}
             onAblegen={(was, ziel) => void ablegen(was, ziel)}
             ansagen={setAnsage}
           />

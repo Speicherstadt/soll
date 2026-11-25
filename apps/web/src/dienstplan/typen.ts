@@ -3,6 +3,18 @@ import type { Deckung, Kalenderwoche, PlanSchicht, Tag } from "@soll/arbeitszeit
 /** A shift as GET /api/v1/dienstplan/woche returns it */
 export type Schicht = PlanSchicht & { vorlageId: string | null; veroeffentlichtAm: number | null };
 
+/** A Rufbereitschaft as GET /api/v1/dienstplan/woche returns it (S-505) */
+export type Rufdienst = {
+  rufdienstId: string;
+  standortId: string;
+  nutzerId: string;
+  tag: Tag;
+  beginn: number;
+  ende: number;
+  reaktionMinuten: number | null;
+  veroeffentlichtAm: number | null;
+};
+
 export type Planperson = { nutzerId: string; name: string };
 
 export type Woche = {
@@ -11,6 +23,8 @@ export type Woche = {
   kw: Kalenderwoche;
   personen: Planperson[];
   schichten: Schicht[];
+  /** the Rufbereitschaft of the week (S-505), drafts only for whoever plans */
+  rufdienste: Rufdienst[];
   /** null for whoever does not plan */
   deckung: Deckung[] | null;
   /** the findings of the rules on the shifts shown (S-502); null for whoever does not plan */

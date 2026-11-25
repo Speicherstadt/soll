@@ -5,6 +5,7 @@ import { AUSLASTUNG, BUCHUNGEN, STUNDENNACHWEISE } from "./buchungen.ts";
 import { HABEN } from "./haben.ts";
 import { IMPORTE } from "./importe.ts";
 import { DIENSTPLAN, PROJEKTZEIT } from "./module.ts";
+import { RUFBEREITSCHAFT } from "./rufbereitschaft.ts";
 import { KIOSK, TERMINAL } from "./terminal.ts";
 
 export { type Operation, openapiDokument, openapiPfad } from "./dokument.ts";
@@ -17,6 +18,7 @@ export const OPERATIONEN = [
   ...ABWESENHEITEN,
   ...KONTEN_OPERATIONEN,
   ...DIENSTPLAN,
+  ...RUFBEREITSCHAFT,
   ...PROJEKTZEIT,
   ...BUCHUNGEN,
   ...AUSLASTUNG,

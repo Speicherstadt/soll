@@ -15,7 +15,11 @@ import { TagListe } from "./tagListe.tsx";
  */
 export const PlanInhalt = (props: RasterProps & { tag: Tag; onTag: (tag: Tag) => void }) => (
   <>
-    <Show when={!props.planer && props.woche.schichten.length === 0}>
+    <Show
+      when={
+        !props.planer && props.woche.schichten.length === 0 && props.woche.rufdienste.length === 0
+      }
+    >
       <Leer text={m.plan_nichts_veroeffentlicht()} />
     </Show>
     <Show when={props.planer}>
@@ -33,6 +37,7 @@ export const PlanInhalt = (props: RasterProps & { tag: Tag; onTag: (tag: Tag) =>
         onTag={props.onTag}
         onOeffnen={props.onOeffnen}
         onNeu={props.onNeu}
+        onRuf={props.onRuf}
       />
     </div>
     <Show when={props.woche.befunde}>

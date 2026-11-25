@@ -744,7 +744,6 @@ neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (sie
 requests“).
 
 - [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
-- [ ] S-606 Haben – #48; offen: Doku in `docs/projektzeit.md`, Entscheidungen, Haken
 - [ ] S-904 Lasttest – #49; offen: Zeitüberschreitungen in den Tests klären, Schwelle festlegen
   und als Entscheidung eintragen, Doku, Haken
 - [ ] S-803 Terminal offline – noch nicht begonnen

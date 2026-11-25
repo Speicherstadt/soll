@@ -15,6 +15,7 @@ import {
   geraete,
   habenUebergaben,
   habenZugaenge,
+  importe,
   instanzschluessel,
   kalenderAbos,
   karten,
@@ -86,6 +87,7 @@ export const kettenTabellen = {
   habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
   kontoAnpassungen: { tabelle: kontoAnpassungen, schluessel: ["anpassungId"] },
   urlaubshinweise: { tabelle: urlaubshinweise, schluessel: ["hinweisId"] },
+  importe: { tabelle: importe, schluessel: ["importId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

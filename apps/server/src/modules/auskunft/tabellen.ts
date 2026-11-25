@@ -55,6 +55,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
     "personenangaben (Geburtsdatum, Wechselschicht, Arbeit auf Abruf, Zeiträume des Mutterschutzes)",
   konto_anpassungen: "kontoAnpassungen (Startsaldo, Auszahlung, Korrekturen mit Grund)",
   urlaubshinweise: "urlaubshinweise (Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub)",
+  importe:
+    "ausgenommen: Vorgang des Betriebs; jede übernommene Zeile der Person steht mit Import, Werkzeug und Kennung unter stempelungen und abwesenheiten, die Originaldatei enthält Daten anderer Personen (Art. 15 Abs. 4)",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -143,6 +145,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
     "Anpassungen der Konten, die der Inhaber selbst einträgt (konten:pflegen)",
   ),
   urlaubshinweise: frei("Hinweise auf den Verfall, die der Inhaber selbst gibt (konten:pflegen)"),
+  importe: aus(
+    "Vorgang des Betriebs; die übernommenen Zeilen stehen unter stempelungen und abwesenheiten",
+  ),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

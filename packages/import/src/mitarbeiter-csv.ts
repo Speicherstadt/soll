@@ -1,4 +1,5 @@
 import { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
+import { schluessel } from "./text.ts";
 
 /**
  * A list of employees from a spreadsheet, for the setup (BAULISTE.md S-303): one person per line with
@@ -27,15 +28,6 @@ export type CsvErgebnis = { personen: CsvPerson[]; fehler: CsvFehler[] };
 export const MAX_PERSONEN = 200;
 /** The longest name of an invitation (apps/server, routes/einladungen.ts) */
 const MAX_NAME = 100;
-
-/** Lower case without accents and inner spaces, so "Lohnbüro", "lohnbuero" and "LOHN BÜRO" match */
-const schluessel = (text: string): string =>
-  text
-    .normalize("NFKD")
-    .replace(/\p{M}/gu, "")
-    .replace(/ß/g, "ss")
-    .toLowerCase()
-    .replace(/[\s_-]+/g, "");
 
 const SPALTEN: Record<string, "name" | "vorname" | "nachname" | "rolle"> = {
   name: "name",

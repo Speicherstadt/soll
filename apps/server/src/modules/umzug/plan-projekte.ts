@@ -1,0 +1,70 @@
+import type { ImportKunde, ImportProjekt, Ziel } from "@soll/import";
+import type { Anzahl, NeuerKunde, NeuesProjekt, PlanGrund, Stand } from "./plan-typen.ts";
+
+/*
+ * Customers and orders of another tool (BAULISTE.md S-701): created anew with the tool and their id
+ * (`extern_quelle`, `extern_id`, S-601), matched with one the business has, or left out. One created
+ * by an earlier import is found by its id and stays as it is.
+ */
+
+export type Ergebnis<T> =
+  | { art: "neu"; wert: T; id: string }
+  | { art: "vorhanden"; id: string }
+  | { art: "ausgelassen" }
+  | { art: "abgelehnt"; grund: PlanGrund };
+
+/** Counts a result into the numbers of its kind */
+export const zaehlen = (anzahl: Anzahl, ergebnis: { art: keyof Anzahl }): void => {
+  anzahl[ergebnis.art] += 1;
+};
+
+const zugeordnet = <T>(
+  ziel: Ziel,
+  vorhanden: ReadonlySet<string>,
+  grund: PlanGrund,
+): Ergebnis<T> | null => {
+  if (ziel === "aus") return { art: "ausgelassen" };
+  if (ziel === "neu") return null;
+  return vorhanden.has(ziel.id) ? { art: "vorhanden", id: ziel.id } : { art: "abgelehnt", grund };
+};
+
+export const kundePlanen = (kunde: ImportKunde, ziel: Ziel, stand: Stand): Ergebnis<NeuerKunde> => {
+  if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
+  const gewaehlt = zugeordnet<NeuerKunde>(ziel, stand.kunden, "kunde_unbekannt");
+  if (gewaehlt) return gewaehlt;
+  const frueher = stand.vorhanden.kunden.get(kunde.externalId);
+  if (frueher !== undefined) return { art: "vorhanden", id: frueher };
+  const kundeId = stand.neueId();
+  return {
+    art: "neu",
+    id: kundeId,
+    wert: { kundeId, name: kunde.name, nummer: kunde.nummer, externId: kunde.externalId },
+  };
+};
+
+/** `kundeId`: the customer of the order in Soll, null when its customer is not taken over */
+export const projektPlanen = (
+  projekt: ImportProjekt,
+  ziel: Ziel,
+  kundeId: string | null,
+  stand: Stand,
+): Ergebnis<NeuesProjekt> => {
+  if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
+  const gewaehlt = zugeordnet<NeuesProjekt>(ziel, stand.projekte, "projekt_unbekannt");
+  if (gewaehlt) return gewaehlt;
+  if (stand.vorhanden.projekte.has(projekt.externalId))
+    return { art: "vorhanden", id: projekt.externalId };
+  if (kundeId === null) return { art: "abgelehnt", grund: "kunde_ausgelassen" };
+  const projektId = stand.neueId();
+  return {
+    art: "neu",
+    id: projektId,
+    wert: {
+      projektId,
+      kundeId,
+      name: projekt.name,
+      nummer: projekt.nummer,
+      externId: projekt.externalId,
+    },
+  };
+};

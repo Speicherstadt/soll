@@ -2,7 +2,7 @@
 title: Terminal
 description: >-
   Ein Tablet am Eingang wird zum Terminal: koppeln mit einem Code, stempeln mit PIN, QR-Code oder
-  NFC-Karte, Sperre nach falschen Versuchen, Wake Lock und Neuladen von selbst.
+  NFC-Karte, auch ohne Netz, Sperre nach falschen Versuchen, Wake Lock und Neuladen von selbst.
 ---
 
 # Terminal
@@ -131,13 +131,71 @@ gesperrtes Terminal fragt alle 15 Sekunden beim Server nach, ob es entsperrt ode
 - **Neuladen**: Nach einem Fehler sagt das Terminal, dass es neu startet, und lädt nach fünf
   Sekunden neu. Fällt das Netz aus, zeigt es das; kommt das Netz zurück, lädt es sofort neu.
 
-Stempeln ohne Netz am Terminal kommt mit S-803.
+## Ohne Netz
+
+Fällt das Netz aus oder antwortet der Server nicht, stempelt das Terminal weiter; eine Antwort, die
+nach 15 Sekunden nicht da ist, gilt als „ohne Netz“. Links unter dem
+Namen steht immer der Stand: **Verbunden** oder **Ohne Netz**, wie viele Stempelungen auf die
+Übertragung warten und wann zuletzt eine übertragen wurde.
+
+Ohne Netz nimmt das Terminal PIN, QR-Code und NFC-Karte an wie sonst. Wer die Person ist, weiß aber
+nur der Server: Das Terminal zeigt deshalb keinen Namen und keinen Stand, sondern **Keine Verbindung
+zum Server** und die Knöpfe **Kommen**, **Pause starten** und **Gehen** (nach der Pause wieder
+Kommen). Nach dem Tipp steht dort „Kommen um 07:58 gespeichert“; die Stempelung wartet auf dem
+Tablet. Kommt das Netz zurück, überträgt das Terminal von selbst, was wartet, in der Reihenfolge der
+Nummern; es versucht es auch alle 30 Sekunden. Soll stempelt dabei nie selbst: Es wartet nur, was
+jemand getippt hat.
+
+Was dabei auf dem Tablet liegt und wie der Server es prüft:
+
+- **Schlüssel des Tablets**: Beim ersten Start nach der Kopplung erzeugt das Tablet einen
+  ECDSA-Schlüssel (P-256) mit WebCrypto, den der Browser nicht herausgibt, und meldet den
+  öffentlichen Teil beim Server an, einmal je Kopplung; ein Tablet, das schon vorher gekoppelt war,
+  tut das beim nächsten Start. Jeder Eintrag trägt eine fortlaufende Nummer je Terminal und eine
+  Signatur über Nummer, Art, Zeit des Tablets und Ausweis.
+- **Ausweis nur verschlüsselt**: PIN, QR-Wert, Karte mit PIN oder SUN-Nachricht stehen auf dem
+  Tablet nur verschlüsselt mit einem öffentlichen Schlüssel des Servers (ECIES: ECDH auf P-256,
+  HKDF-SHA-256, AES-256-GCM), auf dieselbe Länge aufgefüllt, so dass niemand am Tablet eine PIN
+  oder auch nur ihre Länge lesen kann. Den Schlüssel leitet der Server aus `SOLL_SECRET_KEY` ab.
+- **Beim Übertragen** prüft der Server die Signatur mit dem angemeldeten Schlüssel, erkennt die
+  Person mit dem entschlüsselten Ausweis wie am Terminal mit Netz und stempelt für sie: Quelle
+  „Terminal“, das Terminal, als **offline** markiert, zur Zeit des Tablets, verschoben um die
+  Abweichung seiner Uhr beim Senden (wie [ohne Netz am Handy](stempeln.md)). Eine falsche PIN oder
+  Karte zählt zur [Sperre](#sperre) und steht in der Audit-Kette. Die kurzen Wartezeiten der Sperre
+  halten Einträge ohne Netz nicht auf; nach dem zwanzigsten falschen Versuch des Tages lehnt der
+  Server eine PIN (auch mit Karte) ungeprüft als „gesperrt“ ab, QR-Code und NTAG 424 DNA prüft er
+  weiter. So hält niemand mit Rateversuchen ohne Netz die echten Stempelungen dahinter auf.
+- **SUN-Nachricht**: Jede zählt nur einmal, auch aus der Warteschlange. Wurde die Karte
+  inzwischen mit Netz gelesen, gilt die ältere Nachricht als Wiederholung; der Inhaber sieht den
+  Eintrag als abgelehnt und trägt die Stempelung nach. Damit das am selben Tablet nicht passiert,
+  überträgt es zuerst, was wartet, bevor es eine Karte mit Netz erkennt. Ohne Netz geht die
+  Nachricht gleich in die Warteschlange. Bleibt die Antwort des Servers auf eine aufgelegte Karte
+  aus, bittet das Terminal, die Karte noch einmal aufzulegen: Die erste Nachricht kann der Server
+  schon gezählt haben, die nächste ist neu.
+- **Ausweis an seinen Eintrag gebunden**: Ein verschlüsselter Ausweis öffnet sich nur in dem
+  Eintrag (Terminal, Nummer, Art, Zeit), für den er getippt wurde; aus der Ablage des Tablets lässt
+  er sich nicht in einen neuen Eintrag übernehmen.
+- **Antwort verloren**: Hat der Server eine Stempelung mit Netz gemacht, aber das Tablet die Antwort
+  nicht bekommen, legt das Tablet sie in die Warteschlange; beim Übertragen erkennt der Server
+  dieselbe Stempelung (dieselbe Person und Art vom Terminal binnen einer Minute) und macht keine
+  zweite.
+- **Derselbe Eintrag zweimal** ergibt eine Stempelung; ein anderer Inhalt unter einer schon
+  vergebenen Nummer wird abgelehnt.
+- **Was der Inhaber sieht**: Unter **Einstellungen → Terminal** steht bei jedem Terminal jeder
+  Eintrag, den der Server nicht angenommen hat, mit Grund (PIN, Karte oder QR-Code unbekannt,
+  Ausweis nicht lesbar, Terminal bis Mitternacht gesperrt, Monat schon abgeschlossen), und jede Lücke in den Nummern. Ohne Netz kann
+  das Tablet eine falsche PIN nicht erkennen; die Person sieht „gespeichert“, der Inhaber später die
+  Ablehnung und trägt die Stempelung bei Bedarf mit Grund nach.
+- **Entkoppeln** wirkt auch hier: Ein widerrufenes Terminal überträgt nichts mehr.
+
+Fehlt dem Browser WebCrypto oder IndexedDB (etwa ohne HTTPS), stempelt das Terminal nur mit Netz
+und zeigt ohne Netz „Keine Verbindung“.
 
 ## Für Entwickler
 
 | Aufruf | Wer | Was |
 | --- | --- | --- |
-| `GET /api/v1/terminal/geraete` | Inhaber | Terminals mit Stand |
+| `GET /api/v1/terminal/geraete` | Inhaber | Terminals mit Stand, Lücken und abgelehnten Einträgen ohne Netz (`offline`) |
 | `POST /api/v1/terminal/geraete` | Inhaber | neues Terminal mit Kopplungscode (`{ name }`) |
 | `DELETE /api/v1/terminal/geraete/:id` | Inhaber | Terminal widerrufen |
 | `POST /api/v1/terminal/geraete/:id/entsperren` | Inhaber | Sperre aufheben; die Zählung des Tages bleibt |
@@ -148,6 +206,8 @@ Stempeln ohne Netz am Terminal kommt mit S-803.
 | `POST /api/v1/terminal/karten` | Inhaber | Karte eintragen: `{ nutzerId, art: "uid", uid }` oder `{ nutzerId, art: "ntag424", uid, meta, datei }` (409 `karte_vergeben`) |
 | `DELETE /api/v1/terminal/karten/:karteId` | Inhaber | Karte entziehen |
 | `POST /api/v1/kiosk/koppeln` | Tablet | Code gegen Geräte-Token (`{ code }`) |
-| `GET /api/v1/kiosk` | Tablet mit Token | Name, Betrieb, Sperre |
+| `GET /api/v1/kiosk` | Tablet mit Token | Name, Betrieb, Sperre, Schlüssel des Servers für Ausweise ohne Netz (`ausweisSchluessel`) |
 | `POST /api/v1/kiosk/erkennen` | Tablet mit Token | `{ pin }`, `{ qr }`, `{ karte, pin }`, `{ sun: { e, c } }` oder `{ beleg }`: Person und Tag, nach `sun` mit `beleg`; 401 mit den übrigen Versuchen, 423 mit dem Ende der Sperre |
 | `POST /api/v1/kiosk/stempeln` | Tablet mit Token | `{ ausweis, art }`: erkennt und stempelt |
+| `PUT /api/v1/kiosk/schluessel` | Tablet mit Token | `{ schluessel }` (JWK, P-256): öffentlicher Schlüssel der Warteschlange, einmal je Kopplung; 409 `vergeben` bei einem anderen |
+| `POST /api/v1/kiosk/offline` | Tablet mit Token | `{ nummer, art, geraetZeitpunkt, gesendetAm, ausweis, signatur }`: ein Eintrag ohne Netz; 201 neu, 200 derselbe noch einmal, 409 `doppelt`, 422 mit Grund (bleibt abgelehnt, auch `gesperrt`), 409 `schluessel_fehlt` (wartet) |

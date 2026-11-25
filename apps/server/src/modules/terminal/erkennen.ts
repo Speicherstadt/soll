@@ -7,7 +7,7 @@ import { personVonAusweis } from "./ausweise.ts";
 import { belegPruefen } from "./beleg.ts";
 import { pinKennung, type TerminalSchluessel, uidNormalisieren } from "./geheimnis.ts";
 import { karteLesen, karteVonSun, karteVonUid } from "./karten.ts";
-import { istGesperrt, nachFehlversuch, type Sperrstand } from "./sperre.ts";
+import { istGesperrt, nachFehlversuch, offlineGesperrt, type Sperrstand } from "./sperre.ts";
 import type { Sun } from "./sun.ts";
 import { type Terminal, terminalAkteur, terminalLesen } from "./terminals.ts";
 
@@ -24,7 +24,8 @@ export type Ausweis =
 
 export type Erkennung =
   | { ok: true; nutzerId: string }
-  | { ok: false; grund: "gesperrt"; gesperrtBis: number }
+  /** `gezaehlt`: this try was compared and counted, and it locked the terminal */
+  | { ok: false; grund: "gesperrt"; gesperrtBis: number; gezaehlt?: true }
   | { ok: false; grund: "unbekannt"; fehlversuche: number };
 
 /** Who an identification names, and for a SUN message the card's read counter to take over */
@@ -84,7 +85,11 @@ const trefferVon = (
     : {};
 };
 
-/** A SUN message whose read counter is not above the last one seen was read before: a replay */
+/**
+ * A SUN message whose read counter is not above the last one seen was read before: a replay, also
+ * from the offline queue, whatever time the tablet claims (docs/plan.md, "SUN-Nachricht aus der
+ * Warteschlange")
+ */
 const wiederholt = (db: Db, betriebId: string, zaehler: Treffer["zaehler"]): boolean => {
   if (!zaehler) return false;
   const zuletzt = karteLesen(db, betriebId, zaehler.karteId)?.zaehler ?? null;
@@ -92,12 +97,23 @@ const wiederholt = (db: Db, betriebId: string, zaehler: Treffer["zaehler"]): boo
 };
 
 /**
+ * Whether the terminal's lock stops this try: online any lock; for an entry of the offline queue
+ * only the lock until midnight, and only for a credential that can be guessed (sperre.ts)
+ */
+const gesperrt = (stand: Sperrstand, jetzt: number, ausweis: Ausweis, offline?: number) =>
+  offline === undefined
+    ? istGesperrt(stand, jetzt)
+    : offlineGesperrt(stand, jetzt, "pin" in ausweis);
+
+/**
  * Recognises a person at a terminal (S-801, S-802). A locked terminal compares nothing; each wrong
  * try, a card without its person's PIN and a forged or replayed SUN message included, counts toward
  * the lock of the terminal (sperre.ts) and stands in the audit chain; a person recognised lifts
  * nothing, so one's own PIN between guesses does not reset the count. The count and a card's read
  * counter are read again inside the write transaction, which holds the write lock, so parallel
- * tries are not lost and one SUN message cannot count twice (as in modules/pin).
+ * tries are not lost and one SUN message cannot count twice (as in modules/pin). `offline` is the
+ * instant of an entry from the tablet's offline queue (S-803): it changes how the lock counts
+ * (sperre.ts).
  */
 export const erkennen = (
   db: Db,
@@ -106,8 +122,9 @@ export const erkennen = (
   ausweis: Ausweis,
   schluessel: TerminalSchluessel,
   jetzt: number,
+  offline?: number,
 ): Erkennung => {
-  if (istGesperrt(sperrstand(terminal), jetzt))
+  if (gesperrt(sperrstand(terminal), jetzt, ausweis, offline))
     return { ok: false, grund: "gesperrt", gesperrtBis: terminal.gesperrtBis ?? jetzt };
   const treffer = trefferVon(db, terminal, ausweis, schluessel, jetzt);
   const erkannt = stempelt(db, terminal.betriebId, treffer.nutzerId);
@@ -119,7 +136,7 @@ export const erkennen = (
   return schreiben(schreibDb, kontext, (s): Erkennung => {
     const aktuell = terminalLesen(db, terminal.betriebId, terminal.terminalId) ?? terminal;
     const stand = sperrstand(aktuell);
-    if (istGesperrt(stand, jetzt))
+    if (gesperrt(stand, jetzt, ausweis, offline))
       return { ok: false, grund: "gesperrt", gesperrtBis: stand.gesperrtBis ?? jetzt };
     if (erkannt && !wiederholt(db, terminal.betriebId, treffer.zaehler)) {
       if (treffer.zaehler)
@@ -133,7 +150,7 @@ export const erkennen = (
     const neu = nachFehlversuch(stand, jetzt);
     s.aendern("terminals", { terminalId: terminal.terminalId }, neu);
     return neu.gesperrtBis !== null && neu.gesperrtBis > jetzt
-      ? { ok: false, grund: "gesperrt", gesperrtBis: neu.gesperrtBis }
+      ? { ok: false, grund: "gesperrt", gesperrtBis: neu.gesperrtBis, gezaehlt: true }
       : { ok: false, grund: "unbekannt", fehlversuche: neu.fehlversuche };
   });
 };

@@ -50,6 +50,17 @@ export {
   offlineZeitpunkt,
   stempelNachricht,
 } from "./offline/offline.ts";
+export {
+  AUSWEIS_LAENGE,
+  AUSWEIS_ZWECK,
+  ausweisVerschluesseln,
+  ausweisZusatz,
+  base64url,
+  NONCE_BYTES,
+  PUNKT_BYTES,
+  type Terminaleintrag,
+  terminalNachricht,
+} from "./offline/terminal.ts";
 export * from "./planpruefung/index.ts";
 export * from "./projektzeit/index.ts";
 export * from "./pruefung/index.ts";

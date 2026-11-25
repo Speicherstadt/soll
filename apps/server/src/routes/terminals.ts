@@ -9,6 +9,7 @@ import {
   ausweisEntziehen,
   kopplungAnlegen,
   mitAusweis,
+  offlineStand,
   terminalEntsperren,
   terminalsVon,
   terminalWiderrufen,
@@ -26,7 +27,15 @@ export const kopplungSchema = z.object({ name: z.string().trim().min(1).max(80) 
 export const terminalRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
   new Hono<Anfrage>()
     .use(recht("terminal:verwalten"))
-    .get("/geraete", (c) => c.json({ terminals: terminalsVon(db, c.get("betriebId"), jetzt()) }))
+    // each with the gaps in the numbers of its offline queue and the entries refused (S-803)
+    .get("/geraete", (c) => {
+      const betriebId = c.get("betriebId");
+      const terminals = terminalsVon(db, betriebId, jetzt()).map((terminal) => ({
+        ...terminal,
+        offline: offlineStand(db, betriebId, terminal.terminalId),
+      }));
+      return c.json({ terminals });
+    })
     .get("/personen", (c) => {
       const betriebId = c.get("betriebId");
       const pins = mitPin(db, betriebId);

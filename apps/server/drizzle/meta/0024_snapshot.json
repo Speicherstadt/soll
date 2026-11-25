@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "0a58c277-877a-4fd3-8daa-add5c6c54320",
+  "id": "b167bd0c-6583-4b1a-93e3-825657155e11",
   "prevId": "4d816404-94bc-40e4-98af-22e96dd736ea",
   "tables": {
     "arbeitszeitmodelle": {
@@ -781,13 +781,6 @@
           "notNull": false,
           "autoincrement": false
         },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "erstellt_von": {
           "name": "erstellt_von",
           "type": "text",
@@ -1099,27 +1092,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_quelle": {
-          "name": "extern_quelle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_id": {
-          "name": "extern_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -1146,15 +1118,6 @@
             "betrieb_id",
             "geraet_id",
             "nummer"
-          ],
-          "isUnique": true
-        },
-        "stempelungen_extern": {
-          "name": "stempelungen_extern",
-          "columns": [
-            "betrieb_id",
-            "extern_quelle",
-            "extern_id"
           ],
           "isUnique": true
         }
@@ -1288,27 +1251,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_quelle": {
-          "name": "extern_quelle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_id": {
-          "name": "extern_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -1320,15 +1262,6 @@
             "von"
           ],
           "isUnique": false
-        },
-        "abwesenheiten_extern": {
-          "name": "abwesenheiten_extern",
-          "columns": [
-            "betrieb_id",
-            "extern_quelle",
-            "extern_id"
-          ],
-          "isUnique": true
         }
       },
       "foreignKeys": {},
@@ -2505,101 +2438,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "importe": {
-      "name": "importe",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "quelle": {
-          "name": "quelle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "datei_sha256": {
-          "name": "datei_sha256",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "datei_name": {
-          "name": "datei_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "datei_bytes": {
-          "name": "datei_bytes",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "zuordnung": {
-          "name": "zuordnung",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "abgeschlossen_bis": {
-          "name": "abgeschlossen_bis",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "zahlen": {
-          "name": "zahlen",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_von": {
-          "name": "erstellt_von",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "erstellt_am": {
-          "name": "erstellt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "importe_betrieb_id_import_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "import_id"
-          ],
-          "name": "importe_betrieb_id_import_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "personenangaben": {
       "name": "personenangaben",
       "columns": {
@@ -2729,13 +2567,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -2849,13 +2680,6 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         }
       },
@@ -3529,6 +3353,88 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "terminal_eintraege": {
+      "name": "terminal_eintraege",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "terminal_id": {
+          "name": "terminal_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nummer": {
+          "name": "nummer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inhalt_hash": {
+          "name": "inhalt_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "art": {
+          "name": "art",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "geraet_zeitpunkt": {
+          "name": "geraet_zeitpunkt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "stempel_id": {
+          "name": "stempel_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "grund": {
+          "name": "grund",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "empfangen_am": {
+          "name": "empfangen_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "terminal_eintraege_betrieb_id_terminal_id_nummer_pk": {
+          "columns": [
+            "betrieb_id",
+            "terminal_id",
+            "nummer"
+          ],
+          "name": "terminal_eintraege_betrieb_id_terminal_id_nummer_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "terminals": {
       "name": "terminals",
       "columns": {
@@ -3613,6 +3519,13 @@
         },
         "fehler_tag": {
           "name": "fehler_tag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "schluessel": {
+          "name": "schluessel",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

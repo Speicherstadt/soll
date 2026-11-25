@@ -55,7 +55,9 @@ export { type BuchungMitBezug, buchungenImAuftrag, buchungenMitBezug } from "./u
 export {
   kundenUebernehmen,
   projekteUebernehmen,
+  taetigkeitenUebernehmen,
   type UebernommenerKunde,
   type UebernommenesProjekt,
+  type UebernommeneTaetigkeit,
 } from "./uebernahme.ts";
 export { type Verbrauch, verbrauchJeProjekt } from "./verbrauch.ts";

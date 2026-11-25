@@ -5,7 +5,7 @@ import { schluessel } from "./text.ts";
 /*
  * The mapping of an import (BAULISTE.md S-701): which member each person of the file is, which kind
  * of Soll each absence kind is, and whether a customer or an order is created, matched with one
- * that exists or left out. Soll proposes it; the owner decides, the server checks it again.
+ * that exists or left out; so is an activity (S-703). Soll proposes it; the owner decides, the server checks it again.
  */
 
 /** A customer or an order: created anew, matched with an existing one by its id, or left out */
@@ -21,6 +21,8 @@ export type Zuordnung = {
   /** by the id in the old tool; missing: created anew */
   kunden: Record<string, Ziel>;
   projekte: Record<string, Ziel>;
+  /** activities (services in Clockodo, S-703), like customers */
+  taetigkeiten: Record<string, Ziel>;
 };
 
 export type Mitglied = { nutzerId: string; name: string };
@@ -62,6 +64,11 @@ const ARTWOERTER: Record<string, Abwesenheitsart> = {
   uberstundenabbau: "ueberstundenabbau",
   freizeitausgleich: "ueberstundenabbau",
   timeoffinlieu: "ueberstundenabbau",
+  // Clockodo's absence types as the SDK names them (clockodo/bestand.ts, S-703)
+  regularholiday: "urlaub",
+  sickday: "krank",
+  sickdayofchild: "kind_krank",
+  reductionofovertime: "ueberstundenabbau",
 };
 
 export const artVorschlag = (art: string): ArtZuordnung => ARTWOERTER[schluessel(art)] ?? null;
@@ -104,4 +111,5 @@ export const vorschlag = (daten: ImportDaten, mitglieder: readonly Mitglied[]): 
   arten: Object.fromEntries(artenAus(daten).map(({ art }) => [art, artVorschlag(art)])),
   kunden: {},
   projekte: {},
+  taetigkeiten: {},
 });

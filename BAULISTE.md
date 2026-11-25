@@ -737,7 +737,7 @@ S-701 und unabhängig voneinander.
     Projektplan.
 - [ ] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
   Tätigkeit), Datums- und Zahlenformate aus Deutschland, Vorlage zum Herunterladen.
-- [ ] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
+- [x] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,
   Projekte, Leistungen.
   Fertig, wenn: Fixtures nach Clockodos Beschreibung bestehen (Quelle im Test) und ein Playwright-Test
   den ganzen Ablauf zeigt. Genauer:

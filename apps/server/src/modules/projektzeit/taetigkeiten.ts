@@ -39,6 +39,7 @@ const festeVorgabe = (taetigkeitId: string): Taetigkeit => ({
   externQuelle: null,
   externId: null,
   archiviertAm: null,
+  importId: null,
   fest: true,
 });
 

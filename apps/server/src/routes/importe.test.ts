@@ -15,7 +15,13 @@ describe("an import from another tool (S-701)", () => {
   it("previews the file: records, lines it cannot read, proposals and findings", async () => {
     const { weber, sandra } = await weberZumUmzug();
     const vorschau = await json(await vorschauVon(weber));
-    expect(vorschau.anzahl).toEqual({ zeiten: 4, abwesenheiten: 1, kunden: 1, projekte: 1 });
+    expect(vorschau.anzahl).toEqual({
+      zeiten: 4,
+      abwesenheiten: 1,
+      kunden: 1,
+      projekte: 1,
+      taetigkeiten: 0,
+    });
     expect(vorschau.lesefehler).toEqual({
       anzahl: 1,
       liste: [{ zeile: 6, grund: "datum_ungueltig", feld: "datum", wert: "31.09.2026" }],
@@ -42,6 +48,7 @@ describe("an import from another tool (S-701)", () => {
       abwesenheiten: { neu: 1, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
       kunden: { neu: 1, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
       projekte: { neu: 1, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+      taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
     });
     expect(await json(await weber.anfrage(IMP))).toEqual({ importe: [] });
 
@@ -53,6 +60,7 @@ describe("an import from another tool (S-701)", () => {
       abwesenheiten: { neu: 0, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 },
       kunden: { neu: 0, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 },
       projekte: { neu: 0, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 },
+      taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
     });
     const kunden = (await json(await weber.anfrage("/api/v1/projektzeit/kunden"))) as unknown;
     expect(JSON.stringify(kunden).match(/Elbhof Immobilien/g)).toHaveLength(1);

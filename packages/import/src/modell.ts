@@ -41,11 +41,15 @@ export type ImportProjekt = {
   nummer: string;
 };
 
+/** An activity (a service in Clockodo, S-703) */
+export type ImportTaetigkeit = { externalId: string; zeile: number; name: string };
+
 export type ImportDaten = {
   zeiten: ImportZeit[];
   abwesenheiten: ImportAbwesenheit[];
   kunden: ImportKunde[];
   projekte: ImportProjekt[];
+  taetigkeiten: ImportTaetigkeit[];
 };
 
 export const LESE_GRUENDE = [
@@ -63,6 +67,10 @@ export const LESE_GRUENDE = [
   "pause_ungueltig",
   "art_fehlt",
   "kunde_unbekannt",
+  "laeuft_noch",
+  "korrektur",
+  "teil_tag",
+  "nicht_genehmigt",
 ] as const;
 export type LeseGrund = (typeof LESE_GRUENDE)[number];
 
@@ -92,4 +100,5 @@ export const leer = (): ImportDaten => ({
   abwesenheiten: [],
   kunden: [],
   projekte: [],
+  taetigkeiten: [],
 });

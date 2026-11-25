@@ -83,6 +83,7 @@ describe("proposals for the mapping", () => {
       arten: { Urlaub: "urlaub" },
       kunden: {},
       projekte: {},
+      taetigkeiten: {},
     });
   });
 });

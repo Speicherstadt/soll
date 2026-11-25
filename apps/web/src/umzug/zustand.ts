@@ -18,12 +18,15 @@ export const base64Von = (bytes: Uint8Array): string => {
   return btoa(binaer);
 };
 
-/** Soll's proposal: members by name, kinds by word, every customer and order created anew */
+/** Soll's proposal: members by name, kinds by word, every customer, order and activity anew */
 export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   personen: Object.fromEntries(vorschau.personen.map((p) => [p.person, p.vorschlag])),
   arten: Object.fromEntries(vorschau.arten.map((a) => [a.art, a.vorschlag])),
   kunden: Object.fromEntries(vorschau.kunden.map((k) => [k.externalId, "neu" as const])),
   projekte: Object.fromEntries(vorschau.projekte.map((p) => [p.externalId, "neu" as const])),
+  taetigkeiten: Object.fromEntries(
+    vorschau.taetigkeiten.map((t) => [t.externalId, "neu" as const]),
+  ),
 });
 
 /** The columns as the server takes them: each field with a header (a field without one is left out) */

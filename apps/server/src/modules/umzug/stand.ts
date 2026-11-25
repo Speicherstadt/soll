@@ -12,7 +12,7 @@ import {
 } from "../arbeitszeit/index.ts";
 import { modulAktiv } from "../betrieb/index.ts";
 import { type MitgliedMitName, mitgliederMitNamen } from "../mitglieder/index.ts";
-import { kundenLesen, projekteLesen } from "../projektzeit/index.ts";
+import { kundenLesen, projekteLesen, taetigkeitenLesen } from "../projektzeit/index.ts";
 import type { NeueAbwesenheit, Stand } from "./plan-typen.ts";
 
 /*
@@ -54,10 +54,11 @@ const alsGenehmigt = (neu: NeueAbwesenheit) => ({
   kind: null,
 });
 
-/** Customers and orders of the business, and those of the tool by their id there */
+/** Customers, orders and activities of the business, and those of the tool by their id there */
 const projektzeitVon = (db: Db, betriebId: string, quelle: string) => {
   const kunden = kundenLesen(db, betriebId);
   const projekte = projekteLesen(db, betriebId);
+  const taetigkeiten = taetigkeitenLesen(db, betriebId);
   const vonQuelle = <T extends { externQuelle: string | null; externId: string | null }>(
     zeilen: readonly T[],
     id: (zeile: T) => string,
@@ -72,6 +73,8 @@ const projektzeitVon = (db: Db, betriebId: string, quelle: string) => {
     projekte: new Set(projekte.map((p) => p.projektId)),
     uebernommeneKunden: vonQuelle(kunden, (k) => k.kundeId),
     uebernommeneProjekte: new Set(vonQuelle(projekte, (p) => p.projektId).keys()),
+    taetigkeiten: new Set(taetigkeiten.map((t) => t.taetigkeitId)),
+    uebernommeneTaetigkeiten: vonQuelle(taetigkeiten, (t) => t.taetigkeitId),
   };
 };
 
@@ -91,9 +94,11 @@ export const standLesen = (db: Db, betriebId: string, quelle: string, jetzt: num
       abwesenheiten: kennungen.abwesenheiten,
       kunden: projektzeit.uebernommeneKunden,
       projekte: projektzeit.uebernommeneProjekte,
+      taetigkeiten: projektzeit.uebernommeneTaetigkeiten,
     },
     kunden: projektzeit.kunden,
     projekte: projektzeit.projekte,
+    taetigkeiten: projektzeit.taetigkeiten,
     geschlossen: jePerson((nutzerId) => abgeschlosseneMonate(db, betriebId, nutzerId)),
     stempelVon: jePerson((nutzerId) =>
       stempelungenIn(db, betriebId, nutzerId, 0, Number.MAX_SAFE_INTEGER),

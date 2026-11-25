@@ -20,12 +20,14 @@ describe("the move page", () => {
       arten: [{ art: "Urlaub", datensaetze: 1, vorschlag: "urlaub" }],
       kunden: [{ externalId: "k-1", name: "Elbhof", nummer: "" }],
       projekte: [{ externalId: "p-1", name: "Bad", nummer: "", kunde: "k-1" }],
+      taetigkeiten: [{ externalId: "401", name: "Montage" }],
     } as Vorschau;
     expect(zuordnungAus(vorschau)).toEqual({
       personen: { Sandra: "s", Leon: null },
       arten: { Urlaub: "urlaub" },
       kunden: { "k-1": "neu" },
       projekte: { "p-1": "neu" },
+      taetigkeiten: { "401": "neu" },
     });
   });
 

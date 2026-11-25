@@ -5,7 +5,13 @@ import {
   type GenommeneAbwesenheiten,
   monateZwischen,
 } from "./plan-abwesenheiten.ts";
-import { type Ergebnis, kundePlanen, projektPlanen, zaehlen } from "./plan-projekte.ts";
+import {
+  type Ergebnis,
+  kundePlanen,
+  projektPlanen,
+  taetigkeitPlanen,
+  zaehlen,
+} from "./plan-projekte.ts";
 import {
   type Art,
   keineZahlen,
@@ -119,7 +125,7 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
 /** Counts and keeps a customer's or an order's result; the id in Soll, or null */
 const uebernehmen = <T>(
   bau: Bau,
-  art: "kunden" | "projekte",
+  art: "kunden" | "projekte" | "taetigkeiten",
   satz: Satz,
   ergebnis: Ergebnis<T>,
 ): string | null => {
@@ -145,6 +151,10 @@ const projekteUndKundenPlanen = (
     const kundeId = kundeVon.get(projekt.kunde) ?? null;
     uebernehmen(bau, "projekte", projekt, projektPlanen(projekt, ziel, kundeId, stand));
   }
+  for (const taetigkeit of daten.taetigkeiten) {
+    const ziel = zuordnung.taetigkeiten[taetigkeit.externalId] ?? "neu";
+    uebernehmen(bau, "taetigkeiten", taetigkeit, taetigkeitPlanen(taetigkeit, ziel, stand));
+  }
 };
 
 /** The months up to `bis` a person's records reach that are not closed in Soll yet */
@@ -169,6 +179,7 @@ export const planen = (
     abwesenheiten: [],
     kunden: [],
     projekte: [],
+    taetigkeiten: [],
     monate: [],
     zahlen: keineZahlen(),
     abgelehnt: [],

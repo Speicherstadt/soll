@@ -1,10 +1,17 @@
-import type { ImportKunde, ImportProjekt, Ziel } from "@soll/import";
-import type { Anzahl, NeuerKunde, NeuesProjekt, PlanGrund, Stand } from "./plan-typen.ts";
+import type { ImportKunde, ImportProjekt, ImportTaetigkeit, Ziel } from "@soll/import";
+import type {
+  Anzahl,
+  NeuerKunde,
+  NeuesProjekt,
+  NeueTaetigkeit,
+  PlanGrund,
+  Stand,
+} from "./plan-typen.ts";
 
 /*
  * Customers and orders of another tool (BAULISTE.md S-701): created anew with the tool and their id
  * (`extern_quelle`, `extern_id`, S-601), matched with one the business has, or left out. One created
- * by an earlier import is found by its id and stays as it is.
+ * by an earlier import is found by its id and stays as it is. Activities (S-703) go the same way.
  */
 
 export type Ergebnis<T> =
@@ -66,5 +73,23 @@ export const projektPlanen = (
       nummer: projekt.nummer,
       externId: projekt.externalId,
     },
+  };
+};
+
+export const taetigkeitPlanen = (
+  taetigkeit: ImportTaetigkeit,
+  ziel: Ziel,
+  stand: Stand,
+): Ergebnis<NeueTaetigkeit> => {
+  if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
+  const gewaehlt = zugeordnet<NeueTaetigkeit>(ziel, stand.taetigkeiten, "taetigkeit_unbekannt");
+  if (gewaehlt) return gewaehlt;
+  const frueher = stand.vorhanden.taetigkeiten.get(taetigkeit.externalId);
+  if (frueher !== undefined) return { art: "vorhanden", id: frueher };
+  const taetigkeitId = stand.neueId();
+  return {
+    art: "neu",
+    id: taetigkeitId,
+    wert: { taetigkeitId, name: taetigkeit.name, externId: taetigkeit.externalId },
   };
 };

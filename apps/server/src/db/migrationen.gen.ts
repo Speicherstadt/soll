@@ -111,5 +111,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0027_verfahrensdoku",
     "sql": "CREATE TABLE `verfahrensdoku_angaben` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`rechtsform` text DEFAULT '' NOT NULL,\n\t`anschrift` text DEFAULT '' NOT NULL,\n\t`verantwortlich` text DEFAULT '' NOT NULL,\n\t`aufbewahrungsort` text DEFAULT '' NOT NULL,\n\t`serverbetrieb` text DEFAULT '' NOT NULL,\n\t`datensicherung` text DEFAULT '' NOT NULL,\n\t`schluesselablage` text DEFAULT '' NOT NULL,\n\t`eigene` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
+  },
+  {
+    "tag": "0028_import_taetigkeiten",
+    "sql": "ALTER TABLE `taetigkeiten` ADD `import_id` text;"
   }
 ];

@@ -8,7 +8,13 @@ import type { ImportDaten } from "@soll/import";
  */
 
 export type Art = keyof ImportDaten;
-export const ARTEN: readonly Art[] = ["zeiten", "abwesenheiten", "kunden", "projekte"];
+export const ARTEN: readonly Art[] = [
+  "zeiten",
+  "abwesenheiten",
+  "kunden",
+  "projekte",
+  "taetigkeiten",
+];
 
 export const PLAN_GRUENDE = [
   "person_unbekannt",
@@ -21,6 +27,7 @@ export const PLAN_GRUENDE = [
   "kunde_unbekannt",
   "projekt_unbekannt",
   "kunde_ausgelassen",
+  "taetigkeit_unbekannt",
   "zuordnung_abweichend",
   "geaendert_im_alten_tool",
 ] as const;
@@ -49,6 +56,8 @@ export type NeuesProjekt = {
   externId: string;
 };
 
+export type NeueTaetigkeit = { taetigkeitId: string; name: string; externId: string };
+
 /** A month of a person the old tool had closed, to be closed as taken over */
 export type Monatssperre = { nutzerId: string; monat: Monat };
 
@@ -57,6 +66,7 @@ export type Plan = {
   abwesenheiten: NeueAbwesenheit[];
   kunden: NeuerKunde[];
   projekte: NeuesProjekt[];
+  taetigkeiten: NeueTaetigkeit[];
   monate: Monatssperre[];
   zahlen: Zahlen;
   abgelehnt: Abgelehnt[];
@@ -89,10 +99,13 @@ export type Stand = {
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;
+    /** the activity created from an id (S-703) */
+    taetigkeiten: ReadonlyMap<string, string>;
   };
   /** the customers and orders of the business, for a mapping to an existing one */
   kunden: ReadonlySet<string>;
   projekte: ReadonlySet<string>;
+  taetigkeiten: ReadonlySet<string>;
   /** the months closed for a person */
   geschlossen: (nutzerId: string) => ReadonlySet<Monat>;
   /** a person's stamps in force, in time order */
@@ -111,6 +124,7 @@ export const keineZahlen = (): Zahlen => ({
   abwesenheiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   kunden: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   projekte: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+  taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
 });
 
 export const STEMPELARTEN: readonly Stempelart[] = [

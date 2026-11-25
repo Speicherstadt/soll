@@ -7,7 +7,10 @@ import { Abschnitt, type Option, Zeile } from "./auswahl.tsx";
 import { FELD_NAMEN } from "./texte.ts";
 import type { Vorschau } from "./typen.ts";
 
-/* Step 3: what each column, person, kind, customer and order of the file becomes in Soll (S-701) */
+/*
+ * Step 3: what each column, person, kind, customer, order and activity of the file becomes in Soll
+ * (S-701, S-703)
+ */
 
 const NICHT = "";
 
@@ -28,6 +31,7 @@ export type Aendern = {
   art: (art: string, ziel: Abwesenheitsart | null) => void;
   kunde: (externalId: string, ziel: Ziel) => void;
   projekt: (externalId: string, ziel: Ziel) => void;
+  taetigkeit: (externalId: string, ziel: Ziel) => void;
 };
 
 const Spalten = (props: {
@@ -133,6 +137,26 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
   );
 };
 
+/** Activities (Clockodo's services, S-703): created anew, matched or left out like customers */
+const Taetigkeiten = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern: Aendern }) => {
+  const vorhanden = () =>
+    props.vorschau.vorhandeneTaetigkeiten.map((t) => ({ id: t.taetigkeitId, name: t.name }));
+  return (
+    <Abschnitt titel={m.umzug_taetigkeiten_titel()}>
+      <For each={props.vorschau.taetigkeiten}>
+        {(t) => (
+          <Zeile
+            name={t.name}
+            wert={zielWert(props.zuordnung.taetigkeiten[t.externalId])}
+            optionen={zielOptionen(vorhanden())}
+            aendern={(wert) => props.aendern.taetigkeit(t.externalId, zielAus(wert))}
+          />
+        )}
+      </For>
+    </Abschnitt>
+  );
+};
+
 /** Whether the old tool had closed months, and up to which */
 const Abgeschlossen = (props: {
   bis: string | null;
@@ -184,7 +208,9 @@ export const ZuordnungSchritt = (props: {
     <Show when={!props.vorschau.module.arbeitszeit || !props.vorschau.module.projektzeit}>
       <p class="rounded-lg bg-warning-surface px-3 py-2.5">{m.umzug_module_aus()}</p>
     </Show>
-    <Spalten vorschau={props.vorschau} spalten={props.spalten} aendern={props.aendern} />
+    <Show when={props.vorschau.felder.length > 0}>
+      <Spalten vorschau={props.vorschau} spalten={props.spalten} aendern={props.aendern} />
+    </Show>
     <Show when={props.vorschau.personen.length > 0}>
       <Personen vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
     </Show>
@@ -192,6 +218,9 @@ export const ZuordnungSchritt = (props: {
       <Arten vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
     </Show>
     <Projektzeit vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
+    <Show when={props.vorschau.taetigkeiten.length > 0}>
+      <Taetigkeiten vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
+    </Show>
     <Abgeschlossen
       bis={props.abgeschlossenBis}
       hoechstens={props.hoechstens}

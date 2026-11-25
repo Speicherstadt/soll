@@ -211,6 +211,8 @@ export const monatRouten = (
     .get("/stundenzettel", async (c) => {
       const gelesen = lesbar(c);
       if (!gelesen.ok) return c.json({ fehler: gelesen.fehler }, gelesen.status);
+      // the content is gone after the retention period (S-901): no sheet to make from it
+      if (gelesen.status.ausgesondert) return c.json({ fehler: "ausgesondert" }, 410);
       const zettel = zettelVon(db, c, gelesen.nutzerId, gelesen.status, optionen.url, jetzt());
       const pdf = await stundenzettelPdf(zettel);
       return c.body(pdf.slice().buffer, 200, {

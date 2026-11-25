@@ -16,13 +16,13 @@ export const pruefSchema = z
  * proves one was given the sheet. Not behind the module switch: a business must not hide its
  * closed months by switching working time off.
  */
-export const pruefRouten = (db: Db) =>
+export const pruefRouten = (db: Db, now: () => number) =>
   new Hono().post("/", async (c) => {
     const eingabe = pruefSchema.safeParse(await c.req.json().catch(() => null));
     if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
     const betrieb = betriebLesen(db, eingabe.data.betriebId);
     if (!betrieb) return c.json({ ergebnis: "unbekannt" });
-    const pruefung = pruefwertEinesMonats(db, betrieb.betriebId, eingabe.data.pruefwert);
+    const pruefung = pruefwertEinesMonats(db, betrieb.betriebId, eingabe.data.pruefwert, now());
     if (!("nutzerId" in pruefung)) return c.json({ ...pruefung, betrieb: betrieb.name });
     const { nutzerId, ...rest } = pruefung;
     return c.json({

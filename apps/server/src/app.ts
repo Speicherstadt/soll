@@ -105,7 +105,7 @@ export const createApp = ({
   app.get("/health", (c) => c.json({ status: "ok", version }));
   app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
   app.route("/api/v1/einladung", oeffentlicheEinladungRouten(db, schreibDb, auth, now));
-  app.route("/api/v1/pruefen", pruefRouten(db));
+  app.route("/api/v1/pruefen", pruefRouten(db, now));
   app.route("/api/v1/openapi.json", openapiRouten({ version, url }));
 
   // one limit per token for the REST API and the MCP server together (S-607)

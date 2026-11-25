@@ -201,6 +201,7 @@ const unterschrift = (s: Schreiber, nachweis: Stundennachweis, hash: string) => 
     s.text(zeit, 0);
   }
   s.zeile(16);
+  s.platz(1);
   s.text(`SHA-256 des Inhalts: ${hash}`, 0, { groesse: 7.5, grau: true });
   s.zeile();
 };

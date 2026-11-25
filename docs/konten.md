@@ -146,7 +146,8 @@ eigenen. Verfallen kann nur, was der letzte Hinweis mit diesem Tag des Verfalls 
 noch offen ist: Urlaub, der danach genommen wurde, zählt ab; kommt danach Urlaub eines Jahres
 dazu, etwa durch eine Korrektur, bleibt dieser Teil, bis ein neuer Hinweis ihn nennt. Kommt der
 neue Hinweis nach der Frist, nennt er den 31. März nach seinem eigenen Jahr, nie einen Tag, der
-schon vorbei ist. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
+schon vorbei ist. Vor dem Verfall nennt Soll beides getrennt: „Verfall droht“ für den Teil, den ein Hinweis
+nennt, und „Hinweis auf Verfall fällig“ für den Rest, solange die Frist für den Hinweis läuft. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
 
 ## Salden zum Stichtag
 

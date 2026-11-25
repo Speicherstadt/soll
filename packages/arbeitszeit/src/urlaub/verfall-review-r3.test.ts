@@ -119,7 +119,13 @@ describe("review r3: invariants over random inputs", () => {
   it("verfall_droht names the half days that then expire (nothing else changes)", () => {
     const fehler: string[] = [];
     for (let seed = 1; seed <= 3000; seed++) {
-      const e = { ...zufall(seed) };
+      const roh = zufall(seed);
+      // "nothing else changes": no leave and no notice after today, which would count by then
+      const e = {
+        ...roh,
+        benannt: (roh.benannt ?? []).filter((b) => b.tag <= roh.heute),
+        hinweise: (roh.hinweise ?? []).filter((t) => t <= roh.heute),
+      };
       const genommen = e.genommen.filter((g) => g.tag <= e.heute);
       const w = rechne({ ...e, genommen });
       for (const b of w.befunde.filter((x) => x.art === "verfall_droht")) {
@@ -150,7 +156,8 @@ describe("review r3: invariants over random inputs", () => {
         benannt.push({ tag, posten: h.wert.map(({ jahr, halbtage }) => ({ jahr, halbtage })) });
       }
       const mit = rechne({ ...e, hinweise: tageListe, benannt });
-      const ohne = rechne({ ...e, hinweise: tageListe, benannt: undefined });
+      const { benannt: _, ...ohneBenannt } = e;
+      const ohne = rechne({ ...ohneBenannt, hinweise: tageListe });
       const zahlen = (w: typeof mit) =>
         JSON.stringify(
           w.toepfe.map((t) => [t.jahr, t.genommenHalbtage, t.verfallenHalbtage, t.restHalbtage]),

@@ -57,6 +57,8 @@ export type Ablaufstand = {
   naechster: Tag | null;
   /** the last such day that passed, whether leave expired then or not */
   zuletzt: Tag | null;
+  /** the half days that expire at the end of `naechster` if nothing else changes (review S-708) */
+  droht: number;
 };
 
 type Lauf = {
@@ -71,19 +73,25 @@ type Lauf = {
 };
 
 /**
- * At the end of `ablauf`, the last notice that lets the pot expire then governs: what it named,
- * less what was taken from the pot after it, as far as still open
+ * The half days that expire at the end of `ablauf` as the pot stands now: the last notice that lets
+ * the pot expire then governs, what it named less what was taken from the pot after it, as far as
+ * still open
  */
-const verfallen = (lauf: Lauf, ablauf: Tag) => {
+const faellig = (lauf: Lauf, ablauf: Tag): number => {
   const fuer = lauf.benennungen
     .filter((b) => b.ablauf === ablauf)
     .sort((a, b) => a.tag.localeCompare(b.tag));
   const letzte = fuer.at(-1);
-  if (letzte === undefined || lauf.topf.restHalbtage <= 0) return;
+  if (letzte === undefined || lauf.topf.restHalbtage <= 0) return 0;
   const danach = lauf.entnommen
     .filter((g) => g.tag > letzte.tag)
     .reduce((summe, g) => summe + g.halbtage, 0);
-  const teil = Math.min(lauf.topf.restHalbtage, Math.max(0, letzte.halbtage - danach));
+  return Math.min(lauf.topf.restHalbtage, Math.max(0, letzte.halbtage - danach));
+};
+
+/** Lets expire at the end of `ablauf` what is due then */
+const verfallen = (lauf: Lauf, ablauf: Tag) => {
+  const teil = faellig(lauf, ablauf);
   if (teil <= 0) return;
   lauf.topf.restHalbtage -= teil;
   lauf.topf.verfallenHalbtage += teil;
@@ -154,7 +162,12 @@ export const ablaufen = (
   return new Map(
     laeufe.map((lauf) => [
       lauf.topf.jahr,
-      { verfallenAm: lauf.verfallenAm, naechster: lauf.offen[0] ?? null, zuletzt: lauf.zuletzt },
+      {
+        verfallenAm: lauf.verfallenAm,
+        naechster: lauf.offen[0] ?? null,
+        zuletzt: lauf.zuletzt,
+        droht: lauf.offen[0] === undefined ? 0 : faellig(lauf, lauf.offen[0]),
+      },
     ]),
   );
 };

@@ -147,6 +147,7 @@ const befund = (
   art: VerfallBefund["art"],
   tag: Tag,
   teilurlaub: boolean,
+  halbtage: Halbtage,
 ): VerfallBefund => ({
   regel: "R-23",
   norm: teilurlaub ? "§ 7 Abs. 3 Satz 4 BUrlG" : "§ 7 Abs. 3 BUrlG",
@@ -154,29 +155,33 @@ const befund = (
   art,
   tage: [tag],
   jahr: topf.jahr,
-  halbtage: art === "verfallen" ? topf.verfallenHalbtage : topf.restHalbtage,
+  halbtage,
 });
 
+/**
+ * The findings of a pot: what expired; of what is open, the part a notice lets expire next
+ * (`verfall_droht`), and for the rest no notice names the notice still due or missing (review S-708)
+ */
 const befundeFuer = (
   topf: Urlaubstopf,
   stand: Ablaufstand | undefined,
   heute: Tag,
   teilurlaub: boolean,
 ): VerfallBefund[] => {
-  const vorbei =
-    topf.verfallenHalbtage > 0 && stand?.verfallenAm
-      ? [befund(topf, "verfallen", stand.verfallenAm, teilurlaub)]
-      : [];
-  if (topf.restHalbtage <= 0) return vorbei;
-  // what is still open: a notice lets it expire, or the notice is due or missing (review S-708)
-  if (stand?.naechster)
-    return [...vorbei, befund(topf, "verfall_droht", stand.naechster, teilurlaub)];
-  return [
-    ...vorbei,
-    heute <= topf.hinweisBis
-      ? befund(topf, "hinweis_faellig", topf.hinweisBis, teilurlaub)
-      : befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub),
-  ];
+  const befunde: VerfallBefund[] = [];
+  if (topf.verfallenHalbtage > 0 && stand?.verfallenAm)
+    befunde.push(befund(topf, "verfallen", stand.verfallenAm, teilurlaub, topf.verfallenHalbtage));
+  const droht = stand?.naechster ? Math.max(0, Math.min(stand.droht, topf.restHalbtage)) : 0;
+  if (droht > 0 && stand?.naechster)
+    befunde.push(befund(topf, "verfall_droht", stand.naechster, teilurlaub, droht));
+  const ungenannt = topf.restHalbtage - droht;
+  if (ungenannt > 0)
+    befunde.push(
+      heute <= topf.hinweisBis
+        ? befund(topf, "hinweis_faellig", topf.hinweisBis, teilurlaub, ungenannt)
+        : befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub, ungenannt),
+    );
+  return befunde;
 };
 
 /**

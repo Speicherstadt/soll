@@ -113,7 +113,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `verfahrensdoku_angaben` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`rechtsform` text DEFAULT '' NOT NULL,\n\t`anschrift` text DEFAULT '' NOT NULL,\n\t`verantwortlich` text DEFAULT '' NOT NULL,\n\t`aufbewahrungsort` text DEFAULT '' NOT NULL,\n\t`serverbetrieb` text DEFAULT '' NOT NULL,\n\t`datensicherung` text DEFAULT '' NOT NULL,\n\t`schluesselablage` text DEFAULT '' NOT NULL,\n\t`eigene` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
   },
   {
-    "tag": "0028_import_taetigkeiten",
+    "tag": "0028_import_buchungen",
+    "sql": "ALTER TABLE `projektzeiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_extern` ON `projektzeiten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
+  },
+  {
+    "tag": "0029_import_taetigkeiten",
     "sql": "ALTER TABLE `taetigkeiten` ADD `import_id` text;"
   }
 ];

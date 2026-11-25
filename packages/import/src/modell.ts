@@ -18,6 +18,9 @@ export type ImportZeit = {
   beginn: number;
   ende: number;
   pauseMinuten: number;
+  /** the order and the activity as the file names them (S-702), mapped to Soll's by the owner */
+  projekt?: string;
+  taetigkeit?: string;
 };
 
 /** An absence from `von` to `bis`, both included; `art` as the old tool calls it */
@@ -71,11 +74,24 @@ export const LESE_GRUENDE = [
   "korrektur",
   "teil_tag",
   "nicht_genehmigt",
+  "spalte_fehlt",
+  "zeile_doppelt",
+  "dauer_ungueltig",
+  "dauer_abweichend",
 ] as const;
 export type LeseGrund = (typeof LESE_GRUENDE)[number];
 
-/** Why a line could not be read; `feld` names the column, `wert` what it held */
-export type LeseFehler = { zeile: number; grund: LeseGrund; feld?: string; wert?: string };
+/**
+ * Why a line could not be read; `feld` names the field, `spalte` the header of its column as the
+ * file writes it, `wert` what it held
+ */
+export type LeseFehler = {
+  zeile: number;
+  grund: LeseGrund;
+  feld?: string;
+  spalte?: string;
+  wert?: string;
+};
 
 /** What a reader made of a file: the records, the lines it refused, the columns it found */
 export type Gelesen = {

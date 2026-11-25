@@ -12,7 +12,13 @@ import {
 } from "../arbeitszeit/index.ts";
 import { modulAktiv } from "../betrieb/index.ts";
 import { type MitgliedMitName, mitgliederMitNamen } from "../mitglieder/index.ts";
-import { kundenLesen, projekteLesen, taetigkeitenLesen } from "../projektzeit/index.ts";
+import {
+  buchungUeberschneidet,
+  kundenLesen,
+  projekteLesen,
+  taetigkeitenLesen,
+  uebernommeneBuchungen,
+} from "../projektzeit/index.ts";
 import type { NeueAbwesenheit, Stand } from "./plan-typen.ts";
 
 /*
@@ -95,7 +101,10 @@ export const standLesen = (db: Db, betriebId: string, quelle: string, jetzt: num
       kunden: projektzeit.uebernommeneKunden,
       projekte: projektzeit.uebernommeneProjekte,
       taetigkeiten: projektzeit.uebernommeneTaetigkeiten,
+      buchungen: uebernommeneBuchungen(db, betriebId, quelle),
     },
+    buchungUeberschneidet: (nutzerId, spanne) =>
+      buchungUeberschneidet(db, betriebId, nutzerId, spanne),
     kunden: projektzeit.kunden,
     projekte: projektzeit.projekte,
     taetigkeiten: projektzeit.taetigkeiten,

@@ -1,4 +1,4 @@
-import type { LeseFehler } from "@soll/import";
+import { type LeseFehler, WERKZEUGE } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { AbrufFormular } from "./abruf.tsx";
@@ -23,7 +23,11 @@ export const Lesefehler = (props: { fehler: Liste<LeseFehler> }) => (
   </Show>
 );
 
-const Dateiwahl = (props: { gewaehlt: (datei: Datei) => void; zuGross: () => void }) => {
+const Dateiwahl = (props: {
+  quelle: string;
+  gewaehlt: (datei: Datei) => void;
+  zuGross: () => void;
+}) => {
   const id = createUniqueId();
   const waehlen = async (datei: File | undefined) => {
     if (!datei) return;
@@ -39,7 +43,7 @@ const Dateiwahl = (props: { gewaehlt: (datei: Datei) => void; zuGross: () => voi
       <input
         id={id}
         type="file"
-        accept=".csv,.jsonl,text/csv,text/plain"
+        accept={(WERKZEUGE.find((w) => w.id === props.quelle)?.endungen ?? [".csv"]).join(",")}
         class="text-muted-foreground file:me-3 file:h-9 file:rounded-sm file:border file:border-border file:bg-background file:px-3 file:text-foreground"
         onChange={(event) => void waehlen(event.currentTarget.files?.[0])}
       />
@@ -72,6 +76,7 @@ const Wegwahl = (props: { weg: Weg; setWeg: (weg: Weg) => void }) => (
 
 /** Step 2: the exported file or a fetch over the API; the server reads it and answers with the preview */
 export const DateiSchritt = (props: {
+  quelle: string;
   vorschau: Vorschau | null;
   wege: readonly Weg[];
   weg: Weg;
@@ -88,7 +93,9 @@ export const DateiSchritt = (props: {
       </Show>
       <Show
         when={props.weg === "api"}
-        fallback={<Dateiwahl gewaehlt={props.gewaehlt} zuGross={props.zuGross} />}
+        fallback={
+          <Dateiwahl quelle={props.quelle} gewaehlt={props.gewaehlt} zuGross={props.zuGross} />
+        }
       >
         <AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
       </Show>

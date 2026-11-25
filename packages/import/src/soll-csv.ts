@@ -1,4 +1,5 @@
-import { type CsvZeile, csvZeilen, kopfZuLang, MAX_SPALTEN, trennzeichenVon } from "./csv.ts";
+import { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
+import { kopfZuLang, MAX_SPALTEN, nurFehler } from "./kopf.ts";
 import { type Gelesen, type LeseFehler, leer, MAX_DATENSAETZE } from "./modell.ts";
 import {
   artVon,
@@ -20,7 +21,7 @@ import { bereinigt, ohneBom, schluessel } from "./text.ts";
 export { SOLL_CSV_FELDER, type SollCsvFeld };
 
 /** Which header a field is read from, as the mapping of columns names it */
-export type Spaltenwahl = Partial<Record<SollCsvFeld, string>>;
+export type Spaltenwahl = Partial<Record<string, string>>;
 
 /** The headers each field is found under, German and English, compared by `schluessel` */
 const KOPFWOERTER: Record<SollCsvFeld, readonly string[]> = {
@@ -110,13 +111,6 @@ const spaltenVon = (kopfzeile: string[], kopf: Kopf): Gelesen["spalten"] =>
       return [feld, index === undefined ? null : bereinigt(kopfzeile[index] ?? "")];
     }),
   );
-
-const nurFehler = (kopf: string[], fehler: LeseFehler): Gelesen => ({
-  daten: leer(),
-  fehler: [fehler],
-  kopf,
-  spalten: {},
-});
 
 /** Reads a Soll-CSV; `wahl` overrides the columns the header suggests */
 export const sollCsvLesen = (roh: string, wahl: Spaltenwahl = {}): Gelesen => {

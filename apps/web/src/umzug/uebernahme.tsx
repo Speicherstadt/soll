@@ -3,7 +3,14 @@ import { For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { Lesefehler } from "./datei.tsx";
 import { ART_NAMEN, abgelehntText } from "./texte.ts";
-import { ARTEN, type Probelauf, type Uebernahme } from "./typen.ts";
+import { PLAN_ARTEN, type PlanArt, type Probelauf, type Uebernahme } from "./typen.ts";
+
+/** The kinds a result shows: bookings only when there are any (a spreadsheet's times, S-702) */
+const gezeigt = (probelauf: Probelauf): PlanArt[] =>
+  PLAN_ARTEN.filter(
+    (art) =>
+      art !== "buchungen" || Object.values(probelauf.zahlen.buchungen ?? {}).some((n) => n > 0),
+  );
 
 /** What the takeover creates, finds there already, leaves out and refuses, per kind */
 const Zahlen = (props: { probelauf: Probelauf }) => (
@@ -18,7 +25,7 @@ const Zahlen = (props: { probelauf: Probelauf }) => (
       </Tr>
     </Thead>
     <Tbody>
-      <For each={ARTEN}>
+      <For each={gezeigt(props.probelauf)}>
         {(art) => (
           <Tr>
             <Td>{ART_NAMEN[art]()}</Td>

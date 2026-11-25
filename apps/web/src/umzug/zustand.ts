@@ -18,7 +18,10 @@ export const base64Von = (bytes: Uint8Array): string => {
   return btoa(binaer);
 };
 
-/** Soll's proposal: members by name, kinds by word, every customer, order and activity anew */
+/**
+ * Soll's proposal: members by name, kinds by word, every customer, order and activity created anew,
+ * the projects and activities of a spreadsheet's times to the order and activity known by their name
+ */
 export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   personen: Object.fromEntries(vorschau.personen.map((p) => [p.person, p.vorschlag])),
   arten: Object.fromEntries(vorschau.arten.map((a) => [a.art, a.vorschlag])),
@@ -27,13 +30,17 @@ export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   taetigkeiten: Object.fromEntries(
     vorschau.taetigkeiten.map((t) => [t.externalId, "neu" as const]),
   ),
+  buchung: {
+    projekte: Object.fromEntries(vorschau.buchung.projekte.map((p) => [p.wert, p.vorschlag])),
+    taetigkeiten: Object.fromEntries(
+      vorschau.buchung.taetigkeiten.map((t) => [t.wert, t.vorschlag]),
+    ),
+  },
 });
 
-/** The columns as the server takes them: each field with a header (a field without one is left out) */
+/** The columns as the server takes them: a field without a column as "" (none, not proposed) */
 export const spaltenwahl = (gewaehlt: Record<string, string | null>): Record<string, string> =>
-  Object.fromEntries(
-    Object.entries(gewaehlt).filter((eintrag): eintrag is [string, string] => eintrag[1] !== null),
-  );
+  Object.fromEntries(Object.entries(gewaehlt).map(([feld, kopf]) => [feld, kopf ?? ""]));
 
 /** The month before the running one: the latest the old tool may have closed */
 export const letzterAbschliessbarer = (heute: string): string => plusMonate(heute.slice(0, 7), -1);

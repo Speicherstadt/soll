@@ -21,6 +21,13 @@ describe("the move page", () => {
       kunden: [{ externalId: "k-1", name: "Elbhof", nummer: "" }],
       projekte: [{ externalId: "p-1", name: "Bad", nummer: "", kunde: "k-1" }],
       taetigkeiten: [{ externalId: "401", name: "Montage" }],
+      buchung: {
+        projekte: [{ wert: "Bad Elbhof", datensaetze: 2, vorschlag: "p-9" }],
+        taetigkeiten: [
+          { wert: "", datensaetze: 1, vorschlag: null },
+          { wert: "Fahrt", datensaetze: 1, vorschlag: "fahrt" },
+        ],
+      },
     } as Vorschau;
     expect(zuordnungAus(vorschau)).toEqual({
       personen: { Sandra: "s", Leon: null },
@@ -28,13 +35,15 @@ describe("the move page", () => {
       kunden: { "k-1": "neu" },
       projekte: { "p-1": "neu" },
       taetigkeiten: { "401": "neu" },
+      buchung: { projekte: { "Bad Elbhof": "p-9" }, taetigkeiten: { "": null, Fahrt: "fahrt" } },
     });
   });
 
-  it("sends the column of each field that has one", () => {
-    expect(spaltenwahl({ person: "Wer", datum: "Datum", typ: null })).toEqual({
+  it('sends the column of each field, and "" for a field the owner gives none (S-702)', () => {
+    expect(spaltenwahl({ person: "Wer", datum: "Datum", dauer: null })).toEqual({
       person: "Wer",
       datum: "Datum",
+      dauer: "",
     });
   });
 

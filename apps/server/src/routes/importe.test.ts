@@ -49,6 +49,7 @@ describe("an import from another tool (S-701)", () => {
       kunden: { neu: 1, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
       projekte: { neu: 1, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
       taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+      buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
     });
     expect(await json(await weber.anfrage(IMP))).toEqual({ importe: [] });
 
@@ -61,6 +62,7 @@ describe("an import from another tool (S-701)", () => {
       kunden: { neu: 0, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 },
       projekte: { neu: 0, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 },
       taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+      buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
     });
     const kunden = (await json(await weber.anfrage("/api/v1/projektzeit/kunden"))) as unknown;
     expect(JSON.stringify(kunden).match(/Elbhof Immobilien/g)).toHaveLength(1);

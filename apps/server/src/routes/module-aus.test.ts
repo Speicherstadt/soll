@@ -38,6 +38,7 @@ const OHNE_MODUL: readonly string[] = [
   "POST /api/v1/importe/probelauf",
   "POST /api/v1/importe/abruf",
   "GET /api/v1/importe/:importId/datei",
+  "GET /api/v1/importe/vorlagen/:datei",
   // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
   "GET /api/v1/auskunft",
   // the Verfahrensdokumentation describes whatever the business switched on, a freelancer's too

@@ -1,24 +1,17 @@
 import { clockodoLesen } from "./clockodo/index.ts";
 import type { Gelesen } from "./modell.ts";
-import { SOLL_CSV_FELDER, type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
+import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
+import { tabelleLesen } from "./tabelle.ts";
+import { ohneBom, textAusBytes } from "./text.ts";
+import { WERKZEUGE, type Werkzeug } from "./werkzeuge.ts";
 
 /*
- * The tools Soll imports from (BAULISTE.md S-701): each with its ways in (a file the owner exports,
- * an API with an access the owner enters for one fetch, S-703) and a reader into the common model;
- * a fetch becomes a file the same reader reads. The server
- * and the app share this list; the app has the instructions for the export as texts per id.
+ * The tools Soll imports from (BAULISTE.md S-701) with their readers into the common model: each
+ * reads the bytes of the file as uploaded, so a reader may take a workbook as well as a CSV (S-702).
+ * A fetch over a tool's API becomes a file the same reader reads (S-703).
  */
 
-export type Quelle = {
-  /** stored as `extern_quelle` at every row taken over: lower case, digits, `.`, `_`, `-` */
-  id: string;
-  /** the tool's own name, the same in every language */
-  name: string;
-  wege: readonly ("datei" | "api")[];
-  /** the fields of the file, for the mapping of columns; none: the reader knows its columns */
-  felder: readonly string[];
-  lesen: (text: string, spalten: Spaltenwahl) => Gelesen;
-};
+export type Quelle = Werkzeug & { lesen: (bytes: Uint8Array, spalten: Spaltenwahl) => Gelesen };
 
 /** The header of a Soll-CSV and a line of each kind, as the template to download */
 export const SOLL_CSV_VORLAGE = [
@@ -30,22 +23,16 @@ export const SOLL_CSV_VORLAGE = [
   "",
 ].join("\r\n");
 
-export const QUELLEN: readonly Quelle[] = [
-  {
-    id: "soll-csv",
-    name: "Soll-CSV",
-    wege: ["datei"],
-    felder: SOLL_CSV_FELDER,
-    lesen: sollCsvLesen,
-  },
-  {
-    id: "clockodo",
-    name: "Clockodo",
-    wege: ["datei", "api"],
-    felder: [],
-    lesen: (text) => clockodoLesen(text),
-  },
-];
+const LESER: Record<string, Quelle["lesen"]> = {
+  "soll-csv": (bytes, spalten) => sollCsvLesen(ohneBom(textAusBytes(bytes)), spalten),
+  tabelle: tabelleLesen,
+  clockodo: (bytes) => clockodoLesen(textAusBytes(bytes)),
+};
+
+export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({
+  ...werkzeug,
+  lesen: LESER[werkzeug.id] as Quelle["lesen"],
+}));
 
 export const quelleVon = (id: string): Quelle | undefined =>
   QUELLEN.find((quelle) => quelle.id === id);

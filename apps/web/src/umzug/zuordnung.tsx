@@ -4,6 +4,7 @@ import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { m } from "../paraglide/messages.js";
 import { Abschnitt, type Option, Zeile } from "./auswahl.tsx";
+import { type BuchungAendern, BuchungZuordnung } from "./buchung.tsx";
 import { FELD_NAMEN } from "./texte.ts";
 import type { Vorschau } from "./typen.ts";
 
@@ -25,7 +26,7 @@ const zielOptionen = (vorhanden: { id: string; name: string }[]): Option[] => [
   ...vorhanden.map(({ id, name }) => ({ wert: `id:${id}`, name })),
 ];
 
-export type Aendern = {
+export type Aendern = BuchungAendern & {
   spalte: (feld: string, kopf: string | null) => void;
   person: (person: string, nutzerId: string | null) => void;
   art: (art: string, ziel: Abwesenheitsart | null) => void;
@@ -221,6 +222,11 @@ export const ZuordnungSchritt = (props: {
     <Show when={props.vorschau.taetigkeiten.length > 0}>
       <Taetigkeiten vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
     </Show>
+    <BuchungZuordnung
+      vorschau={props.vorschau}
+      zuordnung={props.zuordnung}
+      aendern={props.aendern}
+    />
     <Abgeschlossen
       bis={props.abgeschlossenBis}
       hoechstens={props.hoechstens}

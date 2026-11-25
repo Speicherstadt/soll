@@ -1,10 +1,11 @@
 import { type Monat, monatVon } from "@soll/arbeitszeit";
-import type { ImportDaten, Zuordnung } from "@soll/import";
+import type { ImportDaten, ImportZeit, Zuordnung } from "@soll/import";
 import {
   abwesenheitPlanen,
   type GenommeneAbwesenheiten,
   monateZwischen,
 } from "./plan-abwesenheiten.ts";
+import { buchungenPlanen, buchungenWieder } from "./plan-buchungen.ts";
 import {
   type Ergebnis,
   kundePlanen,
@@ -16,7 +17,9 @@ import {
   type Art,
   keineZahlen,
   type Monatssperre,
+  type NeueStempelung,
   type Plan,
+  type PlanArt,
   type PlanGrund,
   type Stand,
 } from "./plan-typen.ts";
@@ -37,7 +40,7 @@ type Satz = { zeile: number; externalId: string };
  */
 type Bau = Plan & { beruehrt: Map<string, Set<Monat>> };
 
-const ablehnen = (bau: Bau, art: Art, satz: Satz, grund: PlanGrund) => {
+const ablehnen = (bau: Bau, art: PlanArt, satz: Satz, grund: PlanGrund) => {
   bau.zahlen[art].abgelehnt += 1;
   bau.abgelehnt.push({ art, zeile: satz.zeile, externalId: satz.externalId, grund });
 };
@@ -80,6 +83,23 @@ const schonDa = (
   beruehren(bau, nutzerId, fund.monate);
 };
 
+/** The bookings of a time that becomes stamps now (S-702) */
+const buchungenVon = (
+  bau: Bau,
+  zeit: ImportZeit,
+  nutzerId: string,
+  stempel: readonly NeueStempelung[],
+  kontext: { zuordnung: Zuordnung; stand: Stand },
+) => {
+  const ergebnis = buchungenPlanen(zeit, nutzerId, stempel, kontext.zuordnung, kontext.stand);
+  if (ergebnis.art === "abgelehnt") ablehnen(bau, "buchungen", zeit, ergebnis.grund);
+  else if (ergebnis.art === "ausgelassen") bau.zahlen.buchungen.ausgelassen += 1;
+  else if (ergebnis.art === "neu") {
+    bau.zahlen.buchungen.neu += 1;
+    bau.buchungen.push(...ergebnis.buchungen);
+  }
+};
+
 const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
   const genommen: Genommen = new Map();
   for (const zeit of daten.zeiten) {
@@ -88,6 +108,8 @@ const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand:
     const fund = zeitWieder(zeit, nutzerId, stand.vorhanden.stempelungen);
     if (fund !== null) {
       schonDa(bau, "zeiten", zeit, nutzerId, fund);
+      const wieder = "grund" in fund ? "keine" : buchungenWieder(zeit, stand);
+      if (wieder !== "keine") bau.zahlen.buchungen[wieder] += 1;
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
@@ -96,6 +118,7 @@ const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand:
       bau.zahlen.zeiten.neu += 1;
       bau.stempelungen.push(...ergebnis);
       beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
+      buchungenVon(bau, zeit, nutzerId, ergebnis, { zuordnung, stand });
     }
   }
 };
@@ -180,6 +203,7 @@ export const planen = (
     kunden: [],
     projekte: [],
     taetigkeiten: [],
+    buchungen: [],
     monate: [],
     zahlen: keineZahlen(),
     abgelehnt: [],

@@ -1,68 +1,9 @@
 import type { Stempelung } from "@soll/arbeitszeit";
-import { type ImportDaten, type ImportZeit, leer, type Zuordnung } from "@soll/import";
+import { type ImportDaten, leer, type Zuordnung } from "@soll/import";
 import { describe, expect, it } from "vitest";
 import { planen } from "./plan.ts";
-import type { Stand } from "./plan-typen.ts";
-import { stempelAus, stempelKennung } from "./plan-zeiten.ts";
-
-// Instants in Berlin: winter time +01:00, summer time +02:00
-const um = (text: string) => Date.parse(text);
-
-const zeit = (id: string, tag: string, beginn: number, ende: number, pause = 0, zeile = 2) => ({
-  externalId: id,
-  zeile,
-  person: "Sandra Kühn",
-  tag,
-  beginn,
-  ende,
-  pauseMinuten: pause,
-});
-
-/** The stamps an earlier import wrote for a span, by their ids, as `uebernommeneKennungen` reads them */
-const gespeichert = (nutzerId: string, ...zeiten: ImportZeit[]) =>
-  new Map(
-    zeiten.flatMap((z) =>
-      (stempelAus(z) as Stempelung[]).map(
-        (s) => [stempelKennung(z.externalId, s.art), { nutzerId, zeitpunkt: s.zeitpunkt }] as const,
-      ),
-    ),
-  );
-
-const stand = (aenderung: Partial<Stand> = {}): Stand => {
-  let n = 0;
-  return {
-    jetzt: um("2026-11-25T12:00:00+01:00"),
-    module: { arbeitszeit: true, projektzeit: true },
-    mitglieder: new Set(["sandra", "max"]),
-    vorhanden: {
-      stempelungen: new Map(),
-      abwesenheiten: new Map(),
-      kunden: new Map(),
-      projekte: new Set(),
-      taetigkeiten: new Map(),
-    },
-    kunden: new Set(["elbhof"]),
-    projekte: new Set(["bad"]),
-    taetigkeiten: new Set(["montage"]),
-    geschlossen: () => new Set(),
-    stempelVon: () => [],
-    stempelGesperrt: () => false,
-    abwesenheitenVon: () => [],
-    abwesenheitGesperrt: () => false,
-    neueId: () => `id-${++n}`,
-    ...aenderung,
-  };
-};
-
-const ZUORDNUNG: Zuordnung = {
-  personen: { "Sandra Kühn": "sandra", "Max Brandt": "max" },
-  arten: { Urlaub: "urlaub", Krank: "krank" },
-  kunden: {},
-  projekte: {},
-  taetigkeiten: {},
-};
-
-const mitZeiten = (...zeiten: ImportDaten["zeiten"]): ImportDaten => ({ ...leer(), zeiten });
+import { gespeichert, mitZeiten, stand, um, ZUORDNUNG, zeit } from "./plan-testhilfen.ts";
+import { stempelAus } from "./plan-zeiten.ts";
 
 describe("a span of another tool as stamps", () => {
   it("stamps Kommen, Gehen and the break in the middle, on whole minutes", () => {

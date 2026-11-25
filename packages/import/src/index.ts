@@ -37,11 +37,21 @@ export {
 } from "./modell.ts";
 export { QUELLEN, type Quelle, quelleVon, SOLL_CSV_VORLAGE } from "./quellen.ts";
 export { SOLL_CSV_FELDER, type SollCsvFeld, type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
-export { schluessel } from "./text.ts";
+export { tabelleLesen } from "./tabelle.ts";
+export { dauerFrei, pauseFrei, tagFrei, uhrzeitFrei } from "./tabelle-werte.ts";
+export { inhaltsKennung, TABELLE_FELDER, type TabelleFeld } from "./tabelle-zeile.ts";
+export { schluessel, textAusBytes } from "./text.ts";
+export { TABELLE_VORLAGE_CSV, tabelleVorlageXlsx } from "./vorlage.ts";
+export { WERKZEUGE, type Werkzeug } from "./werkzeuge.ts";
 export { datumLesen, minutenLesen, uhrzeitLesen } from "./werte.ts";
+export { MAX_ENTPACKT, xlsxLesen } from "./xlsx.ts";
+export { xlsxSchreiben, type Zelle } from "./xlsx-schreiben.ts";
 export {
   artenAus,
   artVorschlag,
+  type Buchungszuordnung,
+  type Kandidat,
+  kandidatVorschlag,
   type Mitglied,
   type Personenzuordnung,
   personenAus,
@@ -49,4 +59,6 @@ export {
   vorschlag,
   type Ziel,
   type Zuordnung,
+  zeitProjekteAus,
+  zeitTaetigkeitenAus,
 } from "./zuordnung.ts";

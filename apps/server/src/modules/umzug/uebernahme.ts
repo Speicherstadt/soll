@@ -9,6 +9,7 @@ import {
 import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import {
+  buchungenUebernehmen,
   kundenUebernehmen,
   projekteUebernehmen,
   taetigkeitenUebernehmen,
@@ -111,6 +112,7 @@ const schreibenAlles = (
     taetigkeitenUebernehmen(s, kontext, herkunft, zeile.plan.taetigkeiten);
     stempelUebernehmen(s, kontext, herkunft, zeile.plan.stempelungen);
     abwesenheitenUebernehmen(s, kontext, herkunft, zeile.plan.abwesenheiten);
+    buchungenUebernehmen(s, kontext, herkunft, zeile.plan.buchungen);
   });
 };
 

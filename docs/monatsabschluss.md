@@ -126,7 +126,9 @@ abgeschlossen wurde, wird nicht entfernt.
 
 Der Server prüft das beim Start und dann alle sechs Stunden. Entfernt werden die Stempelungen des
 Monats (jede Fassung einer korrigierten Stempelung mit), die in ihm gebuchten Gegeneinträge, die
-Bestätigungen und der Abschluss, und mit ihnen der gespeicherte Inhalt ihrer Einträge in der
+Bestätigungen und der Abschluss, die Abwesenheiten, die ganz in entfernten Monaten liegen (auch
+abgelehnte und zurückgezogene Anträge; eine Abwesenheit, die in einen noch aufbewahrten Monat reicht,
+bleibt bis zu dessen Ende), und mit ihnen der gespeicherte Inhalt ihrer Einträge in der
 [Audit-Kette](audit-kette.md). Die Einträge selbst bleiben, denn sie enthalten nur den Hash des
 Inhalts: Die Kette prüft danach fehlerfrei, und jeder Prüfwert passt weiter zu seinem Eintrag. Die
 Aussonderung steht selbst in der Kette, als eigener Eintrag je entfernter Zeile und als Zeile, die

@@ -209,4 +209,19 @@ describe("removing a closed month after its retention period", () => {
       grund: "abschluss",
     });
   });
+
+  it("names the removal in the Auskunft of the person, without the month's content", async () => {
+    const { server, sandra } = await abgeschlossen();
+    aussondern(server.db, server.schreibDb, NEUJAHR_2029);
+    server.stelleUhr(NEUJAHR_2029);
+    const auskunft = await json(await sandra.anfrage("/api/v1/auskunft"));
+    expect(auskunft.aussonderungen).toEqual([
+      expect.objectContaining({
+        monat: "2026-10",
+        jahre: 2,
+        ausgesondertAm: new Date(NEUJAHR_2029).toISOString(),
+      }),
+    ]);
+    expect(auskunft.stempelungen).toEqual([]);
+  });
 });

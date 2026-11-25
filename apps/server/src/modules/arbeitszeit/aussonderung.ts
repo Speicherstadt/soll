@@ -6,9 +6,9 @@ import {
   stempeltage,
   tagInBerlin,
 } from "@soll/arbeitszeit";
-import { and, asc, eq, lt } from "drizzle-orm";
+import { and, asc, eq, isNotNull, lt } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
-import { korrekturen, monatsabschluesse, stempelungen } from "../../db/schema.ts";
+import { abwesenheiten, korrekturen, monatsabschluesse, stempelungen } from "../../db/schema.ts";
 import { schreiben } from "../audit/index.ts";
 import { aenderungGesperrt, ausgesonderteMonate } from "./abschluss.ts";
 import { type Aufbewahrungsjahre, aufbewahrungsjahre, aussonderbarAb } from "./aufbewahrung.ts";
@@ -18,7 +18,8 @@ import { lohnmodelle } from "./zuordnungen.ts";
 
 /*
  * Removal after the retention period (S-901, docs/plan.md "Aufbewahrung je Monatsabschluss"): once
- * the period of a closed month has ended, its stamps, counter-entries and closing rows are deleted
+ * the period of a closed month has ended, its stamps, counter-entries, closing rows and the absences
+ * lying wholly in removed months are deleted
  * with the stored contents of their links. The links stay, as they hold only the contents' hashes,
  * so the chain still verifies and every Prüfwert a person holds still matches its link; the removal
  * itself is a row of `aussonderungen`, and so a link of the chain. The month stays locked.
@@ -152,6 +153,45 @@ const schritteIn = (db: Db, a: Abschluss) =>
     )
     .all();
 
+/** The months from `von` to `bis`, both included */
+const monateVonBis = (von: Monat, bis: Monat): Monat[] => {
+  const monate: Monat[] = [];
+  for (let [jahr, monat] = von.split("-").map(Number) as [number, number]; ; monat += 1) {
+    if (monat > 12) [jahr, monat] = [jahr + 1, 1];
+    const m = `${jahr}-${String(monat).padStart(2, "0")}` as Monat;
+    monate.push(m);
+    if (m >= bis) return monate;
+  }
+};
+
+/**
+ * The absences of the person whose every month is removed once this one is: an absence is part of
+ * the content of each month it touches (S-401), so one reaching into a month that is kept stays,
+ * and one still open (a sickness without its end) stays too
+ */
+const abwesenheitenIn = (db: Db, a: Abschluss) => {
+  const weg = new Set([a.monat, ...ausgesonderteMonate(db, a.betriebId, a.nutzerId)]);
+  return db
+    .select({
+      abwesenheitId: abwesenheiten.abwesenheitId,
+      von: abwesenheiten.von,
+      bis: abwesenheiten.bis,
+    })
+    .from(abwesenheiten)
+    .where(
+      and(
+        eq(abwesenheiten.betriebId, a.betriebId),
+        eq(abwesenheiten.nutzerId, a.nutzerId),
+        isNotNull(abwesenheiten.bis),
+      ),
+    )
+    .all()
+    .filter(({ von, bis }) =>
+      monateVonBis(monatVon(von), monatVon(bis ?? von)).every((m) => weg.has(m)),
+    )
+    .map(({ abwesenheitId }) => ({ abwesenheitId }));
+};
+
 /** Removes one month in one transaction, its record included */
 const monatAussondern = (
   db: Db,
@@ -165,6 +205,7 @@ const monatAussondern = (
       ...stempel.map((z) => s.aussondern("stempelungen", { stempelId: z.stempelId })),
       ...korrekturenIn(db, a).map((k) => s.aussondern("korrekturen", k)),
       ...schritteIn(db, a).map((schritt) => s.aussondern("monatsabschluesse", schritt)),
+      ...abwesenheitenIn(db, a).map((zeile) => s.aussondern("abwesenheiten", zeile)),
     ];
     const zeilen = entfernt.length;
     const inhalte = entfernt.reduce((summe, e) => summe + e.inhalte, 0);

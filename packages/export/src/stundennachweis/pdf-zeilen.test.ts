@@ -1,14 +1,18 @@
 import { PDFDocument } from "pdf-lib";
 import { describe, expect, it } from "vitest";
-import { pdfText } from "../stundenzettel/text.ts";
+import { pdfInhalt, pdfText } from "../stundenzettel/text.ts";
 import { type NachweisZeile, type Stundennachweis, stundennachweisPdf } from "./pdf.ts";
 
 const ms = (text: string) => Date.parse(text);
 const HASH = "cd".repeat(32);
 
-const buchung = (notiz: string, taetigkeit = "Montage"): NachweisZeile => ({
+const buchung = (
+  notiz: string,
+  taetigkeit = "Montage",
+  person = "Sandra Brandt",
+): NachweisZeile => ({
   tag: "2026-11-19",
-  person: "Sandra Brandt",
+  person,
   beginn: ms("2026-11-19T08:00:00+01:00"),
   ende: ms("2026-11-19T11:30:00+01:00"),
   minuten: 210,
@@ -37,6 +41,10 @@ const nachweis = (zeilen: NachweisZeile[]): Stundennachweis => ({
     ],
   },
 });
+
+/** The height of each line of text drawn, from the text matrices (`1 0 0 1 x y Tm`) */
+const hoehen = (pdf: Uint8Array) =>
+  [...pdfInhalt(pdf).matchAll(/1 0 0 1 -?[\d.]+ (-?[\d.]+) Tm/g)].map((t) => Number(t[1]));
 
 /** The drawn text with its line breaks taken out: a wrapped cell reads as one again */
 const ohneUmbruch = async (pdf: Uint8Array) => pdfText(pdf).replaceAll("\n", " ");
@@ -68,5 +76,22 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     for (let nummer = 1; nummer <= 60; nummer++) expect(text).toContain(notiz(nummer));
     expect(text).toContain("Unterschrieben von Erika Elbhof");
     expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThan(2);
+  });
+
+  it("continues a row taller than a page on the next page, drawing nothing below the bottom", async () => {
+    const person = "Sandra Brandt ".repeat(120).trim();
+    const pdf = await stundennachweisPdf(nachweis([buchung("", "Montage", person)]), HASH);
+    const y = hoehen(pdf);
+    expect(y.length).toBeGreaterThan(0);
+    // RAND of the writer: no line in the bottom margin, let alone below the page
+    expect(Math.min(...y)).toBeGreaterThanOrEqual(40);
+    expect(await ohneUmbruch(pdf)).toContain(person);
+    expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThan(2);
+  });
+
+  it("repeats the head of the table on each page it goes on to", async () => {
+    const zeilen = Array.from({ length: 80 }, () => buchung("Montage Vorwand"));
+    const text = pdfText(await stundennachweisPdf(nachweis(zeilen), HASH));
+    expect(text.match(/^Tätigkeit$/gm)).toHaveLength(2);
   });
 });

@@ -74,10 +74,15 @@ export const csvZeilen = (text: string, trenner: string): CsvZeile[] => {
  * "" (which matches no character) when it has none: a file of one column keeps "Weber, Jonas" whole
  */
 export const trennzeichenVon = (text: string): string => {
-  const erste = text.split("\n", 1)[0] ?? "";
-  const zaehlen = (zeichen: string) => (zeichen === "" ? 0 : erste.split(zeichen).length - 1);
+  // one pass over the first line, so a line of millions of separators costs one count (S-701)
+  const ende = text.indexOf("\n");
+  const zahl: Record<string, number> = { ";": 0, "\t": 0, ",": 0 };
+  for (let i = 0; i < (ende === -1 ? text.length : ende); i++) {
+    const zeichen = text[i] as string;
+    if (zeichen in zahl) zahl[zeichen] = (zahl[zeichen] as number) + 1;
+  }
   return [";", "\t", ","].reduce(
-    (best, zeichen) => (zaehlen(zeichen) > zaehlen(best) ? zeichen : best),
+    (best, zeichen) => ((zahl[zeichen] as number) > (zahl[best] ?? 0) ? zeichen : best),
     "",
   );
 };

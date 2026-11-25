@@ -118,12 +118,27 @@ const nurFehler = (kopf: string[], fehler: LeseFehler): Gelesen => ({
   spalten: {},
 });
 
+/**
+ * The most columns and characters a header may have: a Soll-CSV has twelve columns, an export a few
+ * dozen. A longer first line is no header, refused before it is split, so a file of millions of
+ * separators is read in time (BAULISTE.md S-701: no file hangs the reader).
+ */
+const MAX_SPALTEN = 200;
+const MAX_KOPFZEICHEN = 20_000;
+
+const kopfZuLang = (text: string): boolean => {
+  const ende = text.indexOf("\n");
+  return (ende === -1 ? text.length : ende) > MAX_KOPFZEICHEN;
+};
+
 /** Reads a Soll-CSV; `wahl` overrides the columns the header suggests */
 export const sollCsvLesen = (roh: string, wahl: Spaltenwahl = {}): Gelesen => {
   const text = ohneBom(roh);
+  if (kopfZuLang(text)) return nurFehler([], { zeile: 1, grund: "kein_kopf" });
   const [kopfzeile, ...zeilen] = csvZeilen(text, trennzeichenVon(text));
-  const titel = (kopfzeile?.felder ?? []).map(bereinigt);
-  if (!kopfzeile || kopfzeile.offen) return nurFehler(titel, { zeile: 1, grund: "kein_kopf" });
+  if (!kopfzeile || kopfzeile.offen || kopfzeile.felder.length > MAX_SPALTEN)
+    return nurFehler([], { zeile: 1, grund: "kein_kopf" });
+  const titel = kopfzeile.felder.map(bereinigt);
   const kopf = kopfAus(kopfzeile.felder, wahl);
   if (kopf.typ === undefined || kopf.kennung === undefined)
     return nurFehler(titel, { zeile: 1, grund: "kein_kopf" });

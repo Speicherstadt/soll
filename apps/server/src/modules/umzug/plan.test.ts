@@ -268,4 +268,39 @@ describe("the plan of a takeover", () => {
     );
     expect(zu.monate).toEqual([]);
   });
+
+  it("closes no month whose records were all refused or left out", () => {
+    const daten: ImportDaten = {
+      ...mitZeiten(zeit("z-1", "2026-08-03", 420, 900), {
+        ...zeit("z-2", "2026-09-01", 420, 900, 0, 3),
+        person: "Leon",
+      }),
+      abwesenheiten: [
+        {
+          externalId: "a-1",
+          zeile: 4,
+          person: "Sandra Kühn",
+          art: "Urlaub",
+          von: "2026-07-06",
+          bis: "2026-07-07",
+        },
+      ],
+    };
+    const vorhandene: Stempelung[] = [
+      { art: "kommen", zeitpunkt: um("2026-08-03T06:00:00+02:00") },
+      { art: "gehen", zeitpunkt: um("2026-08-03T16:00:00+02:00") },
+    ];
+    const plan = planen(
+      daten,
+      ZUORDNUNG,
+      "2026-09",
+      stand({
+        stempelVon: () => vorhandene,
+        abwesenheitenVon: () => [{ art: "urlaub", von: "2026-07-07", bis: "2026-07-07" }],
+      }),
+    );
+    expect(plan.zahlen.zeiten).toMatchObject({ neu: 0, ausgelassen: 1, abgelehnt: 1 });
+    expect(plan.zahlen.abwesenheiten.abgelehnt).toBe(1);
+    expect(plan.monate).toEqual([]);
+  });
 });

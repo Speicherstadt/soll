@@ -12,7 +12,8 @@ Wer zu Soll wechselt, soll nichts abtippen. Der Inhaber findet den Umzug unter *
 Aus anderem Tool übernehmen** (`/umzug`). Jeder Import läuft gleich ab, egal aus welchem Tool:
 
 1. **Werkzeug**: das bisherige Tool wählen; Soll sagt, wie man dort die Daten exportiert.
-2. **Datei**: die Exportdatei hochladen (höchstens 5 MB und 20.000 Datensätze). Soll liest sie und
+2. **Datei**: die Exportdatei hochladen (höchstens 5 MB und 20.000 Datensätze, die Kopfzeile
+   höchstens 200 Spalten). Soll liest sie und
    nennt jede Zeile, die es nicht lesen kann, mit dem Grund.
 3. **Zuordnung**: welche Spalte welche Angabe enthält, welche Person der Datei welche Person in
    Soll ist, welche Abwesenheitsart welcher Art in Soll entspricht, ob Kunden und Aufträge neu
@@ -89,7 +90,7 @@ zwei Zeiten mit weniger als neun Stunden Abstand, sind sie wie beim Stempeln ein
   Gegeneintrag ([Monatsabschluss](monatsabschluss.md)).
 - Waren Monate **im alten Tool** schon abgeschlossen, trägt der Inhaber in der Zuordnung den letzten
   davon ein (höchstens den Vormonat). Nach der Übernahme schließt Soll für jede Person jeden dieser
-  Monate ab, in den übernommene Zeiten oder Abwesenheiten fallen: eine Zeile in
+  Monate ab, in den Zeiten oder Abwesenheiten fallen, die jetzt übernommen werden oder schon übernommen waren (ein abgelehnter Datensatz schließt keinen Monat): eine Zeile in
   `monatsabschluesse` mit dem Grund „übernommen aus Soll-CSV (Import …)“ und dem Import, ohne
   Bestätigung der Person, mit Prüfwert wie jeder Abschluss. Der Grund steht auf dem Stundenzettel.
   Danach ist der Monat gesperrt wie jeder andere.

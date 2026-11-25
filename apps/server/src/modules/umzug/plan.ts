@@ -24,7 +24,10 @@ import { type Genommen, stempelKennung, zeitPlanen } from "./plan-zeiten.ts";
 
 type Satz = { zeile: number; externalId: string };
 
-/** The plan being built, with the months each person's records reach */
+/**
+ * The plan being built, with the months each person's records reach that are taken over now or
+ * were before: only those may be closed as taken over (a refused record closes nothing, S-306)
+ */
 type Bau = Plan & { beruehrt: Map<string, Set<Monat>> };
 
 const ablehnen = (bau: Bau, art: Art, satz: Satz, grund: PlanGrund) => {
@@ -59,9 +62,9 @@ const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand:
   for (const zeit of daten.zeiten) {
     const nutzerId = personVon(bau, "zeiten", zeit, zuordnung, stand);
     if (nutzerId === null) continue;
-    beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
     if (stand.vorhanden.stempelungen.has(stempelKennung(zeit.externalId, "kommen"))) {
       bau.zahlen.zeiten.vorhanden += 1;
+      beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
@@ -69,6 +72,7 @@ const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand:
     else {
       bau.zahlen.zeiten.neu += 1;
       bau.stempelungen.push(...ergebnis);
+      beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
     }
   }
 };
@@ -80,9 +84,10 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
     const nutzerId = art === null ? null : personVon(bau, "abwesenheiten", satz, zuordnung, stand);
     if (art === null) bau.zahlen.abwesenheiten.ausgelassen += 1;
     if (art === null || nutzerId === null) continue;
-    beruehren(bau, nutzerId, monateZwischen(satz.von, satz.bis));
+    const monate = monateZwischen(satz.von, satz.bis);
     if (stand.vorhanden.abwesenheiten.has(satz.externalId)) {
       bau.zahlen.abwesenheiten.vorhanden += 1;
+      beruehren(bau, nutzerId, monate);
       continue;
     }
     const ergebnis = abwesenheitPlanen(satz, { nutzerId, art }, stand, genommen);
@@ -90,6 +95,7 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
     else {
       bau.zahlen.abwesenheiten.neu += 1;
       bau.abwesenheiten.push(ergebnis);
+      beruehren(bau, nutzerId, monate);
     }
   }
 };

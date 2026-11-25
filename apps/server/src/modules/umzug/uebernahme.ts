@@ -130,14 +130,20 @@ const monateSperren = (
   };
 };
 
-/** Takes an import over; `gleichzeitig` when another import of the same rows came first */
+/**
+ * Takes an import over; `gleichzeitig` when another import of the same rows came first. The file is
+ * kept first; planning and writing follow without an `await` between them, so no other request runs
+ * in between: a second takeover plans against the rows of the first and refuses what overlaps
+ * (docs/plan.md, "Zwei Übernahmen zugleich").
+ */
 export const uebernehmen = async (
   deps: UmzugDeps,
   kontext: Kontext,
   eingabe: Eingabe,
 ): Promise<{ ok: true; wert: Uebernahme } | { ok: false; grund: "gleichzeitig" }> => {
-  const { gelesen, plan } = planVon(deps.db, kontext.betriebId, eingabe, kontext.jetzt);
   const dateiSha256 = await deps.speicher.speichern(eingabe.datei.bytes);
+  // from here on synchronous: nothing else is written between the plan and its transaction
+  const { gelesen, plan } = planVon(deps.db, kontext.betriebId, eingabe, kontext.jetzt);
   const importId = crypto.randomUUID();
   try {
     schreibenAlles(deps, kontext, eingabe, { importId, dateiSha256, plan });

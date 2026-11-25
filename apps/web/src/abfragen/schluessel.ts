@@ -52,6 +52,8 @@ export const PFAD = {
   habenKontakte: `${PZ}/haben/kontakte`,
   habenBuchungen: `${PZ}/haben/buchungen`,
   habenUebergabe: `${PZ}/haben/uebergabe`,
+  // the Verfahrensdokumentation with the business's statements, for the owner (S-902)
+  verfahrensdoku: "/api/v1/verfahrensdoku",
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -118,6 +120,7 @@ export const ressourcen = {
   habenKontakte: () => einfach(PFAD.habenKontakte),
   habenBuchungen: (parameter: { projektId: string; von: string; bis: string }) =>
     mitParametern(PFAD.habenBuchungen, parameter),
+  verfahrensdoku: () => einfach(PFAD.verfahrensdoku),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

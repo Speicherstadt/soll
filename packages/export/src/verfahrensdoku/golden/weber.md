@@ -1,0 +1,148 @@
+# Verfahrensdokumentation Weber Haustechnik
+
+Stand: 2026-11-25 · Soll 1.0.0 · vollständig
+
+Prüfwert der Audit-Kette beim Erzeugen: Nr. 4711 · 3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a
+
+## 1\. Allgemeine Beschreibung
+
+Weber Haustechnik zeichnet die Arbeitszeit seiner Beschäftigten elektronisch mit Soll 1.0.0 auf, einer selbst betriebenen Software für Zeiterfassung und Dienstplanung. Die Pflicht zur Aufzeichnung folgt aus § 3 Abs. 2 Nr. 1 ArbSchG (BAG, Beschluss vom 13.09.2022, 1 ABR 22/21), § 16 Abs. 2 ArbZG und § 17 Abs. 1 MiLoG. Steuerlich bedeutsam sind die Aufzeichnungen, sobald sie Grundlage des Lohns sind (Stundenlohn, Minijob, Zuschläge; § 41 EStG, § 4 LStDV); dann gelten die GoBD.
+
+Diese Verfahrensdokumentation beschreibt das Verfahren in Soll. Soll erzeugt sie bei jedem Abruf aus dem Stand des Betriebs und den Angaben, die nur der Betrieb machen kann; andere Programme und Abläufe des Betriebs gehören in die eigenen Abschnitte am Ende. Die Anleitung für Anwender steht unter https://soll.work/.
+
+Bundesland des Betriebs: Hamburg.
+
+Rechtsform: Einzelunternehmen
+
+Anschrift: Wandsbeker Chaussee 1  
+22089 Hamburg
+
+Verantwortlich: Jonas Weber (Inhaber), vertreten durch Anna Weber (Büro)
+
+Ort der Aufbewahrung: Server im Büro in Hamburg, Sicherungen auf einem NAS im selben Gebäude
+
+- Modul Arbeitszeit (mit Abwesenheiten und Monatsabschluss): eingeschaltet
+- Modul Dienstplan: ausgeschaltet
+- Modul Projektzeit: eingeschaltet
+- Modul Terminal: ausgeschaltet
+- Standort „Werkstatt Wandsbek“: Hamburg
+
+## 2\. Anwenderdokumentation: Erfassung und Verarbeitung
+
+Erfassung: Jede Person stempelt selbst Kommen, Pause und Gehen in der App im Browser oder als PWA auf dem Handy, über die REST-API oder am Terminal. Jede Stempelung trägt die Zeit des Servers, ihre Quelle (App, API, Terminal) und, wenn sie ohne Netz entstand, die Zeit des Geräts und die Marke „offline“. Soll stempelt nie selbst aus und rundet keine Arbeitszeit zum Nachteil der Person.
+
+Ohne Netz hält das Gerät die Stempelung in einer Warteschlange, fortlaufend nummeriert und mit einem nicht exportierbaren Schlüssel des Geräts signiert (ECDSA P-256); der Server prüft Signatur, Gerät und Nummer, nimmt dieselbe Stempelung nur einmal an und zeigt eine Lücke in den Nummern als Hinweis.
+
+Änderungen: Nachtragen, Ändern und Entfernen einer Stempelung geht bis zum Monatsabschluss, immer mit Grund; die Person sieht, wer was wann und warum geändert hat. Abwesenheiten (Urlaub, Krankheit, Kinderkrankentage und andere) stehen ohne Diagnose und ohne hochgeladene Bescheinigung in Soll (Art. 9 DSGVO).
+
+Prüfung: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; jeder Befund nennt seine Norm. Die Regeln sind als Daten mit Gültigkeit hinterlegt, ebenso Mindestlohn und Minijob-Grenze je Jahr; fehlt ein Wert, heißt das Ergebnis „nicht hinterlegt“, nie der Wert eines anderen Jahres.
+
+Monatsabschluss: Die Person bestätigt ihren Monat, der Inhaber schließt ihn ab (ohne Bestätigung nur mit Grund). Danach ist der Monat gesperrt, eine Korrektur ist ein Gegeneintrag mit Grund im laufenden Monat. Die Person bekommt ihren Stundenzettel als PDF mit dem Prüfwert des Abschlusses.
+
+Projektzeit: Buchungen auf Kunden, Aufträge und Tätigkeiten stehen getrennt von der Arbeitszeit; sie bleiben änderbar, bis sie abgerechnet oder in einem unterschriebenen Stundennachweis sind, danach sind sie gesperrt.
+
+## 3\. Anwenderdokumentation: Terminal
+
+Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Terminals ab.
+
+## 4\. Anwenderdokumentation: Weitergabe und Übernahme von Daten
+
+DATEV: Für das Lohnbüro erzeugt Soll aus dem Inhalt der abgeschlossenen Monate eine Datei für den Import von Bewegungsdaten in LODAS oder Lohn und Gehalt; ein zweiter Export desselben Monats gibt dieselbe Datei. Hinterlegt sind 4 Lohnarten und 5 Personalnummern, Berater- und Mandantennummer ebenfalls. Fehlt etwas, nennt Soll es vor dem Herunterladen, statt einen Wert anzunehmen.
+
+Prüfexport: Für Zoll und Arbeitsschutz gibt Soll die Arbeitstage von Personen in einem Zeitraum als CSV und PDF aus, mit Änderungen von Hand, Gegeneinträgen und dem Prüfwert jedes abgeschlossenen Monats (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG).
+
+Haben: Abgerechnete Projektzeit übergibt Soll als Leistung an die Buchhaltung Haben unter https://haben.weber-haustechnik.test; das Token dafür liegt verschlüsselt in Soll und steht nicht in diesem Dokument. Jede Übergabe sperrt ihre Buchung und hält fest, was gesendet wurde.
+
+Importe: Diese Version von Soll übernimmt keine Daten aus anderen Programmen. Was vor Soll aufgezeichnet wurde, bleibt im bisherigen Verfahren und wird dort aufbewahrt; es gehört in einen eigenen Abschnitt am Ende.
+
+Auskunft: Jede Person kann ihre Daten nach Art. 15 DSGVO abrufen; der Inhaber erteilt sie auch für Personen, die ausgeschieden sind.
+
+## 5\. Technische Systemdokumentation: Audit-Kette und Prüfwert
+
+Jede Schreiboperation in den Tabellen von Soll hängt in derselben Transaktion ein Glied an die Audit-Kette des Betriebs an; einen anderen Weg in diese Tabellen gibt es nicht. Die Module des Servers lesen über eine Verbindung, die SQLite nur lesend öffnet; die einzige schreibende Verbindung gehört der Funktion, die das Glied anhängt. Schlägt das Anhängen fehl, bleibt von der Schreiboperation nichts in der Datenbank (GoBD Rz. 107 bis 110).
+
+Ein Glied enthält eine fortlaufende Nummer je Betrieb, den Zeitpunkt, den Akteur (die Person, auch wenn sie über einen API-Zugang schreibt, das Terminal oder Soll selbst, etwa bei der Aussonderung), Tabelle, Zeile und Art der Änderung, den SHA-256 des neuen Inhalts der Zeile, den Hash des Vorgängers und den SHA-256 über all das (Hash-Kette). Den alten Inhalt hält das vorige Glied derselben Zeile; so bleibt jede Änderung mit ihrem Stand davor erkennbar (Rz. 59 und 111).
+
+Der Inhalt liegt getrennt vom Glied, das nur seinen Hash trägt. Nach Ablauf der Aufbewahrungsfrist entfernt die Aussonderung den Inhalt mit einem eigenen Glied; die Glieder bleiben, und die Kette prüft weiter ohne Befund (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO).
+
+Stempelungen lassen sich bis zum Monatsabschluss nur mit Grund ändern; die Person sieht jede Änderung. Nach dem Abschluss ist der Monat gesperrt, eine Korrektur ist ein Gegeneintrag mit Grund im laufenden Monat; der abgeschlossene Monat bleibt, wie er war (Rz. 58 und 111).
+
+Die Prüfung rechnet die Kette Glied für Glied nach, vergleicht den gespeicherten Kopf mit dem letzten Glied, jeden gespeicherten Inhalt mit seinem Hash und jede Zeile mit dem Inhalt ihres letzten Glieds. Sie meldet geänderte, entfernte oder eingeschobene Glieder, ein abgeschnittenes Ende und jede Zeile, die an der Kette vorbei eingefügt, geändert oder gelöscht wurde. Die Kette verhindert keine Änderung durch jemanden, der den Server betreibt und die Datenbank selbst ändern kann; sie macht sie sichtbar (Rz. 60).
+
+Der Prüfwert ist Nummer und Hash eines Glieds („Nr. 1234 · \<SHA-256\>“). Zum Monatsabschluss bekommt jede Person auf ihrem Stundenzettel den Prüfwert des Glieds, mit dem ihr Monat abgeschlossen wurde. Wer den Server betreibt, kann die Datenbank ändern, aber nicht den Prüfwert, den die Person schon hat: Die Prüfseite unter /pruefen zeigt ohne Anmeldung, ob der Monat noch so ist, wie er abgeschlossen wurde, oder welche Tage abweichen. Das ist der Schutz gegen Änderungen durch den Betrieb selbst.
+
+Beim Erzeugen dieses Dokuments hatte die Kette 4711 Glieder; Prüfwert Nr. 4711 · 3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a3f9a. Außerhalb des Servers aufbewahrt zeigt er später, ob die Kette bis dahin verändert wurde.
+
+Die Prüfung beim Erzeugen dieses Dokuments fand keine Befunde.
+
+## 6\. Technische Systemdokumentation: Programm und Datenhaltung
+
+Eingesetzt ist Soll 1.0.0. Soll ist ein Server (eine einzelne ausführbare Datei, auch als Container-Image) mit einer SQLite-Datenbank im WAL-Modus und einer App für Browser, Handy (PWA) und Tablet (Terminal). Was sich je Version geändert hat, nennen die Versionshinweise; die Version steht im Stand jeder Fassung dieses Dokuments.
+
+Die Migrationen der Datenbank sind im Programm enthalten und laufen beim Start; eine schon angewendete Migration, die sich geändert hat oder fehlt, verhindert den Start. SQLite schreibt mit synchronous = FULL, so dass eine bestätigte Stempelung auch einen Stromausfall übersteht.
+
+Zeitpunkte stehen als Millisekunden in UTC, Kalendertage als JJJJ-MM-TT in Europe/Berlin, Dauern in ganzen Minuten, Geldbeträge in Cent; nichts wird als Gleitkommazahl gerechnet. Ein Arbeitstag ist der Tag, an dem die Schicht beginnt.
+
+Geheimnisse (Zugangsdaten zu anderen Diensten, Schlüssel von Karten, Abos für Web Push) liegen mit AES-256-GCM verschlüsselt in der Datenbank, mit dem Schlüssel aus SOLL\_SECRET\_KEY, ohne den der Server nicht startet. API-Tokens, PINs, QR-Codes und Kopplungscodes stehen nur als Hash darin. In diesem Dokument steht keins davon.
+
+Mehrere Betriebe können eine Instanz teilen: Jede Tabelle von Soll trägt die Kennung des Betriebs, jede Abfrage filtert danach, und jeder Betrieb hat seine eigene Audit-Kette.
+
+## 7\. Betriebsdokumentation: Zugänge und Rechte
+
+Personen melden sich mit Passkey oder Passwort an. Wer den Betrieb nicht selbst angelegt hat, kommt nur über eine Einladung hinein; jede Einladung gilt für eine Rolle. Der Server prüft Rolle und Modul bei jeder Anfrage; ein abgeschaltetes Modul lehnt er ab, statt es nur auszublenden. Jede Änderung der Mitgliedschaft und der Rolle steht in der Audit-Kette (GoBD Rz. 100 und 103).
+
+Programme greifen mit persönlichen API-Zugängen zu, die jede Person für sich anlegt und widerruft; ein Token hat nie mehr Rechte als die Rolle seiner Person zur Zeit des Aufrufs, und in der Audit-Kette steht die Person als Akteur. Gültig sind 1 Zugang.
+
+Die Rollen und was jede darf, mit der Zahl ihrer Mitglieder beim Erzeugen; ein Mitglied mit mehreren Rollen zählt bei jeder:
+
+- Inhaber (1 Mitglied): den Betrieb und seine Module sehen; Monate abschließen; die Verfahrensdokumentation pflegen und herunterladen
+- Planer (1 Mitglied): den Betrieb und seine Module sehen; Zeiten anderer mit Grund korrigieren und Gegeneinträge buchen
+- Mitarbeiter (3 Mitglieder): den Betrieb und seine Module sehen; selbst stempeln und die eigenen Zeiten sehen
+- Lohnbüro (0 Mitglieder): den DATEV-Export einrichten und herunterladen
+
+## 8\. Betriebsdokumentation: Aufbewahrung und Aussonderung
+
+Aufbewahrt wird je abgeschlossenem Monat einer Person. Bucht das Lohnbüro aus dem Monat Stunden oder Beträge (Stundenlohn, Minijob, Zuschläge oder kein Arbeitszeitmodell an einem Tag), ist er Buchungsbeleg und bleibt 8 Jahre (§ 147 Abs. 1 Nr. 4 und Abs. 3 Satz 1 AO, § 257 Abs. 4 HGB); sonst ist er Aufzeichnung nach § 16 Abs. 2 ArbZG und § 17 Abs. 1 MiLoG und bleibt 2 Jahre. Die Frist beginnt mit dem Ende des Kalenderjahres, in dem der Monat abgeschlossen wurde; wo offen ist, ob ein Monat Beleg ist, gilt die längere.
+
+Nach Ablauf entfernt Soll den Inhalt des Monats (Stempelungen, Gegeneinträge, Bestätigung, Abschluss und Abwesenheiten, die nur ihn betreffen) mit den gespeicherten Inhalten ihrer Glieder; die Glieder bleiben, eine eigene Zeile hält fest, welcher Monat welcher Person mit welcher Frist entfernt wurde, und steht selbst in der Kette. Der Server prüft das beim Start und alle sechs Stunden. Die Ablaufhemmung während einer Außenprüfung (§ 147 Abs. 3 AO) kennt Soll nicht: Wer eine Prüfung hat, sichert vorher.
+
+Beim Erzeugen aufbewahrt: 15 abgeschlossene Monate von Personen. Nach Ablauf der Frist ausgesondert: 0 (0 nach 2 Jahren, 0 nach 8 Jahren).
+
+## 9\. Betriebsdokumentation: Betrieb und Datensicherung
+
+Der Befehl soll backup schreibt eine in sich stimmige Kopie der Datenbank, auch während der Server schreibt (SQLite VACUUM INTO), prüft sie mit PRAGMA integrity\_check und überschreibt nie eine vorhandene Datei. Verschlüsseln, Auslagern und Wegräumen alter Sicherungen übernimmt das Backup des Rechners; Soll tut das nicht selbst. Sicherungen sollen so lange erreichbar bleiben wie die Fristen oben.
+
+soll restore legt eine Sicherung nur in ein leeres Datenverzeichnis, prüft danach die Audit-Kette jedes Betriebs und nennt das Ergebnis. Der Server startet nur mit demselben SOLL\_SECRET\_KEY wie zur Zeit der Sicherung; der Schlüssel gehört deshalb getrennt von den Sicherungen verwahrt.
+
+Betrieb des Servers: Jonas Weber spielt Updates monatlich nach einer Sicherung ein.
+
+Datensicherung: Täglich um 3:15 mit soll backup, danach restic auf das NAS; Anna prüft einmal im Quartal eine Wiederherstellung.
+
+Ablage von Schlüsseln und Passwörtern: Tresor im Büro, Umschlag „Soll“
+
+## 10\. Internes Kontrollsystem
+
+Zugriff: Rechte hängen an der Rolle und werden bei jeder Anfrage auf dem Server geprüft, ebenso der Betrieb: Keine Anfrage liest oder schreibt Daten eines anderen Betriebs (GoBD Rz. 100 und 103).
+
+Vier Augen beim Monat: Die Person bestätigt ihre Zeiten, der Inhaber schließt ab; ohne Bestätigung nur mit Grund, der auf dem Stundenzettel steht. Jede Änderung von Hand trägt einen Grund und ist für die Person sichtbar.
+
+Abstimmung: Jede Person hält mit dem Prüfwert auf ihrem Stundenzettel einen Beleg, den der Betrieb nicht ändern kann, und prüft ihn ohne Anmeldung auf der Prüfseite. Lücken in den Nummern der Geräte und Terminals zeigt Soll an, statt sie zu schließen.
+
+Plausibilität: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; Befunde nennen ihre Norm und stehen im Monatsabschluss. Fehlt ein Jahreswert oder ein Arbeitszeitmodell, rechnet Soll nicht mit einem anderen, sondern sagt „nicht hinterlegt“.
+
+Kontrolle der Kette: Die Prüfung der Audit-Kette läuft bei jedem Erzeugen dieses Dokuments, bei jeder Wiederherstellung einer Sicherung und auf der Prüfseite für jeden Prüfwert; beim Erzeugen dieses Dokuments ohne Befund.
+
+Verantwortlich für das Verfahren: Jonas Weber (Inhaber), vertreten durch Anna Weber (Büro)
+
+## 11\. Fassungen dieser Dokumentation
+
+Jede Fassung trägt oben ihren Tag, die Version von Soll und den Prüfwert der Kette beim Erzeugen (Rz. 154). Die Angaben des Betriebs ändert nur der Inhaber; jede gespeicherte Änderung steht mit altem und neuem Inhalt in der Audit-Kette:
+
+- 02\.11.2026 10:15: Angaben gespeichert (Glied Nr. 4700)
+- 20\.11.2026 16:40: Angaben gespeichert (Glied Nr. 4705)
+
+## 12\. Stundenzettel auf Papier vor Soll
+
+Bis Oktober 2026 schrieben die Monteure Stundenzettel auf Papier.
+
+Die Zettel liegen im Ordner \*2026\* im Büro.

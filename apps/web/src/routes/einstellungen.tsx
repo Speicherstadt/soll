@@ -32,6 +32,10 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
+  const inhaber = () => {
+    const betrieb = aktuellerBetrieb();
+    return betrieb ? istInhaber(betrieb) : false;
+  };
   // the terminal is the owner's: pairing tablets, PINs, QR codes (S-801) and NFC cards (S-802)
   const terminal = () => {
     const betrieb = aktuellerBetrieb();
@@ -50,6 +54,15 @@ const Einstellungen = () => {
         <TerminalKarten />
       </Show>
       <DatevZuordnung />
+      <Show when={inhaber()}>
+        <section class="flex max-w-lg flex-col items-start gap-3">
+          <h2 class="font-semibold">{m.verfahrensdoku_titel()}</h2>
+          <p class="text-muted-foreground">{m.verfahrensdoku_link_text()}</p>
+          <Link to="/verfahrensdoku" class={knopfLink}>
+            {m.verfahrensdoku_oeffnen()}
+          </Link>
+        </section>
+      </Show>
       <Zugaenge />
       <section class="flex max-w-sm flex-col gap-3">
         <h2 class="font-semibold">{m.darstellung_titel()}</h2>

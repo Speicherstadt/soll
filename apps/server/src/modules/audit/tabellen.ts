@@ -40,6 +40,7 @@ import {
   terminalEintraege,
   terminals,
   urlaubshinweise,
+  verfahrensdokuAngaben,
 } from "../../db/schema.ts";
 
 /**
@@ -88,6 +89,7 @@ export const kettenTabellen = {
   habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
   kontoAnpassungen: { tabelle: kontoAnpassungen, schluessel: ["anpassungId"] },
   urlaubshinweise: { tabelle: urlaubshinweise, schluessel: ["hinweisId"] },
+  verfahrensdokuAngaben: { tabelle: verfahrensdokuAngaben, schluessel: ["betriebId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

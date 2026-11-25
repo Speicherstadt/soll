@@ -144,8 +144,9 @@ Soll weiß nicht, ob für ein Jahr noch eine Steuerfestsetzung offen ist; dann l
 
 ## Verfahrensdokumentation
 
-Für die Verfahrensdokumentation nach den GoBD (BMF-Schreiben vom 28.11.2019, Rz. 107 ff. und
-151 ff.) beschreibt dieser Abschnitt, wie der Monatsabschluss Unveränderbarkeit herstellt. Der Text
+Für die [Verfahrensdokumentation](verfahrensdokumentation.md) nach den GoBD (BMF-Schreiben vom
+28.11.2019, Rz. 107 ff. und 151 ff.), die Soll aus dem Stand des Betriebs erzeugt, beschreibt dieser
+Abschnitt, wie der Monatsabschluss Unveränderbarkeit herstellt. Der Text
 zum Prüfwert folgt dem Baustein `pruefwert` aus `packages/gobd-kern/src/verfahrensdoku/kern.ts` in
 [Haben](https://github.com/firsttris/haben), erweitert um den Bezug auf den Monat.
 

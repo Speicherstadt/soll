@@ -41,6 +41,7 @@ import { stoppuhrRouten } from "./routes/stoppuhr.ts";
 import { stundennachweisRouten } from "./routes/stundennachweise.ts";
 import { taetigkeitRouten } from "./routes/taetigkeiten.ts";
 import { terminalRouten } from "./routes/terminals.ts";
+import { verfahrensdokuRouten } from "./routes/verfahrensdoku.ts";
 import { zeitRouten } from "./routes/zeiten.ts";
 import { zugangRouten } from "./routes/zugaenge.ts";
 import { webAuslieferung } from "./web.ts";
@@ -134,6 +135,7 @@ export const createApp = ({
     .route("/einladungen", einladungRouten(schreibDb, url, now))
     .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
+    .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
     .route(
       "/",
       modulRouten(db, {

@@ -746,7 +746,7 @@ Alle Punkte: nach S-305.
   Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
-- [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
+- [x] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
   `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle
   nennen).
   Fertig, wenn: der Inhaber eines Betriebs die Verfahrensdokumentation nach GoBD (BMF-Schreiben vom

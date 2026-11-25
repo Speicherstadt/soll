@@ -15,6 +15,7 @@ const pages = [
   "/mehr",
   "/monat",
   "/export",
+  "/verfahrensdoku",
 ];
 
 const pruefen = async (page: Page) => {

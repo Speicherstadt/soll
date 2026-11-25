@@ -1,6 +1,7 @@
 import { Match, Switch } from "solid-js";
 import { AngabenDialog } from "./angabenDialog.tsx";
 import { BedarfDialog } from "./bedarfDialog.tsx";
+import { KalenderDialog } from "./kalenderDialog.tsx";
 import { SchichtDialog, type SchichtModus } from "./schichtDialog.tsx";
 import type { Planperson, Vorlage } from "./typen.ts";
 import { VorlagenDialog } from "./vorlagenDialog.tsx";
@@ -11,9 +12,13 @@ export type OffenerDialog =
   | { art: "vorlagen" }
   | { art: "bedarf" }
   | { art: "angaben" }
+  | { art: "kalender" }
   | null;
 
-/** The dialogs of the plan: a shift, the templates, the need of the site, the data of a person */
+/**
+ * The dialogs of the plan: a shift, the templates, the need of the site, the data of a person, the
+ * own calendar feed
+ */
 export const PlanDialoge = (props: {
   offen: OffenerDialog;
   standortId: string;
@@ -49,6 +54,9 @@ export const PlanDialoge = (props: {
       </Match>
       <Match when={props.offen?.art === "angaben"}>
         <AngabenDialog personen={props.personen} onSchliessen={props.onSchliessen} />
+      </Match>
+      <Match when={props.offen?.art === "kalender"}>
+        <KalenderDialog onSchliessen={props.onSchliessen} />
       </Match>
     </Switch>
   );

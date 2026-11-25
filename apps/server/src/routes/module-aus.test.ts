@@ -37,6 +37,9 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/einladung/:token",
   "POST /api/v1/einladung/:token/annehmen",
   "POST /api/v1/pruefen",
+  // the calendar feed with its secret token instead of a session, refused with its business's
+  // module Dienstplan by the feed itself (dienstplan-kalender.test.ts, S-503)
+  "GET /api/v1/ics/:datei",
   // public: the description of the API (S-607)
   "GET /api/v1/openapi.json",
   // the tablet's own API: a device token instead of a session, refused with its business's module

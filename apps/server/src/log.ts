@@ -27,13 +27,19 @@ const entschluesselt = (teil: string): string =>
     }
   });
 
+/** The path segments whose next segment is a secret */
+const GEHEIM_DAHINTER: readonly string[] = ["einladung", "ics"];
+
 export const redactUrl = (url: string): string => {
   const parsed = new URL(url, "http://soll.invalid");
-  // the token of an invitation link is the only key to it (routes/einladungen.ts); Hono routes the
-  // decoded path, so `/%65inladung/<token>` reaches the same route and must be redacted as well
+  // the token of an invitation link is the only key to it (routes/einladungen.ts), and so is the
+  // token of a calendar feed (S-503); Hono routes the decoded path, so `/%65inladung/<token>`
+  // reaches the same route and must be redacted as well
   const teile = parsed.pathname.split("/");
   const pfad = teile
-    .map((teil, i) => (i > 0 && entschluesselt(teile[i - 1] ?? "") === "einladung" ? "…" : teil))
+    .map((teil, i) =>
+      i > 0 && GEHEIM_DAHINTER.includes(entschluesselt(teile[i - 1] ?? "")) ? "…" : teil,
+    )
     .join("/");
   return parsed.search.length > 1 ? `${pfad}?…` : pfad;
 };

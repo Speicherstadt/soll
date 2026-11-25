@@ -88,7 +88,7 @@ liegen die Vorlagen zum Ziehen; jeder Block hat einen Griff, der ihn mit der Tas
 Handy ein Tag zur Zeit: die sieben Tage als Knöpfe, darunter die Schichten des Tages als Liste.
 Bewusst anders als im Mockup: der Wochenend-Kopf und die Bezeichnung im Block stehen auf
 `--muted` beziehungsweise in `--foreground`, weil `--muted-foreground` auf `--accent` keine 4,5:1
-erreicht; „Veröffentlichen“ fehlt, bis S-503 es bringt. Ein Block mit Befund behält `--accent` und
+erreicht. „Veröffentlichen“ ist die Hauptaktion im Kopf, nur für Inhaber und Planer und nur, solange die Woche einen Entwurf hat; daneben öffnet „Kalender“ für alle den Dialog mit dem eigenen Kalender-Link (S-503). Ein Block mit Befund behält `--accent` und
 bekommt nur den Rand in `--danger` oder `--warning`; die Minijob-Grenze erscheint erst, wenn sie
 überschritten ist (R-32), nicht als Stand „551 € von 603 €“ (keine Summen je Person, BetrVG § 87);
 der Inhaber trägt im Kopf des Plans unter „Angaben zur Prüfung“ ein, was die Regeln von einer

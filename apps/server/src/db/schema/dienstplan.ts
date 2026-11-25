@@ -72,3 +72,21 @@ export const bedarfe = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.betriebId, t.bedarfId] })],
 );
+
+/**
+ * The calendar feed of a person in a business (S-503): one per person, its token kept only as its
+ * SHA-256, like the API tokens (S-607). `sprache` is the app's language when it was issued, for the
+ * texts of the feed, which a calendar app fetches without one. Issued again, the hash changes and
+ * the old link stops at once; revoked, the row goes.
+ */
+export const kalenderAbos = sqliteTable(
+  "kalender_abos",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    nutzerId: text("nutzer_id").notNull(),
+    tokenHash: text("token_hash").notNull().unique(),
+    sprache: text("sprache").notNull(),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
+);

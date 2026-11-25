@@ -2,7 +2,7 @@ import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
-import { vapidLaden } from "./modules/erinnerungen/index.ts";
+import { type PushSenden, vapidKontakt, vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 
 export const TEST_URL = "http://localhost:28200";
@@ -15,6 +15,8 @@ type Optionen = {
   webVerzeichnis?: string | null;
   /** The stand-in for Haben the server calls (S-606) */
   habenFetch?: typeof fetch;
+  /** The stand-in for the push service of messages about the plan (S-503) */
+  push?: PushSenden;
 };
 
 /**
@@ -57,6 +59,9 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     vapidOeffentlich: vapid.oeffentlich,
     webVerzeichnis: optionen.webVerzeichnis ?? null,
     ...(optionen.habenFetch ? { habenFetch: optionen.habenFetch } : {}),
+    push: optionen.push
+      ? { vapid, kontakt: vapidKontakt(TEST_URL, undefined), senden: optionen.push }
+      : null,
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };
 };

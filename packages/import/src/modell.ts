@@ -31,6 +31,9 @@ export type ImportAbwesenheit = {
   art: string;
   von: string;
   bis: string;
+  /** the first or the last day only half (Personio, S-704); missing: whole days */
+  ersterHalb?: boolean;
+  letzterHalb?: boolean;
 };
 
 export type ImportKunde = { externalId: string; zeile: number; name: string; nummer: string };
@@ -65,6 +68,21 @@ export type ImportBuchung = {
   taetigkeit: string;
 };
 
+/**
+ * A planned shift of a shift planner (S-706): instants in UTC milliseconds on whole minutes, the
+ * planned break in minutes, the role as the tool names it (position, workplace); `person` null for
+ * a shift nobody is planned on
+ */
+export type ImportSchicht = {
+  externalId: string;
+  zeile: number;
+  person: string | null;
+  beginn: number;
+  ende: number;
+  pauseMinuten: number;
+  rolle: string;
+};
+
 export type ImportDaten = {
   zeiten: ImportZeit[];
   abwesenheiten: ImportAbwesenheit[];
@@ -72,6 +90,7 @@ export type ImportDaten = {
   projekte: ImportProjekt[];
   taetigkeiten: ImportTaetigkeit[];
   buchungen: ImportBuchung[];
+  schichten: ImportSchicht[];
 };
 
 export const LESE_GRUENDE = [
@@ -139,4 +158,5 @@ export const leer = (): ImportDaten => ({
   projekte: [],
   taetigkeiten: [],
   buchungen: [],
+  schichten: [],
 });

@@ -9,7 +9,7 @@ import { zeitenAus } from "./zeiten.ts";
 const stammdaten = (
   bestand: Bestand,
   fehler: LeseFehler[],
-): Omit<ImportDaten, "zeiten" | "abwesenheiten" | "buchungen"> => {
+): Omit<ImportDaten, "zeiten" | "abwesenheiten" | "buchungen" | "schichten"> => {
   const kunden = einmal(bestand.kunden, fehler);
   const kundenIds = new Set(kunden.map((k) => k.id));
   const projekte = einmal(bestand.projekte, fehler).filter((p) => {

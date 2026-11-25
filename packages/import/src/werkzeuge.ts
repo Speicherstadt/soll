@@ -57,4 +57,13 @@ export const WERKZEUGE: readonly Werkzeug[] = [
     endungen: [".jsonl"],
     vorlagen: [],
   },
+  // the shift planners (S-706): only the API, each fetch a file of the same kind for one reader
+  ...(["papershift", "planday", "crewmeister"] as const).map((id) => ({
+    id,
+    name: { papershift: "Papershift", planday: "Planday", crewmeister: "Crewmeister" }[id],
+    wege: ["api"] as const,
+    felder: [],
+    endungen: [".jsonl"],
+    vorlagen: [],
+  })),
 ];

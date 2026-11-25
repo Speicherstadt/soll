@@ -1,0 +1,245 @@
+{
+  "quelle": "Crewmeister API v3 as github.com/mztechnik/hacs-crewmeister (api/models.py) and github.com/HelpCode-ai/anythingmcp (adapters/de/crewmeister.json) describe it; Café Elbblick, September 2026",
+  "members": [
+    {
+      "id": 71,
+      "crewId": 9,
+      "userId": 501,
+      "name": "Tom Becker",
+      "email": "tom@elbblick.test",
+      "employeeId": "E-1",
+      "disabled": false
+    },
+    {
+      "id": 72,
+      "crewId": 9,
+      "userId": 502,
+      "name": "Lea Wolf",
+      "email": "lea@elbblick.test",
+      "employeeId": "E-2",
+      "disabled": false
+    },
+    {
+      "id": 73,
+      "crewId": 9,
+      "userId": 503,
+      "name": "Yusuf Demir",
+      "email": "yusuf@elbblick.test",
+      "employeeId": "E-3",
+      "disabled": false
+    },
+    {
+      "id": 74,
+      "crewId": 9,
+      "userId": 504,
+      "name": "Olena Koval",
+      "email": "olena@elbblick.test",
+      "employeeId": "E-4",
+      "disabled": false
+    }
+  ],
+  "absenceTypes": [
+    { "id": 31, "crewId": 9, "absenceTypeId": 1, "name": "Urlaub" },
+    { "id": 32, "crewId": 9, "absenceTypeId": 2, "name": "Krankheit" }
+  ],
+  "workplaces": [
+    { "id": 41, "crewId": 9, "name": "Küche" },
+    { "id": 42, "crewId": 9, "name": "Service" }
+  ],
+  "shifts": [
+    {
+      "id": 8001,
+      "crewId": 9,
+      "userId": 501,
+      "from": "2026-09-01T07:00:00+02:00",
+      "to": "2026-09-01T15:00:00+02:00",
+      "workplaceId": 41,
+      "publishedShiftId": null,
+      "note": "Lieferung annehmen"
+    },
+    {
+      "id": 8002,
+      "crewId": 9,
+      "userId": 502,
+      "from": "2026-09-04T18:00:00+02:00",
+      "to": "2026-09-05T02:00:00+02:00",
+      "workplaceId": 42,
+      "publishedShiftId": null
+    },
+    {
+      "id": 8003,
+      "crewId": 9,
+      "userId": null,
+      "from": "2026-09-06T10:00:00+02:00",
+      "to": "2026-09-06T18:00:00+02:00",
+      "workplaceId": 42,
+      "publishedShiftId": null
+    },
+    {
+      "id": 8004,
+      "crewId": 9,
+      "userId": 501,
+      "from": "2026-09-01T07:00:00+02:00",
+      "to": "2026-09-01T15:30:00+02:00",
+      "workplaceId": 41,
+      "publishedShiftId": 8001
+    }
+  ],
+  "stamps": [
+    {
+      "id": 9001,
+      "crewId": 9,
+      "userId": 501,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-01T06:58:30+02:00",
+      "chainStartStampId": 9001,
+      "stampStatus": "CLOSED",
+      "location": "Elbchaussee",
+      "note": ""
+    },
+    {
+      "id": 9002,
+      "crewId": 9,
+      "userId": 501,
+      "stampType": "START_BREAK",
+      "timestamp": "2026-09-01T10:30:00+02:00",
+      "chainStartStampId": 9001,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9003,
+      "crewId": 9,
+      "userId": 501,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-01T11:00:00+02:00",
+      "chainStartStampId": 9001,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9004,
+      "crewId": 9,
+      "userId": 501,
+      "stampType": "CLOCK_OUT",
+      "timestamp": "2026-09-01T13:01:10Z",
+      "chainStartStampId": 9001,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9010,
+      "crewId": 9,
+      "userId": 502,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-04T17:55:00+02:00",
+      "chainStartStampId": 9010,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9011,
+      "crewId": 9,
+      "userId": 502,
+      "stampType": "START_BREAK",
+      "timestamp": "2026-09-04T22:00:00+02:00",
+      "chainStartStampId": 9010,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9012,
+      "crewId": 9,
+      "userId": 502,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-04T22:30:00+02:00",
+      "chainStartStampId": 9010,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9013,
+      "crewId": 9,
+      "userId": 502,
+      "stampType": "CLOCK_OUT",
+      "timestamp": "2026-09-05T02:05:00+02:00",
+      "chainStartStampId": 9010,
+      "stampStatus": "CLOSED"
+    },
+    {
+      "id": 9014,
+      "crewId": 9,
+      "userId": 502,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-04T23:00:00+02:00",
+      "chainStartStampId": 9014,
+      "stampStatus": "INVALID"
+    },
+    {
+      "id": 9020,
+      "crewId": 9,
+      "userId": 503,
+      "stampType": "START_WORK",
+      "timestamp": "2026-09-07T09:00:00+02:00",
+      "chainStartStampId": 9020,
+      "stampStatus": "OPEN"
+    }
+  ],
+  "absences": [
+    {
+      "id": 6001,
+      "crewId": 9,
+      "userId": 501,
+      "absenceType": 1,
+      "from": "2026-09-14",
+      "to": "2026-09-18",
+      "fromDayPart": "MORNING",
+      "toDayPart": "AFTERNOON",
+      "state": "APPROVED",
+      "zoneId": "Europe/Berlin"
+    },
+    {
+      "id": 6002,
+      "crewId": 9,
+      "userId": 502,
+      "absenceType": 2,
+      "from": "2026-09-21",
+      "to": "2026-09-22",
+      "fromDayPart": "MORNING",
+      "toDayPart": "AFTERNOON",
+      "state": "APPROVED",
+      "zoneId": "Europe/Berlin",
+      "memberNote": "Grippe"
+    },
+    {
+      "id": 6003,
+      "crewId": 9,
+      "userId": 503,
+      "absenceType": 1,
+      "from": "2026-09-25",
+      "to": "2026-09-25",
+      "fromDayPart": "AFTERNOON",
+      "toDayPart": "AFTERNOON",
+      "state": "APPROVED",
+      "zoneId": "Europe/Berlin"
+    },
+    {
+      "id": 6004,
+      "crewId": 9,
+      "userId": 504,
+      "absenceType": 1,
+      "from": "2026-09-28",
+      "to": "2026-09-30",
+      "fromDayPart": "MORNING",
+      "toDayPart": "AFTERNOON",
+      "state": "REQUESTED",
+      "zoneId": "Europe/Berlin"
+    },
+    {
+      "id": 6005,
+      "crewId": 9,
+      "userId": 503,
+      "absenceType": 1,
+      "from": "2026-09-10",
+      "to": "2026-09-11",
+      "fromDayPart": "MORNING",
+      "toDayPart": "AFTERNOON",
+      "state": "REJECTED",
+      "zoneId": "Europe/Berlin"
+    }
+  ]
+}

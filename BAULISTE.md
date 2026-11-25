@@ -370,7 +370,7 @@ nennt Norm, Schwere und die betroffenen Tage. Alle Punkte: nach S-104.
 
 Alle Punkte: nach S-306.
 
-- [ ] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
+- [x] **S-401 Abwesenheiten** – Arten Urlaub, Krank, Kind krank, Sonderurlaub, Überstundenabbau;
   ganze und halbe Tage.
   - **Urlaub**: Antrag mit Resturlaub und Hinweis auf eigene Schichten im Zeitraum; Freigabe oder
     Ablehnung mit Grund durch Inhaber oder Planer, Benachrichtigung beider Seiten; Zurückziehen des
@@ -386,7 +386,23 @@ Alle Punkte: nach S-306.
     Dienstplan steht nur „abwesend“.
   Fertig, wenn: Playwright Antrag, Freigabe, Ablehnung und Krankmeldung zeigt und Tests „krank im
   Urlaub“, die Frist am 4. Tag, die Erinnerung an die eAU und die Sichtbarkeit von „krank“ je Rolle
-  abdecken.
+  abdecken. Dazu: eine neue Tabelle `abwesenheiten` mit `betrieb_id` in der Audit-Kette über eine
+  neue Migration (Art, von, bis, halbe Tage, Status, Bescheinigung „eAU“ oder „Papier“, Kennung des
+  Kinds; keine Diagnose, keine Datei); R-27 als reine Funktion in `packages/arbeitszeit` mit allen
+  Fällen aus `docs/regeln.md` (dazu „ab Tag 2“ und ein Feiertag am Fälligkeitstag), die Einstellung
+  „Bescheinigung ab Tag“ am Betrieb; genehmigte Abwesenheiten gehen in Soll und Ist des Monats
+  (Gutschrift, Urlaubstage, R-24), in den Inhalt des Monatsabschlusses und auf den Stundenzettel, ein
+  Monat ohne Abwesenheit behält seinen Inhalt aus S-306 (Prüfwerte bleiben gültig); eine
+  Abwesenheit, die einen Tag eines abgeschlossenen Monats ändern würde, wird abgelehnt (409), die
+  Korrektur geht über den Gegeneintrag aus S-306; Resturlaub des Jahres und Urlaubstage des Antrags
+  ohne Wochenenden und Feiertage; Überschneidungen abgelehnt außer Krankheit im Urlaub; Zähler der
+  Kinderkrankentage je Kind gegen den Jahreswert, „nicht hinterlegt“ ohne ihn; eine Schnittstelle,
+  über die der Dienstplan (S-501) eigene Schichten im Antrag zeigt und Schichten einer Krankmeldung als
+  offen meldet; Mails an Betrieb und Person über das Mail-Modul aus S-306 (Test mit SMTP-Ersatz);
+  ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder ändert, und dass die
+  Routen bei abgeschaltetem Modul Arbeitszeit abgelehnt werden; Playwright in `desktop` und `@phone`,
+  axe grün auf `/abwesenheiten` in hell und dunkel; Texte in allen sechs Sprachen, Arabisch von rechts
+  nach links.
 - [ ] **S-402 Teamkalender und Konten** – Kalender je Standort, Konten in der App, Datum des
   Hinweises auf Verfall.
 
@@ -411,9 +427,29 @@ Alle Punkte: nach S-306.
   abgeschalteten Moduls Dienstplan wird abgelehnt; ein Test je Endpunkt, dass kein Betrieb Daten
   eines anderen sieht oder ändert. Playwright in `desktop` und `phone` (am Handy ein Tag zur Zeit),
   axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku `docs/dienstplan.md`.
-- [ ] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
+- [x] **S-502 Prüfung beim Einplanen** – alle Regeln aus Phase 2 auf geplante Schichten, dazu § 12
   TzBfG (4 Tage Vorlauf bei Arbeit auf Abruf).
   Fertig, wenn: jede Regel aus Phase 2 im Plan einen Playwright-Fall hat.
+  Dazu: eine reine Funktion in `packages/arbeitszeit` baut aus den geplanten Schichten einer Person
+  `PruefTag`s (Tage vor heute aus den Stempelungen, ab heute aus dem Plan; geplante Schichten mit
+  weniger als 9 h Abstand sind eine Schicht wie in S-201; eine Pause ab 15 min liegt in der Mitte der
+  Arbeitszeit, eine kürzere ist Arbeitszeit) und gibt mit den vorhandenen Regelfunktionen, ohne
+  zweite Umsetzung einer Regel, die Befunde je Schicht mit Regel, Norm und Schwere zurück, geprüft,
+  als wäre der Plan gearbeitet (Vitest auch über Mitternacht und beide Zeitumstellungen); § 12 TzBfG
+  (R-22) als reine Funktion mit den Fällen aus `docs/regeln.md`, Mitteilung ist die
+  Veröffentlichung, im Entwurf der heutige Tag; angewendet werden R-02 bis R-09, R-14 bis R-22 und
+  R-32, nicht R-01, R-10 und R-13 (sie betreffen Stempelungen), R-11 und R-12 (Bereitschaft im Plan
+  kommt mit S-505) und die Berechnungen R-29 und R-33; jede angewendete Regel hat einen
+  Playwright-Fall im Plan (desktop, einer auch am Handy); ein Befund warnt am Block (Icon, Text,
+  Norm) und in der Liste „Hinweise zum Plan“ unter dem Plan und verhindert das Speichern nicht;
+  Befunde sieht nur, wer plant; die Angaben, die eine Regel braucht (Geburtsdatum, Wechselschicht,
+  Arbeit auf Abruf, Zeitraum des Mutterschutzes), trägt nur der Inhaber ein, gespeichert wird nur
+  das, in der Audit-Kette; die Einstellungen des Betriebs zur Prüfung (Branche nach § 5 Abs. 2 ArbZG,
+  Ausnahme nach § 10 Abs. 1 ArbZG, Ausgleichszeitraum mit Beginn) haben eine Vorgabe, die nie
+  weniger streng ist als das Gesetz; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines
+  anderen sieht oder ändert, und dass das abgeschaltete Modul abgelehnt wird; axe grün in hell und
+  dunkel; Texte in allen sechs Sprachen, Normen auf Deutsch; Doku in `docs/dienstplan.md` und
+  `docs/regeln.md`.
 - [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
   5545).
 - [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
@@ -604,10 +640,28 @@ Alle Punkte: nach S-305.
   bei der Kopplung; jede Stempelung trägt die Quelle „terminal“ und das Gerät; ein abgeschaltetes
   Modul Terminal wird abgelehnt; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen
   sieht oder ändert; keine Fotos, Fingerabdrücke oder Standorte; Texte in allen sechs Sprachen.
-- [ ] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
+- [x] **S-802 NFC-Karten** – Web NFC; Karten-UID nur mit PIN, NTAG 424 DNA mit Prüfung der
   SUN-Nachricht.
   Fertig, wenn: Playwright mit einem Ersatz für `NDEFReader` Karte mit PIN, Karte ohne PIN und eine
   gefälschte SUN-Nachricht prüft.
+  Dazu: der Inhaber trägt unter Einstellungen je Person Karten ein, als einfache Karte mit ihrer UID
+  oder als NTAG 424 DNA mit UID, SDMMetaReadKey und SDMFileReadKey; die Schlüssel stehen nur
+  verschlüsselt in der Datenbank, die UID nur als Kennung mit geheimem Schlüssel (wie die PIN), und
+  eine UID gibt es im Betrieb einmal; eine einfache Karte erkennt die Person nur zusammen mit deren
+  PIN, denn eine UID lässt sich kopieren, und eine Karte allein lehnt der Server ab; eine NTAG 424 DNA
+  erkennt die Person allein, wenn die SUN-Nachricht stimmt: PICCData mit dem SDMMetaReadKey
+  entschlüsselt, der CMAC mit dem aus dem SDMFileReadKey abgeleiteten Sitzungsschlüssel geprüft, ein
+  Lesezähler, der nicht größer ist als der zuletzt gesehene, abgelehnt (Wiederholung); AES-CMAC mit
+  `node:crypto`, geprüft mit den Beispielwerten aus AN12196 und RFC 4493; jede unbekannte Karte,
+  falsche PIN zur Karte und gefälschte oder wiederholte SUN-Nachricht zählt zur Sperre des Terminals
+  und steht in der Audit-Kette; der Inhaber entzieht eine Karte, ihre Schlüssel werden gelöscht, der
+  Zähler bleibt; Web NFC nur, wo der Browser `NDEFReader` hat (Chrome auf Android), sonst bleibt das
+  Terminal bei PIN und QR-Code; Playwright `@terminal` mit einem Ersatz für `NDEFReader`: eine Karte
+  mit PIN stempelt, eine Karte ohne PIN wird abgelehnt, eine gefälschte und eine wiederholte
+  SUN-Nachricht werden abgelehnt, eine echte erkennt die Person; ein Test je neuem Endpunkt, dass kein
+  Betrieb Karten eines anderen sieht oder ändert; die Auskunft nennt die Karten der Person ohne UID
+  und Schlüssel; ein abgeschaltetes Modul Terminal wird abgelehnt; axe in hell und dunkel; Texte in
+  allen sechs Sprachen.
 - [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
 
 ## Phase 9 – Härtung und Betrieb
@@ -680,6 +734,40 @@ Alle Punkte: nach S-305.
   Terminal.
 - [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
+
+## Übergabe
+
+Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streichen.
+
+**Angefangene Punkte (Entwurf, ungetestet):** Weiterbauen auf dem Branch des Pull Requests, nicht
+neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
+requests“).
+
+- [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
+- [ ] S-606 Haben – #48; offen: Doku in `docs/projektzeit.md`, Entscheidungen, Haken
+- [ ] S-904 Lasttest – #49; offen: Zeitüberschreitungen in den Tests klären, Schwelle festlegen
+  und als Entscheidung eintragen, Doku, Haken
+- [ ] S-803 Terminal offline – noch nicht begonnen
+
+**Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604
+(#43), S-605 (#42), S-802 (#45), S-906 (#44). Das Review (`tdd-review`) wird für jeden nachgeholt,
+Befunde gehen als eigene Pull Requests mit fehlschlagendem Test zuerst. Ab sofort gilt wieder das
+Review vor jedem Merge.
+
+**Offene Nacharbeiten** (beim Bauen aufgefallen, noch ohne Pull Request):
+
+- [ ] SvEV § 1: Aufteilung bei 25 €/h auf drei Teile (nur ein Test liegt vor)
+- [ ] Dienstplan zeigt „nicht hinterlegt“, wenn ein Jahreswert fehlt
+- [ ] Doppeltes Antippen beim Stempeln: kurze Sperre (Vorschlag 1,5 s), Entscheidung fehlt
+- [ ] Abgeschlossener Monat sperrt die Projektzeit nicht; entscheiden und eintragen
+- [ ] Solo-Betrieb: Oberfläche für „später einladen“ fehlt
+- [ ] Projektzeit über MCP buchen
+- [ ] Inhaber kann API-Zugänge anderer nicht widerrufen
+- [ ] OpenAPI-Dokument durch einen externen Validator prüfen
+- [ ] Quadlet und arm64-Image nicht geprüft
+- [ ] S-605: Storno eines unterschriebenen Stundennachweises fehlt
+- [ ] Gesetzeswächter: Workflow einmal von Hand starten und die Prüfsummen in
+  `scripts/gesetze/normen.json` übernehmen
 
 ## Zurückgestellt
 

@@ -2,9 +2,12 @@ import { Hono } from "hono";
 import type { Auth } from "./auth/auth.ts";
 import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
+import { schichtquelle } from "./modules/dienstplan/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
-import { pinSchluesselAus } from "./modules/terminal/index.ts";
+import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
+import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
 import { auslastungRouten } from "./routes/auslastung.ts";
 import { betriebRouten } from "./routes/betrieb.ts";
@@ -15,6 +18,7 @@ import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladung
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { habenRouten } from "./routes/haben.ts";
+import { kartenRouten } from "./routes/karten.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { kundenRouten } from "./routes/kunden.ts";
@@ -23,6 +27,7 @@ import { modellRouten } from "./routes/modelle.ts";
 import { modulRouten } from "./routes/module.ts";
 import { monatRouten } from "./routes/monat.ts";
 import { openapiRouten } from "./routes/openapi.ts";
+import { personenRouten } from "./routes/personen.ts";
 import { pinRouten } from "./routes/pins.ts";
 import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
@@ -50,6 +55,8 @@ export type AppDeps = {
   url: string;
   /** Mail over SMTP from the configuration; null while none is set (S-306) */
   mail: Mailer | null;
+  /** The planned shifts for absences (S-401); the plan itself (S-501) unless a test passes one */
+  schichten?: Schichtquelle;
   /**
    * The key of the encrypted columns (SOLL_SECRET_KEY; the key of the PIN lookup is derived from it,
    * S-801) and the public VAPID key (S-307)
@@ -72,12 +79,13 @@ export const createApp = ({
   auth,
   url,
   mail,
+  schichten,
   geheimerSchluessel,
   vapidOeffentlich,
   webVerzeichnis = null,
   habenFetch = fetch,
 }: AppDeps) => {
-  const pinSchluessel = pinSchluesselAus(geheimerSchluessel);
+  const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
   app.use(async (c, next) => {
@@ -107,7 +115,7 @@ export const createApp = ({
     mcpRouten({ db, zugang, version, url, fetch: (anfrage, env) => app.fetch(anfrage, env) }),
   );
   // the tablet with its device token, not a session (S-801)
-  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, pinSchluessel));
+  app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, terminalSchluessel));
 
   const v1 = new Hono<Anfrage>()
     .use(angemeldet(auth, db, zugang))
@@ -116,6 +124,7 @@ export const createApp = ({
     .route("/einrichtung", einrichtungRouten(db, schreibDb, now))
     .route("/standorte", standortRouten(db, schreibDb, now))
     .route("/einladungen", einladungRouten(schreibDb, url, now))
+    .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route(
       "/",
@@ -124,6 +133,10 @@ export const createApp = ({
           "/modelle": modellRouten(db, schreibDb, now),
           "/datev": datevRouten(db, schreibDb, now),
           "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
+            mail,
+            schichten: schichten ?? schichtquelle(db),
+          }),
           "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,
@@ -148,7 +161,8 @@ export const createApp = ({
         },
         dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
         terminal: {
-          "/pins": pinRouten(db, schreibDb, now, pinSchluessel),
+          "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
+          "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),
           "/": terminalRouten(db, schreibDb, now),
         },
       }),

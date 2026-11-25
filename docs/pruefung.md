@@ -90,8 +90,10 @@ genügt jeder der beiden Zeiträume; der Verstoß kommt erst, wenn beide abgelau
 
 ## Einstellungen und Vorgaben
 
-Was der Betrieb einstellt (in der Einrichtung, S-303), kommt als Parameter in die Prüfung. Solange
-es nicht eingestellt ist, gilt eine Vorgabe:
+Was der Betrieb einstellt, kommt als Parameter in die Prüfung. Branche, Ausgleichszeitraum und
+sein Beginn stellt der Inhaber unter **Einstellungen → Prüfung** ein (S-502, siehe
+[Dienstplan](dienstplan.md#einstellungen-zur-prufung)); der Ausgleich der Ruhezeit hat noch keine
+Einstellung. Solange etwas nicht eingestellt ist, gilt eine Vorgabe:
 
 | Einstellung | Werte | Vorgabe |
 | --- | --- | --- |

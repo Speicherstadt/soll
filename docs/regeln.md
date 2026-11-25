@@ -7,7 +7,10 @@ description: >-
 
 # Regelwerk
 
-Soll prüft jede Zeit gegen diese Regeln, beim Stempeln, beim Einplanen und zum Monatsabschluss. Jede
+Soll prüft jede Zeit gegen diese Regeln, beim Stempeln, beim Einplanen und zum Monatsabschluss.
+Beim Einplanen (S-502) gelten R-02 bis R-09, R-14 bis R-22 und R-32 für die geplanten Schichten,
+zusammen mit dem, was vor heute gestempelt ist; wie Soll eine geplante Schicht liest, steht im
+[Dienstplan](dienstplan.md#prufung-beim-einplanen). Jede
 Regel hat eine Kennung (`R-…`), ihre Norm, die Grenzwerte, die Ausnahmen und eine **Schwere**:
 
 - **Hinweis**: Etwas ist zu beachten oder bald fällig, ist aber für sich erlaubt (etwa mehr als 8 h
@@ -886,9 +889,12 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
   drei aufeinanderfolgende Stunden; § 12 Abs. 1 Satz 3: ohne vereinbarte Wochenarbeitszeit gelten
   20 Stunden; § 12 Abs. 3 Satz 1: der Betrieb legt den Zeitrahmen (Referenzstunden und -tage) fest, in dem
   abgerufen werden kann; Arbeit außerhalb verpflichtet ebenfalls nicht.
-- **Regel**: Für Mitarbeiter mit Arbeit auf Abruf (Merkmal am Arbeitszeitmodell) prüft der
-  Dienstplan beim Veröffentlichen den Abstand zwischen Mitteilung und Schichtbeginn. Der Tag der
-  Mitteilung zählt nicht mit (§ 187 Abs. 1 BGB): Mitteilung am Mo, frühester Schichttag Sa.
+- **Regel**: Für Mitarbeiter mit Arbeit auf Abruf (Merkmal an der Person, das der Inhaber unter
+  „Angaben zur Prüfung“ setzt) prüft der Dienstplan den Abstand zwischen Mitteilung und
+  Schichtbeginn. Mitgeteilt ist eine Schicht mit ihrer Veröffentlichung (S-503); ein Entwurf
+  frühestens heute, so warnt der Plan schon beim Einplanen. Der Tag der Mitteilung zählt nicht mit
+  (§ 187 Abs. 1 BGB): Mitteilung am Mo, frühester Schichttag Sa. Eine tägliche Dauer ist vereinbart,
+  wenn das Arbeitszeitmodell für den Wochentag Minuten hat; sonst gelten mindestens 3 Stunden.
 - **Ausnahmen**: Tarifvertrag nach § 12 Abs. 6 TzBfG (Einstellung).
 - **Schwere**: Hinweis (die Person muss dann nicht kommen; verboten ist die Schicht nicht).
 
@@ -899,6 +905,8 @@ Gilt, solange am Mitarbeiter ein Zeitraum für Mutterschutz eingetragen ist (Dat
 | Verstoß | Mo 10:00 – Fr 10:00 (drei volle Tage Di bis Do dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 3 Tage“: der Mitteilungstag und der Tag der Arbeit zählen nicht | § 12 Abs. 3 Satz 2 TzBfG; § 187 Abs. 1 BGB |
 | Verstoß | Mo – Do (zwei volle Tage dazwischen) | Hinweis „keine Pflicht zur Arbeit, Vorlauf 2 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
 | Dauer | Abruf ohne vereinbarte Tagesdauer für 2:30 | Hinweis „mindestens 3 Stunden“ | § 12 Abs. 1 Satz 4 TzBfG |
+| Dauer | Abruf ohne vereinbarte Tagesdauer für 3:00, oder mit vereinbarter Tagesdauer für 2:30 | kein Befund | § 12 Abs. 1 Satz 4 TzBfG („wenn die Dauer … nicht festgelegt ist“) |
+| am selben Tag | Entwurf für heute | Hinweis „keine Pflicht zur Arbeit, Vorlauf 0 Tage“ | § 12 Abs. 3 Satz 2 TzBfG |
 
 Hinweis zur Grenze: Die Frist von vier Tagen ist erst gewahrt, wenn zwischen dem Tag der Mitteilung
 und dem Tag der Arbeit vier volle Tage liegen; so lesen es die Kommentare (ErfK/Preis, § 12 TzBfG).
@@ -1024,7 +1032,14 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   Papier im Büro), keine Diagnose und keine Datei (CLAUDE.md, Art. 9 DSGVO).
 - **Grenzwerte**: Erster Krankheitstag ist Tag 1; dauert die Krankheit über Tag 3 hinaus, ist die
   Bescheinigung am nächsten Arbeitstag nach Tag 3 fällig (bei Krankheit ab Montag also Donnerstag).
-  Der Betrieb kann „ab Tag 1“ oder „ab Tag 2“ einstellen.
+  Der Betrieb kann „ab Tag 1“, „ab Tag 2“ oder „ab Tag 3“ einstellen; dann ist die Bescheinigung am
+  ersten Arbeitstag ab diesem Tag fällig. Arbeitstag ist ein Tag mit Soll im Arbeitszeitmodell (kein
+  Feiertag am Standort, kein freier Tag), ohne Modell Montag bis Freitag. Die Erinnerung an den
+  Betrieb gilt ab dem Tag der Fälligkeit, bis „Bescheinigung liegt vor“ markiert ist; der Hinweis
+  folgt am Tag danach. Für „Kind krank“ gilt § 5 EntgFG nicht.
+- **Umsetzung** (S-401): `bescheinigungPruefen()` in `packages/arbeitszeit/src/abwesenheit/`; der
+  Hinweis steht an der Krankmeldung und in der Liste des Betriebs, nicht im Monatsabschluss: Er gilt
+  einem Dokument, nicht der Arbeitszeit, und änderte sonst die Bestätigung des Monats.
 - **Schwere**: Hinweis.
 
 | Fall | krank ab | Erwartet | Quelle |
@@ -1033,6 +1048,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Grenze | Mo – Do (4 Kalendertage) | fällig am Do, Erinnerung an die eAU | § 5 Abs. 1 Satz 2 EntgFG |
 | Wochenende | Fr – Mo (4 Kalendertage) | fällig am Mo (nächster Arbeitstag nach So) | § 5 Abs. 1 Satz 2 EntgFG |
 | Einstellung | Betrieb „ab Tag 1“, krank Mo | fällig am Mo | § 5 Abs. 1 Satz 3 EntgFG |
+| Einstellung „ab Tag 2“ | krank Mo – Di | fällig am Di; nur Mo: keine nötig | § 5 Abs. 1 Satz 3 EntgFG |
+| Feiertag | krank ab Mo 11.5.2026, Do 14.5. Christi Himmelfahrt | fällig am Fr 15.5. | § 5 Abs. 1 Satz 2 EntgFG („Arbeitstag“) |
 | Verstoß | krank Mo – Fr, am Fr noch keine Bescheinigung | Hinweis an Person und Betrieb „Bescheinigung fällig seit Do“ | § 5 Abs. 1 Satz 2 EntgFG |
 
 ### R-28 Kinderkrankentage

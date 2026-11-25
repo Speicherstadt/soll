@@ -35,6 +35,11 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   projektzeiten: eigen.projektzeiten,
   personalnummer: eigen.personalnummer,
   ausweis: eigen.ausweis,
+  karten: eigen.karten,
+  // the owner sees every absence with its kind (abwesenheiten:gesundheit, docs/abwesenheiten.md)
+  abwesenheiten: eigen.abwesenheiten,
+  // the owner reads and writes what the rules need of a person (personen:angaben, S-502)
+  personenangaben: eigen.personenangaben,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

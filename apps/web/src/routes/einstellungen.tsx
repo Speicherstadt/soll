@@ -4,8 +4,11 @@ import { createSignal, Show } from "solid-js";
 import { api } from "../api.ts";
 import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
+import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
+import { PruefungEinstellungen } from "../einstellungen/pruefung.tsx";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
+import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
 import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
 import { Erinnerungen } from "../erinnerungen/erinnerungen.tsx";
 import { m } from "../paraglide/messages.js";
@@ -29,7 +32,7 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
-  // the terminal is the owner's: pairing tablets, PINs and QR codes (S-801)
+  // the terminal is the owner's: pairing tablets, PINs, QR codes (S-801) and NFC cards (S-802)
   const terminal = () => {
     const betrieb = aktuellerBetrieb();
     if (!betrieb?.module.terminal) return false;
@@ -38,10 +41,13 @@ const Einstellungen = () => {
   return (
     <Seite titel={m.nav_einstellungen()}>
       <ModuleSchalter />
+      <PruefungEinstellungen />
+      <BescheinigungEinstellung />
       <Erinnerungen />
       <Show when={terminal()}>
         <TerminalGeraete />
         <TerminalPersonen />
+        <TerminalKarten />
       </Show>
       <DatevZuordnung />
       <Zugaenge />

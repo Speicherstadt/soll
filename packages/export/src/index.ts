@@ -18,7 +18,7 @@ export {
   type Stundennachweis,
   stundennachweisPdf,
 } from "./stundennachweis/pdf.ts";
-export { monatText } from "./stundenzettel/format.ts";
+export { datumText, monatText, uhrzeitText } from "./stundenzettel/format.ts";
 export {
   type Stundenzettel,
   stundenzettelPdf,

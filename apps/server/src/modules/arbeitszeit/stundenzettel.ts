@@ -1,6 +1,35 @@
-import { arbeitstage, type Stempelung } from "@soll/arbeitszeit";
+import {
+  type Abwesenheitsart,
+  arbeitstage,
+  type Stempelung,
+  sichtbareArt,
+} from "@soll/arbeitszeit";
 import type { Stundenzettel } from "@soll/export";
 import type { MonatStatus } from "./monatsabschluss.ts";
+import type { Tagesabwesenheit } from "./monatsinhalt.ts";
+
+/** The words of the sheet for absences, German like the whole sheet */
+const ABWESENHEIT: Record<Abwesenheitsart | "abwesend", string> = {
+  urlaub: "Urlaub",
+  krank: "krank",
+  kind_krank: "Kind krank",
+  sonderurlaub: "Sonderurlaub",
+  ueberstundenabbau: "Überstundenabbau",
+  abwesend: "abwesend",
+};
+
+/** The absences of a day as the sheet writes them, „krank“ only for whoever may see it */
+const abwesenheitText = (
+  liste: readonly Tagesabwesenheit[] | undefined,
+  gesundheit: boolean,
+): string | null =>
+  liste === undefined
+    ? null
+    : liste
+        .map(
+          (a) => `${ABWESENHEIT[sichtbareArt(a.art, gesundheit)]}${a.halb ? " (halber Tag)" : ""}`,
+        )
+        .join(", ");
 
 /**
  * The time sheet of a month (S-306) from its content: the closed content once closed, so the sheet
@@ -14,9 +43,13 @@ export const stundenzettelAus = (
     name: (nutzerId: string) => string;
     pruefseite: string;
     jetzt: number;
+    /** whether the reader may see sickness; otherwise „abwesend“ and no R-24 (S-401) */
+    gesundheit?: boolean;
   },
 ): Stundenzettel => {
   const { inhalt } = status;
+  const gesundheit = angaben.gesundheit ?? true;
+  const befunde = inhalt.befunde.filter((befund) => gesundheit || befund.regel !== "R-24");
   const stempel: Stempelung[] = inhalt.tage.flatMap((tag) =>
     tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
   );
@@ -35,7 +68,8 @@ export const stundenzettelAus = (
         pauseMinuten: tag?.pausenMinuten ?? 0,
         arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
         sollMinuten: aufzeichnung.modellMinuten,
-        hinweise: inhalt.befunde
+        abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),
+        hinweise: befunde
           .filter((befund) => befund.tage.includes(aufzeichnung.tag))
           .map(
             (befund) => `${befund.schwere === "verstoss" ? "Verstoß" : "Hinweis"} ${befund.norm}`,
@@ -44,7 +78,7 @@ export const stundenzettelAus = (
     }),
     summen: inhalt.summen,
     nichtHinterlegt: inhalt.nichtHinterlegt,
-    befunde: inhalt.befunde,
+    befunde,
     gegeneintraege: inhalt.gegeneintraege,
     bestaetigt:
       status.bestaetigung?.gueltig === true

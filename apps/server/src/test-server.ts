@@ -1,6 +1,7 @@
 import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { testDatenbank } from "./db/test-db.ts";
+import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { vapidLaden } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 
@@ -10,6 +11,7 @@ type Optionen = {
   log?: (line: string) => void;
   uhr?: () => number;
   mail?: Mailer | null;
+  schichten?: Schichtquelle;
   webVerzeichnis?: string | null;
   /** The stand-in for Haben the server calls (S-606) */
   habenFetch?: typeof fetch;
@@ -36,6 +38,7 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
     auth,
     url: TEST_URL,
     mail: optionen.mail ?? null,
+    ...(optionen.schichten ? { schichten: optionen.schichten } : {}),
     geheimerSchluessel,
     vapidOeffentlich: vapid.oeffentlich,
     webVerzeichnis: optionen.webVerzeichnis ?? null,

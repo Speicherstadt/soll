@@ -27,7 +27,42 @@ export const codeNormalisieren = (eingabe: string): string =>
  * encrypted columns is never used for anything else
  */
 export const pinSchluesselAus = (geheimerSchluessel: Uint8Array): Uint8Array =>
-  new Uint8Array(hkdfSync("sha256", geheimerSchluessel, new Uint8Array(0), "soll pin-kennung", 32));
+  abgeleitet(geheimerSchluessel, "soll pin-kennung");
+
+const abgeleitet = (geheimerSchluessel: Uint8Array, zweck: string): Uint8Array =>
+  new Uint8Array(hkdfSync("sha256", geheimerSchluessel, new Uint8Array(0), zweck, 32));
+
+/**
+ * The keys of the terminal, each derived for one purpose: the PIN lookup, the card lookup (S-802),
+ * the receipt of a recognised card (beleg.ts) and, as it is, the key of the encrypted columns for
+ * the cards' AES keys
+ */
+export type TerminalSchluessel = {
+  pin: Uint8Array;
+  karte: Uint8Array;
+  beleg: Uint8Array;
+  spalten: Uint8Array;
+};
+
+export const terminalSchluesselAus = (geheimerSchluessel: Uint8Array): TerminalSchluessel => ({
+  pin: pinSchluesselAus(geheimerSchluessel),
+  karte: abgeleitet(geheimerSchluessel, "soll karten-kennung"),
+  beleg: abgeleitet(geheimerSchluessel, "soll kiosk-beleg"),
+  spalten: geheimerSchluessel,
+});
+
+/**
+ * A card's UID as typed or as Web NFC gives it (`serialNumber`, "04:de:5f:…"): hex in upper case
+ * without separators, 4, 7 or 10 bytes (ISO/IEC 14443-3), or null
+ */
+export const uidNormalisieren = (eingabe: string): string | null => {
+  const uid = eingabe.replace(/[\s:-]/g, "").toUpperCase();
+  return /^(?:[0-9A-F]{8}|[0-9A-F]{14}|[0-9A-F]{20})$/.test(uid) ? uid : null;
+};
+
+/** The keyed hash by which the terminal finds a card (as `pinKennung`): business and UID */
+export const kartenKennung = (schluessel: Uint8Array, betriebId: string, uid: string): string =>
+  createHmac("sha256", schluessel).update(`${betriebId}\n${uid}`).digest("hex");
 
 /**
  * The keyed hash by which the terminal finds a person from a PIN alone (docs/plan.md, "PIN am

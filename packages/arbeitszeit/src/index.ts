@@ -3,6 +3,7 @@
  * (docs/regeln.md, BAULISTE.md).
  */
 
+export * from "./abwesenheit/index.ts";
 export * from "./arbeitstag/index.ts";
 export * from "./auslastung/index.ts";
 export type { Befund, Schwere } from "./befund.ts";
@@ -49,6 +50,7 @@ export {
   offlineZeitpunkt,
   stempelNachricht,
 } from "./offline/offline.ts";
+export * from "./planpruefung/index.ts";
 export * from "./projektzeit/index.ts";
 export * from "./pruefung/index.ts";
 export * from "./pruefung-bereitschaft/index.ts";

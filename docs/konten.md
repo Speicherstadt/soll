@@ -34,7 +34,9 @@ Jahr ohne Feiertagskalender ist ein Tag mit Minuten im Modell „nicht hinterleg
 ## Abwesenheiten
 
 Eine Abwesenheit lässt das Soll stehen und schreibt dem Ist eine Gutschrift gut. So zeigt der Monat
-getrennt, was gearbeitet und was gutgeschrieben wurde.
+getrennt, was gearbeitet und was gutgeschrieben wurde. Es zählen nur genehmigte Abwesenheiten; wie
+sie entstehen, steht unter [Abwesenheiten](abwesenheiten.md). Ganze Tage mit Urlaub, Krankheit,
+Kind krank oder Sonderurlaub sind im Ausgleichszeitraum neutral (R-03).
 
 | Abwesenheit | Gutschrift | Grundlage |
 | --- | --- | --- |

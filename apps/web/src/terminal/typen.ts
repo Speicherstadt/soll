@@ -11,13 +11,23 @@ export type KioskStand = {
   gesperrtBis: number | null;
 };
 
-/** What identifies a person: the PIN alone or the value of a QR code */
-export type Ausweis = { pin: string } | { qr: string };
+/**
+ * What identifies a person: the PIN alone, the value of a QR code, a card's UID with the PIN, the
+ * SUN message of an NTAG 424 DNA or the receipt the server gave for one (S-802)
+ */
+export type Ausweis =
+  | { pin: string }
+  | { qr: string }
+  | { karte: string; pin: string }
+  | { sun: { e: string; c: string } }
+  | { beleg: string };
 
 /** A person recognised and their running day (POST /api/v1/kiosk/erkennen) */
 export type Erkannt = {
   person: { nutzerId: string; name: string };
   tag: { tag: Tag; jetzt: number; sollMinuten: number | null; stand: Tagesstand } | null;
+  /** after a SUN message: what to stamp with, as the message itself counts only once */
+  beleg?: string;
 };
 
 /** POST /api/v1/kiosk/stempeln */

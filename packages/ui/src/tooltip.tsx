@@ -2,7 +2,12 @@ import type { JSX } from "@solidjs/web";
 import { createUniqueId, onSettled } from "solid-js";
 import { verankert } from "./popover.tsx";
 
-export type TooltipProps = { text: string; children: JSX.Element };
+export type TooltipProps = {
+  text: string;
+  /** classes of the wrapper, e.g. to let a block fill its cell */
+  class?: string;
+  children: JSX.Element;
+};
 
 /**
  * A short note on hover and on keyboard focus, closed with Esc; the element it belongs to names it
@@ -27,7 +32,7 @@ export const Tooltip = (props: TooltipProps) => {
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: the wrapper only listens for its trigger's hover and focus
     <span
-      class="inline-flex"
+      class={props.class ? `inline-flex ${props.class}` : "inline-flex"}
       style={{ "anchor-name": anker }}
       aria-describedby={id}
       onMouseEnter={zeigen}

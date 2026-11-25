@@ -117,8 +117,29 @@
     {
       "idx": 16,
       "version": "6",
-      "when": 1795222664590,
-      "tag": "0016_haben",
+      "when": 1795222322197,
+      "tag": "0016_karten",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1795336582825,
+      "tag": "0017_abwesenheiten",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "6",
+      "when": 1795339300123,
+      "tag": "0018_pruefung",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1795602337430,
+      "tag": "0019_haben",
       "breakpoints": true
     }
   ]

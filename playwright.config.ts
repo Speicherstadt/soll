@@ -19,6 +19,8 @@ export default defineConfig({
   testDir: "e2e",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
+  // CI: as many workers as the runner has cores (Playwright takes half by default); locally its default
+  ...(process.env.CI ? { workers: 4 } : {}),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["github"], ["list"]] : "list",
   use: { baseURL: `http://localhost:${WEB_PORT}`, trace: "off" },

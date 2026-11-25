@@ -43,3 +43,19 @@ test("switching two modules quickly keeps both off, whatever answer comes last",
   await expect(projektzeit).not.toBeChecked();
   await expect(page.getByRole("link", { name: t("nav_projekte") })).toHaveCount(0);
 });
+
+test("switching a module keeps what the owner changed in the settings of the checks", async ({
+  page,
+}) => {
+  await betriebAnlegen(page);
+  await page.goto("/einstellungen");
+  const branche = page.getByLabel(t("pruefung_branche"));
+  await branche.selectOption({ label: t("branche_verkehr") });
+  // a switch of a module reads the session again; the edit not saved yet stays in the form
+  const sitzung = page.waitForResponse(
+    (r) => new URL(r.url()).pathname === "/api/v1/betrieb" && r.request().method() === "GET",
+  );
+  await page.getByRole("checkbox", { name: t("modul_projektzeit") }).uncheck();
+  await sitzung;
+  await expect(branche).toHaveValue("verkehr");
+});

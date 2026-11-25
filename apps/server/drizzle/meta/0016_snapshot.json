@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ff6663bf-966e-4272-ad6b-13e31a2f31bb",
+  "id": "61b8f005-9ffd-4e63-aeae-c0b7146354c8",
   "prevId": "b7352f59-1423-4fae-8152-d5aaf4a7b786",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1793,125 +1793,6 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "haben_uebergaben": {
-      "name": "haben_uebergaben",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "buchung_id": {
-          "name": "buchung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "inhalt": {
-          "name": "inhalt",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "leistung_id": {
-          "name": "leistung_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "gesendet_am": {
-          "name": "gesendet_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "fehler": {
-          "name": "fehler",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "meldung": {
-          "name": "meldung",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "versucht_am": {
-          "name": "versucht_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "angelegt_am": {
-          "name": "angelegt_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "haben_uebergaben_betrieb_id_buchung_id_pk": {
-          "columns": [
-            "betrieb_id",
-            "buchung_id"
-          ],
-          "name": "haben_uebergaben_betrieb_id_buchung_id_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "haben_zugaenge": {
-      "name": "haben_zugaenge",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "adresse": {
-          "name": "adresse",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "geaendert_am": {
-          "name": "geaendert_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
     "kunden": {
       "name": "kunden",
       "columns": {
@@ -2654,6 +2535,103 @@
             "nutzer_id"
           ],
           "name": "ausweise_betrieb_id_nutzer_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "karten": {
+      "name": "karten",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "karte_id": {
+          "name": "karte_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "nutzer_id": {
+          "name": "nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "art": {
+          "name": "art",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "uid_kennung": {
+          "name": "uid_kennung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "schluessel": {
+          "name": "schluessel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "zaehler": {
+          "name": "zaehler",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "widerrufen_am": {
+          "name": "widerrufen_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_von": {
+          "name": "angelegt_von",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "karten_uid": {
+          "name": "karten_uid",
+          "columns": [
+            "betrieb_id",
+            "uid_kennung"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "karten_betrieb_id_karte_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "karte_id"
+          ],
+          "name": "karten_betrieb_id_karte_id_pk"
         }
       },
       "uniqueConstraints": {},

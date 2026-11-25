@@ -1,10 +1,11 @@
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Show, untrack } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { istInhaber } from "../sitzung/ziel.ts";
 import { type OffenerDialog, PlanDialoge } from "./dialoge.tsx";
 import { PlanInhalt } from "./inhalt.tsx";
 import { PlanKopf } from "./kopf.tsx";
@@ -18,15 +19,22 @@ const istPlaner = () =>
     .split(",")
     .some((rolle) => ["inhaber", "planer"].includes(rolle.trim()));
 
+/** The owner keeps the data of a person the rules need (S-502) */
+const istInhaberHier = () => {
+  const betrieb = aktuellerBetrieb();
+  return betrieb !== null && istInhaber(betrieb);
+};
+
 type Ablage = { was: Abgelegt; ziel: Ziel; standortId: string };
 
 /**
  * The plan of the sites of a business: the week of the site chosen (the first at the start), its
  * templates for whoever plans, the dialogs; read under the page's `<Loading>`
  */
-export const Plan = (props: { standorte: Standort[] }) => {
+export const Plan = (props: { standorte: Standort[]; tag?: string | undefined }) => {
   const [standortId, setStandortId] = createSignal(() => props.standorte[0]?.standortId ?? "");
-  const [tag, setTag] = createSignal(tagInBerlin(Date.now()));
+  // the week a link names, else this week; the plan's own arrows change it from there
+  const [tag, setTag] = createSignal(untrack(() => props.tag) ?? tagInBerlin(Date.now()));
   const [offen, setOffen] = createSignal<OffenerDialog>(null);
   const [ansage, setAnsage] = createSignal("");
   const [fehler, setFehler] = createSignal("");
@@ -69,10 +77,12 @@ export const Plan = (props: { standorte: Standort[] }) => {
         standorte={props.standorte}
         standortId={standortId()}
         planer={istPlaner()}
+        inhaber={istInhaberHier()}
         onWoche={(schritt) => setTag((alt) => plusTage(alt, 7 * schritt))}
         onStandort={setStandortId}
         onVorlagen={() => setOffen({ art: "vorlagen" })}
         onBedarf={() => setOffen({ art: "bedarf" })}
+        onAngaben={() => setOffen({ art: "angaben" })}
       />
       <Fehler text={fehler() || (woche.data.ok ? "" : m.laden_fehler())} />
       <Show when={geladen()}>

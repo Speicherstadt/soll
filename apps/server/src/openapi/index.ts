@@ -1,3 +1,4 @@
+import { ABWESENHEITEN } from "./abwesenheiten.ts";
 import { ALLGEMEIN } from "./allgemein.ts";
 import { ARBEITSZEIT } from "./arbeitszeit.ts";
 import { AUSLASTUNG, BUCHUNGEN, STUNDENNACHWEISE } from "./buchungen.ts";
@@ -11,6 +12,7 @@ export { type Operation, openapiDokument, openapiPfad } from "./dokument.ts";
 export const OPERATIONEN = [
   ...ALLGEMEIN,
   ...ARBEITSZEIT,
+  ...ABWESENHEITEN,
   ...DIENSTPLAN,
   ...PROJEKTZEIT,
   ...BUCHUNGEN,

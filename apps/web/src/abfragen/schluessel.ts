@@ -7,6 +7,7 @@ export type Schluessel = readonly unknown[];
 export type Ressource = { schluessel: Schluessel; pfad: string };
 
 const AZ = "/api/v1/arbeitszeit";
+const ABW = `${AZ}/abwesenheiten`;
 const PLAN = "/api/v1/dienstplan";
 const PZ = "/api/v1/projektzeit";
 const TERMINAL = "/api/v1/terminal";
@@ -18,7 +19,13 @@ export const PFAD = {
   monat: `${AZ}/monat`,
   erinnerungen: `${AZ}/erinnerungen`,
   datev: `${AZ}/datev`,
+  abwesenheiten: ABW,
+  abwesenheitenOffen: `${ABW}/offen`,
+  abwesenheitenTeam: `${ABW}/team`,
   standorte: "/api/v1/standorte",
+  pruefung: "/api/v1/betrieb/pruefung",
+  // the key of every person's data for the rules; each is loaded from /personen/:nutzerId/angaben
+  angaben: "/api/v1/personen/angaben",
   woche: `${PLAN}/woche`,
   vorlagen: `${PLAN}/vorlagen`,
   bedarf: `${PLAN}/bedarf`,
@@ -30,7 +37,10 @@ export const PFAD = {
   zugaenge: "/api/v1/zugaenge",
   terminalGeraete: `${TERMINAL}/geraete`,
   terminalPersonen: `${TERMINAL}/personen`,
+  terminalKarten: `${TERMINAL}/karten`,
   stoppuhr: `${PZ}/stoppuhr`,
+  // the kiosk's own state, asked with its device token instead of a session (terminal/ablauf.ts)
+  kiosk: "/api/v1/kiosk",
   nachweise: `${PZ}/stundennachweise`,
   nachweisVorschau: `${PZ}/stundennachweise/vorschau`,
   auslastung: `${PZ}/auslastung`,
@@ -67,7 +77,16 @@ export const ressourcen = {
     mitParametern(PFAD.monat, parameter),
   erinnerungen: () => einfach(PFAD.erinnerungen),
   datev: () => einfach(PFAD.datev),
+  abwesenheiten: () => einfach(PFAD.abwesenheiten),
+  abwesenheitenOffen: () => einfach(PFAD.abwesenheitenOffen),
+  abwesenheitenTeam: (parameter: { von: string; bis: string }) =>
+    mitParametern(PFAD.abwesenheitenTeam, parameter),
   standorte: () => einfach(PFAD.standorte),
+  pruefung: () => einfach(PFAD.pruefung),
+  angaben: (nutzerId: string): Ressource => ({
+    schluessel: [PFAD.angaben, { nutzerId }],
+    pfad: `/api/v1/personen/${encodeURIComponent(nutzerId)}/angaben`,
+  }),
   woche: (parameter: { standortId: string; tag: string }) => mitParametern(PFAD.woche, parameter),
   vorlagen: () => einfach(PFAD.vorlagen),
   bedarf: (standortId: string) => mitParametern(PFAD.bedarf, { standortId }),
@@ -79,6 +98,7 @@ export const ressourcen = {
   zugaenge: () => einfach(PFAD.zugaenge),
   terminalGeraete: () => einfach(PFAD.terminalGeraete),
   terminalPersonen: () => einfach(PFAD.terminalPersonen),
+  terminalKarten: () => einfach(PFAD.terminalKarten),
   stoppuhr: (parameter: { tag?: string | undefined }) => mitParametern(PFAD.stoppuhr, parameter),
   nachweise: () => einfach(PFAD.nachweise),
   nachweisVorschau: (parameter: {

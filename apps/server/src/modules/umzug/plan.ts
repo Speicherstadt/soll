@@ -14,7 +14,8 @@ import {
   type PlanGrund,
   type Stand,
 } from "./plan-typen.ts";
-import { type Genommen, stempelKennung, zeitPlanen } from "./plan-zeiten.ts";
+import { abwesenheitWieder, type Wiederfund, zeitWieder } from "./plan-wieder.ts";
+import { type Genommen, zeitPlanen } from "./plan-zeiten.ts";
 
 /*
  * The plan of a takeover from the records of a file, the owner's mapping and the business as it
@@ -58,20 +59,19 @@ const personVon = (
 };
 
 /**
- * A record an earlier import took over: there already, its months still to be closed for its
- * person; taken over for another person than the mapping names now (`monate` null), it is reported
- * and closes nothing, so no month is closed for someone without its records
+ * A record an earlier import took over (plan-wieder.ts): there already, its months those of the row
+ * in Soll; reported with its line when that row says something else now
  */
 const schonDa = (
   bau: Bau,
   art: "zeiten" | "abwesenheiten",
   satz: Satz,
-  monate: readonly Monat[] | null,
   nutzerId: string,
+  fund: Wiederfund,
 ) => {
-  if (monate === null) return ablehnen(bau, art, satz, "zuordnung_abweichend");
+  if ("grund" in fund) return ablehnen(bau, art, satz, fund.grund);
   bau.zahlen[art].vorhanden += 1;
-  beruehren(bau, nutzerId, monate);
+  beruehren(bau, nutzerId, fund.monate);
 };
 
 const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
@@ -79,9 +79,9 @@ const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand:
   for (const zeit of daten.zeiten) {
     const nutzerId = personVon(bau, "zeiten", zeit, zuordnung, stand);
     if (nutzerId === null) continue;
-    const besitzer = stand.vorhanden.stempelungen.get(stempelKennung(zeit.externalId, "kommen"));
-    if (besitzer !== undefined) {
-      schonDa(bau, "zeiten", zeit, besitzer === nutzerId ? [monatVon(zeit.tag)] : null, nutzerId);
+    const fund = zeitWieder(zeit, nutzerId, stand.vorhanden.stempelungen);
+    if (fund !== null) {
+      schonDa(bau, "zeiten", zeit, nutzerId, fund);
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
@@ -101,10 +101,9 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
     const nutzerId = art === null ? null : personVon(bau, "abwesenheiten", satz, zuordnung, stand);
     if (art === null) bau.zahlen.abwesenheiten.ausgelassen += 1;
     if (art === null || nutzerId === null) continue;
-    const monate = monateZwischen(satz.von, satz.bis);
-    const besitzer = stand.vorhanden.abwesenheiten.get(satz.externalId);
-    if (besitzer !== undefined) {
-      schonDa(bau, "abwesenheiten", satz, besitzer === nutzerId ? monate : null, nutzerId);
+    const fund = abwesenheitWieder(satz, { nutzerId, art }, stand.vorhanden.abwesenheiten);
+    if (fund !== null) {
+      schonDa(bau, "abwesenheiten", satz, nutzerId, fund);
       continue;
     }
     const ergebnis = abwesenheitPlanen(satz, { nutzerId, art }, stand, genommen);
@@ -112,7 +111,7 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
     else {
       bau.zahlen.abwesenheiten.neu += 1;
       bau.abwesenheiten.push(ergebnis);
-      beruehren(bau, nutzerId, monate);
+      beruehren(bau, nutzerId, monateZwischen(satz.von, satz.bis));
     }
   }
 };

@@ -1140,5 +1140,6 @@
   "umzug_liste_neu": "Oluşturulan",
   "umzug_datei_laden": "Orijinal dosya {name} indir",
   "stempel_uebernommen": "{quelle} kaynağından devralındı",
-  "umzug_grund_zuordnung_abweichend": "zaten başka bir kişi için devralındı"
+  "umzug_grund_zuordnung_abweichend": "zaten başka bir kişi için devralındı",
+  "umzug_grund_geaendert_im_alten_tool": "Soll devraldığından beri eski araçta değiştirildi"
 }

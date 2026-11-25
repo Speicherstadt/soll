@@ -1140,5 +1140,6 @@
   "umzug_liste_neu": "Neu angelegt",
   "umzug_datei_laden": "Originaldatei {name} herunterladen",
   "stempel_uebernommen": "übernommen aus {quelle}",
-  "umzug_grund_zuordnung_abweichend": "schon für eine andere Person übernommen"
+  "umzug_grund_zuordnung_abweichend": "schon für eine andere Person übernommen",
+  "umzug_grund_geaendert_im_alten_tool": "im alten Tool geändert, seit Soll es übernommen hat"
 }

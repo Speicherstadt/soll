@@ -1,9 +1,9 @@
 import type { Stempelung } from "@soll/arbeitszeit";
-import { type ImportDaten, leer, type Zuordnung } from "@soll/import";
+import { type ImportDaten, type ImportZeit, leer, type Zuordnung } from "@soll/import";
 import { describe, expect, it } from "vitest";
 import { planen } from "./plan.ts";
 import type { Stand } from "./plan-typen.ts";
-import { stempelAus } from "./plan-zeiten.ts";
+import { stempelAus, stempelKennung } from "./plan-zeiten.ts";
 
 // Instants in Berlin: winter time +01:00, summer time +02:00
 const um = (text: string) => Date.parse(text);
@@ -17,6 +17,16 @@ const zeit = (id: string, tag: string, beginn: number, ende: number, pause = 0, 
   ende,
   pauseMinuten: pause,
 });
+
+/** The stamps an earlier import wrote for a span, by their ids, as `uebernommeneKennungen` reads them */
+const gespeichert = (nutzerId: string, ...zeiten: ImportZeit[]) =>
+  new Map(
+    zeiten.flatMap((z) =>
+      (stempelAus(z) as Stempelung[]).map(
+        (s) => [stempelKennung(z.externalId, s.art), { nutzerId, zeitpunkt: s.zeitpunkt }] as const,
+      ),
+    ),
+  );
 
 const stand = (aenderung: Partial<Stand> = {}): Stand => {
   let n = 0;
@@ -88,7 +98,8 @@ describe("the plan of a takeover", () => {
       zeit("z-1", "2026-09-01", 420, 900),
       zeit("z-2", "2026-09-02", 420, 900, 0, 3),
     );
-    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "sandra"]]) };
+    const stempelungen = gespeichert("sandra", zeit("z-1", "2026-09-01", 420, 900));
+    const vorhanden = { ...stand().vorhanden, stempelungen };
     const plan = planen(daten, ZUORDNUNG, null, stand({ vorhanden }));
     expect(plan.zahlen.zeiten).toEqual({ neu: 1, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 });
     expect(plan.stempelungen.map((s) => [s.nutzerId, s.art, s.externId])).toEqual([
@@ -249,7 +260,8 @@ describe("the plan of a takeover", () => {
       zeit("z-2", "2026-09-30", 420, 900, 0, 3),
       zeit("z-3", "2026-10-01", 420, 900, 0, 4),
     );
-    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "sandra"]]) };
+    const stempelungen = gespeichert("sandra", zeit("z-1", "2026-08-31", 420, 900));
+    const vorhanden = { ...stand().vorhanden, stempelungen };
     const plan = planen(
       daten,
       ZUORDNUNG,
@@ -306,12 +318,56 @@ describe("the plan of a takeover", () => {
 
   it("reports a record taken over for another person and closes no month for the new one", () => {
     const daten = mitZeiten(zeit("z-1", "2026-09-01", 420, 900));
-    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "max"]]) };
+    const stempelungen = gespeichert("max", zeit("z-1", "2026-09-01", 420, 900));
+    const vorhanden = { ...stand().vorhanden, stempelungen };
     const plan = planen(daten, ZUORDNUNG, "2026-09", stand({ vorhanden }));
     expect(plan.zahlen.zeiten).toEqual({ neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 1 });
     expect(plan.abgelehnt).toEqual([
       { art: "zeiten", zeile: 2, externalId: "z-1", grund: "zuordnung_abweichend" },
     ]);
     expect(plan.monate).toEqual([]);
+  });
+
+  it("reports a record moved in the old tool and closes the month of the row in Soll only", () => {
+    const stempelungen = gespeichert("sandra", zeit("z-1", "2026-08-03", 420, 900));
+    const abwesenheiten = new Map([
+      ["a-1", { nutzerId: "sandra", art: "urlaub" as const, von: "2026-08-03", bis: "2026-08-07" }],
+    ]);
+    const vorhanden = { ...stand().vorhanden, stempelungen, abwesenheiten };
+    const verschoben: ImportDaten = {
+      ...mitZeiten(zeit("z-1", "2026-09-03", 420, 900)),
+      abwesenheiten: [
+        {
+          externalId: "a-1",
+          zeile: 3,
+          person: "Sandra Kühn",
+          art: "Urlaub",
+          von: "2026-08-03",
+          bis: "2026-09-07",
+        },
+      ],
+    };
+    const plan = planen(verschoben, ZUORDNUNG, "2026-09", stand({ vorhanden }));
+    expect(plan.abgelehnt.map((a) => [a.externalId, a.grund])).toEqual([
+      ["z-1", "geaendert_im_alten_tool"],
+      ["a-1", "geaendert_im_alten_tool"],
+    ]);
+    expect(plan.monate).toEqual([]);
+    // a longer break is a change too; the same record again closes August, the month of its row
+    const pause = planen(
+      mitZeiten(zeit("z-1", "2026-08-03", 420, 900, 30)),
+      ZUORDNUNG,
+      "2026-09",
+      stand({ vorhanden }),
+    );
+    expect(pause.abgelehnt.map((a) => a.grund)).toEqual(["geaendert_im_alten_tool"]);
+    const gleich = planen(
+      mitZeiten(zeit("z-1", "2026-08-03", 420, 900)),
+      ZUORDNUNG,
+      "2026-09",
+      stand({ vorhanden }),
+    );
+    expect(gleich.zahlen.zeiten.vorhanden).toBe(1);
+    expect(gleich.monate).toEqual([{ nutzerId: "sandra", monat: "2026-08" }]);
   });
 });

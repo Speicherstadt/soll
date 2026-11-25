@@ -64,7 +64,10 @@ ausgeschaltet“ ab.
 Ein zweiter Import mit denselben Daten legt nichts doppelt an: Soll findet jeden Datensatz an seiner
 Kennung im alten Tool wieder und zählt ihn als „schon da“. Das gilt auch, wenn eine übernommene
 Stempelung inzwischen mit Grund geändert oder entfernt wurde: Sie kommt nicht wieder. Ein geänderter
-Datensatz im alten Tool überschreibt nichts in Soll; Korrekturen laufen wie immer mit Grund.
+Datensatz im alten Tool überschreibt nichts in Soll: Der Import meldet ihn mit Zeile als „im alten
+Tool geändert, seit Soll es übernommen hat“ und schließt für ihn keinen Monat; die Korrektur in
+Soll läuft wie immer mit Grund. Die Monate eines Datensatzes, der schon da ist, sind die seiner
+Zeile in Soll.
 
 Abgelehnt werden mit Zeile und Grund:
 

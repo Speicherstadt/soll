@@ -1140,5 +1140,6 @@
   "umzug_liste_neu": "Створено",
   "umzug_datei_laden": "Завантажити оригінальний файл {name}",
   "stempel_uebernommen": "перенесено з {quelle}",
-  "umzug_grund_zuordnung_abweichend": "вже перенесено для іншої особи"
+  "umzug_grund_zuordnung_abweichend": "вже перенесено для іншої особи",
+  "umzug_grund_geaendert_im_alten_tool": "змінено в старому інструменті після перенесення в Soll"
 }

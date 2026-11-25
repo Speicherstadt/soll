@@ -1140,5 +1140,6 @@
   "umzug_liste_neu": "Created",
   "umzug_datei_laden": "Download original file {name}",
   "stempel_uebernommen": "taken over from {quelle}",
-  "umzug_grund_zuordnung_abweichend": "taken over for another person already"
+  "umzug_grund_zuordnung_abweichend": "taken over for another person already",
+  "umzug_grund_geaendert_im_alten_tool": "changed in the old tool since Soll took it over"
 }

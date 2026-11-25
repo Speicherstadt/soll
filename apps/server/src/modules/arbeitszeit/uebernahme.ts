@@ -30,25 +30,35 @@ export type UebernommeneAbwesenheit = {
 };
 
 /**
- * The ids in the old tool that stamps and absences of the business already carry, each with the
- * person whose row it is
+ * The ids in the old tool that stamps and absences of the business already carry, each with what
+ * the row holds: its person, and the instant of a stamp or the kind and span of an absence
  */
 export const uebernommeneKennungen = (db: Db, betriebId: string, quelle: string) => ({
   stempelungen: new Map(
     db
-      .select({ id: stempelungen.externId, nutzerId: stempelungen.nutzerId })
+      .select({
+        id: stempelungen.externId,
+        nutzerId: stempelungen.nutzerId,
+        zeitpunkt: stempelungen.zeitpunkt,
+      })
       .from(stempelungen)
       .where(and(eq(stempelungen.betriebId, betriebId), eq(stempelungen.externQuelle, quelle)))
       .all()
-      .map(({ id, nutzerId }) => [id as string, nutzerId] as const),
+      .map(({ id, ...zeile }) => [id as string, zeile] as const),
   ),
   abwesenheiten: new Map(
     db
-      .select({ id: abwesenheiten.externId, nutzerId: abwesenheiten.nutzerId })
+      .select({
+        id: abwesenheiten.externId,
+        nutzerId: abwesenheiten.nutzerId,
+        art: abwesenheiten.art,
+        von: abwesenheiten.von,
+        bis: abwesenheiten.bis,
+      })
       .from(abwesenheiten)
       .where(and(eq(abwesenheiten.betriebId, betriebId), eq(abwesenheiten.externQuelle, quelle)))
       .all()
-      .map(({ id, nutzerId }) => [id as string, nutzerId] as const),
+      .map(({ id, ...zeile }) => [id as string, zeile] as const),
   ),
 });
 

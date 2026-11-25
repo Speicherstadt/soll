@@ -22,6 +22,7 @@ export const PLAN_GRUENDE = [
   "projekt_unbekannt",
   "kunde_ausgelassen",
   "zuordnung_abweichend",
+  "geaendert_im_alten_tool",
 ] as const;
 export type PlanGrund = (typeof PLAN_GRUENDE)[number];
 
@@ -61,6 +62,16 @@ export type Plan = {
   abgelehnt: Abgelehnt[];
 };
 
+/** A stamp an earlier import wrote: whose it is and when, by its id in the old tool */
+export type GespeicherterStempel = { nutzerId: string; zeitpunkt: number };
+/** An absence an earlier import wrote, by its id in the old tool */
+export type GespeicherteAbwesenheit = {
+  nutzerId: string;
+  art: Abwesenheitsart;
+  von: Tag;
+  bis: Tag | null;
+};
+
 /** An absence there already, as far as an overlap needs it */
 export type VorhandeneAbwesenheit = { art: Abwesenheitsart; von: Tag; bis: Tag | null };
 
@@ -73,8 +84,8 @@ export type Stand = {
   /** the ids in the old tool that rows of this tool already carry, stamps and absences with the
    * person whose row it is */
   vorhanden: {
-    stempelungen: ReadonlyMap<string, string>;
-    abwesenheiten: ReadonlyMap<string, string>;
+    stempelungen: ReadonlyMap<string, GespeicherterStempel>;
+    abwesenheiten: ReadonlyMap<string, GespeicherteAbwesenheit>;
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;

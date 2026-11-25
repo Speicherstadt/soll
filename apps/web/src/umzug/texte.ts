@@ -55,6 +55,7 @@ const PLANGRUND: Record<string, () => string> = {
   projekt_unbekannt: () => m.umzug_grund_projekt_unbekannt(),
   kunde_ausgelassen: () => m.umzug_grund_kunde_ausgelassen(),
   zuordnung_abweichend: () => m.umzug_grund_zuordnung_abweichend(),
+  geaendert_im_alten_tool: () => m.umzug_grund_geaendert_im_alten_tool(),
 };
 
 export const abgelehntText = (zeile: number, grund: string): string =>

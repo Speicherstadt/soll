@@ -1140,5 +1140,6 @@
   "umzug_liste_neu": "Utworzono",
   "umzug_datei_laden": "Pobierz oryginalny plik {name}",
   "stempel_uebernommen": "przejęte z {quelle}",
-  "umzug_grund_zuordnung_abweichend": "już przejęte dla innej osoby"
+  "umzug_grund_zuordnung_abweichend": "już przejęte dla innej osoby",
+  "umzug_grund_geaendert_im_alten_tool": "zmienione w starym narzędziu od czasu przejęcia przez Soll"
 }

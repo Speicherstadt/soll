@@ -148,6 +148,13 @@
       "when": 1795605228521,
       "tag": "0020_aussonderung",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1795606611527,
+      "tag": "0021_karten_neu_eintragen",
+      "breakpoints": true
     }
   ]
 }

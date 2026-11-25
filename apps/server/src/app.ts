@@ -12,6 +12,8 @@ import {
   type ClockodoDeps,
   type Dateispeicher,
   type KimaiDeps,
+  PERSONIO_API,
+  type PersonioDeps,
   sicherHolen,
 } from "./modules/umzug/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
@@ -87,6 +89,8 @@ export type AppDeps = {
   clockodo?: ClockodoDeps;
   /** How the server calls a Kimai instance for an import (S-705); a stand-in in tests */
   kimai?: KimaiDeps;
+  /** How the server calls Personio's API for an import (S-704); a stand-in in tests */
+  personio?: PersonioDeps;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -108,6 +112,7 @@ export const createApp = ({
   dateien,
   clockodo = { fetch, basis: CLOCKODO_API },
   kimai = { holen: sicherHolen(), erlaubt: new Set() },
+  personio = { holen: sicherHolen(), basis: PERSONIO_API },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -153,7 +158,7 @@ export const createApp = ({
     .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
-    .route("/importe", importRouten(db, schreibDb, now, dateien, { clockodo, kimai }))
+    .route("/importe", importRouten(db, schreibDb, now, dateien, { clockodo, kimai, personio }))
     .route(
       "/",
       modulRouten(db, {

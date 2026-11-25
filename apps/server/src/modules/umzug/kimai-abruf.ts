@@ -51,7 +51,7 @@ const GESAMT_MS = 5 * 60_000;
  * node:http throws on a character outside Latin-1 or a line break (RFC 9110, 5.5), and Kimai
  * reads the bytes as they come, so a name of other letters could not be matched either.
  */
-const KOPFWERT = /^[\x21-\x7e](?:[\x20-\x7e]*[\x21-\x7e])?$/;
+export const KOPFWERT = /^[\x21-\x7e](?:[\x20-\x7e]*[\x21-\x7e])?$/;
 
 const zugangSendbar = (zugang: KimaiZugang): boolean =>
   KOPFWERT.test(zugang.token) && (zugang.benutzer === null || KOPFWERT.test(zugang.benutzer));
@@ -70,7 +70,7 @@ const sekundenAus = (kopf: string | null): number | null => {
 };
 
 /** What a status says, or null for a JSON body to read */
-const statusFehler = (antwort: Antwort): KimaiFehler | null => {
+export const statusFehler = (antwort: Antwort): KimaiFehler | null => {
   if (antwort.status === 401) return { grund: "zugang_abgelehnt" };
   if (antwort.status === 403) return { grund: "rechte_fehlen" };
   if (antwort.status === 429)

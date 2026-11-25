@@ -26,6 +26,8 @@ export type UebernommeneAbwesenheit = {
   art: Abwesenheitsart;
   von: Tag;
   bis: Tag;
+  ersterHalb: boolean;
+  letzterHalb: boolean;
   externId: string;
 };
 
@@ -102,6 +104,8 @@ export const abwesenheitenUebernehmen = (
       art: abwesenheit.art,
       von: abwesenheit.von,
       bis: abwesenheit.bis,
+      ersterHalb: abwesenheit.ersterHalb,
+      letzterHalb: abwesenheit.letzterHalb,
       status: "genehmigt",
       entschiedenVon: kontext.akteur,
       entschiedenAm: kontext.jetzt,

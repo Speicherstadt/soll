@@ -52,6 +52,9 @@ export type NeueAbwesenheit = {
   art: Abwesenheitsart;
   von: Tag;
   bis: Tag;
+  /** the first or the last day only half, as the old tool kept it (Personio, S-704) */
+  ersterHalb: boolean;
+  letzterHalb: boolean;
   externId: string;
 };
 export type NeuerKunde = { kundeId: string; name: string; nummer: string; externId: string };

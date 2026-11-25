@@ -13,7 +13,7 @@ import {
 } from "./modules/erinnerungen/index.ts";
 import { smtpMailer } from "./modules/mail/index.ts";
 import { DATENBANK } from "./modules/sicherung/index.ts";
-import { CLOCKODO_API, dateispeicher, sicherHolen } from "./modules/umzug/index.ts";
+import { CLOCKODO_API, dateispeicher, PERSONIO_API, sicherHolen } from "./modules/umzug/index.ts";
 
 const lesen = () => {
   try {
@@ -69,6 +69,8 @@ export const serverStarten = () => {
     clockodo: { fetch, basis: env.clockodoApi ?? CLOCKODO_API },
     // Kimai instances for imports (S-705): public https only, unless the operator allows an origin
     kimai: { holen: sicherHolen(), erlaubt: env.importErlaubt },
+    // Personio's API for imports (S-704) at its fixed address; another only for the e2e stand-in
+    personio: { holen: sicherHolen(), basis: env.personioApi ?? PERSONIO_API },
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)

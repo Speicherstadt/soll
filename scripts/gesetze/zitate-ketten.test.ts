@@ -44,3 +44,19 @@ describe("citations docs/regeln.md writes that the parser drops", () => {
     });
   });
 });
+
+describe("chains and ranges that are not citations (review S-906, round 2)", () => {
+  it.each([
+    ["§ 5 Abs. 2 wie oben, § 7 ArbZG", ["§ 7 ArbZG"]],
+    ["Einstellung nach § 7 im Tarifvertrag, § 5 Abs. 1 ArbZG", ["§ 5 ArbZG"]],
+    ["nach § 4 Abs. 2 gilt das, § 12 JArbSchG regelt den Rest", ["§ 12 JArbSchG"]],
+    ["§ 4 Abs. 2; § 12 JArbSchG", ["§ 12 JArbSchG"]],
+  ])("keeps a later citation after prose: %s", (text, erwartet) => {
+    expect(zitiert(text)).toEqual(erwartet);
+  });
+
+  it("reads no range wider than a few paragraphs", () => {
+    expect(zitiert("Minijob nach § 8 bis 2026 SGB IV")).toEqual(["§ 8 SGB IV"]);
+    expect(zitiert("§§ 18 bis 15 JArbSchG")).toEqual(["§ 18 JArbSchG"]);
+  });
+});

@@ -6,7 +6,7 @@ import {
 } from "@soll/arbeitszeit";
 import type { Stundenzettel } from "@soll/export";
 import type { MonatStatus } from "./monatsabschluss.ts";
-import type { Tagesabwesenheit } from "./monatsinhalt.ts";
+import { einsatzMinuten, type Tagesabwesenheit } from "./monatsinhalt.ts";
 
 /** The words of the sheet for absences, German like the whole sheet */
 const ABWESENHEIT: Record<Abwesenheitsart | "abwesend", string> = {
@@ -40,10 +40,7 @@ const uhrzeit = new Intl.DateTimeFormat("de-DE", {
 
 /** The call-outs of a day as the sheet writes them and their minutes once ended (S-505, R-12) */
 const einsaetzeVon = (einsaetze: readonly [number, number | null][] = []) => ({
-  minuten: einsaetze.reduce(
-    (summe, [beginn, ende]) => summe + (ende === null ? 0 : Math.round((ende - beginn) / 60_000)),
-    0,
-  ),
+  minuten: einsatzMinuten(einsaetze),
   texte: einsaetze.map(
     ([beginn, ende]) =>
       `Einsatz ${uhrzeit.format(beginn)}–${ende === null ? "offen" : uhrzeit.format(ende)}`,

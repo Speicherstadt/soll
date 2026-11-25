@@ -208,3 +208,27 @@ describe("lohnmonat: absences and overtime paid out (inputs of S-401 and S-208)"
     ]);
   });
 });
+
+describe("lohnmonat: call-outs from a Rufbereitschaft (S-505)", () => {
+  const mitEinsatz = (beginn: string, ende: string | null) => {
+    const eingabe = sandra("2026-06", [acht("2026-06-01")]);
+    return {
+      ...eingabe,
+      tage: eingabe.tage.map((tag) =>
+        tag.tag === "2026-06-01"
+          ? { ...tag, einsaetze: [[Date.parse(beginn), ende === null ? null : Date.parse(ende)]] }
+          : tag,
+      ),
+    } as LohnmonatEingabe;
+  };
+
+  it("books the minutes of an ended call-out as hours of its working day", () => {
+    const eingabe = mitEinsatz(`2026-06-01T22:00:00${SOMMER}`, `2026-06-01T23:30:00${SOMMER}`);
+    expect(posten(eingabe)).toEqual([{ art: "stunden", minuten: 480 + 90 }]);
+  });
+
+  it("books nothing of a call-out still open", () => {
+    const eingabe = mitEinsatz(`2026-06-01T22:00:00${SOMMER}`, null);
+    expect(posten(eingabe)).toEqual([{ art: "stunden", minuten: 480 }]);
+  });
+});

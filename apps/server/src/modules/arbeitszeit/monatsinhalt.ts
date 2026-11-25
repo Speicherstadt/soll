@@ -131,6 +131,13 @@ export const einsatzTage = (
   return einsaetze.map(({ beginn }) => arbeitstagMit(tage, beginn) ?? tagInBerlin(beginn));
 };
 
+/** The minutes of a day's call-outs that have ended: working time (R-12) */
+export const einsatzMinuten = (einsaetze: readonly [number, number | null][] = []): number =>
+  einsaetze.reduce(
+    (summe, [beginn, ende]) => summe + (ende === null ? 0 : Math.round((ende - beginn) / 60_000)),
+    0,
+  );
+
 /** The call-outs of each working day, in time order */
 const einsaetzeJeTag = (
   monat: Monat,

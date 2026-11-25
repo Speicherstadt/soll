@@ -23,8 +23,9 @@ Feldtrenner und Komma als Dezimalzeichen.
 ## Nur abgeschlossene Monate
 
 Die Datei entsteht aus dem Inhalt, mit dem der Betrieb den Monat
-[abgeschlossen](monatsabschluss.md) hat, also aus den Stempelungen, für die der Prüfwert jeder
-Person steht. Was danach geschieht, ändert sie nicht: Ein Gegeneintrag zu einem abgeschlossenen Tag
+[abgeschlossen](monatsabschluss.md) hat, also aus den Stempelungen und den
+[Einsätzen aus der Rufbereitschaft](stempeln.md#einsatze-aus-der-rufbereitschaft), für die der
+Prüfwert jeder Person steht; ein Einsatz zählt in Stunden und Zuschlägen wie gestempelte Arbeit. Was danach geschieht, ändert sie nicht: Ein Gegeneintrag zu einem abgeschlossenen Tag
 zählt im Monat, in dem er gebucht wird, und erscheint in dessen Datei. Ein zweiter Export desselben
 Monats gibt dieselbe Datei.
 

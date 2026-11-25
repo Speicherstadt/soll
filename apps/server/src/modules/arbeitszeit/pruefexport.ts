@@ -19,6 +19,7 @@ import { stempelungen } from "../../db/schema.ts";
 import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 import { gegeneintraegeVon } from "./monat.ts";
 import { type MonatStatus, monatStatus } from "./monatsabschluss.ts";
+import { einsatzMinuten } from "./monatsinhalt.ts";
 
 /*
  * A person's working days in a period for the Prüfexport (S-309): the days of a closed month as
@@ -135,7 +136,8 @@ const tageDesMonats = (status: MonatStatus, angaben: Angaben, erfasst: Map<strin
         beginn: tag?.beginn ?? auf.stempel[0]?.[1] ?? null,
         ende: tag?.ende ?? null,
         pauseMinuten: tag?.pausenMinuten ?? 0,
-        arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
+        // with the call-outs of the day, working time from a Rufbereitschaft (S-505)
+        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + einsatzMinuten(auf.einsaetze),
         erfasstAm: bekannt.length === 0 ? null : Math.max(...bekannt),
         aenderungen: [],
         befunde: inhalt.befunde

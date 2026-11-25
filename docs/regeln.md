@@ -1254,7 +1254,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
 | Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | docs/plan.md, „Abwesenheiten im Soll“ |
 | Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | docs/plan.md, „Konten“ |
-| Soll aus dem Plan | ab 1.11.2026 aus dem Plan, 21 veröffentlichte Schichten 6:00 – 14:30 mit 30 min Pause, je 7:30 gearbeitet | Soll 168:00, Ist 157:30, Saldo −10:30 | § 611a Abs. 1 BGB (die Weisung des Plans, § 106 GewO); docs/plan.md, „Soll aus dem Plan“ |
+| Soll aus dem Plan | ab 1.11.2026 aus dem Plan, 21 veröffentlichte Schichten 6:00 – 14:30 mit 30 min Pause, je 7:30 gearbeitet | Soll 168:00, Ist 157:30, Saldo −10:30 | § 611a Abs. 1 BGB (die vereinbarte Arbeit nach Plan); docs/plan.md, „Soll aus dem Plan“ |
 | Plan, Grenze | dasselbe, ein Werktag ohne veröffentlichte Schicht, je 8:00 gearbeitet | Soll 160:00, Saldo 0:00 (das Modell zählt nicht) | docs/plan.md, „Soll aus dem Plan“ |
 | Plan am Feiertag | Schicht am 25.12.2026 (1. Weihnachtstag) mit 6:00 | Soll 6:00, keine Minderung; am 24.12. ohne Schicht 0:00 | docs/plan.md, „Soll aus dem Plan“ |
 | Plan und Krankheit | krank am Mo 2.11.2026, geplant 10:00 – 16:00 | 6:00 gutgeschrieben | § 4 Abs. 1 EntgFG (Ausfallprinzip) |

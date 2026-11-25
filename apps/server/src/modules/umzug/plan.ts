@@ -20,6 +20,7 @@ import {
   zaehlen,
 } from "./plan-projekte.ts";
 import { saldoPlanen } from "./plan-salden.ts";
+import { schichtenPlanen } from "./plan-schichten.ts";
 import {
   type Art,
   keineZahlen,
@@ -303,6 +304,7 @@ export const planen = (
     taetigkeiten: [],
     buchungen: [],
     salden: [],
+    schichten: [],
     monate: [],
     zahlen: keineZahlen(),
     abgelehnt: [],
@@ -313,6 +315,11 @@ export const planen = (
   toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids, verworfen });
   abwesenheitenPlanen(bau, daten, zuordnung, stand);
   saldenPlanen(bau, daten, zuordnung, stand);
+  // shifts are the plan, not records: they close no month (S-706)
+  const schichten = schichtenPlanen(daten.schichten, zuordnung, stand);
+  bau.schichten.push(...schichten.neu);
+  bau.zahlen.schichten = schichten.zahlen;
+  bau.abgelehnt.push(...schichten.abgelehnt);
   const { beruehrt: _, ...plan } = bau;
   return {
     ...plan,

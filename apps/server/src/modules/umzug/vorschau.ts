@@ -23,6 +23,7 @@ import {
   projekteLesen,
   taetigkeitenLesen,
 } from "../projektzeit/index.ts";
+import { standorteLesen } from "../standorte/index.ts";
 import { type Vorschaubefund, vorschauBefunde } from "./befunde.ts";
 import { dateiLesen } from "./datei.ts";
 import { sha256Von } from "./dateispeicher.ts";
@@ -53,7 +54,9 @@ export type Vorschau = {
   taetigkeiten: { externalId: string; name: string }[];
   /** the business's own activities, not the four fixed ones (they have no name of their own) */
   vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
-  module: { arbeitszeit: boolean; projektzeit: boolean };
+  module: { arbeitszeit: boolean; projektzeit: boolean; dienstplan: boolean };
+  /** the sites of the business, one of which the planned shifts of a shift planner go to (S-706) */
+  standorte: { standortId: string; name: string }[];
   befunde: { anzahl: number; liste: Vorschaubefund[] };
   /** the balances on a cut-off date of the file, as the owner checks them before the takeover (S-708) */
   salden: { anzahl: number; liste: Omit<ImportSaldo, "externalId">[] };
@@ -143,7 +146,9 @@ export const vorschau = (
     module: {
       arbeitszeit: modulAktiv(db, betriebId, "arbeitszeit"),
       projektzeit: modulAktiv(db, betriebId, "projektzeit"),
+      dienstplan: modulAktiv(db, betriebId, "dienstplan"),
     },
+    standorte: standorteLesen(db, betriebId).map(({ standortId, name }) => ({ standortId, name })),
     befunde: { anzahl: befunde.length, liste: befunde.slice(0, MAX_LISTE) },
     salden: {
       anzahl: daten.salden.length,

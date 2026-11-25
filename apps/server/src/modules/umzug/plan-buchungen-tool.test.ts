@@ -89,7 +89,7 @@ describe("bookings a tool kept itself", () => {
       daten(MORGEN),
       ZUORDNUNG,
       null,
-      stand({ module: { arbeitszeit: true, projektzeit: false } }),
+      stand({ module: { arbeitszeit: true, projektzeit: false, dienstplan: true } }),
     );
     expect(ohne.abgelehnt.map((a) => [a.art, a.grund])).toEqual([
       ["kunden", "modul_aus"],

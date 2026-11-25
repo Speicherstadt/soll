@@ -1,21 +1,27 @@
 import { istTag, plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { abzugText, kimaiAbzugText, personioAbzugText } from "@soll/import";
+import { abzugText, kimaiAbzugText, personioAbzugText, schichtplanerAbzugText } from "@soll/import";
 import { Hono } from "hono";
 import { z } from "zod";
 import {
   type ClockodoDeps,
   clockodoAbrufen,
+  crewmeisterAbrufen,
   type KimaiDeps,
+  type KimaiFehler,
   kimaiAbrufen,
   MAX_BYTES,
   type PersonioDeps,
+  papershiftAbrufen,
   personioAbrufen,
+  plandayAbrufen,
+  type SchichtplanerDeps,
 } from "../modules/umzug/index.ts";
 import type { Anfrage } from "./kontext.ts";
 import { koerper, ungueltig } from "./projektzeit-gemeinsam.ts";
 
 /*
- * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai, S-704 Personio):
+ * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai, S-704 Personio,
+ * S-706 Papershift, Planday, Crewmeister):
  * POST /api/v1/importe/abruf with the access and a period answers with the file the fetch became,
  * which the app then sends to preview, dry run and takeover like any file. The access is used for
  * this one request: it is not stored, not logged and in no answer (docs/plan.md, "API-Zugang eines
@@ -67,12 +73,53 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
       ...zeitraum,
     })
     .strict(),
+  // S-706: the shift planners, each at its own address
+  z
+    .object({
+      quelle: z.literal("papershift"),
+      zugang: z.object({ token: z.string().trim().min(1).max(500) }).strict(),
+      ...zeitraum,
+    })
+    .strict(),
+  z
+    .object({
+      quelle: z.literal("planday"),
+      zugang: z
+        .object({
+          // the app id goes as X-ClientId: visible ASCII only, refused before anything is sent
+          appId: z
+            .string()
+            .trim()
+            .regex(/^[\x21-\x7e]{1,100}$/),
+          token: z.string().trim().min(1).max(2000),
+        })
+        .strict(),
+      ...zeitraum,
+    })
+    .strict(),
+  z
+    .object({
+      quelle: z.literal("crewmeister"),
+      zugang: z
+        .object({ email: z.email().max(254), passwort: z.string().min(1).max(200) })
+        .strict(),
+      ...zeitraum,
+    })
+    .strict(),
 ]);
 
-export type AbrufDeps = { clockodo: ClockodoDeps; kimai: KimaiDeps; personio: PersonioDeps };
+export type AbrufDeps = {
+  clockodo: ClockodoDeps;
+  kimai: KimaiDeps;
+  personio: PersonioDeps;
+  schichtplaner: SchichtplanerDeps;
+};
 
 /** The longest period of one fetch: a year; a longer one is fetched in parts */
 const MAX_TAGE = 366;
+/** How far a shift planner's period may reach ahead: the coming plan and approved leave (S-706) */
+const VORAUS_TAGE = 92;
+const SCHICHTPLANER = new Set(["papershift", "planday", "crewmeister"]);
 
 const STATUS = {
   adresse_ungueltig: 422,
@@ -90,20 +137,44 @@ const STATUS = {
 
 type Eingabe = z.infer<typeof abrufSchema>;
 
-/** The fetch of the tool chosen, as the text of its file, or why there is none */
-const abrufen = async (deps: AbrufDeps, eingabe: Eingabe) => {
+/** A fetch's records as the text of its file, or why there is none */
+const alsDatei = <T>(
+  abruf: { ok: true; wert: T } | ({ ok: false } & KimaiFehler),
+  text: (wert: T) => string,
+) => (abruf.ok ? { ok: true as const, text: text(abruf.wert) } : abruf);
+
+/** The fetch of the tool chosen; the shift planners give the same kind of file (S-706) */
+const abrufen = async (deps: AbrufDeps, eingabe: Eingabe, heute: string) => {
   const zeitraum = { von: eingabe.von, bis: eingabe.bis };
-  if (eingabe.quelle === "clockodo") {
-    const abruf = await clockodoAbrufen(deps.clockodo, eingabe.zugang, zeitraum);
-    return abruf.ok ? { ok: true as const, text: abzugText(abruf.wert) } : abruf;
+  const bisHeute = { ...zeitraum, heute };
+  switch (eingabe.quelle) {
+    case "clockodo":
+      return alsDatei(await clockodoAbrufen(deps.clockodo, eingabe.zugang, zeitraum), abzugText);
+    case "kimai": {
+      const zugang = { ...eingabe.zugang, benutzer: eingabe.zugang.benutzer || null };
+      return alsDatei(await kimaiAbrufen(deps.kimai, zugang, zeitraum), kimaiAbzugText);
+    }
+    case "personio":
+      return alsDatei(
+        await personioAbrufen(deps.personio, eingabe.zugang, zeitraum),
+        personioAbzugText,
+      );
+    case "papershift":
+      return alsDatei(
+        await papershiftAbrufen(deps.schichtplaner, eingabe.zugang, bisHeute),
+        schichtplanerAbzugText,
+      );
+    case "planday":
+      return alsDatei(
+        await plandayAbrufen(deps.schichtplaner, eingabe.zugang, bisHeute),
+        schichtplanerAbzugText,
+      );
+    case "crewmeister":
+      return alsDatei(
+        await crewmeisterAbrufen(deps.schichtplaner, eingabe.zugang, bisHeute),
+        schichtplanerAbzugText,
+      );
   }
-  if (eingabe.quelle === "personio") {
-    const abruf = await personioAbrufen(deps.personio, eingabe.zugang, zeitraum);
-    return abruf.ok ? { ok: true as const, text: personioAbzugText(abruf.wert) } : abruf;
-  }
-  const zugang = { ...eingabe.zugang, benutzer: eingabe.zugang.benutzer || null };
-  const abruf = await kimaiAbrufen(deps.kimai, zugang, zeitraum);
-  return abruf.ok ? { ok: true as const, text: kimaiAbzugText(abruf.wert) } : abruf;
 };
 
 export const abrufRouten = (deps: AbrufDeps, jetzt: () => number) =>
@@ -111,9 +182,11 @@ export const abrufRouten = (deps: AbrufDeps, jetzt: () => number) =>
     const eingabe = abrufSchema.safeParse(await koerper(c));
     if (!eingabe.success) return ungueltig(c);
     const { quelle, von, bis } = eingabe.data;
-    if (bis < von || bis > tagInBerlin(jetzt()) || plusTage(von, MAX_TAGE) <= bis)
+    const heute = tagInBerlin(jetzt());
+    const spaetestens = SCHICHTPLANER.has(quelle) ? plusTage(heute, VORAUS_TAGE) : heute;
+    if (bis < von || bis > spaetestens || plusTage(von, MAX_TAGE) <= bis)
       return c.json({ fehler: "zeitraum" }, 422);
-    const abruf = await abrufen(deps, eingabe.data);
+    const abruf = await abrufen(deps, eingabe.data, heute);
     if (!abruf.ok) {
       const { ok: _, grund, ...rest } = abruf;
       return c.json({ fehler: grund, ...rest }, STATUS[grund]);

@@ -1,4 +1,11 @@
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /* The tables of the shift plan (S-501); re-exported by ../schema.ts */
 
@@ -45,11 +52,16 @@ export const schichten = sqliteTable(
     veroeffentlichtAm: integer("veroeffentlicht_am"),
     angelegtVon: text("angelegt_von").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
+    // S-706: the import it was taken over in, the tool and its id there, once per business
+    importId: text("import_id"),
+    externQuelle: text("extern_quelle"),
+    externId: text("extern_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.schichtId] }),
     index("schichten_woche").on(t.betriebId, t.standortId, t.tag),
     index("schichten_person").on(t.betriebId, t.nutzerId, t.tag),
+    uniqueIndex("schichten_extern").on(t.betriebId, t.externQuelle, t.externId),
   ],
 );
 

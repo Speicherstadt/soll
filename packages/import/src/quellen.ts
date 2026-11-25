@@ -2,6 +2,7 @@ import { clockodoLesen } from "./clockodo/index.ts";
 import { kimaiLesen } from "./kimai/index.ts";
 import type { Gelesen } from "./modell.ts";
 import { personioLesen } from "./personio/index.ts";
+import { schichtplanerLesen } from "./schichtplaner/index.ts";
 import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 import { tabelleLesen } from "./tabelle.ts";
 import { ohneBom, textAusBytes } from "./text.ts";
@@ -41,6 +42,9 @@ const LESER: Record<string, Quelle["lesen"]> = {
   clockodo: (bytes) => clockodoLesen(textAusBytes(bytes)),
   kimai: (bytes) => kimaiLesen(bytes),
   personio: (bytes) => personioLesen(bytes),
+  papershift: schichtplanerLesen("papershift"),
+  planday: schichtplanerLesen("planday"),
+  crewmeister: schichtplanerLesen("crewmeister"),
 };
 
 export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({

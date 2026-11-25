@@ -10,6 +10,7 @@ import {
 } from "../arbeitszeit/index.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
+import { schichtenUebernehmen } from "../dienstplan/index.ts";
 import {
   buchungenUebernehmen,
   kundenUebernehmen,
@@ -135,6 +136,7 @@ const schreibenAlles = (
     const grund = herkunftsGrund(eingabe, zeile.importId);
     const salden = zeile.plan.salden.map((saldo) => alsAnpassung(saldo, grund));
     anpassungenUebernehmen(s, kontext, herkunft, salden);
+    schichtenUebernehmen(s, kontext, herkunft, zeile.plan.schichten);
   });
 };
 

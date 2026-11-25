@@ -125,7 +125,7 @@ describe("the plan of a takeover", () => {
       daten,
       ZUORDNUNG,
       null,
-      stand({ module: { arbeitszeit: false, projektzeit: true } }),
+      stand({ module: { arbeitszeit: false, projektzeit: true, dienstplan: true } }),
     );
     expect(aus.abgelehnt.map((a) => a.grund)).toEqual(["modul_aus", "modul_aus"]);
   });

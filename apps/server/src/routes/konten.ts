@@ -36,6 +36,8 @@ export const anpassungSchema = z.discriminatedUnion("art", [
     .strict(),
   z.object({ art: z.literal("auszahlung"), monat, minuten: minuten.positive(), grund }).strict(),
   z.object({ art: z.literal("urlaub_start"), jahr, halbtage: halbtage.min(0), grund }).strict(),
+  // the leave open on a cut-off date, never negative (§ 5 Abs. 3 BUrlG; S-708, R-34)
+  z.object({ art: z.literal("urlaub_stichtag"), monat, halbtage: halbtage.min(0), grund }).strict(),
   z
     .object({
       art: z.literal("urlaub_korrektur"),

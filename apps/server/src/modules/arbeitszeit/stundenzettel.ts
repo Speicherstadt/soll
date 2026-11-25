@@ -80,6 +80,8 @@ export const stundenzettelAus = (
     nichtHinterlegt: inhalt.nichtHinterlegt,
     befunde,
     gegeneintraege: inhalt.gegeneintraege,
+    // the start balances its Prüfwert covers (S-708); a month without has none
+    ...(inhalt.startsalden === undefined ? {} : { startsalden: inhalt.startsalden }),
     bestaetigt:
       status.bestaetigung?.gueltig === true
         ? { name: angaben.name(status.bestaetigung.von), am: status.bestaetigung.am }

@@ -1052,8 +1052,57 @@ S-701 und unabhängig voneinander.
     Datei denselben Weg); axe grün; Texte in allen sechs Sprachen; Doku `docs/umzug.md`, README,
     Entscheidungen im Projektplan; Abdeckungstests (S-903) für die neuen Spalten.
 - [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
-- [ ] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
+- [x] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
   oder aus dem Import, im Audit-Log.
+  nach: S-402, S-701. Fertig, wenn: ein Startsaldo von Hand und aus einer Datei dasselbe Konto ergibt,
+  ein zweiter Import nichts doppelt anlegt und der Prüfwert der Person ihn deckt. Genauer:
+  - **Stichtag**: je Person ein Stichtag, der Erste eines Monats, vom Eintritt bis zum laufenden
+    Monat; ab ihm rechnet Soll die Konten. Überstunden zum Stichtag sind der Startsaldo der
+    Überstunden (S-402, `startsaldo`, ganze Minuten, auch negativ); ein Monat davor, auch einer, der
+    erst danach abgeschlossen wird, zählt nicht. Resturlaub zum Stichtag (neue Art
+    `urlaub_stichtag`, halbe Tage, nicht negativ: zu viel gewährter Urlaub wird nicht
+    zurückgefordert, § 5 Abs. 3 BUrlG) ist aller Urlaub, der am Stichtag offen ist, den des
+    laufenden Jahres eingeschlossen, wie ihn das alte Tool zeigt: er ersetzt den Jahresurlaub des
+    Stichtagsjahres, Urlaub vor dem Stichtag zählt nicht mehr, die Jahre danach rechnet Soll wie
+    bisher. Er gilt als Urlaub des Stichtagsjahres und verfällt frühestens mit dem 31.3. des
+    Folgejahres und nur nach einem Hinweis in Soll (§ 7 Abs. 3 BUrlG; EuGH C-684/16; BAG,
+    19.02.2019, 9 AZR 423/16): auch übertragener Urlaub aus dem Vorjahr verfällt nie still, die
+    für die Person günstigere Lesart. Höchstens ein Beginn des Urlaubskontos je Person
+    (`urlaub_stichtag` oder das bisherige `urlaub_start`); ein Hinweis auf Verfall vor dem Stichtag
+    schließt ihn aus. Eine Regel mit Fällen in `docs/regeln.md` (R-34) und eine reine Funktion in
+    `packages/arbeitszeit` mit Vitest.
+  - **Von Hand**: nur der Inhaber (`konten:pflegen`; das Lohnbüro liest), mit Grund, unter Konten der
+    Person; korrigiert wird mit einer weiteren Anpassung (Korrektur), nie durch Überschreiben; ein
+    zweiter Startsaldo ist `409 vorhanden`. Ein Stichtag in einem abgeschlossenen Monat oder nach
+    einem abgeschlossenen Monat der Person wird abgelehnt (`409 widerspruch`).
+  - **Prüfwert**: der Inhalt des Monats, in den der Stichtag fällt, trägt die Startsalden
+    (`startsalden`: Überstunden in Minuten, Resturlaub in halben Tagen, Grund); ein Monat ohne hat
+    den Schlüssel nicht, so bleiben Inhalt und Prüfwert älterer Abschlüsse gleich. Stundenzettel
+    und PDF zeigen „Startsaldo zum …“. Weil der Stichtag nie in einem abgeschlossenen Monat liegt,
+    deckt der Prüfwert der Person ihn, sobald sein Monat abgeschlossen ist.
+  - **Aus dem Import**: die Soll-CSV liest den Typ `saldo` (`balance`) mit Person, Datum
+    (Stichtag), `Überstunden` (`-12:30`, `7,5`) und `Resturlaub` (`8,5`), mindestens einem der
+    beiden; Fehler mit Zeile (`stichtag_ungueltig`, `saldo_ungueltig`); Vorlage `soll-salden.csv`
+    zum Herunterladen; Fuzzing wie S-701. Clockodo, Kimai: keine Salden (Kimai führt keine Konten
+    in seiner API; Clockodos `userreports` rechnen nach Clockodos eigenen Regeln mit Feldern, deren
+    Bedeutung das SDK nicht festlegt, die Doku ist nicht erreichbar); der Inhaber trägt die Zahl
+    des alten Tools in die Vorlage ein. Personio (S-704) hat in seiner API v2 keine Salden
+    und liefert `salden` leer; ein Werkzeug mit Salden füllt dasselbe Modell. Planung, Probelauf und Übernahme prüfen mit denselben Regeln wie von Hand (Grund
+    je Zeile: `saldo_vorhanden`, `monat_abgeschlossen`, `zukunft`, `vor_eintritt`,
+    `widerspruch`); die Anpassungen tragen Import, Werkzeug und Kennung (`<Kennung>/ueberstunden`,
+    `/urlaub`, neue Migration), der Grund „übernommen aus …“; die Übernahme schreibt sie vor den
+    Abschlüssen „abgeschlossen bis“, so tragen deren Inhalte sie. Ein zweiter Lauf: „schon da“, mit
+    anderem Wert „im alten Tool geändert“, nie überschrieben.
+  - **Anzeige und Rechte**: die Konten zeigen den Startsaldo mit Stichtag und „übernommen aus …“;
+    die Person sieht ihn (Seite Konten, Monat), der Planer nur den Saldo wie bisher. DATEV bleibt
+    unberührt (ein Startsaldo ist kein Lohn eines Monats; ausgezahlt wird wie bisher über die
+    Auszahlung). Auskunft: die Anpassungen mit Import und Kennung; Löschkonzept und
+    Betriebsvereinbarung nennen die neuen Spalten (Test S-903).
+  - **Tests**: Vitest für Leser, Regel und Plan; Server-Tests für Hand und Import (Mandanten je
+    Endpunkt, `403` für jede andere Rolle als den Inhaber, zweiter Lauf, abgeschlossener Monat,
+    Prüfwert); Playwright: Inhaber übernimmt eine Salden-Datei (desktop), die Person sieht ihren
+    Startsaldo (desktop und `@phone`), axe grün; Texte in allen sechs Sprachen; Doku
+    `docs/konten.md`, `docs/umzug.md`, README, Entscheidungen im Projektplan.
 
 Für S-703 bis S-707 gilt: Fertig, wenn Fixtures nach der Exportbeschreibung des Anbieters bestehen
 (Quelle im Test) und ein Playwright-Test den ganzen Ablauf zeigt. Echte, anonymisierte Dateien

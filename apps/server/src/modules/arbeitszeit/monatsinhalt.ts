@@ -51,6 +51,14 @@ export type Summen = Pick<
 /** A counter-entry to a day of a closed month, counted in the month it was entered in */
 export type Gegeneintrag = { tag: Tag; minuten: number; grund: string };
 
+/**
+ * A start balance whose cut-off date is the first day of the month (S-708): overtime in minutes or
+ * leave in half days, with its reason
+ */
+export type Startsaldo =
+  | { art: "ueberstunden"; minuten: number; grund: string }
+  | { art: "urlaub"; halbtage: number; grund: string };
+
 /** The month as it is confirmed and closed; `fassung` changes when the form ever changes */
 export type Monatsinhalt = {
   fassung: 1;
@@ -63,6 +71,11 @@ export type Monatsinhalt = {
   befunde: Blattbefund[];
   /** counter-entries to closed months entered in this month; Ist and balance include them */
   gegeneintraege: Gegeneintrag[];
+  /**
+   * the start balances on the first day of the month (S-708); a month without has no key, so the
+   * content of a month closed before stays what it was and its Prüfwert keeps matching
+   */
+  startsalden?: Startsaldo[];
 };
 
 /**
@@ -138,6 +151,7 @@ export const monatsinhalt = (angaben: {
   nichtHinterlegt: readonly Tag[];
   befunde: readonly Befund[];
   gegeneintraege?: readonly Gegeneintrag[];
+  startsalden?: readonly Startsaldo[];
 }): Monatsinhalt => ({
   fassung: 1,
   monat: angaben.monat,
@@ -151,10 +165,21 @@ export const monatsinhalt = (angaben: {
     minuten,
     grund,
   })),
+  ...(angaben.startsalden !== undefined && angaben.startsalden.length > 0
+    ? { startsalden: [...angaben.startsalden] }
+    : {}),
 });
 
 /** The hash of a month's content: SHA-256 of its canonical JSON (sorted keys, whole numbers only) */
 export const inhaltHash = (inhalt: Monatsinhalt): string => sha256(kanonisch(inhalt));
+
+/**
+ * Whether a confirmation still holds for the month as it stands: the same records of every day and
+ * the same start balances (S-708)
+ */
+export const bestaetigungGilt = (bestaetigt: Monatsinhalt, jetzt: Monatsinhalt): boolean =>
+  abweichendeTage(bestaetigt.tage, jetzt.tage).length === 0 &&
+  kanonisch(bestaetigt.startsalden ?? []) === kanonisch(jetzt.startsalden ?? []);
 
 /** The days whose records differ between the month as closed and as it stands now, in order */
 export const abweichendeTage = (

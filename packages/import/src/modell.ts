@@ -69,6 +69,20 @@ export type ImportBuchung = {
 };
 
 /**
+ * The balances of a person on a cut-off date (S-708): `stichtag` the first day of a month, overtime
+ * in whole minutes (signed) and leave in half days (all leave open that day, its year's included),
+ * at least one of the two; null where the old tool gave none
+ */
+export type ImportSaldo = {
+  externalId: string;
+  zeile: number;
+  person: string;
+  stichtag: string;
+  ueberstundenMinuten: number | null;
+  urlaubHalbtage: number | null;
+};
+
+/**
  * A planned shift of a shift planner (S-706): instants in UTC milliseconds on whole minutes, the
  * planned break in minutes, the role as the tool names it (position, workplace); `person` null for
  * a shift nobody is planned on
@@ -90,6 +104,7 @@ export type ImportDaten = {
   projekte: ImportProjekt[];
   taetigkeiten: ImportTaetigkeit[];
   buchungen: ImportBuchung[];
+  salden: ImportSaldo[];
   schichten: ImportSchicht[];
 };
 
@@ -118,6 +133,8 @@ export const LESE_GRUENDE = [
   "dauer_abweichend",
   "projekt_unbekannt",
   "taetigkeit_unbekannt",
+  "stichtag_ungueltig",
+  "saldo_ungueltig",
 ] as const;
 export type LeseGrund = (typeof LESE_GRUENDE)[number];
 
@@ -158,5 +175,6 @@ export const leer = (): ImportDaten => ({
   projekte: [],
   taetigkeiten: [],
   buchungen: [],
+  salden: [],
   schichten: [],
 });

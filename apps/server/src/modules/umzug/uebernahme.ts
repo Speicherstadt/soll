@@ -3,8 +3,10 @@ import type { Gelesen, LeseFehler, Quelle, Spaltenwahl, Zuordnung } from "@soll/
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import {
   abwesenheitenUebernehmen,
+  anpassungenUebernehmen,
   monatUebernehmen,
   stempelUebernehmen,
+  type UebernommeneAnpassung,
 } from "../arbeitszeit/index.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
@@ -18,7 +20,7 @@ import {
 import { dateiLesen } from "./datei.ts";
 import type { Dateispeicher } from "./dateispeicher.ts";
 import { planen } from "./plan.ts";
-import type { Abgelehnt, Monatssperre, Plan, Zahlen } from "./plan-typen.ts";
+import type { Abgelehnt, Monatssperre, NeuerSaldo, Plan, Zahlen } from "./plan-typen.ts";
 import { standLesen } from "./stand.ts";
 
 /*
@@ -86,7 +88,24 @@ export type Uebernahme = Probelauf & {
   nichtGesperrt: (Monatssperre & { grund: string })[];
 };
 
-/** The plan and its row in `importe`, all or nothing */
+/** The reason a row taken over carries: the tool and the import, as the time sheet shows it */
+const herkunftsGrund = (eingabe: Eingabe, importId: string) =>
+  `übernommen aus ${eingabe.quelle.name} (Import ${importId.slice(0, 8)})`;
+
+/** A start balance of the plan as a change of the accounts (S-708) */
+const alsAnpassung = (saldo: NeuerSaldo, grund: string): UebernommeneAnpassung => ({
+  nutzerId: saldo.nutzerId,
+  externId: saldo.externId,
+  anpassung:
+    saldo.art === "startsaldo"
+      ? { art: saldo.art, monat: saldo.monat, minuten: saldo.wert, grund }
+      : { art: saldo.art, monat: saldo.monat, halbtage: saldo.wert, grund },
+});
+
+/**
+ * The plan and its row in `importe`, all or nothing; the start balances go in before the months are
+ * closed as taken over, so the content of the month of their cut-off date carries them (S-708)
+ */
 const schreibenAlles = (
   deps: UmzugDeps,
   kontext: Kontext,
@@ -114,6 +133,9 @@ const schreibenAlles = (
     stempelUebernehmen(s, kontext, herkunft, zeile.plan.stempelungen);
     abwesenheitenUebernehmen(s, kontext, herkunft, zeile.plan.abwesenheiten);
     buchungenUebernehmen(s, kontext, herkunft, zeile.plan.buchungen);
+    const grund = herkunftsGrund(eingabe, zeile.importId);
+    const salden = zeile.plan.salden.map((saldo) => alsAnpassung(saldo, grund));
+    anpassungenUebernehmen(s, kontext, herkunft, salden);
     schichtenUebernehmen(s, kontext, herkunft, zeile.plan.schichten);
   });
 };
@@ -126,7 +148,7 @@ const monateSperren = (
   importId: string,
   monate: readonly Monatssperre[],
 ) => {
-  const grund = `übernommen aus ${eingabe.quelle.name} (Import ${importId.slice(0, 8)})`;
+  const grund = herkunftsGrund(eingabe, importId);
   const ergebnisse = monate.map((sperre) => ({
     sperre,
     ergebnis: monatUebernehmen(deps.db, deps.schreibDb, kontext, { ...sperre, grund, importId }),

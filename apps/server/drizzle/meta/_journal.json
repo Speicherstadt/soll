@@ -215,8 +215,15 @@
     {
       "idx": 30,
       "version": "6",
-      "when": 1795640589873,
-      "tag": "0030_import_schichten",
+      "when": 1795635191818,
+      "tag": "0030_salden",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1795643816216,
+      "tag": "0031_import_schichten",
       "breakpoints": true
     }
   ]

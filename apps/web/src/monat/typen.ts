@@ -34,7 +34,14 @@ export type Monatsinhalt = {
   nichtHinterlegt: Tag[];
   befunde: Blattbefund[];
   gegeneintraege: Gegeneintrag[];
+  /** the start balances on the first day of the month (S-708); missing in a month without */
+  startsalden?: Startsaldo[];
 };
+
+/** A start balance of the month: overtime in minutes or leave in half days, with its reason */
+export type Startsaldo =
+  | { art: "ueberstunden"; minuten: number; grund: string }
+  | { art: "urlaub"; halbtage: number; grund: string };
 
 /** A month of one person as GET /api/v1/arbeitszeit/monat returns it */
 export type MonatAnsicht = {

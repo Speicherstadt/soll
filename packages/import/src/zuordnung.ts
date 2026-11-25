@@ -105,7 +105,9 @@ const gezaehlt = <K extends string>(werte: readonly string[], name: K) =>
 export const personenAus = (daten: ImportDaten) =>
   gezaehlt(
     [
-      ...[...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen].map((satz) => satz.person),
+      ...[...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen, ...daten.salden].map(
+        (satz) => satz.person,
+      ),
       // a shift nobody is planned on names no person (S-706)
       ...daten.schichten.flatMap((schicht) => (schicht.person === null ? [] : [schicht.person])),
     ],

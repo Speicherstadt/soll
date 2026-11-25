@@ -36,6 +36,7 @@ export {
   type ImportDaten,
   type ImportKunde,
   type ImportProjekt,
+  type ImportSaldo,
   type ImportSchicht,
   type ImportTaetigkeit,
   type ImportZeit,
@@ -55,7 +56,13 @@ export {
   personioAbzugText,
   personioLesen,
 } from "./personio/index.ts";
-export { QUELLEN, type Quelle, quelleVon, SOLL_CSV_VORLAGE } from "./quellen.ts";
+export {
+  QUELLEN,
+  type Quelle,
+  quelleVon,
+  SOLL_CSV_VORLAGE,
+  SOLL_SALDEN_VORLAGE,
+} from "./quellen.ts";
 export { type CrewmeisterAntworten, crewmeisterAbzug } from "./schichtplaner/crewmeister.ts";
 export {
   SCHICHTPLANER_FORMAT,

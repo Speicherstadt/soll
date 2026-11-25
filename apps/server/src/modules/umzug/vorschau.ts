@@ -3,6 +3,7 @@ import {
   artenAus,
   artVorschlag,
   type ImportDaten,
+  type ImportSaldo,
   kandidatVorschlag,
   type LeseFehler,
   personenAus,
@@ -57,6 +58,8 @@ export type Vorschau = {
   /** the sites of the business, one of which the planned shifts of a shift planner go to (S-706) */
   standorte: { standortId: string; name: string }[];
   befunde: { anzahl: number; liste: Vorschaubefund[] };
+  /** the balances on a cut-off date of the file, as the owner checks them before the takeover (S-708) */
+  salden: { anzahl: number; liste: Omit<ImportSaldo, "externalId">[] };
   /** the projects and activities the times name, with Soll's proposal, and what may be booked */
   buchung: {
     projekte: Wertvorschlag[];
@@ -147,6 +150,10 @@ export const vorschau = (
     },
     standorte: standorteLesen(db, betriebId).map(({ standortId, name }) => ({ standortId, name })),
     befunde: { anzahl: befunde.length, liste: befunde.slice(0, MAX_LISTE) },
+    salden: {
+      anzahl: daten.salden.length,
+      liste: daten.salden.slice(0, MAX_LISTE).map(({ externalId: _, ...saldo }) => saldo),
+    },
     buchung: buchungVon(db, betriebId, daten),
   };
 };

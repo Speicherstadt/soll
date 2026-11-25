@@ -74,15 +74,21 @@ export const HinweisDialog = (props: {
   );
 };
 
+/**
+ * The changes the owner makes here; the leave brought in before Soll by year (`urlaub_start`) stays
+ * readable and in the API, the app offers the leave on a cut-off date instead (S-708)
+ */
 const ARTEN: readonly Anpassungsart[] = [
   "startsaldo",
+  "urlaub_stichtag",
   "auszahlung",
   "korrektur",
-  "urlaub_start",
   "urlaub_korrektur",
 ];
 
 const inStunden = (art: Anpassungsart) => !art.startsWith("urlaub");
+/** A change for a month: of the overtime, or the leave on a cut-off date */
+const mitMonat = (art: Anpassungsart) => inStunden(art) || art === "urlaub_stichtag";
 
 /** What a change sends: a month and minutes, or a year and half days; null for what is no value */
 const anfrageAus = (k: Konten, daten: FormData, grund: string) => {
@@ -98,10 +104,8 @@ const anfrageAus = (k: Konten, daten: FormData, grund: string) => {
   }
   const halbtage = halbtageAus(wert);
   if (halbtage === null) return null;
-  return {
-    pfad: pfad(k, "anpassungen"),
-    body: { art, jahr: Number(daten.get("jahr")), halbtage, grund },
-  };
+  const wann = mitMonat(art) ? { monat: daten.get("monat") } : { jahr: Number(daten.get("jahr")) };
+  return { pfad: pfad(k, "anpassungen"), body: { art, ...wann, halbtage, grund } };
 };
 
 /** The fields of a change: what, when (month or year), how much */
@@ -124,7 +128,7 @@ const AnpassungFelder = (props: { id: string; k: Konten }) => {
       </div>
       <div class="grid grid-cols-2 gap-3">
         <Show
-          when={inStunden(art())}
+          when={mitMonat(art())}
           fallback={
             <div class="flex flex-col gap-1.5">
               <label for={`${props.id}-jahr`} class="font-medium">
@@ -161,6 +165,9 @@ const AnpassungFelder = (props: { id: string; k: Konten }) => {
           <input id={`${props.id}-wert`} name="wert" class={feld} inputmode="text" required />
         </div>
       </div>
+      <Show when={art() === "startsaldo" || art() === "urlaub_stichtag"}>
+        <p class="text-muted-foreground">{m.konten_stichtag_hilfe()}</p>
+      </Show>
     </>
   );
 };

@@ -72,6 +72,31 @@ test("the owner records the notice on leave expiring and a start balance; Sandra
   await axe(page);
 });
 
+test("Sandra sees apart what a notice lets expire and the leave no notice named yet @phone", async ({
+  page,
+  browser,
+}) => {
+  const { jonas, nutzerId } = await weberMitSandra(page, browser, test.info());
+  const heute = inTagen(0);
+  const pfad = `/api/v1/arbeitszeit/konten/${nutzerId}`;
+  await senden(jonas, "POST", `${pfad}/hinweise`, { tag: heute });
+  // one more day of this year after the notice: no notice names it (review S-708)
+  await senden(jonas, "POST", `${pfad}/anpassungen`, {
+    art: "urlaub_korrektur",
+    jahr: Number(heute.slice(0, 4)),
+    halbtage: 2,
+    grund: "Tag aus dem Vorjahr nachgetragen",
+  });
+  await page.goto("/abwesenheiten");
+  const konten = page.getByRole("region", { name: t("konten_titel") });
+  const zeilen = konten.getByRole("listitem");
+  await expect(zeilen.filter({ hasText: ", verfällt mit dem " })).toHaveCount(1);
+  const faellig = zeilen.filter({ hasText: "Hinweis auf Verfall fällig bis" });
+  await expect(faellig).toHaveCount(1);
+  await expect(faellig).toContainText(`${t("abw_tag_eins")}.`);
+  await axe(page);
+});
+
 test("the team calendar of a site: its holidays, and Sandra's leave only as „abwesend“", async ({
   page,
   browser,

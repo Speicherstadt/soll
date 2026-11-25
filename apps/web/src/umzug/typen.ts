@@ -10,6 +10,7 @@ export type Art =
   | "projekte"
   | "taetigkeiten"
   | "buchungen"
+  | "salden"
   | "schichten";
 export const ARTEN: readonly Art[] = [
   "zeiten",
@@ -18,8 +19,18 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "salden",
   "schichten",
 ];
+
+/** The balances of a person on a cut-off date in the file (S-708) */
+export type Saldo = {
+  zeile: number;
+  person: string;
+  stichtag: string;
+  ueberstundenMinuten: number | null;
+  urlaubHalbtage: number | null;
+};
 
 /**
  * What a dry run and a takeover count: the records; bookings are those a tool kept (S-705) and
@@ -61,6 +72,7 @@ export type Vorschau = {
   /** the sites the shifts of a shift planner may go to (S-706) */
   standorte: { standortId: string; name: string }[];
   befunde: Liste<Vorschaubefund>;
+  salden: Liste<Saldo>;
   buchung: {
     projekte: Wertvorschlag[];
     taetigkeiten: Wertvorschlag[];

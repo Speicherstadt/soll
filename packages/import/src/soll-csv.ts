@@ -14,8 +14,8 @@ import { bereinigt, ohneBom, schluessel } from "./text.ts";
 /*
  * The reference format of Soll's imports (BAULISTE.md S-701), with which the whole import is tested
  * from file to takeover: one CSV (RFC 4180, the separator found as for employees) whose column
- * `Typ` says what a line holds: a time, an absence, a customer or an order. The vendors' formats
- * (S-702 to S-707) read into the same model.
+ * `Typ` says what a line holds: a time, an absence, a customer, an order or the balances
+ * on a cut-off date (S-708). The vendors' formats (S-702 to S-707) read into the same model.
  */
 
 export { SOLL_CSV_FELDER, type SollCsvFeld };
@@ -37,6 +37,8 @@ const KOPFWOERTER: Record<SollCsvFeld, readonly string[]> = {
   kunde: ["kunde", "customer"],
   name: ["name", "bezeichnung", "title"],
   nummer: ["nummer", "number", "nr"],
+  ueberstunden: ["uberstunden", "ueberstunden", "overtime", "saldo", "balance"],
+  resturlaub: ["resturlaub", "urlaub", "remainingleave", "leave"],
 };
 
 type Kopf = Partial<Record<SollCsvFeld, number>>;

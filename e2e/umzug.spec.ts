@@ -57,7 +57,8 @@ const bisZurUebernahme = async (page: Page, pruefen = false) => {
   await weiter(page);
   // Soll proposes the owner for "Jonas Weber" and leave for "Urlaub"
   await expect(page.getByLabel("Jonas Weber")).toHaveValue(/.+/);
-  await expect(page.getByLabel("Urlaub")).toHaveValue("urlaub");
+  // the kind of absence "Urlaub", not the column "Resturlaub" of the balances (S-708)
+  await expect(page.getByLabel(/^Urlaub/)).toHaveValue("urlaub");
   if (pruefen) await axe(page);
   await weiter(page);
   // 11:30 without a break on 2 September: shown with its norm, not changed

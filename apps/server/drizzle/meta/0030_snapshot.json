@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3fc52034-2687-42ad-b77e-2434f8d6c26a",
+  "id": "7204bd1d-8b97-416a-86e9-9e14055ef9c1",
   "prevId": "88f49295-8253-487b-8b1c-8f13b7dd918c",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1781,27 +1781,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_quelle": {
-          "name": "extern_quelle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_id": {
-          "name": "extern_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -1822,15 +1801,6 @@
             "tag"
           ],
           "isUnique": false
-        },
-        "schichten_extern": {
-          "name": "schichten_extern",
-          "columns": [
-            "betrieb_id",
-            "extern_quelle",
-            "extern_id"
-          ],
-          "isUnique": true
         }
       },
       "foreignKeys": {},
@@ -2528,6 +2498,27 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "import_id": {
+          "name": "import_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_quelle": {
+          "name": "extern_quelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "extern_id": {
+          "name": "extern_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -2538,6 +2529,15 @@
             "nutzer_id"
           ],
           "isUnique": false
+        },
+        "konto_anpassungen_extern": {
+          "name": "konto_anpassungen_extern",
+          "columns": [
+            "betrieb_id",
+            "extern_quelle",
+            "extern_id"
+          ],
+          "isUnique": true
         }
       },
       "foreignKeys": {},

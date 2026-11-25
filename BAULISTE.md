@@ -452,6 +452,29 @@ Alle Punkte: nach S-306.
   `docs/regeln.md`.
 - [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
   5545).
+  Fertig, wenn: ein Planer eine Woche je Standort veröffentlicht, die Beschäftigten danach ihre
+  Schichten sehen und sie als Kalender abonnieren (Playwright). Dazu: „Veröffentlichen“ im Kopf des
+  Plans (nur Inhaber und Planer, Test je Rolle) setzt `veroeffentlicht_am` aller Entwürfe der Woche am
+  Standort in einer Transaktion über die Audit-Kette; Entwürfe anderer Wochen und Standorte bleiben
+  Entwurf (Test); jede Person mit einer neu veröffentlichten Schicht bekommt eine Benachrichtigung
+  über Web Push, ohne Gerät per Mail, über die Module aus S-306/S-307 (Test mit Push- und
+  SMTP-Ersatz), in der Sprache ihres Geräts, die Mail auf Deutsch, wer veröffentlicht, bekommt keine;
+  eine Änderung oder das Entfernen einer veröffentlichten Schicht bleibt sichtbar, gilt als neue
+  Mitteilung (`veroeffentlicht_am` neu, § 12 TzBfG, Entscheidung aus S-502) und benachrichtigt die
+  bisherige und die neue Person, eine Änderung an einem Entwurf niemanden (Test); der ICS-Feed je
+  Person und Betrieb liegt unter einem nicht erratbaren Token (32 Zufallsbytes), gespeichert nur als
+  SHA-256 wie die API-Tokens (S-607), in der Audit-Kette, nur mit Sitzung angelegt, neu ausgestellt
+  (der alte gilt sofort nicht mehr) und widerrufen; der Feed ist nur lesbar, zeigt nur veröffentlichte
+  Schichten der Person, keine Entwürfe, keine anderen Personen und keine Abwesenheiten mit Art
+  (Art. 9 DSGVO), wird abgelehnt bei abgeschaltetem Modul Dienstplan, widerrufenem Token oder einer
+  Person, die nicht mehr Mitglied ist, und das Token steht nicht im Log; der Feed ist korrektes RFC
+  5545 als reine Funktion mit Vitest und Golden File: CRLF und Faltung bei 75 Oktetten ohne ein
+  UTF-8-Zeichen zu teilen (3.1), Escaping von Text (3.3.11), Zeiten in UTC (3.3.5), `UID` stabil je
+  Schicht (3.8.4.7), `DTSTAMP`, `LAST-MODIFIED` und `SEQUENCE` folgen jeder Änderung (3.8.7),
+  entfernte Schichten fehlen; Nachtschichten über Mitternacht und in beiden Nächten der
+  Zeitumstellung mit 7 und 9 Stunden (Test); ein Test je neuem Endpunkt, dass kein Betrieb Daten
+  eines anderen sieht oder ändert; Playwright in `desktop` und `@phone`, axe grün in hell und
+  dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.

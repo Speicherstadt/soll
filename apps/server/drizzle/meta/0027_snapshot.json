@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b230e6d2-05d5-4cc9-9fc2-1de82cab3808",
+  "id": "5f9cb087-8ae0-4018-87e1-5426a52c9bfb",
   "prevId": "75562c4a-efef-4da4-be9b-f85dfb44c7f5",
   "tables": {
     "arbeitszeitmodelle": {
@@ -2978,39 +2978,9 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "import_id": {
-          "name": "import_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_quelle": {
-          "name": "extern_quelle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "extern_id": {
-          "name": "extern_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
-        "projektzeiten_extern": {
-          "name": "projektzeiten_extern",
-          "columns": [
-            "betrieb_id",
-            "extern_quelle",
-            "extern_id"
-          ],
-          "isUnique": true
-        },
         "projektzeiten_person": {
           "name": "projektzeiten_person",
           "columns": [
@@ -3913,6 +3883,94 @@
           "name": "terminals_betrieb_id_terminal_id_pk"
         }
       },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "verfahrensdoku_angaben": {
+      "name": "verfahrensdoku_angaben",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rechtsform": {
+          "name": "rechtsform",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "anschrift": {
+          "name": "anschrift",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "verantwortlich": {
+          "name": "verantwortlich",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "aufbewahrungsort": {
+          "name": "aufbewahrungsort",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "serverbetrieb": {
+          "name": "serverbetrieb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "datensicherung": {
+          "name": "datensicherung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "schluesselablage": {
+          "name": "schluesselablage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "eigene": {
+          "name": "eigene",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "geaendert_am": {
+          "name": "geaendert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

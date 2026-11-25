@@ -40,6 +40,11 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/importe/vorlagen/:datei",
   // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
   "GET /api/v1/auskunft",
+  // the Verfahrensdokumentation describes whatever the business switched on, a freelancer's too
+  // (docs/plan.md, "Verfahrensdokumentation: Angaben", S-902)
+  "GET /api/v1/verfahrensdoku",
+  "GET /api/v1/verfahrensdoku/datei",
+  "PUT /api/v1/verfahrensdoku/angaben",
   // public: an invitation and the check page of a Prüfwert (docs/plan.md, "Prüfseite")
   "GET /api/v1/einladung/:token",
   "POST /api/v1/einladung/:token/annehmen",

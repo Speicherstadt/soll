@@ -109,7 +109,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `schichttausche` (\n\t`betrieb_id` text NOT NULL,\n\t`tausch_id` text NOT NULL,\n\t`schicht_id` text NOT NULL,\n\t`anbieter_id` text NOT NULL,\n\t`an_nutzer_id` text,\n\t`uebernehmer_id` text,\n\t`status` text NOT NULL,\n\t`grund` text,\n\t`angeboten_am` integer NOT NULL,\n\t`uebernommen_am` integer,\n\t`entschieden_von` text,\n\t`entschieden_am` integer,\n\tPRIMARY KEY(`betrieb_id`, `tausch_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `schichttausche_schicht` ON `schichttausche` (`betrieb_id`,`schicht_id`);--> statement-breakpoint\nCREATE TABLE `tauschregeln` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`ohne_freigabe` integer NOT NULL\n);\n"
   },
   {
-    "tag": "0027_import_buchungen",
+    "tag": "0027_verfahrensdoku",
+    "sql": "CREATE TABLE `verfahrensdoku_angaben` (\n\t`betrieb_id` text PRIMARY KEY NOT NULL,\n\t`rechtsform` text DEFAULT '' NOT NULL,\n\t`anschrift` text DEFAULT '' NOT NULL,\n\t`verantwortlich` text DEFAULT '' NOT NULL,\n\t`aufbewahrungsort` text DEFAULT '' NOT NULL,\n\t`serverbetrieb` text DEFAULT '' NOT NULL,\n\t`datensicherung` text DEFAULT '' NOT NULL,\n\t`schluesselablage` text DEFAULT '' NOT NULL,\n\t`eigene` text DEFAULT '[]' NOT NULL,\n\t`geaendert_am` integer NOT NULL\n);\n"
+  },
+  {
+    "tag": "0028_import_buchungen",
     "sql": "ALTER TABLE `projektzeiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_extern` ON `projektzeiten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
   }
 ];

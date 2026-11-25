@@ -90,9 +90,10 @@ describe("kimaiLesen with Weber's Kimai", () => {
       expect.objectContaining({ externalId: "11", beginn: 7 * 60, ende: 15 * 60 }),
     ]);
     const buchungen = gelesen.daten.buchungen.filter((b) => b.tag === "2026-09-02");
-    expect(buchungen.map((b) => [b.externalId, b.projekt, b.taetigkeit])).toEqual([
-      ["11/1", "1", "2"],
-      ["12/1", "1", "1"],
+    // each names the span it lies in, so a span not taken over takes both with it (review 2)
+    expect(buchungen.map((b) => [b.externalId, b.projekt, b.taetigkeit, b.zeit])).toEqual([
+      ["11/1", "1", "2", "11"],
+      ["12/1", "1", "1", "11"],
     ]);
   });
 

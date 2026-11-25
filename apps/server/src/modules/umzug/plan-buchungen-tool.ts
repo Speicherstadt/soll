@@ -5,9 +5,9 @@ import type { NeueBuchung, PlanGrund, Stand } from "./plan-typen.ts";
  * Bookings of project time the old tool kept itself (Kimai's timesheets, BAULISTE.md S-705): each on
  * the project and the activity the import created or matched for the ids it names. A booking whose
  * project or activity the owner left out is left out too; one that overlaps a booking of the person
- * there already, or one taken in this run, is refused; one in a time of the person that the run
- * refuses is left out with it (as S-702 books only for a time taken over). Its id in Soll is the
- * tool's own.
+ * there already, or one taken in this run, is refused; one of a time the run does not take over
+ * (named by the time's id, not by its span: two accounts of the tool may be one member) is left
+ * out with it, as S-702 books only for a time taken over. Its id in Soll is the tool's own.
  */
 
 /** The ids in Soll of the projects and activities of the file, null when not taken over */
@@ -19,8 +19,8 @@ export type Bezugsids = {
 type Spanne = { beginn: number; ende: number };
 /** The bookings taken so far in this run, per person */
 export type GenommeneBuchungen = Map<string, Spanne[]>;
-/** The spans of the times this run refused, per person: their bookings are not taken over either */
-export type VerworfeneZeiten = ReadonlyMap<string, readonly Spanne[]>;
+/** The ids of the times this run does not take over: their bookings are not taken over either */
+export type VerworfeneZeiten = ReadonlySet<string>;
 
 export type ToolBuchungsergebnis =
   | { art: "vorhanden" | "ausgelassen" }
@@ -56,8 +56,7 @@ export const toolBuchungPlanen = (
   const nutzerId = personVon(satz, kontext.zuordnung, stand);
   if (typeof nutzerId !== "string") return nutzerId;
   if (stand.vorhanden.buchungen.has(satz.externalId)) return { art: "vorhanden" };
-  if ((kontext.verworfen.get(nutzerId) ?? []).some((zeit) => ueberschneiden(zeit, satz)))
-    return { art: "ausgelassen" };
+  if (kontext.verworfen.has(satz.zeit)) return { art: "ausgelassen" };
   if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
   const projektId = ids.projekte.get(satz.projekt) ?? null;
   const taetigkeitId = ids.taetigkeiten.get(satz.taetigkeit) ?? null;

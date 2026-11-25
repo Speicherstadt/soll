@@ -22,6 +22,7 @@ const daten: ImportDaten = {
     {
       externalId: "10/1",
       zeile: 10,
+      zeit: "10",
       person: "Sandra Kühn",
       tag: "2026-09-01",
       beginn: um("2026-09-01T07:00:00+02:00"),

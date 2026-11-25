@@ -44,8 +44,7 @@ export type Bezuege = { projekte: ReadonlySet<string>; taetigkeiten: ReadonlySet
 /** The booking of a piece, or why it has none (no project, or one the file does not hold) */
 const alsBuchung = (
   stueck: Stueck,
-  tag: string,
-  person: string,
+  zeit: ImportZeit,
   bezuege: Bezuege,
 ): ImportBuchung | LeseFehler | null => {
   const { projekt, taetigkeit } = stueck.buchung;
@@ -62,8 +61,9 @@ const alsBuchung = (
   return {
     externalId: `${stueck.buchung.id}/${stueck.nummer}`,
     zeile: stueck.zeile,
-    person,
-    tag,
+    zeit: zeit.externalId,
+    person: zeit.person,
+    tag: zeit.tag,
     beginn: stueck.beginn,
     ende: stueck.ende,
     projekt,
@@ -102,9 +102,8 @@ const blockAufnehmen = (
     return [];
   }
   ergebnis.zeiten.push(zeit);
-  const tag = kontext.uhr.uhr(block.beginn).tag;
   return block.stuecke.flatMap((stueck) => {
-    const buchung = alsBuchung(stueck, tag, kontext.person, kontext.bezuege);
+    const buchung = alsBuchung(stueck, zeit, kontext.bezuege);
     if (buchung === null) return [];
     if ("grund" in buchung) {
       // a timesheet of two pieces names its project once

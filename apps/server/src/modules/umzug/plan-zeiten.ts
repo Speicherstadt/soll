@@ -16,7 +16,7 @@ export const stempelKennung = (externalId: string, art: Stempelung["art"]): stri
   `${externalId}/${art}`;
 
 /** Kommen and Gehen as instants; an end at or before the begin lies on the next day */
-export const spanneVon = (zeit: ImportZeit): { kommen: number; gehen: number } | null => {
+const spanneVon = (zeit: ImportZeit): { kommen: number; gehen: number } | null => {
   const kommen = eingabeInBerlin(zeit.tag, zeit.beginn);
   const gehen = eingabeInBerlin(
     zeit.ende > zeit.beginn ? zeit.tag : plusTage(zeit.tag, 1),

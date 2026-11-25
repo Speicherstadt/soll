@@ -11,6 +11,7 @@ import { stand, um, ZUORDNUNG } from "./plan-testhilfen.ts";
 const buchung = (id: string, beginn: string, ende: string, zeile = 10): ImportBuchung => ({
   externalId: id,
   zeile,
+  zeit: id.split("/")[0] as string,
   person: "Sandra Kühn",
   tag: "2026-09-01",
   beginn: um(beginn),

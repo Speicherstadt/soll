@@ -50,11 +50,13 @@ export type ImportTaetigkeit = { externalId: string; zeile: number; name: string
 /**
  * A booking of project time the old tool keeps of its own (Kimai's timesheets, S-705): a piece of
  * work of a person from `beginn` to `ende` (UTC milliseconds on whole minutes) on a project and an
- * activity, both named by their ids in the same file; `tag` is the Berlin day of the piece's time
+ * activity, both named by their ids in the same file; `tag` is the Berlin day of the piece's time,
+ * `zeit` the id of that time (ImportZeit), so a time not taken over takes its bookings with it
  */
 export type ImportBuchung = {
   externalId: string;
   zeile: number;
+  zeit: string;
   person: string;
   tag: string;
   beginn: number;

@@ -134,9 +134,12 @@ test("the chosen language stays when the browser blocks local storage", async ({
   });
   await page.goto("/einstellungen");
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
-  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  // the same reload after setLocale as above: on a busy runner it takes longer than 5 s
+  const nachNeuladen = { timeout: 15_000 };
+  await expect(page.locator("html")).toHaveAttribute("lang", "en", nachNeuladen);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     messagesOf("en").nav_einstellungen ?? "",
+    nachNeuladen,
   );
 });

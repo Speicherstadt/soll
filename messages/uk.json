@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "Ким",
   "umzug_liste_neu": "Створено",
   "umzug_datei_laden": "Завантажити оригінальний файл {name}",
-  "stempel_uebernommen": "перенесено з {quelle}"
+  "stempel_uebernommen": "перенесено з {quelle}",
+  "umzug_grund_zuordnung_abweichend": "вже перенесено для іншої особи"
 }

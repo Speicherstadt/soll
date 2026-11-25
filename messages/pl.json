@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "Przez",
   "umzug_liste_neu": "Utworzono",
   "umzug_datei_laden": "Pobierz oryginalny plik {name}",
-  "stempel_uebernommen": "przejęte z {quelle}"
+  "stempel_uebernommen": "przejęte z {quelle}",
+  "umzug_grund_zuordnung_abweichend": "już przejęte dla innej osoby"
 }

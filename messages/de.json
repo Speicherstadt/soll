@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "Von",
   "umzug_liste_neu": "Neu angelegt",
   "umzug_datei_laden": "Originaldatei {name} herunterladen",
-  "stempel_uebernommen": "übernommen aus {quelle}"
+  "stempel_uebernommen": "übernommen aus {quelle}",
+  "umzug_grund_zuordnung_abweichend": "schon für eine andere Person übernommen"
 }

@@ -25,8 +25,8 @@ const stand = (aenderung: Partial<Stand> = {}): Stand => {
     module: { arbeitszeit: true, projektzeit: true },
     mitglieder: new Set(["sandra", "max"]),
     vorhanden: {
-      stempelungen: new Set(),
-      abwesenheiten: new Set(),
+      stempelungen: new Map(),
+      abwesenheiten: new Map(),
       kunden: new Map(),
       projekte: new Set(),
     },
@@ -88,7 +88,7 @@ describe("the plan of a takeover", () => {
       zeit("z-1", "2026-09-01", 420, 900),
       zeit("z-2", "2026-09-02", 420, 900, 0, 3),
     );
-    const vorhanden = { ...stand().vorhanden, stempelungen: new Set(["z-1/kommen"]) };
+    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "sandra"]]) };
     const plan = planen(daten, ZUORDNUNG, null, stand({ vorhanden }));
     expect(plan.zahlen.zeiten).toEqual({ neu: 1, vorhanden: 1, ausgelassen: 0, abgelehnt: 0 });
     expect(plan.stempelungen.map((s) => [s.nutzerId, s.art, s.externId])).toEqual([
@@ -249,7 +249,7 @@ describe("the plan of a takeover", () => {
       zeit("z-2", "2026-09-30", 420, 900, 0, 3),
       zeit("z-3", "2026-10-01", 420, 900, 0, 4),
     );
-    const vorhanden = { ...stand().vorhanden, stempelungen: new Set(["z-1/kommen"]) };
+    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "sandra"]]) };
     const plan = planen(
       daten,
       ZUORDNUNG,
@@ -301,6 +301,17 @@ describe("the plan of a takeover", () => {
     );
     expect(plan.zahlen.zeiten).toMatchObject({ neu: 0, ausgelassen: 1, abgelehnt: 1 });
     expect(plan.zahlen.abwesenheiten.abgelehnt).toBe(1);
+    expect(plan.monate).toEqual([]);
+  });
+
+  it("reports a record taken over for another person and closes no month for the new one", () => {
+    const daten = mitZeiten(zeit("z-1", "2026-09-01", 420, 900));
+    const vorhanden = { ...stand().vorhanden, stempelungen: new Map([["z-1/kommen", "max"]]) };
+    const plan = planen(daten, ZUORDNUNG, "2026-09", stand({ vorhanden }));
+    expect(plan.zahlen.zeiten).toEqual({ neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 1 });
+    expect(plan.abgelehnt).toEqual([
+      { art: "zeiten", zeile: 2, externalId: "z-1", grund: "zuordnung_abweichend" },
+    ]);
     expect(plan.monate).toEqual([]);
   });
 });

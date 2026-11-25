@@ -21,6 +21,12 @@ describe("a second import with another mapping (S-701)", () => {
     );
     // Max has no record in September at all: his September must not be closed as taken over
     expect(probe.monate).not.toContainEqual({ nutzerId: max.nutzerId, monat: "2026-09" });
+    // the records taken over for Sandra are reported with their line, not counted as there
+    expect((probe.abgelehnt as { liste: unknown[] }).liste).toEqual([
+      { art: "zeiten", zeile: 2, externalId: "z-1", grund: "zuordnung_abweichend" },
+      { art: "zeiten", zeile: 3, externalId: "z-2", grund: "zuordnung_abweichend" },
+      { art: "abwesenheiten", zeile: 7, externalId: "a-1", grund: "zuordnung_abweichend" },
+    ]);
     const ergebnis = await uebernehmen(weber, koerper(zuordnung, WEBER_CSV, "2026-09"));
     expect(ergebnis.gesperrt).not.toContainEqual({ nutzerId: max.nutzerId, monat: "2026-09" });
   });

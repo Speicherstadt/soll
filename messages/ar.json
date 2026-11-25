@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "بواسطة",
   "umzug_liste_neu": "تم الإنشاء",
   "umzug_datei_laden": "تنزيل الملف الأصلي {name}",
-  "stempel_uebernommen": "منقول من {quelle}"
+  "stempel_uebernommen": "منقول من {quelle}",
+  "umzug_grund_zuordnung_abweichend": "تم نقله بالفعل لشخص آخر"
 }

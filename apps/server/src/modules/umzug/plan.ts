@@ -57,14 +57,31 @@ const personVon = (
   return null;
 };
 
+/**
+ * A record an earlier import took over: there already, its months still to be closed for its
+ * person; taken over for another person than the mapping names now (`monate` null), it is reported
+ * and closes nothing, so no month is closed for someone without its records
+ */
+const schonDa = (
+  bau: Bau,
+  art: "zeiten" | "abwesenheiten",
+  satz: Satz,
+  monate: readonly Monat[] | null,
+  nutzerId: string,
+) => {
+  if (monate === null) return ablehnen(bau, art, satz, "zuordnung_abweichend");
+  bau.zahlen[art].vorhanden += 1;
+  beruehren(bau, nutzerId, monate);
+};
+
 const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
   const genommen: Genommen = new Map();
   for (const zeit of daten.zeiten) {
     const nutzerId = personVon(bau, "zeiten", zeit, zuordnung, stand);
     if (nutzerId === null) continue;
-    if (stand.vorhanden.stempelungen.has(stempelKennung(zeit.externalId, "kommen"))) {
-      bau.zahlen.zeiten.vorhanden += 1;
-      beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
+    const besitzer = stand.vorhanden.stempelungen.get(stempelKennung(zeit.externalId, "kommen"));
+    if (besitzer !== undefined) {
+      schonDa(bau, "zeiten", zeit, besitzer === nutzerId ? [monatVon(zeit.tag)] : null, nutzerId);
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
@@ -85,9 +102,9 @@ const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung,
     if (art === null) bau.zahlen.abwesenheiten.ausgelassen += 1;
     if (art === null || nutzerId === null) continue;
     const monate = monateZwischen(satz.von, satz.bis);
-    if (stand.vorhanden.abwesenheiten.has(satz.externalId)) {
-      bau.zahlen.abwesenheiten.vorhanden += 1;
-      beruehren(bau, nutzerId, monate);
+    const besitzer = stand.vorhanden.abwesenheiten.get(satz.externalId);
+    if (besitzer !== undefined) {
+      schonDa(bau, "abwesenheiten", satz, besitzer === nutzerId ? monate : null, nutzerId);
       continue;
     }
     const ergebnis = abwesenheitPlanen(satz, { nutzerId, art }, stand, genommen);

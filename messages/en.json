@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "By",
   "umzug_liste_neu": "Created",
   "umzug_datei_laden": "Download original file {name}",
-  "stempel_uebernommen": "taken over from {quelle}"
+  "stempel_uebernommen": "taken over from {quelle}",
+  "umzug_grund_zuordnung_abweichend": "taken over for another person already"
 }

@@ -21,6 +21,7 @@ export const PLAN_GRUENDE = [
   "kunde_unbekannt",
   "projekt_unbekannt",
   "kunde_ausgelassen",
+  "zuordnung_abweichend",
 ] as const;
 export type PlanGrund = (typeof PLAN_GRUENDE)[number];
 
@@ -69,10 +70,11 @@ export type Stand = {
   module: { arbeitszeit: boolean; projektzeit: boolean };
   /** members of the business who may have times and absences */
   mitglieder: ReadonlySet<string>;
-  /** the ids in the old tool that rows of this tool already carry */
+  /** the ids in the old tool that rows of this tool already carry, stamps and absences with the
+   * person whose row it is */
   vorhanden: {
-    stempelungen: ReadonlySet<string>;
-    abwesenheiten: ReadonlySet<string>;
+    stempelungen: ReadonlyMap<string, string>;
+    abwesenheiten: ReadonlyMap<string, string>;
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;

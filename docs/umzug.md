@@ -75,6 +75,9 @@ Abgelehnt werden mit Zeile und Grund:
   § 9 BUrlG);
 - alles, was einen in Soll abgeschlossenen Monat ändern würde (siehe unten);
 - ein Auftrag, dessen Kunde nicht übernommen wird.
+- ein Datensatz, den ein früherer Import schon für eine andere Person übernommen hat, als die
+  Zuordnung jetzt nennt („schon für eine andere Person übernommen“); er schließt auch keinen
+  Monat.
 
 ## Ehrlich geprüft
 

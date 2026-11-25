@@ -1139,5 +1139,6 @@
   "umzug_liste_von": "Yapan",
   "umzug_liste_neu": "Oluşturulan",
   "umzug_datei_laden": "Orijinal dosya {name} indir",
-  "stempel_uebernommen": "{quelle} kaynağından devralındı"
+  "stempel_uebernommen": "{quelle} kaynağından devralındı",
+  "umzug_grund_zuordnung_abweichend": "zaten başka bir kişi için devralındı"
 }

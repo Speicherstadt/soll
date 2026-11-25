@@ -29,23 +29,26 @@ export type UebernommeneAbwesenheit = {
   externId: string;
 };
 
-/** The ids in the old tool that stamps and absences of the business already carry */
+/**
+ * The ids in the old tool that stamps and absences of the business already carry, each with the
+ * person whose row it is
+ */
 export const uebernommeneKennungen = (db: Db, betriebId: string, quelle: string) => ({
-  stempelungen: new Set(
+  stempelungen: new Map(
     db
-      .select({ id: stempelungen.externId })
+      .select({ id: stempelungen.externId, nutzerId: stempelungen.nutzerId })
       .from(stempelungen)
       .where(and(eq(stempelungen.betriebId, betriebId), eq(stempelungen.externQuelle, quelle)))
       .all()
-      .map(({ id }) => id as string),
+      .map(({ id, nutzerId }) => [id as string, nutzerId] as const),
   ),
-  abwesenheiten: new Set(
+  abwesenheiten: new Map(
     db
-      .select({ id: abwesenheiten.externId })
+      .select({ id: abwesenheiten.externId, nutzerId: abwesenheiten.nutzerId })
       .from(abwesenheiten)
       .where(and(eq(abwesenheiten.betriebId, betriebId), eq(abwesenheiten.externQuelle, quelle)))
       .all()
-      .map(({ id }) => id as string),
+      .map(({ id, nutzerId }) => [id as string, nutzerId] as const),
   ),
 });
 

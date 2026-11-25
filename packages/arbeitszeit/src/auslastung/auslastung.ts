@@ -2,6 +2,7 @@ import type { Stempelung } from "../arbeitstag/stempelungen.ts";
 import { tagesstand } from "../heute/tagesstand.ts";
 import { letzterTag, type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
 import type { Tag } from "../kalender/tag.ts";
+import { tagInBerlin } from "../kalender/zeit.ts";
 import { buchungsMinuten } from "../projektzeit/buchung.ts";
 
 /**
@@ -84,8 +85,16 @@ const mitAnteilen = (summe: Summe): Auslastung => ({
 });
 
 /**
+ * The minutes a booking adds to its month: a running one up to now while the month runs, none once
+ * it has ended, so two calls about an ended month give the same numbers (docs/plan.md, "Laufende
+ * Buchung in der Auslastung")
+ */
+const gezaehlteMinuten = (buchung: AuslastungBuchung, monatLaeuft: boolean, jetzt: number) =>
+  buchung.ende === null && !monatLaeuft ? 0 : buchungsMinuten(buchung.beginn, buchung.ende, jetzt);
+
+/**
  * The month of each person with stamped or booked time in it, ordered by id so the order tells
- * nothing: only working days of the month count, a running booking up to now
+ * nothing: only working days of the month count, a running booking up to now while the month runs
  */
 export const auslastungJePerson = (angaben: {
   monat: Monat;
@@ -101,9 +110,10 @@ export const auslastungJePerson = (angaben: {
   };
   for (const { nutzerId, tag, minuten } of angaben.anwesenheit)
     if (monatVon(tag) === angaben.monat) addieren(nutzerId, "anwesendMinuten", minuten);
+  const monatLaeuft = !monatVorbei(angaben.monat, tagInBerlin(angaben.jetzt));
   for (const buchung of angaben.buchungen) {
     if (monatVon(buchung.tag) !== angaben.monat) continue;
-    const minuten = buchungsMinuten(buchung.beginn, buchung.ende, angaben.jetzt);
+    const minuten = gezaehlteMinuten(buchung, monatLaeuft, angaben.jetzt);
     addieren(
       buchung.nutzerId,
       buchung.abrechenbar ? "abrechenbarMinuten" : "internMinuten",

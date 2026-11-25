@@ -117,9 +117,9 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
   };
   /**
    * Text broken into lines that fit `breite` points (the rest of the page by default): at its line
-   * breaks (also U+0085, U+2028, U+2029), at spaces (any blank space counts as one, an invisible
-   * format character such as U+200B is left out), and inside a word only when the word alone is
-   * wider, so nothing is cut off
+   * breaks (also U+0085, U+2028, U+2029), at spaces (any blank space counts as one, a no-break
+   * space such as U+202F stays one, an invisible format character such as U+200B is left out), and
+   * inside a word only when the word alone is wider, so nothing is cut off
    */
   const umbrechen = (inhalt: string, x = 0, optionen: TextOptionen = {}): string[] => {
     const font = optionen.fett ? schrift.fett : schrift.normal;
@@ -129,7 +129,12 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
     };
     return inhalt
       .split(/\r\n|[\r\n\u0085\u2028\u2029]/)
-      .map((teil) => teil.replace(/\s/gu, " ").replace(/\p{Cf}/gu, ""))
+      .map((teil) =>
+        teil
+          .replace(/[\u202f\u2007]/gu, "\u00a0")
+          .replace(/(?!\u00a0)\s/gu, " ")
+          .replace(/\p{Cf}/gu, ""),
+      )
       .flatMap((teil) => absatzUmbrechen(druckbar(font, teil), font, masse));
   };
   /** A paragraph wrapped at the width of the page */

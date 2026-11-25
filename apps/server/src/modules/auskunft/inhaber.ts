@@ -44,6 +44,8 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   // the owner keeps the accounts by hand and gives the notices on leave expiring (konten:pflegen)
   kontoAnpassungen: eigen.kontoAnpassungen,
   urlaubshinweise: eigen.urlaubshinweise,
+  // the owner approves and sees every swap of a shift (plan:planen, S-504)
+  schichttausche: eigen.schichttausche,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

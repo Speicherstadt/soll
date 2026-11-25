@@ -31,6 +31,7 @@ export const PFAD = {
   vorlagen: `${PLAN}/vorlagen`,
   bedarf: `${PLAN}/bedarf`,
   kalender: `${PLAN}/kalender`,
+  tausch: `${PLAN}/tausch`,
   kunden: `${PZ}/kunden`,
   projekte: `${PZ}/projekte`,
   taetigkeiten: `${PZ}/taetigkeiten`,
@@ -52,6 +53,8 @@ export const PFAD = {
   habenKontakte: `${PZ}/haben/kontakte`,
   habenBuchungen: `${PZ}/haben/buchungen`,
   habenUebergabe: `${PZ}/haben/uebergabe`,
+  // imports from other tools, for the owner (S-701)
+  importe: "/api/v1/importe",
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -94,6 +97,7 @@ export const ressourcen = {
   vorlagen: () => einfach(PFAD.vorlagen),
   bedarf: (standortId: string) => mitParametern(PFAD.bedarf, { standortId }),
   kalender: () => einfach(PFAD.kalender),
+  tausch: () => einfach(PFAD.tausch),
   kunden: () => einfach(PFAD.kunden),
   projekte: () => einfach(PFAD.projekte),
   taetigkeiten: () => einfach(PFAD.taetigkeiten),
@@ -118,6 +122,7 @@ export const ressourcen = {
   habenKontakte: () => einfach(PFAD.habenKontakte),
   habenBuchungen: (parameter: { projektId: string; von: string; bis: string }) =>
     mitParametern(PFAD.habenBuchungen, parameter),
+  importe: () => einfach(PFAD.importe),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

@@ -1,9 +1,10 @@
 import type { JSX } from "@solidjs/web";
 import type { Module } from "@soll/arbeitszeit";
-import { Button, cn } from "@soll/ui";
+import { Button } from "@soll/ui";
 import { For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { Kopf } from "../rahmen/karte.tsx";
+import { Schrittfolge } from "../rahmen/schritte.tsx";
 import { HINWEIS_TEXTE } from "./namen.ts";
 import { hinweiseFuer, type Schritt } from "./schritte.ts";
 
@@ -17,30 +18,11 @@ const SCHRITT_NAMEN: Record<Schritt, () => string> = {
 
 /** The steps as in the mockup: numbered pills, the current one marked for screen readers too */
 const SchrittListe = (props: { schritte: Schritt[]; aktuell: number }) => (
-  <ol aria-label={m.einrichtung_schritte()} class="m-0 flex list-none flex-wrap gap-2 p-0">
-    <For each={props.schritte}>
-      {(schritt, index) => (
-        <li
-          aria-current={index() === props.aktuell ? "step" : undefined}
-          class={cn(
-            "flex items-center gap-2 rounded-full border border-border bg-background py-1.5 ps-1.5 pe-3",
-            index() === props.aktuell && "border-foreground font-semibold",
-          )}
-        >
-          <span
-            aria-hidden="true"
-            class={cn(
-              "flex size-5.5 items-center justify-center rounded-full bg-accent text-[12px] text-muted-foreground",
-              index() === props.aktuell && "bg-primary text-primary-foreground",
-            )}
-          >
-            {index() + 1}
-          </span>
-          {SCHRITT_NAMEN[schritt]()}
-        </li>
-      )}
-    </For>
-  </ol>
+  <Schrittfolge
+    namen={props.schritte.map((schritt) => SCHRITT_NAMEN[schritt]())}
+    aktuell={props.aktuell}
+    beschriftung={m.einrichtung_schritte()}
+  />
 );
 
 /** The hints beside the step, by the modules of the business */

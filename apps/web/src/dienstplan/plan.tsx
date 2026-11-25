@@ -10,6 +10,7 @@ import { type OffenerDialog, PlanDialoge } from "./dialoge.tsx";
 import { PlanInhalt } from "./inhalt.tsx";
 import { PlanKopf } from "./kopf.tsx";
 import { ausVorlage, bleibt, PLAN_AENDERT, verschieben } from "./quelle.ts";
+import { TauschBereich } from "./tauschBereich.tsx";
 import type { Standort, Vorlage, Woche, Ziel } from "./typen.ts";
 import { veroeffentlichung } from "./veroeffentlichung.ts";
 import type { Abgelegt } from "./ziehen.ts";
@@ -30,7 +31,8 @@ type Ablage = { was: Abgelegt; ziel: Ziel; standortId: string };
 
 /**
  * The plan of the sites of a business: the week of the site chosen (the first at the start), its
- * templates for whoever plans, the dialogs; read under the page's `<Loading>`
+ * templates for whoever plans, the dialogs, the shift swap (S-504); read under the page's
+ * `<Loading>`
  */
 export const Plan = (props: { standorte: Standort[]; tag?: string | undefined }) => {
   const [standortId, setStandortId] = createSignal(() => props.standorte[0]?.standortId ?? "");
@@ -111,6 +113,10 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
           />
         )}
       </Show>
+      <TauschBereich
+        ich={{ nutzerId: aktuellerBetrieb()?.nutzerId ?? "", planer: istPlaner() }}
+        inhaber={istInhaberHier()}
+      />
       <p class="sr-only" aria-live="polite">
         {ansage()}
       </p>

@@ -90,7 +90,7 @@ SOLL_SECRET_KEY=… SOLL_URL=https://soll.example.de SOLL_DATA_DIR=/var/lib/soll
 | `SOLL_MAIL_VON` | – | Absender, etwa `Soll <soll@example.de>` |
 | `SOLL_PORT` | `8200` | Port im Container |
 | `SOLL_HOST` | `0.0.0.0` | Adresse im Container |
-| `SOLL_DATA_DIR` | `/data` | Datenverzeichnis mit `soll.db` und den Sicherungen unter `backups/` |
+| `SOLL_DATA_DIR` | `/data` | Datenverzeichnis mit `soll.db`, den Sicherungen unter `backups/` und den Originaldateien der Importe unter `dateien/` |
 | `SOLL_WEB_DIR` | `/app/web` | der Build der App; ohne liefert der Server nur die API aus |
 | `SOLL_VERSION` | Tag des Release | Version, die `/health` meldet |
 
@@ -122,7 +122,9 @@ und alte Stände wegräumt; Soll selbst tut das nicht. Ein täglicher Aufruf fü
 15 3 * * * cd /srv/soll && docker compose exec -T soll soll backup
 ```
 
-Die Sicherung enthält die Arbeitszeiten mit allen Gliedern der [Audit-Kette](audit-kette.md). Für
+Die Sicherung enthält die Arbeitszeiten mit allen Gliedern der [Audit-Kette](audit-kette.md). Die
+Originaldateien der [Importe](umzug.md) liegen daneben unter `/data/dateien/` und kommen mit dem
+Backup des Volumes mit; `soll backup` kopiert nur die Datenbank. Für
 Aufzeichnungen nach § 16 Abs. 2 ArbZG und § 17 MiLoG gelten zwei Jahre, für lohnrelevante Unterlagen
 sechs bis acht Jahre (§ 147 AO); so lange sollten auch Sicherungen erreichbar bleiben.
 

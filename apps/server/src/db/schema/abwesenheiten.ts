@@ -1,4 +1,11 @@
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 /* The table of absences (S-401); re-exported by ../schema.ts */
 
@@ -34,9 +41,14 @@ export const abwesenheiten = sqliteTable(
     entschiedenAm: integer("entschieden_am"),
     erstelltVon: text("erstellt_von").notNull(),
     erstelltAm: integer("erstellt_am").notNull(),
+    // S-701: the import it was taken over in, the tool and its id there, once per business
+    importId: text("import_id"),
+    externQuelle: text("extern_quelle"),
+    externId: text("extern_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.abwesenheitId] }),
     index("abwesenheiten_person").on(t.betriebId, t.nutzerId, t.von),
+    uniqueIndex("abwesenheiten_extern").on(t.betriebId, t.externQuelle, t.externId),
   ],
 );

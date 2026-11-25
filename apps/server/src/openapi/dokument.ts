@@ -9,7 +9,7 @@ import { z } from "zod";
 export type Methode = "get" | "post" | "put" | "patch" | "delete";
 
 /** What a route answers with when it succeeds */
-export type Antwortart = "json" | "pdf" | "csv" | "text";
+export type Antwortart = "json" | "pdf" | "csv" | "text" | "datei";
 
 /** One route as the description shows it; `pfad` is written as in Hono (`:name`) */
 export type Operation = {
@@ -28,6 +28,8 @@ const MEDIEN: Record<Antwortart, string> = {
   json: "application/json",
   pdf: "application/pdf",
   csv: "text/csv",
+  // the original file of an import, as it was uploaded (S-701)
+  datei: "application/octet-stream",
   text: "text/plain",
 };
 

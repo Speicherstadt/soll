@@ -509,7 +509,33 @@ Alle Punkte: nach S-306.
   Zeitumstellung mit 7 und 9 Stunden (Test); ein Test je neuem Endpunkt, dass kein Betrieb Daten
   eines anderen sieht oder ändert; Playwright in `desktop` und `@phone`, axe grün in hell und
   dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
-- [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+- [x] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+  Fertig, wenn: ein Mitarbeiter eine eigene veröffentlichte Schicht zum Tausch anbietet, eine
+  Kollegin sie übernimmt und der Planer den Tausch mit den Befunden der Prüfung für die Übernehmende
+  freigibt, wonach die Schicht ihr gehört (Playwright). Dazu: angeboten wird nur eine eigene
+  veröffentlichte Schicht, die noch nicht begonnen hat, an alle, die sie übernehmen können
+  (Mitglieder mit `plan:lesen` und `stempeln`), oder an eine genannte Kollegin; je Schicht ein
+  offenes Angebot; übernehmen kann nur, an wen es gerichtet ist, nie der Anbietende und nicht, wer
+  zur selben Zeit schon eine veröffentlichte Schicht hat; Inhaber und Planer (`plan:planen`) geben
+  frei oder lehnen mit Grund ab (Test je Rolle); hat der Inhaber „Tausch ohne Freigabe“
+  eingestellt, gilt die Übernahme sofort, solange die Prüfung keinen Verstoß findet, sonst wartet
+  sie auf die Freigabe; die Schicht wechselt die Person erst mit der Freigabe, in einer Transaktion
+  mit dem Tausch über die Audit-Kette (Test); vor der Freigabe laufen die Regeln aus S-502 für die
+  Übernehmende, als hätte sie die Schicht (Tests für § 5 ArbZG, JArbSchG beim Auszubildenden Leon,
+  MuSchG), ihre Befunde mit Norm sieht nur, wer freigibt, nie Anbietender und Übernehmende
+  (Art. 9 DSGVO); die Freigabe ist eine neue Mitteilung nach § 12 TzBfG (`veroeffentlicht_am` neu,
+  Entscheidung aus S-503), vor ihr gilt für die Prüfung heute; jeder Schritt benachrichtigt über
+  die Zustellung aus S-503 (Web Push, sonst Mail; Test mit Push- und SMTP-Ersatz) mit dem Tag der
+  Schicht (`plan-<schichtId>`): das Angebot die, an die es geht, die Übernahme den Anbietenden und
+  wer freigibt, Freigabe und Ablehnung beide Seiten, das Zurückziehen die Übernehmende, nie den, der
+  handelt; der ICS-Feed beider Personen folgt der Freigabe (Test); der Anbietende zieht ein Angebot
+  zurück, solange es nicht entschieden ist; ein Angebot läuft ab, wenn die Schicht beginnt, und
+  eine Änderung oder das Entfernen der Schicht durch den Planer macht es hinfällig (Test); ein
+  Entwurf lässt sich nicht anbieten; ein Angebot hat keinen Grund des Anbietenden (keine
+  Gesundheitsdaten, Art. 9 DSGVO); der Tausch steht in der Auskunft (Art. 15 DSGVO) ohne Daten der
+  anderen Person; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
+  ändert, und dass das abgeschaltete Modul abgelehnt wird; Playwright in `desktop` und `@phone`,
+  axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
 
@@ -648,7 +674,7 @@ Wer wechselt, bringt Mitarbeiter, Zeiten, Abwesenheiten, Salden und Projekte mit
 eine reine Funktion in `packages/import`; Datei oder API, Vorschau, Übernahme. S-702 bis S-708 nach
 S-701 und unabhängig voneinander.
 
-- [ ] **S-701 Import-Grundlage** – Ablauf: Tool wählen, Anleitung zum Export, Datei hochladen oder
+- [x] **S-701 Import-Grundlage** – Ablauf: Tool wählen, Anleitung zum Export, Datei hochladen oder
   API-Zugang eingeben, Zuordnung von Personen, Spalten, Projekten und Abwesenheitsarten, Vorschau
   mit Befunden der Prüfregeln, Probelauf, Übernahme. Die Originaldatei wird unter ihrem SHA-256
   aufbewahrt; jeder Eintrag trägt „übernommen aus …“ und die Kennung im alten Tool (`externalId`),
@@ -656,7 +682,59 @@ S-701 und unabhängig voneinander.
   übernommen gesperrt.
   nach: S-306, S-401, S-501, S-601. Fertig, wenn: Fuzzing mit fast-check keine Datei findet, die den
   Parser abstürzen oder hängen lässt, ein Fehler die Zeile nennt und ein wiederholter Import nichts
-  verdoppelt.
+  verdoppelt. Genauer, für die Grundlage (die Formate der Anbieter kommen mit S-702 bis S-707):
+  - **Rahmen in `packages/import`**: ein gemeinsames Modell der übernommenen Daten (Zeiten mit Tag,
+    Beginn, Ende und Pause in ganzen Minuten; Abwesenheiten mit Art, von, bis; Kunden; Aufträge),
+    jeder Datensatz mit seiner Kennung im alten Tool (`externalId`) und seiner Zeile in der Datei; eine
+    Liste der Werkzeuge (Name, Weg „Datei“ oder „API“, Anleitung zum Export, Leser) und ein
+    Referenzformat „Soll-CSV“ (RFC 4180, Trennzeichen erkannt, Kopf auf Deutsch oder Englisch, Daten
+    `2026-09-01` oder `01.09.2026`, Uhrzeiten `7:00`, Pause in Minuten oder `0:30`), mit dem der Ablauf
+    von Anfang bis Ende getestet wird. Fuzzing mit fast-check (beliebiger Text und Zeilen aus gültigen
+    und kaputten Feldern) findet keine Eingabe, bei der der Leser wirft oder länger als 1 s braucht;
+    jeder Fehler nennt Zeile und Grund (unbekannter Typ, Kennung fehlt oder doppelt, Datum, Uhrzeit,
+    Pause, Person fehlt, Anführung nicht geschlossen, zu viele Zeilen); Vorschläge der Zuordnung
+    (Person nach Namen, Abwesenheitsart nach Wort, Spalten nach Kopf) als reine Funktionen mit
+    Vitest.
+  - **Ablauf und Server**: Werkzeug wählen, Anleitung, Datei hochladen, Zuordnung von Spalten,
+    Personen (zu Mitgliedern des Betriebs oder „nicht übernehmen“; Personen legt der Import nicht an),
+    Abwesenheitsarten, Kunden und Aufträgen (neu anlegen, einem vorhandenen zuordnen oder nicht
+    übernehmen), Vorschau mit den Befunden der Prüfregeln je Person (Verstöße der Vergangenheit
+    zeigen, nicht ändern), Probelauf (was neu wäre, was schon da ist und was abgelehnt würde, mit
+    Zeile und Grund, ohne zu schreiben), Übernahme. Der Server liest die Datei selbst mit demselben
+    Leser und prüft die Zuordnung mit Zod; Datei höchstens 5 MiB und 20.000 Datensätze. Nur der
+    Inhaber (`403` für jede andere Rolle); die Routen hängen an keinem Modul, aber Zeiten und
+    Abwesenheiten werden nur bei eingeschalteter Arbeitszeit, Kunden und Aufträge nur bei
+    eingeschalteter Projektzeit übernommen, sonst je Datensatz `modul_aus`.
+  - **Ablage**: die Originaldatei liegt im inhaltsadressierten Speicher (aus `dateispeicher.ts` von
+    gobd-kern kopiert, Quelle im Code) unter ihrem SHA-256 und lässt sich vom Inhaber wieder
+    herunterladen, eine veränderte Datei fällt beim Lesen auf; jede Übernahme ist eine Zeile in
+    `importe` (Werkzeug, SHA-256, Name und Größe der Datei, Zuordnung, Zahlen, wer, wann), nur
+    angefügt. Übernommene Stempelungen (Kommen, Gehen, Pause in der Mitte wie in S-502, Quelle
+    `import`), Abwesenheiten (genehmigt), Kunden und Aufträge tragen den Import, das Werkzeug und die
+    Kennung (`extern_quelle`, `extern_id`, eindeutig je Betrieb); alles über die Audit-Kette und
+    eine neue Migration. Die Liste der Stempelungen zeigt „übernommen aus …“ (Texte in allen sechs
+    Sprachen).
+  - **Wiederholbar**: ein zweiter Import derselben Datei legt nichts an (Probelauf und Übernahme
+    nennen alles „schon da“); auch eine geänderte, entfernte oder schon abgeschlossene übernommene
+    Stempelung kommt nicht wieder. Zeiten, die sich mit vorhandenen oder untereinander
+    überschneiden, eine Uhrzeit, die es wegen der Zeitumstellung nicht gibt, und Abwesenheiten, die
+    sich mit vorhandenen überschneiden, werden mit Zeile und Grund abgelehnt (Test).
+  - **Abgeschlossene Monate**: ein in Soll abgeschlossener Monat nimmt nichts an
+    (`monat_abgeschlossen`, die Sperre aus S-306); was im alten Tool bis zu einem Monat abgeschlossen
+    war („abgeschlossen bis“ in der Zuordnung, vor dem laufenden Monat), schließt Soll nach der
+    Übernahme je Person und Monat mit übernommenen Einträgen ab: eine Zeile in `monatsabschluesse`
+    mit dem Grund „übernommen aus …“ und dem Import, ohne Bestätigung der Person, mit Prüfwert wie
+    jeder Abschluss; danach sperrt der Monat wie jeder andere (Test). Ein abgebrochener Lauf wird
+    durch die Wiederholung vollständig.
+  - **Mandanten und Auskunft**: ein Test je Endpunkt, dass kein Betrieb Importe, Dateien oder
+    Personen eines anderen sieht oder zuordnet; die Auskunft entscheidet über `importe`. Ein
+    API-Zugang wird nicht gespeichert (Entscheidung im Projektplan; der Weg über eine API kommt mit
+    dem ersten Werkzeug, das ihn braucht).
+  - **Oberfläche und Doku**: Seite `/umzug` unter Einstellungen (nur Inhaber) mit den Schritten als
+    Pillen wie in der Einrichtung; Playwright (desktop) geht den Ablauf mit einer Soll-CSV bis zur
+    Übernahme und zeigt, dass der zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in
+    `de` und `en` (Inhaberansicht); Doku `docs/umzug.md`, Zeile im README, Entscheidungen im
+    Projektplan.
 - [ ] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
   Tätigkeit), Datums- und Zahlenformate aus Deutschland, Vorlage zum Herunterladen.
 - [ ] **S-703 Clockodo** – Export-Dateien und REST-API: Mitarbeiter, Zeiten, Abwesenheiten, Kunden,

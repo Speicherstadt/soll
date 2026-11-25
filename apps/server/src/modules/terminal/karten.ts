@@ -86,7 +86,11 @@ export const karteEintragen = (
   });
 };
 
-/** Revokes a card: it stops at once, its keys are deleted, the row keeps the read counter */
+/**
+ * Revokes a card: it stops at once, the row keeps the read counter. Its keys are deleted from the
+ * row and from the stored contents of every link that wrote it (each holds the row with its keys);
+ * the links stay, so the chain still verifies (docs/plan.md, "Schlüssel entzogener Karten").
+ */
 export const karteEntziehen = (
   db: Db,
   schreibDb: SchreibDb,
@@ -95,9 +99,11 @@ export const karteEntziehen = (
 ): boolean => {
   const karte = karteLesen(db, kontext.betriebId, karteId);
   if (!karte || karte.widerrufenAm !== null) return false;
-  schreiben(schreibDb, kontext, (s) =>
-    s.aendern("karten", { karteId }, { widerrufenAm: kontext.jetzt, schluessel: null }),
-  );
+  schreiben(schreibDb, kontext, (s) => {
+    const werte = { widerrufenAm: kontext.jetzt, schluessel: null };
+    if (karte.schluessel !== null) s.inhalteEntfernen("karten", { karteId }, werte);
+    else s.aendern("karten", { karteId }, werte);
+  });
   return true;
 };
 

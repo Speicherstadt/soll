@@ -142,8 +142,11 @@ den Hinweis drei Monate vor dem Verfall:
 | kein Hinweis | ab 1.1.2027 Hinweis „Hinweis auf Verfall fehlt“; der Urlaub verfällt nicht und verjährt nicht (BAG, 20.12.2022, 9 AZR 266/20) |
 
 Ein Hinweis nennt allen Urlaub, der an seinem Tag offen ist; er gilt für jedes Jahr ab seinem
-eigenen. Verfallen kann nur, was ein Hinweis genannt hat: kommt danach Urlaub eines Jahres dazu,
-etwa durch eine Korrektur, bleibt dieser Teil, bis ein neuer Hinweis ihn nennt. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
+eigenen. Verfallen kann nur, was der letzte Hinweis mit diesem Tag des Verfalls genannt hat und
+noch offen ist: Urlaub, der danach genommen wurde, zählt ab; kommt danach Urlaub eines Jahres
+dazu, etwa durch eine Korrektur, bleibt dieser Teil, bis ein neuer Hinweis ihn nennt. Kommt der
+neue Hinweis nach der Frist, nennt er den 31. März nach seinem eigenen Jahr, nie einen Tag, der
+schon vorbei ist. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
 
 ## Salden zum Stichtag
 

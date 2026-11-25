@@ -934,8 +934,13 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
   verlangt den Hinweis drei Monate vor dem Verfall, also bis 31. Dezember (beim übertragenen
   Teilurlaub bis 30. September des Folgejahres); ein späterer Hinweis lässt den Urlaub erst mit dem
   31. März nach dem Jahr des Hinweises verfallen, ohne Hinweis verfällt er nicht (BAG, 20.12.2022,
-  9 AZR 266/20). Es verfällt nur, was ein Hinweis bis zum Tag des Verfalls für das Jahr nannte;
-  Urlaub, der danach dazukam (etwa durch eine Korrektur), bleibt, bis ein Hinweis ihn nennt.
+  9 AZR 266/20). Es verfällt nur, was der letzte Hinweis mit diesem Tag des Verfalls für das Jahr
+  nannte, abzüglich des Urlaubs, der danach aus diesem Jahr genommen wurde; Urlaub, der danach
+  dazukam (etwa durch eine Korrektur), bleibt, bis ein Hinweis ihn nennt. Ein Hinweis nach der
+  Frist (nach dem 31. Dezember, beim übertragenen Teilurlaub nach dem 30. September des
+  Folgejahres) nennt nie einen vergangenen Tag: Der Urlaub tritt zum Urlaub des Jahres, in dem der
+  Hinweis kommt, und verfällt mit Ablauf des 31. März danach (BAG, 19.02.2019, 9 AZR 423/16;
+  Soll gewährt die Übertragung immer).
   Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
 - **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
   übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
@@ -962,6 +967,9 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Hinweis fällig | Resturlaub 2026, noch kein Hinweis, Stand 20.11.2026 | Hinweis „Hinweis auf Verfall fällig bis 31.12.2026“ | docs/plan.md, „Verfall von Urlaub“ |
 | Teilurlaub übertragen | Eintritt 1.8.2026, 8,5 Tage, Übertragung verlangt, Hinweis am 1.9.2026 | verfällt mit Ablauf des 31.12.2027 | § 7 Abs. 3 Satz 4 BUrlG |
 | Hinweis nennt weniger | Resturlaub 2026 3 Tage, der Hinweis am 1.10.2026 nannte 2 (ein Tag kam danach durch eine Korrektur dazu), Stand 1.4.2027 | 2 Tage verfallen, 1 Tag bleibt mit „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 (der Hinweis muss den Urlaub konkret nennen) |
+| genommen nach dem Hinweis | Hinweis am 1.10.2026 nennt 3 Tage aus 2026, 1 Tag genommen am 2.11.2026, danach 1 Tag durch Korrektur dazu, Stand 1.4.2027 | 2 Tage verfallen (genannt und noch offen), 1 Tag bleibt | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 |
+| zwei Hinweise | wie oben, ein zweiter Hinweis am 1.12.2026 nennt 2 Tage | der letzte Hinweis gilt: 2 Tage verfallen, 1 Tag bleibt | BAG, 19.02.2019, 9 AZR 541/15 |
+| Hinweis nach dem Verfall | wie „Hinweis nennt weniger“, am 3.5.2027 nennt ein neuer Hinweis den übrigen Tag | er nennt den Verfall mit Ablauf des 31.3.2028 (nicht den vergangenen 31.3.2027); am 1.4.2028 ist auch dieser Tag verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).

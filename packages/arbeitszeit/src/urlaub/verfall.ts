@@ -1,5 +1,6 @@
 import type { Befund } from "../befund.ts";
 import { istTag, jahrVon, type Tag } from "../kalender/tag.ts";
+import { type Ablaufstand, ablaufen } from "./ablauf.ts";
 import type { Halbtage } from "./halbtage.ts";
 
 /**
@@ -100,20 +101,6 @@ const fristen = (jahr: Urlaubsjahr): { verfallstag: Tag; hinweisBis: Tag } =>
         hinweisBis: `${jahrText(jahr.jahr)}-12-31`,
       };
 
-/**
- * When the leave of a year expires, given its first notice: in time, on its day; later, the leave
- * joins the leave of the year of the notice and expires with it (BAG, 19.02.2019, 9 AZR 423/16);
- * without a notice never (BAG, 20.12.2022, 9 AZR 266/20: nor does it become time-barred)
- */
-const verfaelltAm = (
-  fristenDesJahres: ReturnType<typeof fristen>,
-  hinweis: Tag | null,
-): Tag | null => {
-  if (hinweis === null) return null;
-  if (hinweis <= fristenDesJahres.hinweisBis) return fristenDesJahres.verfallstag;
-  return `${jahrText(jahrVon(hinweis) + 1)}-03-31`;
-};
-
 const ganz = (zahl: number, ab: number): boolean => Number.isSafeInteger(zahl) && zahl >= ab;
 
 const gueltig = (e: UrlaubskontoEingaben): boolean =>
@@ -128,7 +115,6 @@ const gueltig = (e: UrlaubskontoEingaben): boolean =>
 
 /** One pot of leave per year, with the adjustments by hand and the notice that names it */
 const toepfeAus = (e: UrlaubskontoEingaben): Urlaubstopf[] => {
-  const hinweise = (e.hinweise ?? []).filter((tag) => tag <= e.heute).sort();
   const jahre = new Map(e.jahre.map((j) => [j.jahr, j] as const));
   for (const { jahr } of [
     ...(e.anpassungen ?? []),
@@ -139,7 +125,6 @@ const toepfeAus = (e: UrlaubskontoEingaben): Urlaubstopf[] => {
     .sort((a, b) => a.jahr - b.jahr)
     .map((jahr) => {
       const frist = fristen(jahr);
-      const hinweis = hinweise.find((tag) => jahrVon(tag) >= jahr.jahr) ?? null;
       const angepasst = (e.anpassungen ?? [])
         .filter((a) => a.jahr === jahr.jahr)
         .reduce((summe, a) => summe + a.halbtage, jahr.anspruchHalbtage);
@@ -150,35 +135,11 @@ const toepfeAus = (e: UrlaubskontoEingaben): Urlaubstopf[] => {
         verfallenHalbtage: 0,
         restHalbtage: angepasst,
         ...frist,
-        hinweis,
-        verfaelltAm: verfaelltAm(frist, hinweis),
+        // set with the notices by `ablaufen`
+        hinweis: null,
+        verfaelltAm: null,
       };
     });
-};
-
-const verfuegbarAm = (topf: Urlaubstopf, tag: Tag): boolean =>
-  topf.jahr <= jahrVon(tag) && (topf.verfaelltAm === null || tag <= topf.verfaelltAm);
-
-/**
- * Takes leave off the pots, the oldest first: it expires first, so the person keeps the most
- * (docs/plan.md, "Verfall von Urlaub"). More leave than open is charged to its own year.
- */
-const abbuchen = (toepfe: Urlaubstopf[], genommen: readonly GenommenerUrlaub[]): void => {
-  for (const eintrag of [...genommen].sort((a, b) => a.tag.localeCompare(b.tag))) {
-    let offen = eintrag.halbtage;
-    for (const topf of toepfe) {
-      if (offen === 0 || !verfuegbarAm(topf, eintrag.tag) || topf.restHalbtage <= 0) continue;
-      const teil = Math.min(offen, topf.restHalbtage);
-      topf.restHalbtage -= teil;
-      topf.genommenHalbtage += teil;
-      offen -= teil;
-    }
-    const eigener = toepfe.find((topf) => topf.jahr === jahrVon(eintrag.tag));
-    if (offen > 0 && eigener !== undefined) {
-      eigener.restHalbtage -= offen;
-      eigener.genommenHalbtage += offen;
-    }
-  }
 };
 
 const befund = (
@@ -196,56 +157,42 @@ const befund = (
   halbtage: art === "verfallen" ? topf.verfallenHalbtage : topf.restHalbtage,
 });
 
-/**
- * The most half days of a year any notice up to `bis` named (EuGH C-684/16: only leave the person
- * was told of expires); all of it when the inputs carry no named amounts
- */
-const benanntBis = (e: UrlaubskontoEingaben, jahr: number, bis: Tag): number =>
-  e.benannt === undefined
-    ? Number.MAX_SAFE_INTEGER
-    : Math.max(
-        0,
-        ...e.benannt
-          .filter((h) => h.tag <= bis)
-          .flatMap((h) => h.posten.filter((p) => p.jahr === jahr).map((p) => p.halbtage)),
-      );
-
-const befundeFuer = (topf: Urlaubstopf, heute: Tag, teilurlaub: boolean): VerfallBefund[] => {
-  if (topf.verfallenHalbtage > 0)
-    return [
-      befund(topf, "verfallen", topf.verfaelltAm as Tag, teilurlaub),
-      // leave no notice named stays, and its notice is still missing (review S-708)
-      ...(topf.restHalbtage > 0
-        ? [befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub)]
-        : []),
-    ];
-  if (topf.restHalbtage <= 0) return [];
-  if (topf.verfaelltAm !== null)
-    return [befund(topf, "verfall_droht", topf.verfaelltAm, teilurlaub)];
-  return heute <= topf.hinweisBis
-    ? [befund(topf, "hinweis_faellig", topf.hinweisBis, teilurlaub)]
-    : [befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub)];
+const befundeFuer = (
+  topf: Urlaubstopf,
+  stand: Ablaufstand | undefined,
+  heute: Tag,
+  teilurlaub: boolean,
+): VerfallBefund[] => {
+  const vorbei =
+    topf.verfallenHalbtage > 0 && stand?.verfallenAm
+      ? [befund(topf, "verfallen", stand.verfallenAm, teilurlaub)]
+      : [];
+  if (topf.restHalbtage <= 0) return vorbei;
+  // what is still open: a notice lets it expire, or the notice is due or missing (review S-708)
+  if (stand?.naechster)
+    return [...vorbei, befund(topf, "verfall_droht", stand.naechster, teilurlaub)];
+  return [
+    ...vorbei,
+    heute <= topf.hinweisBis
+      ? befund(topf, "hinweis_faellig", topf.hinweisBis, teilurlaub)
+      : befund(topf, "hinweis_fehlt", topf.verfallstag, teilurlaub),
+  ];
 };
 
 /**
  * The leave account on a day (BAULISTE.md S-208, docs/regeln.md R-23): the leave of each year less
  * what was taken, carried over and expiring by § 7 Abs. 3 BUrlG only after the business told the
- * person in time (EuGH C-684/16 Max-Planck; BAG, 19.02.2019, 9 AZR 423/16). Computed, not stored
- * (docs/plan.md, "Konten").
+ * person in time, and only as far as the notice named it (EuGH C-684/16 Max-Planck; BAG,
+ * 19.02.2019, 9 AZR 423/16 and 9 AZR 541/15). Computed, not stored (docs/plan.md, "Konten").
  */
 export const urlaubskonto = (e: UrlaubskontoEingaben): UrlaubskontoErgebnis => {
   if (!gueltig(e)) return { ok: false, grund: "ungueltig" };
   const toepfe = toepfeAus(e);
-  abbuchen(
-    toepfe,
-    e.genommen.filter((g) => g.tag <= e.heute),
-  );
-  for (const topf of toepfe)
-    if (topf.verfaelltAm !== null && e.heute > topf.verfaelltAm && topf.restHalbtage > 0) {
-      const teil = Math.min(topf.restHalbtage, benanntBis(e, topf.jahr, topf.verfaelltAm));
-      topf.verfallenHalbtage = teil;
-      topf.restHalbtage -= teil;
-    }
+  const staende = ablaufen(e, toepfe);
+  for (const topf of toepfe) {
+    const stand = staende.get(topf.jahr);
+    topf.verfaelltAm = stand?.naechster ?? stand?.zuletzt ?? null;
+  }
   const teilurlaub = (jahr: number) =>
     e.jahre.some((j) => j.jahr === jahr && uebertragenBisJahresende(j));
   return {
@@ -253,7 +200,9 @@ export const urlaubskonto = (e: UrlaubskontoEingaben): UrlaubskontoErgebnis => {
     wert: {
       toepfe,
       restHalbtage: toepfe.reduce((summe, topf) => summe + topf.restHalbtage, 0),
-      befunde: toepfe.flatMap((topf) => befundeFuer(topf, e.heute, teilurlaub(topf.jahr))),
+      befunde: toepfe.flatMap((topf) =>
+        befundeFuer(topf, staende.get(topf.jahr), e.heute, teilurlaub(topf.jahr)),
+      ),
     },
   };
 };

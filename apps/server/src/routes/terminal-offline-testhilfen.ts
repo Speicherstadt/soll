@@ -1,5 +1,6 @@
 import {
   ausweisVerschluesseln,
+  ausweisZusatz,
   base64url,
   type Stempelart,
   terminalNachricht,
@@ -48,7 +49,12 @@ export const offlineTablet = async (geraet: Geraet, paar?: CryptoKeyPair) => {
         crypto.subtle,
         server,
         JSON.stringify(angaben.ausweis),
-        angaben.fuer ?? geraet.terminalId,
+        ausweisZusatz({
+          terminalId: angaben.fuer ?? geraet.terminalId,
+          nummer: angaben.nummer,
+          art: angaben.art ?? "kommen",
+          geraetZeitpunkt,
+        }),
       ),
     };
     const signatur = await crypto.subtle.sign(

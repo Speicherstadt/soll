@@ -54,6 +54,7 @@ export {
   AUSWEIS_LAENGE,
   AUSWEIS_ZWECK,
   ausweisVerschluesseln,
+  ausweisZusatz,
   base64url,
   NONCE_BYTES,
   PUNKT_BYTES,

@@ -32,6 +32,24 @@ export const terminalNachricht = (eintrag: Terminaleintrag): string =>
     eintrag.ausweis,
   ]);
 
+/** The parts of an entry its credential is bound to: everything the tablet signs but the credential */
+export type AusweisBindung = Omit<Terminaleintrag, "ausweis">;
+
+/**
+ * The additional data of a credential's encryption: terminal, number, kind and time of its own
+ * entry. The credential opens only inside the entry it was typed for, whose number the server takes
+ * once; whoever holds the tablet and its signing key cannot put a queued credential into a new entry
+ * (review of S-803)
+ */
+export const ausweisZusatz = (bindung: AusweisBindung): string =>
+  JSON.stringify([
+    "soll/terminal-ausweis/1",
+    bindung.terminalId,
+    bindung.nummer,
+    bindung.art,
+    bindung.geraetZeitpunkt,
+  ]);
+
 /**
  * The length every credential is padded to before it is encrypted: the longest (a QR value of 200
  * characters in JSON) fits, and the length of the cipher text tells neither the kind of credential
@@ -57,7 +75,7 @@ export const base64url = (bytes: Uint8Array): string =>
 /**
  * Encrypts a credential to the server's public key (ECIES): a fresh ECDH key pair on P-256 per
  * entry, HKDF-SHA-256 over the shared secret with the fresh public key as salt, AES-256-GCM with
- * `zusatz` (the terminal) as additional data. The result is base64url of the fresh public key, the
+ * `zusatz` (`ausweisZusatz` of its entry) as additional data. The result is base64url of the fresh public key, the
  * nonce and the cipher text with its tag. Only the server's private key opens it, so a tablet that
  * is stolen or read out holds no PIN in the clear (docs/plan.md, "Ausweis in der Warteschlange").
  */

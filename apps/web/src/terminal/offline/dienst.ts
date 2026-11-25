@@ -1,5 +1,6 @@
 import {
   ausweisVerschluesseln,
+  ausweisZusatz,
   base64url,
   type Stempelart,
   terminalNachricht,
@@ -113,16 +114,14 @@ export const kioskSchlange = (abh: KioskAbhaengigkeiten) => {
     return abh.sperre(async (): Promise<KioskEintrag | null> => {
       const geraet = await abh.ablage.geraet(terminalId);
       if (!geraet?.server || geraet.angemeldet === "vergeben") return null;
+      const bindung = { terminalId, nummer: geraet.letzteNummer + 1, art, geraetZeitpunkt };
       const ohne = {
-        terminalId,
-        nummer: geraet.letzteNummer + 1,
-        art,
-        geraetZeitpunkt,
+        ...bindung,
         ausweis: await ausweisVerschluesseln(
           abh.subtle,
           geraet.server,
           JSON.stringify(ausweis),
-          terminalId,
+          ausweisZusatz(bindung),
         ),
       };
       const signatur = await abh.subtle.sign(

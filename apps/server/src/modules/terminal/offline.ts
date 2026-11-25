@@ -1,4 +1,9 @@
-import { nummernLuecken, type Stempelart, terminalNachricht } from "@soll/arbeitszeit";
+import {
+  ausweisZusatz,
+  nummernLuecken,
+  type Stempelart,
+  terminalNachricht,
+} from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { terminalEintraege } from "../../db/schema.ts";
@@ -162,7 +167,7 @@ export const offlineEintragAnnehmen = async (
   const klartext = ausweisOeffnen(
     abh.schluessel.ausweis.privat,
     eingabe.ausweis,
-    terminal.terminalId,
+    ausweisZusatz({ terminalId: terminal.terminalId, ...eingabe }),
   );
   const ausweis = klartext === null ? null : abh.ausweisAus(klartext);
   if (!ausweis) return ablehnen("ausweis_unlesbar");

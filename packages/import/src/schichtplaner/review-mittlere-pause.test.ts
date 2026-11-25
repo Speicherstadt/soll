@@ -1,6 +1,5 @@
+import { arbeitstage, ruhepausen, type Stempelung } from "@soll/arbeitszeit";
 import { describe, expect, it } from "vitest";
-import { tage } from "../../../arbeitszeit/src/arbeitstag/testhilfen.ts";
-import { ruhepausen } from "../../../arbeitszeit/src/pruefung/ruhepausen.ts";
 import { schichtplanerAbzugText, schichtplanerLesen } from "./index.ts";
 import { papershiftAbzug } from "./papershift.ts";
 
@@ -10,6 +9,13 @@ import { papershiftAbzug } from "./papershift.ts";
  * must not lose a minute of that break, or § 4 Satz 1 ArbZG (30 min after more than 6 hours)
  * reports a break the employee took as too short.
  */
+/** The working days of stamps, as the tests of packages/arbeitszeit build them (testhilfen.ts) */
+const tage = (stempel: Stempelung[]) => {
+  const ergebnis = arbeitstage(stempel, Date.parse("2030-01-01T00:00:00Z"));
+  if (!ergebnis.ok) throw new Error(ergebnis.grund);
+  return ergebnis.wert;
+};
+
 const leer = { users: [{ id: 1, name: "Tom Becker" }], absenceTypes: [], absences: [] };
 
 describe("review: Papershift break_duration in the middle", () => {

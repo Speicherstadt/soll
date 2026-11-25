@@ -116,20 +116,27 @@ const arbeitstageVon = (teile: readonly Teil[], vorhanden: readonly Stempelung[]
 };
 
 /**
- * The spans of one working day are decided together: whether a month is closed is asked once, for
- * the month of that day and for all their stamps, so a shift is never taken by halves
+ * The spans of one working day are decided together: whether they change a closed month is asked
+ * once, by Soll's own rule for a change by hand (`stempelGesperrt`, abschluss.ts
+ * `aenderungGesperrt`), for all their stamps with those the run already takes on earlier days
+ * (`genommen`), so a shift is never taken by halves, two days that each alone leave a closed month
+ * as it was cannot change it together, and the import refuses what Soll would refuse by hand and
+ * nothing more (CLAUDE.md: never change a closed month; GoBD Rz. 107 ff.; review S-704 round 5)
  */
 const tagPlanen = (
   tag: Tag,
   teile: readonly Teil[],
   nutzerId: string,
   stand: Stand,
+  genommen: readonly Stempelung[],
 ): Zeitplan[] => {
   const monat = monatVon(tag);
   // the stamps around are read only when the person has a closed month at all
   const geschlossen = stand.geschlossen(nutzerId);
-  const alle = teile.flatMap((t) => t.stempel).sort((a, b) => a.zeitpunkt - b.zeitpunkt);
-  if (geschlossen.has(monat) || (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle)))
+  const alle = [...genommen, ...teile.flatMap((t) => t.stempel)].sort(
+    (a, b) => a.zeitpunkt - b.zeitpunkt,
+  );
+  if (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle))
     return teile.map(() => "monat_abgeschlossen");
   return teile.map((teil) => ({
     monat,
@@ -173,12 +180,19 @@ export const zeitenEinerPerson = (
     else plaene.set(zeit, grund);
   }
   const genommeneSpannen = [...bisher];
-  for (const [tag, teile] of arbeitstageVon(bleiben, stand.stempelVon(nutzerId))) {
-    const ergebnisse = tagPlanen(tag, teile, nutzerId, stand);
+  const genommeneStempel: Stempelung[] = [];
+  // in the order of the days, each checked against the database and what the run took before it
+  const tage = [...arbeitstageVon(bleiben, stand.stempelVon(nutzerId))].sort(([a], [b]) =>
+    a < b ? -1 : a > b ? 1 : 0,
+  );
+  for (const [tag, teile] of tage) {
+    const ergebnisse = tagPlanen(tag, teile, nutzerId, stand, genommeneStempel);
     teile.forEach((teil, i) => {
       const plan = ergebnisse[i] as Zeitplan;
       plaene.set(teil.zeit, plan);
-      if (typeof plan !== "string") genommeneSpannen.push(teil.spanne);
+      if (typeof plan === "string") return;
+      genommeneSpannen.push(teil.spanne);
+      genommeneStempel.push(...teil.stempel);
     });
   }
   genommen.set(nutzerId, genommeneSpannen);

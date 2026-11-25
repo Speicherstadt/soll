@@ -940,7 +940,9 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
   Frist (nach dem 31. Dezember, beim übertragenen Teilurlaub nach dem 30. September des
   Folgejahres) nennt nie einen vergangenen Tag: Der Urlaub tritt zum Urlaub des Jahres, in dem der
   Hinweis kommt, und verfällt mit Ablauf des 31. März danach (BAG, 19.02.2019, 9 AZR 423/16;
-  Soll gewährt die Übertragung immer).
+  Soll gewährt die Übertragung immer). Vor dem Verfall nennt Soll jeden Teil, den ein Hinweis
+  verfallen lässt, mit seinem eigenen Tag („Verfall droht“), und als „Hinweis fällig“ oder „fehlt“
+  genau den Teil, den kein Hinweis verfallen lässt.
   Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
 - **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
   übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
@@ -970,6 +972,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | genommen nach dem Hinweis | Hinweis am 1.10.2026 nennt 3 Tage aus 2026, 1 Tag genommen am 2.11.2026, danach 1 Tag durch Korrektur dazu | am 1.12.2026 „Verfall droht“ für 2 Tage bis 31.3.2027 und „Hinweis auf Verfall fällig bis 31.12.2026“ für den einen Tag, den kein Hinweis nennt; am 1.4.2027 sind 2 Tage verfallen (genannt und noch offen), 1 Tag bleibt mit „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 |
 | zwei Hinweise | wie oben, ein zweiter Hinweis am 1.12.2026 nennt 2 Tage | der letzte Hinweis gilt: 2 Tage verfallen, 1 Tag bleibt | BAG, 19.02.2019, 9 AZR 541/15 |
 | Hinweis nach dem Verfall | wie „Hinweis nennt weniger“, am 3.5.2027 nennt ein neuer Hinweis den übrigen Tag | er nennt den Verfall mit Ablauf des 31.3.2028 (nicht den vergangenen 31.3.2027); am 1.4.2028 ist auch dieser Tag verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
+| zwei Fristen | 2025 10 Tage, Hinweis am 1.10.2025 nennt 10, danach 5 Tage durch Korrektur dazu, ein später Hinweis am 2.2.2026 nennt 15, Stand 2.3.2026 | „Verfall droht“ für 10 Tage bis 31.3.2026 und für 5 Tage bis 31.3.2027, kein „Hinweis fehlt“; am 1.4.2027 sind alle 15 verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).

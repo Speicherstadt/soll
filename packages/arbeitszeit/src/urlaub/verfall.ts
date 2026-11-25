@@ -171,9 +171,11 @@ const befundeFuer = (
   const befunde: VerfallBefund[] = [];
   if (topf.verfallenHalbtage > 0 && stand?.verfallenAm)
     befunde.push(befund(topf, "verfallen", stand.verfallenAm, teilurlaub, topf.verfallenHalbtage));
-  const droht = stand?.naechster ? Math.max(0, Math.min(stand.droht, topf.restHalbtage)) : 0;
-  if (droht > 0 && stand?.naechster)
-    befunde.push(befund(topf, "verfall_droht", stand.naechster, teilurlaub, droht));
+  // each part a notice lets expire, on its own day; the rest no notice names needs one
+  const drohend = stand?.drohend ?? [];
+  for (const teil of drohend)
+    befunde.push(befund(topf, "verfall_droht", teil.tag, teilurlaub, teil.halbtage));
+  const droht = drohend.reduce((summe, teil) => summe + teil.halbtage, 0);
   const ungenannt = topf.restHalbtage - droht;
   if (ungenannt > 0)
     befunde.push(

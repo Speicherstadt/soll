@@ -129,7 +129,9 @@ describe("review r3: invariants over random inputs", () => {
       const genommen = e.genommen.filter((g) => g.tag <= e.heute);
       const w = rechne({ ...e, genommen });
       for (const b of w.befunde.filter((x) => x.art === "verfall_droht")) {
-        const vorher = w.toepfe.find((t) => t.jahr === b.jahr)?.verfallenHalbtage ?? 0;
+        // each part names its own day (review r4): compare the end of that day with its start
+        const amTag = rechne({ ...e, genommen, heute: b.tage[0] as Tag });
+        const vorher = amTag.toepfe.find((t) => t.jahr === b.jahr)?.verfallenHalbtage ?? 0;
         const danach = rechne({ ...e, genommen, heute: plusTage(b.tage[0] as Tag, 1) });
         const nachher = danach.toepfe.find((t) => t.jahr === b.jahr)?.verfallenHalbtage ?? 0;
         if (nachher - vorher !== b.halbtage)

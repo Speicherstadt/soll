@@ -57,8 +57,11 @@ export type Ablaufstand = {
   naechster: Tag | null;
   /** the last such day that passed, whether leave expired then or not */
   zuletzt: Tag | null;
-  /** the half days that expire at the end of `naechster` if nothing else changes (review S-708) */
-  droht: number;
+  /**
+   * every day still to come at whose end leave of the pot expires if nothing else changes, with
+   * the half days then: the same day-by-day expiry run on to the last such day (review S-708)
+   */
+  drohend: { tag: Tag; halbtage: number }[];
 };
 
 type Lauf = {
@@ -106,6 +109,20 @@ const bis = (laeufe: readonly Lauf[], tag: Tag) => {
       verfallen(lauf, ablauf);
       lauf.zuletzt = ablauf;
     }
+};
+
+/**
+ * What would expire on each day still to come, if nothing else changes: the same expiry run on a
+ * copy of the pot, so the findings and the expiry agree by construction
+ */
+const vorausrechnen = (lauf: Lauf): { tag: Tag; halbtage: number }[] => {
+  const kopie: Lauf = { ...lauf, topf: { ...lauf.topf }, offen: [...lauf.offen] };
+  return lauf.offen.flatMap((ablauf) => {
+    const vorher = kopie.topf.verfallenHalbtage;
+    verfallen(kopie, ablauf);
+    const halbtage = kopie.topf.verfallenHalbtage - vorher;
+    return halbtage > 0 ? [{ tag: ablauf, halbtage }] : [];
+  });
 };
 
 /**
@@ -166,7 +183,7 @@ export const ablaufen = (
         verfallenAm: lauf.verfallenAm,
         naechster: lauf.offen[0] ?? null,
         zuletzt: lauf.zuletzt,
-        droht: lauf.offen[0] === undefined ? 0 : faellig(lauf, lauf.offen[0]),
+        drohend: vorausrechnen(lauf),
       },
     ]),
   );

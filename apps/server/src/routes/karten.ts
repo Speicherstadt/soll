@@ -23,6 +23,12 @@ const uid = z
     return normal ?? "";
   });
 
+/**
+ * The UID of an NTAG 424 DNA: always 7 bytes, the only length its SUN message mirrors (PICCDataTag
+ * C7, NXP AN12196 section 3.4, sun.ts); with another one it could never be recognised
+ */
+const ntagUid = uid.refine((wert) => wert.length === 14, { message: "uid" });
+
 /** An AES-128 key as 32 hex digits; the factory key of zeros is no key, anyone knows it */
 const aesSchluessel = z
   .string()
@@ -36,7 +42,7 @@ export const karteSchema = z.discriminatedUnion("art", [
     .object({
       nutzerId: z.string().min(1),
       art: z.literal("ntag424"),
-      uid,
+      uid: ntagUid,
       meta: aesSchluessel,
       datei: aesSchluessel,
     })

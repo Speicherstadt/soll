@@ -4,7 +4,7 @@ import type { Db } from "../../db/oeffnen.ts";
 import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch, sha256 } from "../audit/hash.ts";
 import { formatPruefwert, parsePruefwert, pruefwertPruefen } from "../audit/index.ts";
-import { aufbewahrungsjahre, aussonderbarAb } from "./aufbewahrung.ts";
+import { type Aufbewahrungsjahre, aufbewahrungsjahre, aussonderbarAb } from "./aufbewahrung.ts";
 import { aufzeichnungenJetzt, gegeneintraegeVon } from "./monat.ts";
 import { abweichendeTage, type Gegeneintrag, type Monatsinhalt } from "./monatsinhalt.ts";
 import { lohnmodelle } from "./zuordnungen.ts";
@@ -80,7 +80,7 @@ const aussonderungVon = (db: Db, betriebId: string, abschlussId: string, abschlu
   // the least the month's own days ask for: counter-entries booked in it can only raise it (to 8),
   // and their days went with the month, so the stored years count when they are not fewer
   const mindestens = aufbewahrungsjahre(lohnmodelle(db, betriebId, zeile.nutzerId), zeile.monat);
-  const jahre = zeile.jahre >= mindestens ? zeile.jahre : mindestens;
+  const jahre: Aufbewahrungsjahre = zeile.jahre === 8 || mindestens === 8 ? 8 : 2;
   const echt =
     glied?.aktion === "einfuegen" &&
     sha256(kanonisch(zeile)) === glied.inhaltHash &&

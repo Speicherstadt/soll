@@ -27,6 +27,9 @@ const FREIGEGEBEN = [
   "schichten",
   // the swaps of the person's shifts, which the owner approves (S-504)
   "schichttausche",
+  // the Rufbereitschaft in the plan and its call-outs, which owner and planner see (S-505)
+  "rufdienste",
+  "einsaetze",
   "stundensaetze",
   "projektzeiten",
   "personalnummer",

@@ -10,17 +10,26 @@ import type { Abwesenheit, Beschaeftigung, Modellabschnitt } from "./typen.ts";
 /** R-24: sickness on a leave day without a certificate; the day counts as leave */
 export type KrankImUrlaubBefund = Befund<"bescheinigung_fehlt">;
 
-/** What the Soll of a day needs: the person's models, the place for holidays, the employment */
+/**
+ * What the Soll of a day needs: the person's models, the place for holidays, the employment, and
+ * the days whose Soll comes from the published plan with their planned minutes (S-505, `planSoll`)
+ */
 export type SollGrundlagen = {
   modelle: readonly Modellabschnitt[];
   standort: Standort;
   beschaeftigung: Beschaeftigung;
+  plan?: ReadonlyMap<Tag, number>;
 };
 
 export type TagesSoll = {
   tag: Tag;
-  /** the model's minutes for the weekday; 0 outside the employment and while it rests */
+  /**
+   * the model's minutes for the weekday, or on a day of the plan its planned minutes; 0 outside
+   * the employment and while it rests
+   */
   modellMinuten: number;
+  /** true on a day whose Soll comes from the published plan (S-505) */
+  ausPlan?: true;
   /** the holiday at the place, looked up only on a day with model minutes */
   feiertag: Feiertag | null;
   /** the model's minutes a holiday takes (§ 2 Abs. 1 EntgFG), e.g. for § 4 Abs. 4 Satz 2 JArbSchG */
@@ -48,6 +57,8 @@ const beschaeftigtAm = (beschaeftigung: Beschaeftigung, tag: Tag): boolean =>
 /** The model's minutes of a day, 0 outside the employment, null without a model ("nicht hinterlegt") */
 const modellMinutenAm = (grundlagen: SollGrundlagen, tag: Tag): number | null => {
   if (!beschaeftigtAm(grundlagen.beschaeftigung, tag)) return 0;
+  const geplant = grundlagen.plan?.get(tag);
+  if (geplant !== undefined) return geplant;
   const modell = modellAm(grundlagen.modelle, tag);
   return modell === null ? null : minutenAmWochentag(modell.sollMinuten, tag);
 };
@@ -65,7 +76,9 @@ const bescheinigungFehlt = (tag: Tag): KrankImUrlaubBefund => ({
  * absences of that day: a holiday at the place takes the Soll (§ 2 Abs. 1 EntgFG), an absence keeps
  * it and is credited to Ist, leave is charged only on a day with Soll. A day of the employment
  * without a model, or with model minutes in a year without holidays, is "nicht hinterlegt"; never
- * the value of another model or year (CLAUDE.md, "Never").
+ * the value of another model or year (CLAUDE.md, "Never"). On a day of the plan (S-505) the
+ * published plan is the Soll, a holiday included: a shift planned on it is owed, a holiday without
+ * one owes nothing, and an absence is credited what the plan held (Ausfallprinzip, § 4 Abs. 1 EntgFG).
  */
 export const tagesSoll = (
   tag: Tag,
@@ -75,7 +88,8 @@ export const tagesSoll = (
   if (!istTag(tag)) return { ok: false, grund: "ungueltig" };
   const modellMinuten = modellMinutenAm(grundlagen, tag);
   if (modellMinuten === null) return { ok: false, grund: "nicht_hinterlegt" };
-  const nachschlag = modellMinuten > 0 ? feiertagAm(tag, grundlagen.standort) : null;
+  const ausPlan = beschaeftigtAm(grundlagen.beschaeftigung, tag) && grundlagen.plan?.has(tag);
+  const nachschlag = modellMinuten > 0 && !ausPlan ? feiertagAm(tag, grundlagen.standort) : null;
   if (nachschlag !== null && !nachschlag.ok)
     return { ok: false, grund: nachschlag.grund === "kein_tag" ? "ungueltig" : "nicht_hinterlegt" };
   const aufgeloest = abwesenheitenAufloesen(abwesenheiten.filter((a) => a.tag === tag));
@@ -88,6 +102,7 @@ export const tagesSoll = (
     wert: {
       tag,
       modellMinuten,
+      ...(ausPlan ? { ausPlan: true as const } : {}),
       feiertag,
       ausfallMinuten: modellMinuten - sollMinuten,
       sollMinuten,

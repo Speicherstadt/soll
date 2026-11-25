@@ -20,6 +20,7 @@ export {
   bereitschaftGrenzenAm,
 } from "./grenzen.ts";
 export type { Tarif, TarifBefund, TarifRuhezeitBefund } from "./tarif.ts";
+export { arbeitstagMit } from "./zuordnung.ts";
 export type {
   BereitschaftEingabe,
   BereitschaftsSchicht,

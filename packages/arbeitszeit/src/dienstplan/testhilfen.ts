@@ -1,4 +1,4 @@
-import type { Bedarf, PlanSchicht } from "./typen.ts";
+import type { Bedarf, PlanRufdienst, PlanSchicht } from "./typen.ts";
 import { schichtZeiten } from "./zeiten.ts";
 
 const minute = (uhrzeit: string): number => {
@@ -25,6 +25,27 @@ export const schicht = (
     ...zeiten,
     pauseMinuten: 0,
     rolle: "Service",
+    nutzerId: "tom",
+    ...weiteres,
+  };
+};
+
+/** A planned Rufbereitschaft from day and clock times, without a reaction time by default */
+export const rufdienst = (
+  tag: string,
+  von: string,
+  bis: string,
+  weiteres: Partial<PlanRufdienst> = {},
+): PlanRufdienst => {
+  const zeiten = schichtZeiten(tag, minute(von), minute(bis));
+  if (!zeiten) throw new Error(`no times for ${tag} ${von}–${bis}`);
+  zaehler += 1;
+  return {
+    rufdienstId: `r${zaehler}`,
+    standortId: "elbe",
+    tag,
+    ...zeiten,
+    reaktionMinuten: null,
     nutzerId: "tom",
     ...weiteres,
   };

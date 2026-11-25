@@ -1,7 +1,10 @@
 import {
   type Abwesenheit,
+  arbeitstage,
+  arbeitstagMit,
   type Befund,
   beginnInBerlin,
+  bereitschaftstage,
   ersterTag,
   letzterTag,
   type Monat,
@@ -15,6 +18,7 @@ import {
   stempeltage,
   type Tag,
   tageImMonat,
+  tagInBerlin,
 } from "@soll/arbeitszeit";
 import { kanonisch, sha256 } from "../audit/hash.ts";
 
@@ -38,6 +42,23 @@ export type Aufzeichnung = {
   /** the model's minutes for the weekday; null without a model ("nicht hinterlegt") */
   modellMinuten: number | null;
   abwesenheiten?: Tagesabwesenheit[];
+  /**
+   * S-505: the call-outs of the working day, beginning and end (null while one runs), and on a day
+   * whose Soll comes from the plan its published minutes; both only where there are any, so the
+   * content of a month closed before stays what it was
+   */
+  einsaetze?: [number, number | null][];
+  planMinuten?: number;
+};
+
+/** A call-out from a Rufbereitschaft: from the call to the end of work, open while it runs */
+export type Einsatzspanne = { beginn: number; ende: number | null };
+
+/** What a month records besides stamps, model and absences (S-505) */
+export type Weitere = {
+  einsaetze?: readonly Einsatzspanne[];
+  /** the days whose Soll comes from the plan, with the person's published minutes */
+  plan?: ReadonlyMap<Tag, number>;
 };
 
 /** A finding as the time sheet shows it: rule, norm (German in every language), severity, days */
@@ -92,15 +113,52 @@ export const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabw
 };
 
 /**
+ * The working day of each call-out (R-12): the day of the shift it joins, of stamped work within
+ * 9 hours before it, else the day it begins on. The stamps are read up to the end of the month's
+ * window, so closing, the check page and the lock assign them alike.
+ */
+export const einsatzTage = (
+  monat: Monat,
+  stempelungen: readonly Stempelung[],
+  einsaetze: readonly Einsatzspanne[],
+): Tag[] => {
+  const ergebnis = arbeitstage(stempelungen, lesefenster(monat).bis);
+  const geschlossen = einsaetze.flatMap(({ beginn, ende }) =>
+    ende === null ? [] : [{ beginn, ende }],
+  );
+  const mit = ergebnis.ok ? bereitschaftstage(ergebnis.wert, { einsaetze: geschlossen }) : null;
+  const tage = mit?.ok ? mit.wert : ergebnis.ok ? ergebnis.wert : [];
+  return einsaetze.map(({ beginn }) => arbeitstagMit(tage, beginn) ?? tagInBerlin(beginn));
+};
+
+/** The call-outs of each working day, in time order */
+const einsaetzeJeTag = (
+  monat: Monat,
+  stempelungen: readonly Stempelung[],
+  einsaetze: readonly Einsatzspanne[],
+): Map<Tag, [number, number | null][]> => {
+  const sortiert = [...einsaetze].sort((a, b) => a.beginn - b.beginn);
+  const tage = einsatzTage(monat, stempelungen, sortiert);
+  const jeTag = new Map<Tag, [number, number | null][]>();
+  sortiert.forEach(({ beginn, ende }, index) => {
+    const tag = tage[index] as Tag;
+    jeTag.set(tag, [...(jeTag.get(tag) ?? []), [beginn, ende]]);
+  });
+  return jeTag;
+};
+
+/**
  * The records of every day of the month: each stamp goes to the working day of its shift (a night
  * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"), each approved absence
- * to its day. Pass the stamps of `lesefenster(monat)`.
+ * to its day, each call-out to its working day (R-12). Pass the stamps and call-outs of
+ * `lesefenster(monat)`.
  */
 export const aufzeichnungen = (
   monat: Monat,
   stempelungen: readonly Stempelung[],
   modellMinuten: (tag: Tag) => number | null,
   abwesenheiten: readonly Abwesenheit[] = [],
+  weitere: Weitere = {},
 ): Aufzeichnung[] => {
   const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
   const tagVon = stempeltage(sortiert);
@@ -110,13 +168,18 @@ export const aufzeichnungen = (
     if (tag === undefined || monatVon(tag) !== monat) continue;
     jeTag.set(tag, [...(jeTag.get(tag) ?? []), [stempel.art, stempel.zeitpunkt]]);
   }
+  const einsaetze = einsaetzeJeTag(monat, sortiert, weitere.einsaetze ?? []);
   return tageImMonat(monat).map((tag) => {
     const abwesend = amTag(abwesenheiten, tag);
+    const einsatz = einsaetze.get(tag) ?? [];
+    const plan = weitere.plan?.get(tag);
     return {
       tag,
       stempel: jeTag.get(tag) ?? [],
       modellMinuten: modellMinuten(tag),
       ...(abwesend.length > 0 ? { abwesenheiten: abwesend } : {}),
+      ...(einsatz.length > 0 ? { einsaetze: einsatz } : {}),
+      ...(plan === undefined ? {} : { planMinuten: plan }),
     };
   });
 };

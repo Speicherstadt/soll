@@ -32,9 +32,16 @@ export type TauschArt =
   | "abgelehnt"
   | "zurueckgezogen";
 
+/** The changes to a published Rufbereitschaft that tell someone (S-505) */
+export type RufArt = "ruf_neu" | "ruf_geaendert" | "ruf_entfaellt";
+
 export type Meldung =
   | { art: "veroeffentlicht"; nutzerId: string; standortId: string; tag: Tag; kw: number }
-  | { art: "neu" | "geaendert" | "entfaellt" | TauschArt; nutzerId: string; schicht: Zeitraum };
+  | {
+      art: "neu" | "geaendert" | "entfaellt" | TauschArt | RufArt;
+      nutzerId: string;
+      schicht: Zeitraum;
+    };
 
 const FELDER = [
   "standortId",

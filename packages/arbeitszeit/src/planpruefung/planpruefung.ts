@@ -4,7 +4,7 @@ import { feiertage } from "../feiertage/feiertage.ts";
 import type { Standort } from "../feiertage/laender.ts";
 import { jahrVon, plusTage, type Tag } from "../kalender/tag.ts";
 import { beginnInBerlin } from "../kalender/zeit.ts";
-import { arbzgBefunde } from "../pruefung/arbzg.ts";
+import { type ArbzgOptionen, arbzgBefunde } from "../pruefung/arbzg.ts";
 import type { Ausgleichszeitraum } from "../pruefung/ausgleichszeitraum.ts";
 import type { Branche } from "../pruefung/grenzen.ts";
 import { nachTag, type Pruefergebnis, type PruefTag, sortiert } from "../pruefung/typen.ts";
@@ -13,7 +13,10 @@ import { mutterschutzBefunde } from "../pruefung-mutterschutz/mutterschutz.ts";
 import type { Tagesspanne } from "../pruefung-mutterschutz/typen.ts";
 import { nachtSonntagBefunde } from "../pruefung-nacht-sonntag/nacht-sonntag.ts";
 import type { Sonntagsausnahme } from "../pruefung-nacht-sonntag/sonntagsruhe.ts";
+import { bereitschaftBefunde } from "../pruefung-bereitschaft/bereitschaft.ts";
+import type { BereitschaftsTag } from "../pruefung-bereitschaft/typen.ts";
 import { abrufBefunde } from "./abruf.ts";
+import { mitPlanBereitschaft, type PlanBereitschaft } from "./bereitschaft.ts";
 import { type LohnAm, lohnBefunde } from "./lohnmonate.ts";
 import { planTage } from "./plantage.ts";
 
@@ -40,7 +43,7 @@ export type PlanPerson = {
   mutterschutz?: readonly Tagesspanne[];
 };
 
-export type PlanPruefung = {
+export type PlanPruefung = PlanBereitschaft & {
   /** one person's planned shifts, at any site */
   schichten: readonly PlanSchicht[];
   /** the person's working days from the stamps; only the days before `heute` are read */
@@ -88,24 +91,39 @@ const betroffeneSchichten = (befund: Befund, tagVon: ReadonlyMap<string, Tag>): 
   return [...tagVon].filter(([, tag]) => tag >= von && tag <= bis).map(([schichtId]) => schichtId);
 };
 
+/**
+ * §§ 3 to 5 ArbZG; with Bereitschaft on the days R-11 and R-12 through `bereitschaftBefunde`, which
+ * reads days of S-206 and gives the findings of §§ 3 to 5 with them (S-505)
+ */
+const arbeitszeitRegeln = (
+  tage: readonly PruefTag[],
+  optionen: ArbzgOptionen & { jetzt: number },
+  mitBereitschaft: boolean,
+): Pruefergebnis<Befund> =>
+  mitBereitschaft
+    ? bereitschaftBefunde(tage as readonly BereitschaftsTag[], optionen)
+    : arbzgBefunde(tage, optionen);
+
 /** Every rule of Phase 2 that reads planned shifts, on one person's days (BAULISTE.md, S-502) */
 const alleRegeln = (
   pruefung: PlanPruefung,
   tage: readonly PruefTag[],
   geplant: readonly Tag[],
   jetzt: number,
+  mitBereitschaft: boolean,
 ): Pruefergebnis<Befund>[] => {
   const { standort, betrieb, person } = pruefung;
   const ausnahmen = betrieb.ausnahmen ?? [];
+  const optionen = {
+    jetzt,
+    feiertage: feiertageIn(tage, standort),
+    neutral: new Set<Tag>(),
+    ...(betrieb.zeitraum ? { zeitraum: betrieb.zeitraum } : {}),
+    ...(betrieb.beginn ? { beginn: betrieb.beginn } : {}),
+    ...(betrieb.branche ? { branche: betrieb.branche } : {}),
+  };
   const ergebnisse: Pruefergebnis<Befund>[] = [
-    arbzgBefunde(tage, {
-      jetzt,
-      feiertage: feiertageIn(tage, standort),
-      neutral: new Set(),
-      ...(betrieb.zeitraum ? { zeitraum: betrieb.zeitraum } : {}),
-      ...(betrieb.beginn ? { beginn: betrieb.beginn } : {}),
-      ...(betrieb.branche ? { branche: betrieb.branche } : {}),
-    }),
+    arbeitszeitRegeln(tage, optionen, mitBereitschaft),
     nachtSonntagBefunde(tage, {
       jetzt,
       standort,
@@ -152,15 +170,23 @@ const alleRegeln = (
  * worked before today and the days planned from today on, as if the plan were worked up to the last
  * minute of its last day. Only findings that concern a planned shift are returned, each with the
  * shifts of the days it names; a finding about the past alone belongs to the record of times, not
- * the plan. No rule is implemented twice: each comes from its own module.
+ * the plan. No rule is implemented twice: each comes from its own module. With Rufbereitschaft
+ * (S-505) R-11 and R-12 join, and a finding also names the planned duties of the days it names that
+ * count as working time.
  */
 export const planBefunde = (pruefung: PlanPruefung): Pruefergebnis<PlanBefund> => {
-  const { tage, tagVon } = planTage(pruefung.schichten, pruefung.ist, pruefung.heute);
+  const { tage, tagVon: schichtTag, rufdienstTag, mitBereitschaft } = mitPlanBereitschaft(
+    planTage(pruefung.schichten, pruefung.ist, pruefung.heute),
+    pruefung.heute,
+    new Map(pruefung.schichten.map((schicht) => [schicht.schichtId, schicht.beginn])),
+    pruefung,
+  );
+  const tagVon = new Map([...schichtTag, ...rufdienstTag]);
   const geplant = sortiert(tagVon.values());
   const letzter = geplant.at(-1);
   if (letzter === undefined) return { befunde: [], nichtHinterlegt: [] };
   const jetzt = beginnInBerlin(plusTage(letzter, 1)) - 60_000;
-  const ergebnisse = alleRegeln(pruefung, tage, geplant, jetzt);
+  const ergebnisse = alleRegeln(pruefung, tage, geplant, jetzt, mitBereitschaft);
   const befunde = nachTag(ergebnisse.flatMap((ergebnis) => ergebnis.befunde)).flatMap((befund) => {
     const schichtIds = betroffeneSchichten(befund, tagVon);
     const abruf = (befund as { schichtId?: string }).schichtId;

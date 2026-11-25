@@ -22,6 +22,7 @@ export * from "./schema/importe.ts";
 export * from "./schema/konten.ts";
 export * from "./schema/personenangaben.ts";
 export * from "./schema/projektzeit.ts";
+export * from "./schema/rufbereitschaft.ts";
 export * from "./schema/schichttausch.ts";
 export * from "./schema/stundennachweise.ts";
 export * from "./schema/terminal.ts";

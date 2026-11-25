@@ -62,6 +62,9 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   tauschregeln: "ausgenommen: ob ein Tausch eine Freigabe braucht, Einstellung des Betriebs",
   importe:
     "ausgenommen: Vorgang des Betriebs; jede übernommene Zeile der Person steht mit Import, Werkzeug und Kennung unter stempelungen und abwesenheiten, die Originaldatei enthält Daten anderer Personen (Art. 15 Abs. 4)",
+  rufdienste: "rufdienste (Rufbereitschaft im Dienstplan, auch im Entwurf, mit Reaktionszeit)",
+  einsaetze: "einsaetze (Einsätze aus der Rufbereitschaft mit jedem Grund, auch entfernte)",
+  sollquellen: "ausgenommen: woher das Soll des Betriebs kommt, Einstellung des Betriebs",
   // Better Auth's tables (db/auth-schema.ts)
   user: "konto",
   session: "sitzungen",
@@ -156,6 +159,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   importe: aus(
     "Vorgang des Betriebs; die übernommenen Zeilen stehen unter stempelungen und abwesenheiten",
   ),
+  rufdienste: frei("Rufbereitschaft im Dienstplan, den der Betrieb plant, auch im Entwurf"),
+  einsaetze: frei("Einsätze mit Grund, wie Monat und Prüfexport sie zeigen"),
+  sollquellen: aus("keine Daten der Person (Einstellung des Betriebs zum Soll)"),
   // Better Auth's tables (db/auth-schema.ts)
   user: frei("nur Name und Adresse, wie die Mitglieder des Betriebs sie zeigen"),
   session: aus("wann, von wo und womit sich die Person anmeldet, sieht der Inhaber nirgends"),

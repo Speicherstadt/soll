@@ -51,7 +51,10 @@ const eingabenGueltig = (monat: Monat, eingaben: MonatsEingaben): boolean =>
   (eingaben.beschaeftigung.ruhend ?? []).every(
     (spanne) => istTag(spanne.von) && (spanne.bis === null || istTag(spanne.bis)),
   ) &&
-  (eingaben.abwesenheiten ?? []).every((a) => istTag(a.tag) && ARTEN.has(a.art));
+  (eingaben.abwesenheiten ?? []).every((a) => istTag(a.tag) && ARTEN.has(a.art)) &&
+  [...(eingaben.plan ?? new Map<Tag, number>())].every(
+    ([tag, minuten]) => istTag(tag) && Number.isSafeInteger(minuten) && minuten >= 0,
+  );
 
 const summe = (tage: readonly TagesSoll[], wert: (tag: TagesSoll) => number): number =>
   tage.reduce((teil, tag) => teil + wert(tag), 0);

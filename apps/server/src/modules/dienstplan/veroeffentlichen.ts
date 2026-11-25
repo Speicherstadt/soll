@@ -5,6 +5,7 @@ import { type Kontext, schreiben } from "../audit/index.ts";
 import { benachrichtigen, type Kanal, type ZustellDeps } from "../erinnerungen/index.ts";
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { type Meldung, veroeffentlichungsMeldungen } from "./meldungen.ts";
+import { rufdiensteZwischen } from "./rufdienste.ts";
 import { schichtenZwischen } from "./schichten.ts";
 import { meldungTag, meldungText, meldungZiel } from "./texte.ts";
 
@@ -15,8 +16,8 @@ import { meldungTag, meldungText, meldungZiel } from "./texte.ts";
 
 /**
  * Publishes every draft of the week around `tag` at a site in one transaction, each through the
- * audit chain; drafts of other weeks and sites stay drafts. The messages tell each person with a
- * newly published shift once.
+ * audit chain, shifts and Rufbereitschaft (S-505) alike; drafts of other weeks and sites stay
+ * drafts. The messages tell each person with a newly published shift or duty once.
  */
 export const wocheVeroeffentlichen = (
   db: Db,
@@ -34,14 +35,27 @@ export const wocheVeroeffentlichen = (
     montag,
     tage[6] ?? tag,
   ).filter((schicht) => schicht.veroeffentlichtAm === null);
-  if (entwuerfe.length > 0)
+  const dienste = rufdiensteZwischen(
+    db,
+    kontext.betriebId,
+    standortId,
+    montag,
+    tage[6] ?? tag,
+  ).filter((dienst) => dienst.veroeffentlichtAm === null);
+  if (entwuerfe.length + dienste.length > 0)
     schreiben(schreibDb, kontext, (s) => {
       for (const { schichtId } of entwuerfe)
         s.aendern("schichten", { schichtId }, { veroeffentlichtAm: kontext.jetzt });
+      for (const { rufdienstId } of dienste)
+        s.aendern("rufdienste", { rufdienstId }, { veroeffentlichtAm: kontext.jetzt });
     });
   return {
-    anzahl: entwuerfe.length,
-    meldungen: veroeffentlichungsMeldungen(entwuerfe, { standortId, tag: montag, kw: kw.nummer }),
+    anzahl: entwuerfe.length + dienste.length,
+    meldungen: veroeffentlichungsMeldungen([...entwuerfe, ...dienste], {
+      standortId,
+      tag: montag,
+      kw: kw.nummer,
+    }),
   };
 };
 

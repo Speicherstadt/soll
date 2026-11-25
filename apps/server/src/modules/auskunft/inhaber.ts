@@ -46,6 +46,9 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   urlaubshinweise: eigen.urlaubshinweise,
   // the owner approves and sees every swap of a shift (plan:planen, S-504)
   schichttausche: eigen.schichttausche,
+  // the plan's Rufbereitschaft and the call-outs, which owner and planner see in plan and month
+  rufdienste: eigen.rufdienste,
+  einsaetze: eigen.einsaetze,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

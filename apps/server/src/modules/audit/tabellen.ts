@@ -9,6 +9,7 @@ import {
   datevEinstellungen,
   datevPersonalnummern,
   einladungen,
+  einsaetze,
   erinnerungen,
   erinnerungseinstellungen,
   erinnerungsregeln,
@@ -30,9 +31,11 @@ import {
   projekte,
   projektzeiten,
   pushAbos,
+  rufdienste,
   schichten,
   schichttausche,
   schichtvorlagen,
+  sollquellen,
   standorte,
   stempelungen,
   stundennachweisBuchungen,
@@ -94,6 +97,9 @@ export const kettenTabellen = {
   schichttausche: { tabelle: schichttausche, schluessel: ["tauschId"] },
   tauschregeln: { tabelle: tauschregeln, schluessel: ["betriebId"] },
   importe: { tabelle: importe, schluessel: ["importId"] },
+  rufdienste: { tabelle: rufdienste, schluessel: ["rufdienstId"] },
+  einsaetze: { tabelle: einsaetze, schluessel: ["einsatzId"] },
+  sollquellen: { tabelle: sollquellen, schluessel: ["ab"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

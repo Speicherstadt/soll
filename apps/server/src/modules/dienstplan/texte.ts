@@ -1,6 +1,7 @@
 import type { Tag } from "@soll/arbeitszeit";
 import type { Sprache } from "../erinnerungen/index.ts";
-import type { Meldung, TauschArt, Zeitraum } from "./meldungen.ts";
+import type { Meldung, RufArt, TauschArt, Zeitraum } from "./meldungen.ts";
+import { RUF_TEXTE } from "./ruftexte.ts";
 import { TAUSCH_TEXTE } from "./tauschtexte.ts";
 
 /*
@@ -15,7 +16,7 @@ type Woerter = { schicht: string; pause: string; minuten: string };
 
 const TEXTE: Record<
   Sprache,
-  Record<Exclude<Meldung["art"], TauschArt>, Vorlage> & { woerter: Woerter }
+  Record<Exclude<Meldung["art"], TauschArt | RufArt>, Vorlage> & { woerter: Woerter }
 > = {
   de: {
     veroeffentlicht: {
@@ -145,7 +146,9 @@ export const meldungText = (meldung: Meldung, sprache: Sprache) => {
   const vorlage =
     art === "neu" || art === "geaendert" || art === "entfaellt"
       ? TEXTE[sprache][art]
-      : TAUSCH_TEXTE[sprache][art];
+      : art === "ruf_neu" || art === "ruf_geaendert" || art === "ruf_entfaellt"
+        ? RUF_TEXTE[sprache][art]
+        : TAUSCH_TEXTE[sprache][art];
   const werte = werteVon(sprache, meldung.schicht);
   return { titel: vorlage.titel, text: vorlage.text(werte) };
 };

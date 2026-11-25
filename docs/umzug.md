@@ -283,13 +283,17 @@ Läuft Kimai im eigenen Netz, kann der Betreiber der Soll-Instanz die Adresse fr
 Gerechnet wird mit den gebuchten Zeitpunkten, nicht mit Kimais gerundeter Dauer: Beginn auf die
 Minute abgerundet, Ende aufgerundet, die Pause abgerundet, nie zum Nachteil der Person. Abgelehnt
 mit Zeile werden eine laufende Zeitbuchung, eine Zeit ab 24 Stunden und eine in der doppelten Stunde
-der Zeitumstellung im Oktober. Sätze und Beträge aus Kimai übernimmt Soll nicht; Stundensätze legst
+der Zeitumstellung im Oktober. Eine Zeit, die nicht übernommen wird (abgelehnt beim Einlesen oder
+im Probelauf, etwa in einem abgeschlossenen Monat), bringt auch keine Buchungen der Projektzeit
+mit. Sätze und Beträge aus Kimai übernimmt Soll nicht; Stundensätze legst
 du in der [Projektzeit](projektzeit.md) an. Die Beschreibung einer Zeitbuchung kommt nicht mit.
 
 **Wiederholbar**: Kennungen sind Kimais ids (eine Zeit trägt die ihrer ersten Zeitbuchung, eine
 Buchung die ihrer Zeitbuchung und ihres Stücks). Ein zweiter Abruf desselben Zeitraums legt nichts
 an.
 
-**Fehler** sagt Soll mit Grund: Adresse nicht erlaubt, Token abgelehnt, Rechte fehlen, zu viele
+**Fehler** sagt Soll mit Grund: Adresse nicht erlaubt, Token oder Benutzername nicht sendbar
+(nur Buchstaben ohne Akzente, Ziffern und Zeichen der Tastatur; ein mitkopierter Zeilenumbruch am
+Ende wird entfernt), Token abgelehnt, Rechte fehlen, zu viele
 Anfragen, nicht erreichbar, Weiterleitung, keine Antwort einer Kimai-API, mehr als 20.000
 Datensätze (dann einen kürzeren Zeitraum wählen). Einen Abruf wiederholt Soll nicht von selbst.

@@ -116,6 +116,7 @@ export const ABRUF_FEHLER: Record<string, (werkzeug: string) => string> = {
   adresse_ungueltig: () => m.umzug_abruf_adresse_ungueltig(),
   adresse_intern: () => m.umzug_abruf_adresse_intern(),
   weiterleitung: () => m.umzug_abruf_weiterleitung(),
+  zugang_ungueltig: () => m.umzug_abruf_zugang_ungueltig(),
   zugang_abgelehnt: (werkzeug) => m.umzug_abruf_zugang_abgelehnt({ werkzeug }),
   rechte_fehlen: () => m.umzug_abruf_rechte_fehlen(),
   zu_viele_anfragen: (werkzeug) => m.umzug_abruf_zu_viele_anfragen({ werkzeug }),

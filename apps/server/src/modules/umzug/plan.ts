@@ -10,6 +10,7 @@ import {
   type Bezugsids,
   type GenommeneBuchungen,
   toolBuchungPlanen,
+  type VerworfeneZeiten,
 } from "./plan-buchungen-tool.ts";
 import {
   type Ergebnis,
@@ -29,7 +30,7 @@ import {
   type Stand,
 } from "./plan-typen.ts";
 import { abwesenheitWieder, type Wiederfund, zeitWieder } from "./plan-wieder.ts";
-import { type Genommen, zeitPlanen } from "./plan-zeiten.ts";
+import { type Genommen, spanneVon, zeitPlanen } from "./plan-zeiten.ts";
 
 /*
  * The plan of a takeover from the records of a file, the owner's mapping and the business as it
@@ -38,6 +39,7 @@ import { type Genommen, zeitPlanen } from "./plan-zeiten.ts";
  */
 
 type Satz = { zeile: number; externalId: string };
+type Spanne = { beginn: number; ende: number };
 
 /**
  * The plan being built, with the months each person's records reach that are taken over now or
@@ -105,27 +107,46 @@ const buchungenVon = (
   }
 };
 
-const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
+/** Keeps the span of a refused time of a member, so its bookings of the tool stay out (S-705) */
+const verwerfen = (verworfen: Map<string, Spanne[]>, nutzerId: string, zeit: ImportZeit) => {
+  const spanne = spanneVon(zeit);
+  if (spanne === null) return;
+  const bisher = verworfen.get(nutzerId) ?? [];
+  bisher.push({ beginn: spanne.kommen, ende: spanne.gehen });
+  verworfen.set(nutzerId, bisher);
+};
+
+const zeitenPlanen = (
+  bau: Bau,
+  daten: ImportDaten,
+  zuordnung: Zuordnung,
+  stand: Stand,
+): VerworfeneZeiten => {
   const genommen: Genommen = new Map();
+  const verworfen = new Map<string, Spanne[]>();
   for (const zeit of daten.zeiten) {
     const nutzerId = personVon(bau, "zeiten", zeit, zuordnung, stand);
     if (nutzerId === null) continue;
     const fund = zeitWieder(zeit, nutzerId, stand.vorhanden.stempelungen);
     if (fund !== null) {
       schonDa(bau, "zeiten", zeit, nutzerId, fund);
+      if ("grund" in fund) verwerfen(verworfen, nutzerId, zeit);
       const wieder = "grund" in fund ? "keine" : buchungenWieder(zeit, stand);
       if (wieder !== "keine") bau.zahlen.buchungen[wieder] += 1;
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
-    if (typeof ergebnis === "string") ablehnen(bau, "zeiten", zeit, ergebnis);
-    else {
+    if (typeof ergebnis === "string") {
+      ablehnen(bau, "zeiten", zeit, ergebnis);
+      verwerfen(verworfen, nutzerId, zeit);
+    } else {
       bau.zahlen.zeiten.neu += 1;
       bau.stempelungen.push(...ergebnis);
       beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
       buchungenVon(bau, zeit, nutzerId, ergebnis, { zuordnung, stand });
     }
   }
+  return verworfen;
 };
 
 const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
@@ -195,7 +216,7 @@ const projekteUndKundenPlanen = (
 const toolBuchungenPlanen = (
   bau: Bau,
   daten: ImportDaten,
-  kontext: { zuordnung: Zuordnung; stand: Stand; ids: Bezugsids },
+  kontext: { zuordnung: Zuordnung; stand: Stand; ids: Bezugsids; verworfen: VerworfeneZeiten },
 ) => {
   const genommen: GenommeneBuchungen = new Map();
   for (const satz of daten.buchungen) {
@@ -236,8 +257,8 @@ export const planen = (
     beruehrt: new Map(),
   };
   const ids = projekteUndKundenPlanen(bau, daten, zuordnung, stand);
-  zeitenPlanen(bau, daten, zuordnung, stand);
-  toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids });
+  const verworfen = zeitenPlanen(bau, daten, zuordnung, stand);
+  toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids, verworfen });
   abwesenheitenPlanen(bau, daten, zuordnung, stand);
   const { beruehrt: _, ...plan } = bau;
   return {

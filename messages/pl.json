@@ -1235,6 +1235,7 @@
   "umzug_abruf_adresse_ungueltig": "Soll nie pobiera z tego adresu: tylko https, bez użytkownika i hasła, bez adresu wewnętrznego.",
   "umzug_abruf_adresse_intern": "Adres prowadzi do sieci wewnętrznej. Zezwolić na to może tylko operator tej instancji Soll.",
   "umzug_abruf_weiterleitung": "Instancja przekierowuje. Wpisz adres, pod którym Kimai odpowiada bezpośrednio.",
+  "umzug_abruf_zugang_ungueltig": "Token i nazwa użytkownika mogą zawierać tylko litery bez znaków diakrytycznych, cyfry i znaki z klawiatury, bez podziału wiersza.",
   "umzug_abruf_zugang_abgelehnt": "{werkzeug} odrzuciło dostęp.",
   "umzug_abruf_rechte_fehlen": "Tokenowi brakuje uprawnień: musi widzieć wszystkie osoby i ich czas.",
   "umzug_abruf_zu_viele_anfragen": "{werkzeug} nie przyjmuje teraz zapytań. Spróbuj ponownie za kilka minut.",

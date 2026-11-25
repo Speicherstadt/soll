@@ -43,7 +43,8 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
         .object({
           // the instance the owner names; kimai-adresse.ts decides whether it may be called
           instanz: z.string().trim().min(1).max(300),
-          token: z.string().min(1).max(500),
+          // a line break pasted with the token is dropped; kimai-abruf.ts refuses what cannot be sent
+          token: z.string().trim().min(1).max(500),
           // only for a Kimai before API tokens (X-AUTH-USER); empty: the token as a bearer
           benutzer: z.string().trim().max(180).nullable().default(null),
         })
@@ -61,6 +62,7 @@ const MAX_TAGE = 366;
 const STATUS = {
   adresse_ungueltig: 422,
   adresse_intern: 422,
+  zugang_ungueltig: 422,
   weiterleitung: 502,
   zugang_abgelehnt: 422,
   rechte_fehlen: 422,

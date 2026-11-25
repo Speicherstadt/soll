@@ -24,6 +24,7 @@ export type KimaiFehler =
   | { grund: "adresse_ungueltig" }
   | { grund: "adresse_intern" }
   | { grund: "weiterleitung" }
+  | { grund: "zugang_ungueltig" }
   | { grund: "zugang_abgelehnt" }
   | { grund: "rechte_fehlen" }
   | { grund: "zu_viele_anfragen"; wiederholenNach: number | null }
@@ -45,6 +46,16 @@ const GESAMT_MS = 5 * 60_000;
  * before API tokens the user and the API password (TokenAuthenticator.php, X-AUTH-USER and
  * X-AUTH-TOKEN, which 2.73 refuses)
  */
+/**
+ * Whether a token or user name can go as a header value: visible ASCII with spaces inside only.
+ * node:http throws on a character outside Latin-1 or a line break (RFC 9110, 5.5), and Kimai
+ * reads the bytes as they come, so a name of other letters could not be matched either.
+ */
+const KOPFWERT = /^[\x21-\x7e](?:[\x20-\x7e]*[\x21-\x7e])?$/;
+
+const zugangSendbar = (zugang: KimaiZugang): boolean =>
+  KOPFWERT.test(zugang.token) && (zugang.benutzer === null || KOPFWERT.test(zugang.benutzer));
+
 const kopfzeilen = (zugang: KimaiZugang): Record<string, string> => ({
   Accept: "application/json",
   "User-Agent": "Soll",
@@ -155,6 +166,7 @@ export const kimaiAbrufen = async (
 ): Promise<Ergebnis<KimaiAbzug>> => {
   const instanz = instanzVon(zugang.instanz, deps.erlaubt);
   if (instanz === null) return { ok: false, grund: "adresse_ungueltig" };
+  if (!zugangSendbar(zugang)) return { ok: false, grund: "zugang_ungueltig" };
   const k: Kontext = { deps, zugang, ...instanz, frist: Date.now() + GESAMT_MS };
   const listen = [
     ["user", "/api/users", { visible: 3 }],

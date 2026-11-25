@@ -112,20 +112,27 @@ export const sicherHolen =
       // an address typed as such is not looked up; it is checked here
       if (nurOeffentlich && isIP(host) !== 0 && !adresseOeffentlich(host))
         return fertig({ ok: false, grund: "adresse_intern" });
-      const anfrage = (url.protocol === "https:" ? https : http).request(
-        {
-          protocol: url.protocol,
-          hostname: host,
-          port: url.port || undefined,
-          path: `${url.pathname}${url.search}`,
-          method: "GET",
-          headers: kopf,
-          lookup: gepruefteSuche(aufloesen, nurOeffentlich),
-          agent: false,
-          ...(ca ? { ca } : {}),
-        },
-        (antwort) => lesen(antwort, fertig),
-      );
+      // a header value node:http refuses throws here, not as an "error" event (kimai-abruf.ts checks
+      // the access before); the value itself is never echoed
+      let anfrage: ReturnType<typeof http.request>;
+      try {
+        anfrage = (url.protocol === "https:" ? https : http).request(
+          {
+            protocol: url.protocol,
+            hostname: host,
+            port: url.port || undefined,
+            path: `${url.pathname}${url.search}`,
+            method: "GET",
+            headers: kopf,
+            lookup: gepruefteSuche(aufloesen, nurOeffentlich),
+            agent: false,
+            ...(ca ? { ca } : {}),
+          },
+          (antwort) => lesen(antwort, fertig),
+        );
+      } catch {
+        return fertig({ ok: false, grund: "nicht_erreichbar" });
+      }
       uhr = setTimeout(() => {
         anfrage.destroy();
         fertig({ ok: false, grund: "nicht_erreichbar" });

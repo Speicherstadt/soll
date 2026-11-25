@@ -1235,6 +1235,7 @@
   "umzug_abruf_adresse_ungueltig": "Soll bu adresten veri almaz: yalnızca https, kullanıcı ve parola olmadan, dahili adres olmadan.",
   "umzug_abruf_adresse_intern": "Adres dahili bir ağa çıkıyor. Buna yalnızca bu Soll sunucusunun işletmecisi izin verebilir.",
   "umzug_abruf_weiterleitung": "Sunucu yönlendiriyor. Kimai'nin doğrudan yanıt verdiği adresi gir.",
+  "umzug_abruf_zugang_ungueltig": "Token ve kullanıcı adı yalnızca aksansız harf, rakam ve klavye işaretleri içerebilir, satır sonu içeremez.",
   "umzug_abruf_zugang_abgelehnt": "{werkzeug} erişimi reddetti.",
   "umzug_abruf_rechte_fehlen": "Belirtecin yetkileri eksik: tüm kişileri ve sürelerini görebilmeli.",
   "umzug_abruf_zu_viele_anfragen": "{werkzeug} şu anda istek kabul etmiyor. Birkaç dakika sonra tekrar dene.",

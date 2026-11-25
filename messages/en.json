@@ -1235,6 +1235,7 @@
   "umzug_abruf_adresse_ungueltig": "Soll does not fetch from this address: https only, without user and password, no internal address.",
   "umzug_abruf_adresse_intern": "The address leads into an internal network. Only the operator of this Soll instance can allow it.",
   "umzug_abruf_weiterleitung": "The instance redirects. Enter the address where Kimai answers directly.",
+  "umzug_abruf_zugang_ungueltig": "The token and user name may only hold letters without accents, digits and keyboard symbols, no line break.",
   "umzug_abruf_zugang_abgelehnt": "{werkzeug} refused the access.",
   "umzug_abruf_rechte_fehlen": "The token lacks rights: it must be allowed to see every person and their times.",
   "umzug_abruf_zu_viele_anfragen": "{werkzeug} takes no more requests right now. Try again in a few minutes.",

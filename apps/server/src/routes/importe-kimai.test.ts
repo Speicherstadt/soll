@@ -186,6 +186,13 @@ describe("the import from Kimai (S-705)", () => {
         422,
         "adresse_ungueltig",
       ],
+      // what node:http cannot send as a header value (review S-705): an error value, not a 500
+      [{ zugang: { instanz: INSTANZ, token: TOKEN, benutzer: "Łukasz" } }, 422, "zugang_ungueltig"],
+      [
+        { zugang: { instanz: INSTANZ, token: `kimai\n${TOKEN}`, benutzer: null } },
+        422,
+        "zugang_ungueltig",
+      ],
       [{ von: "2026-11-01", bis: "2026-12-31" }, 422, "zeitraum"],
       [{ von: "2025-01-01", bis: "2026-09-30" }, 422, "zeitraum"],
     ];
@@ -201,6 +208,13 @@ describe("the import from Kimai (S-705)", () => {
     expect(viele.status).toBe(429);
     expect(await json(viele)).toEqual({ fehler: "zu_viele_anfragen", wiederholenNach: 60 });
     expect(w.log.join("\n")).not.toContain(TOKEN);
+  });
+
+  it("drops a line break pasted with the token", async () => {
+    const w = await weberMitKimai();
+    const zugang = { instanz: INSTANZ, token: `${TOKEN}\n`, benutzer: null };
+    const antwort = await w.weber.anfrage(`${IMP}/abruf`, { body: abrufKoerper({ zugang }) });
+    expect(antwort.status).toBe(200);
   });
 
   it("lets only the owner fetch", async () => {

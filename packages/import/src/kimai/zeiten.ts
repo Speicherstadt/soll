@@ -96,8 +96,12 @@ const blockAufnehmen = (
   kontext: { person: string; uhr: BerlinerUhr; bezuege: Bezuege },
 ): ImportBuchung[] => {
   const zeit = alsZeit(block, kontext.person, kontext.uhr);
-  if ("grund" in zeit) ergebnis.fehler.push(zeit);
-  else ergebnis.zeiten.push(zeit);
+  // only a span taken over is booked: a refused one gives no project time either (S-705 "Zeiten")
+  if ("grund" in zeit) {
+    ergebnis.fehler.push(zeit);
+    return [];
+  }
+  ergebnis.zeiten.push(zeit);
   const tag = kontext.uhr.uhr(block.beginn).tag;
   return block.stuecke.flatMap((stueck) => {
     const buchung = alsBuchung(stueck, tag, kontext.person, kontext.bezuege);

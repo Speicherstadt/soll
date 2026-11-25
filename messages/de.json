@@ -1235,6 +1235,7 @@
   "umzug_abruf_adresse_ungueltig": "Diese Adresse ruft Soll nicht ab: nur https, ohne Benutzer und Kennwort, keine interne Adresse.",
   "umzug_abruf_adresse_intern": "Die Adresse führt in ein internes Netz. Das darf nur der Betreiber dieser Soll-Instanz freigeben.",
   "umzug_abruf_weiterleitung": "Die Instanz leitet weiter. Gib die Adresse ein, unter der Kimai direkt antwortet.",
+  "umzug_abruf_zugang_ungueltig": "Token und Benutzername dürfen nur Buchstaben ohne Akzente, Ziffern und Zeichen der Tastatur enthalten, keinen Zeilenumbruch.",
   "umzug_abruf_zugang_abgelehnt": "{werkzeug} hat den Zugang abgelehnt.",
   "umzug_abruf_rechte_fehlen": "Dem Token fehlen Rechte: es muss alle Personen und ihre Zeiten sehen dürfen.",
   "umzug_abruf_zu_viele_anfragen": "{werkzeug} nimmt gerade keine Anfragen mehr an. Versuch es in ein paar Minuten noch einmal.",

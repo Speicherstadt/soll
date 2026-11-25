@@ -57,7 +57,7 @@ describe("review of S-803: the offline queue of the terminal", { timeout: 60_000
     expect(await e.tagVonLea()).toHaveLength(1);
   });
 
-  it("does not lose an older SUN entry because the card was read online in between", async () => {
+  it("refuses an older SUN entry once the card was read online, and shows it to the owner", async () => {
     const e = await elbblick();
     await ntagKarte(e.inhaber, e.lea.nutzerId);
     // offline: Lea taps her card (counter 5) and comes; the entry waits on the tablet
@@ -66,24 +66,30 @@ describe("review of S-803: the offline queue of the terminal", { timeout: 60_000
       ausweis: { sun: sun(5) },
       geraetZeitpunkt: JETZT - 10 * 60_000,
     });
-    // the server is back before the queue's next try (up to 30 s); Lea taps again (counter 6)
+    // the card is read online meanwhile (counter 6), at another terminal or before the tablet sent
     const online = await e.geraet.anfrage("/api/v1/kiosk/erkennen", { body: { sun: sun(6) } });
     expect(online.status).toBe(200);
-    // the queue sends the older entry: a real stamp of Lea, read before the online one
+    // the server cannot tell a real older read from one read off the card and played back: the
+    // entry is refused and the owner sees it with its reason to add it by hand (round 2 of review)
     const antwort = await e.offline.senden({ ...wartend, gesendetAm: JETZT });
-    expect(antwort.status).toBe(201);
-    const fehlversuche = e.server.sqlite
-      .query("SELECT fehlversuche FROM terminals WHERE terminal_id = ?")
-      .get(e.geraet.terminalId) as { fehlversuche: number };
-    expect(fehlversuche.fehlversuche).toBe(0);
-    // the same message once more is a replay, also from the queue
-    const wieder = await e.offline.stempeln({
-      nummer: 2,
+    expect(await json(antwort)).toEqual({ fehler: "ausweis_unbekannt" });
+    expect((await e.stand())?.abgelehnt).toMatchObject([{ nummer: 1, grund: "ausweis_unbekannt" }]);
+  });
+
+  it("refuses a SUN message read off the card and played later with a back-dated tablet clock", async () => {
+    const e = await elbblick();
+    await ntagKarte(e.inhaber, e.lea.nutzerId);
+    expect(
+      (await e.geraet.anfrage("/api/v1/kiosk/erkennen", { body: { sun: sun(6) } })).status,
+    ).toBe(200);
+    e.server.stelleUhr(JETZT + 5 * 60_000);
+    const gespielt = await e.offline.stempeln({
+      nummer: 1,
       ausweis: { sun: sun(5) },
       geraetZeitpunkt: JETZT - 10 * 60_000,
-      gesendetAm: JETZT,
+      gesendetAm: JETZT + 5 * 60_000,
     });
-    expect(await json(wieder)).toEqual({ fehler: "ausweis_unbekannt" });
+    expect(await json(gespielt)).toEqual({ fehler: "ausweis_unbekannt" });
   });
 
   it("refuses an older SUN counter it cannot place before a later read", async () => {

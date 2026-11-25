@@ -6,15 +6,16 @@ import {
   type Grundlohn,
   type Modellabschnitt,
   type Monat,
+  mitEinsaetzen,
   modellAm,
   monatVon,
   type Standort,
   type Stempelart,
   type Tag,
+  type VerbundenerTag,
   type Zuschlagssaetze,
   zuschlaege,
 } from "@soll/arbeitszeit";
-import { type Lohntag, stundentage, zuschlagstage } from "./einsaetze.ts";
 import {
   istStundenposten,
   type Lohnmonat,
@@ -49,7 +50,8 @@ export type LohnAufzeichnung = {
   einsaetze?: readonly (readonly [number, number | null])[];
 };
 
-type Arbeitstag = Lohntag;
+/** A working day as payroll reads it: its shifts and the minutes worked */
+type Arbeitstag = VerbundenerTag;
 
 /** An absence credited with hours (docs/konten.md); taking off overtime is paid by the account */
 export type Lohnabwesenheit = {
@@ -94,25 +96,24 @@ const stundenpostenVon = (modell: Lohnmodell): Postenart | null =>
   modell.lohnArt === "monat" ? null : modell.minijob ? "minijob" : "stunden";
 
 /**
- * The working days of the month, rebuilt from the stamps it was closed with, with its call-outs
- * (R-12): for the hours stamped work keeps its day and model, for the surcharges a call-out is a
- * block of the shift it joins; never less than the same times stamped (S-505, reviews)
+ * The working days of the month, rebuilt from the stamps it was closed with and its call-outs joined
+ * in (R-12, `mitEinsaetzen`): a joined shift is the day it begins on, as the records file it, so a
+ * call-out gets the hours, the model and the surcharges the same times stamped would get, the 40 %
+ * from 0 to 4 Uhr after a start before 0 Uhr included (§ 3b Abs. 3 Nr. 1 EStG, reviews of S-505)
  */
-const arbeitstageAus = (
-  eingabe: LohnmonatEingabe,
-): { stunden: Arbeitstag[]; zuschlag: Arbeitstag[] } => {
+const arbeitstageAus = (eingabe: LohnmonatEingabe): Arbeitstag[] => {
   const stempel = eingabe.tage.flatMap((tag) =>
     tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
+  );
+  const einsaetze = eingabe.tage.flatMap((tag) =>
+    (tag.einsaetze ?? []).map(([beginn, ende]) => ({ beginn, ende })),
   );
   const jetzt = Math.max(0, ...stempel.map((s) => s.zeitpunkt));
   const ergebnis = arbeitstage(stempel, jetzt);
   if (!ergebnis.ok) throw new Error("lohnmonat: stamps of a closed month are invalid");
-  const imMonat = (liste: Arbeitstag[]) =>
-    liste.filter((tag) => monatVon(tag.tag) === eingabe.monat);
-  return {
-    stunden: imMonat(stundentage(ergebnis.wert, eingabe.tage)),
-    zuschlag: imMonat(zuschlagstage(ergebnis.wert, eingabe.tage)),
-  };
+  return mitEinsaetzen(ergebnis.wert, einsaetze).tage.filter(
+    (tag) => monatVon(tag.tag) === eingabe.monat,
+  );
 };
 
 /** Worked hours and counter-entries per hours item, by the model of each day */
@@ -247,12 +248,12 @@ const posten = (summen: Summen): Posten[] =>
  * data in payroll and is no item. Whatever is "nicht hinterlegt" is named, not guessed (CLAUDE.md).
  */
 export const lohnmonat = (eingabe: LohnmonatEingabe): LohnmonatErgebnis => {
-  const { stunden, zuschlag } = arbeitstageAus(eingabe);
+  const tage = arbeitstageAus(eingabe);
   const summen: Summen = new Map();
   const probleme = [
-    ...gearbeitet(eingabe, stunden, summen),
-    ...feiertagsstunden(eingabe, stunden, summen),
-    ...zuschlaegeDesMonats(eingabe, zuschlag, summen),
+    ...gearbeitet(eingabe, tage, summen),
+    ...feiertagsstunden(eingabe, tage, summen),
+    ...zuschlaegeDesMonats(eingabe, tage, summen),
   ];
   for (const abwesenheit of eingabe.abwesenheiten ?? [])
     dazu(summen, abwesenheit.art, abwesenheit.minuten);

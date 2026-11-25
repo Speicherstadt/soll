@@ -1,12 +1,11 @@
-import type { Monat } from "@soll/arbeitszeit";
-import { and, asc, eq, gte, isNull, lt } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { einsaetze } from "../../db/schema.ts";
-import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import { rufdienstUm } from "../plandaten/index.ts";
 import { abgeschlosseneMonate } from "./abschluss.ts";
-import { aufzeichnungen, type Einsatzspanne, lesefenster } from "./monatsinhalt.ts";
+import { type Einsatz, einsaetzeIn } from "./einsatzliste.ts";
+import { aufzeichnungsKern, type Einsatzspanne, lesefenster } from "./monatsinhalt.ts";
 import { stempelungenIn } from "./stempelungen.ts";
 
 /*
@@ -14,8 +13,6 @@ import { stempelungenIn } from "./stempelungen.ts";
  * there and back included (R-12). Begun and ended live on the server's clock, or entered
  * afterwards with a reason; removed only with a reason. Every write goes through the audit chain.
  */
-
-export type Einsatz = typeof einsaetze.$inferSelect;
 
 /** Longest call-out Soll takes: a shift never reaches 24 hours past its start (R-01) */
 const LAENGSTER = 24 * 60 * 60_000;
@@ -32,29 +29,6 @@ export type EinsatzFehler =
   | "unbekannt";
 
 export type EinsatzErgebnis = { ok: true; einsatz: Einsatz } | { ok: false; grund: EinsatzFehler };
-
-/** A person's call-outs in force (not removed) that begin from `von` to before `bis` */
-export const einsaetzeIn = (
-  db: Db,
-  betriebId: string,
-  nutzerId: string,
-  von: number,
-  bis: number,
-): Einsatz[] =>
-  db
-    .select()
-    .from(einsaetze)
-    .where(
-      and(
-        eq(einsaetze.betriebId, betriebId),
-        eq(einsaetze.nutzerId, nutzerId),
-        eq(einsaetze.entfernt, false),
-        gte(einsaetze.beginn, von),
-        lt(einsaetze.beginn, bis),
-      ),
-    )
-    .orderBy(asc(einsaetze.beginn))
-    .all();
 
 const laufender = (db: Db, betriebId: string, nutzerId: string): Einsatz | undefined =>
   db
@@ -77,17 +51,7 @@ const einsatzLesen = (db: Db, betriebId: string, einsatzId: string): Einsatz | u
     .where(and(eq(einsaetze.betriebId, betriebId), eq(einsaetze.einsatzId, einsatzId)))
     .get();
 
-/** The call-out records of a closed month, as closing and the check page read them */
-const einsatzRecords = (
-  monat: Monat,
-  stempel: Parameters<typeof aufzeichnungen>[1],
-  liste: readonly Einsatzspanne[],
-) =>
-  kanonisch(
-    aufzeichnungen(monat, stempel, () => null, [], { einsaetze: liste }).map(
-      (tag) => tag.einsaetze ?? [],
-    ),
-  );
+export { type Einsatz, einsaetzeIn };
 
 /**
  * Whether a change of a person's call-outs alters the records of a closed month (docs/plan.md,
@@ -107,7 +71,8 @@ const gesperrt = (
     const stempel = stempelungenIn(db, betriebId, nutzerId, von, bis);
     const vorher = einsaetzeIn(db, betriebId, nutzerId, von, bis);
     const neu = nachher(vorher).filter(({ beginn }) => beginn >= von && beginn < bis);
-    return einsatzRecords(monat, stempel, vorher) !== einsatzRecords(monat, stempel, neu);
+    // a call-out can move the stamps of a shift it joins (R-12), so stamps and call-outs both
+    return aufzeichnungsKern(monat, stempel, vorher) !== aufzeichnungsKern(monat, stempel, neu);
   });
 
 const ueberschneidet = (

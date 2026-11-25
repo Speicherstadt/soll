@@ -2,8 +2,8 @@ import { type Monat, monatVon, type Stempelung, type Tag } from "@soll/arbeitsze
 import { and, eq } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { aussonderungen, monatsabschluesse } from "../../db/schema.ts";
-import { kanonisch } from "../audit/hash.ts";
-import { aufzeichnungen, lesefenster } from "./monatsinhalt.ts";
+import { einsaetzeIn } from "./einsatzliste.ts";
+import { aufzeichnungsKern, type Einsatzspanne, lesefenster } from "./monatsinhalt.ts";
 
 /** The months of a person whose content was removed after the retention period (S-901) */
 export const ausgesonderteMonate = (db: Db, betriebId: string, nutzerId: string): Set<Monat> =>
@@ -45,11 +45,18 @@ export const monatAbgeschlossen = (
   tag: Tag,
 ): boolean => abgeschlosseneMonate(db, betriebId, nutzerId).has(monatVon(tag));
 
-/** The records of a month's stamps in force, read from the month's window (`lesefenster`) */
-const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) => {
+/**
+ * The records of a month's stamps in force and call-outs, read from the month's window
+ * (`lesefenster`): a stamp can join a call-out's shift, and its day move with it (R-12, S-505)
+ */
+const stempelDesMonats = (
+  monat: Monat,
+  stempelungen: readonly Stempelung[],
+  einsaetze: readonly Einsatzspanne[],
+) => {
   const { von, bis } = lesefenster(monat);
   const imFenster = stempelungen.filter(({ zeitpunkt }) => zeitpunkt >= von && zeitpunkt < bis);
-  return kanonisch(aufzeichnungen(monat, imFenster, () => null).map((tag) => tag.stempel));
+  return aufzeichnungsKern(monat, imFenster, einsaetze);
 };
 
 /**
@@ -87,9 +94,20 @@ export const aenderungGesperrt = <S extends Stempelung>(
     Math.max(...fenster.map(({ bis }) => bis)),
   );
   const nachher = aenderung.nachher(vorher);
-  return betroffen.some(
-    (monat) => stempelDesMonats(monat, vorher) !== stempelDesMonats(monat, nachher),
+  const einsaetze = einsaetzeIn(
+    db,
+    betriebId,
+    nutzerId,
+    Math.min(...fenster.map(({ von }) => von)),
+    Math.max(...fenster.map(({ bis }) => bis)),
   );
+  return betroffen.some((monat) => {
+    const { von, bis } = lesefenster(monat);
+    const imFenster = einsaetze.filter(({ beginn }) => beginn >= von && beginn < bis);
+    return (
+      stempelDesMonats(monat, vorher, imFenster) !== stempelDesMonats(monat, nachher, imFenster)
+    );
+  });
 };
 
 /**

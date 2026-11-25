@@ -103,13 +103,20 @@ export type MonatStatus = {
 };
 
 /**
- * 9 h after the last stamp a month records (`NEUE_SCHICHT_AB`, as the shifts are cut): before then a
- * Kommen would continue its last shift, and the lock would refuse to record it (BAG 1 ABR 22/21;
- * docs/plan.md, "Abschluss nach der letzten Schicht")
+ * 9 h after the last stamp and the end of the last call-out a month records (`NEUE_SCHICHT_AB`, as
+ * the shifts are cut; a call-out within 9 h joins a call-out's shift, R-12, S-505): before then a
+ * Kommen or a call-out would continue its last shift, and the lock would refuse to record it (BAG 1 ABR 22/21; docs/plan.md, "Abschluss nach der letzten Schicht")
  */
 const schichtEndetSicher = (inhalt: Monatsinhalt): number | null => {
-  const zeitpunkte = inhalt.tage.flatMap((tag) => tag.stempel.map(([, zeitpunkt]) => zeitpunkt));
-  return zeitpunkte.length === 0 ? null : Math.max(...zeitpunkte) + NEUE_SCHICHT_AB;
+  const zeitpunkte = [
+    ...inhalt.tage.flatMap((tag) =>
+      tag.stempel.map(([, zeitpunkt]) => zeitpunkt + NEUE_SCHICHT_AB),
+    ),
+    ...inhalt.tage.flatMap((tag) =>
+      (tag.einsaetze ?? []).flatMap(([, ende]) => (ende === null ? [] : [ende + NEUE_SCHICHT_AB])),
+    ),
+  ];
+  return zeitpunkte.length === 0 ? null : Math.max(...zeitpunkte);
 };
 
 export const monatStatus = (

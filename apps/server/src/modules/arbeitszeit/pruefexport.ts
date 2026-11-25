@@ -1,5 +1,4 @@
 import {
-  arbeitstage,
   beginnInBerlin,
   type Monat,
   monatVon,
@@ -9,6 +8,7 @@ import {
   stempelSchluessel,
   stempeltage,
   type Tag,
+  tageswerteDesInhalts,
   tagInBerlin,
 } from "@soll/arbeitszeit";
 import type { PruefPerson, PruefTag } from "@soll/export";
@@ -19,7 +19,6 @@ import { stempelungen } from "../../db/schema.ts";
 import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 import { gegeneintraegeVon } from "./monat.ts";
 import { type MonatStatus, monatStatus } from "./monatsabschluss.ts";
-import { einsatzMinutenDerTage } from "./monatsinhalt.ts";
 
 /*
  * A person's working days in a period for the Prüfexport (S-309): the days of a closed month as
@@ -119,26 +118,21 @@ type Angaben = {
 /** The days of one month inside the period, with minutes and findings */
 const tageDesMonats = (status: MonatStatus, angaben: Angaben, erfasst: Map<string, number>) => {
   const { inhalt } = status;
-  const stempel: Stempelung[] = inhalt.tage.flatMap((tag) =>
-    tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
-  );
-  const ergebnis = arbeitstage(stempel, status.abschluss?.am ?? angaben.jetzt);
-  const tage = new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag]));
-  const einsatzMinuten = einsatzMinutenDerTage(inhalt.tage, ergebnis.ok ? ergebnis.wert : []);
+  // with the call-outs joined in, each day shows the Ist (S-505)
+  const werte = tageswerteDesInhalts(inhalt.tage, status.abschluss?.am ?? angaben.jetzt);
   return inhalt.tage
     .filter((auf) => auf.tag >= angaben.von && auf.tag <= angaben.bis)
     .map((auf): PruefTag => {
-      const tag = tage.get(auf.tag);
+      const tag = werte(auf);
       const zeiten = auf.stempel.map(([art, zeitpunkt]) => erfasst.get(schluessel(art, zeitpunkt)));
       const bekannt = zeiten.filter((am): am is number => am !== undefined);
       return {
         tag: auf.tag,
         // an open shift has no beginning in the working day: its first stamp is shown all the same
-        beginn: tag?.beginn ?? auf.stempel[0]?.[1] ?? null,
-        ende: tag?.ende ?? null,
-        pauseMinuten: tag?.pausenMinuten ?? 0,
-        // with the call-outs of the day, working time from a Rufbereitschaft (S-505)
-        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + (einsatzMinuten.get(auf.tag) ?? 0),
+        beginn: tag.beginn ?? auf.stempel[0]?.[1] ?? null,
+        ende: tag.ende,
+        pauseMinuten: tag.pauseMinuten,
+        arbeitsMinuten: tag.arbeitsMinuten,
         erfasstAm: bekannt.length === 0 ? null : Math.max(...bekannt),
         aenderungen: [],
         befunde: inhalt.befunde

@@ -520,9 +520,9 @@ ohne sie gilt der Fall „Pause“.
   nächste Schicht ist ein eigener Arbeitstag, wenn sie nicht binnen 9 h nach anderer Arbeit beginnt.
   Liegen weniger als 15 min zwischen einem Einsatz und anderer Arbeit, ist er ein Stück dieser Arbeit
   (§ 4 Satz 2 ArbZG); zwei Einsätze mit weniger als 15 min Abstand sind einer.
-  Für die Aufzeichnung und das Ist verschiebt ein Einsatz nie gestempelte Arbeit: Sie behält den
-  Arbeitstag ihrer Stempelungen, und was zugleich gestempelt ist, zählt einmal; die verbundene
-  Schicht gilt nur für die Prüfung (S-505).
+  Die verbundene Schicht gehört mit ihren Stempelungen zum Tag, an dem sie beginnt, wie dieselben
+  Zeiten gestempelt, für Aufzeichnung, Ist, Lohn und Prüfung; was zugleich gestempelt ist, zählt
+  einmal (S-505).
 - **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
   anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05.
   Beginnt nach einem Einsatz eine eigene Schicht am selben Kalendertag, endet die Ruhezeit mit ihr.
@@ -1109,8 +1109,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 - **Rufbereitschaft**: Eine Pauschale für Rufbereitschaft ist kein Zuschlag „für tatsächlich
   geleistete Sonntags-, Feiertags- oder Nachtarbeit“ (§ 3b Abs. 1 EStG) und nicht steuerfrei; Soll
   rechnet sie nicht. Ein Einsatz ist geleistete Arbeit, seine Minuten bekommen die Zuschläge dieser
-  Regel (S-505), nie weniger als dieselben Zeiten gestempelt: Für die Zuschläge ist er ein Block der
-  Schicht, der er nach R-12 angehört, mit dem Modell ihres Arbeitstags.
+  Regel (S-505), nie weniger als dieselben Zeiten gestempelt: Er ist ein Block der Schicht, der er
+  nach R-12 angehört, und die Schicht gehört zu ihrem ersten Tag, auch über ein Monatsende.
 
 | Fall | Lage (Grundlohn 20 €, gezahlt 25 % Nacht) | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1139,6 +1139,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
 | Einsatz nach Mitternacht | 20 € je Stunde, gezahlt 25 % Nacht und 40 % von 0 bis 4 Uhr; gestempelt Mi 3.6.2026 22:00 – 23:30, Einsatz Do 0:30 – 2:00 (dieselbe Schicht nach R-12) | dieselben Zuschläge wie gestempelt Do 0:30 – 2:00: die 40 %, denn die Schicht wurde vor 0 Uhr aufgenommen | § 3b Abs. 3 Nr. 1 EStG; R-12 (S-505) |
 | Einsatz vor gestempelter Arbeit | dieselben Sätze; Einsatz Mi 3.6.2026 22:00 – 23:50, gestempelt Do 0:00 – 3:00 | 300 min wie gestempelt (die 10 min dazwischen sind Arbeitszeit) und dieselben Zuschläge mit 40 % von 0 bis 3 Uhr | § 3b Abs. 3 Nr. 1 EStG; § 4 Satz 2 ArbZG; R-12 (S-505) |
+| Einsatz am Monatsende | dieselben Sätze; Einsatz Di 30.6.2026 22:00 – 23:50, gestempelt Mi 1.7. 0:00 – 3:00 | eine Schicht des 30.6. im Juni: 300 min und 40 % von 0 bis 3 Uhr wie gestempelt, der Juli zählt nichts davon | § 3b Abs. 3 Nr. 1 EStG; CLAUDE.md, „Time“ (S-505) |
 | Einsatz und Rufbereitschaft | Pauschale für Rufbereitschaft Mo 18:00 – Di 6:00, kein Einsatz | kein steuerfreier Teil, Soll rechnet keine Pauschale | § 3b Abs. 1 EStG („tatsächlich geleistete“ Arbeit) |
 
 ## Mitbestimmung und Datenschutz

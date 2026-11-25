@@ -12,7 +12,7 @@ import {
   hoechstarbeitszeit,
   letzterTag,
   type Monat,
-  mitStempeltagen,
+  mitEinsaetzen,
   monatsstand,
   monatVon,
   type PruefTag,
@@ -33,7 +33,6 @@ import {
   type Aufzeichnung,
   aufzeichnungen,
   type Einsatzspanne,
-  einsatzMinutenDerTage,
   type Gegeneintrag,
   lesefenster,
   type Monatsinhalt,
@@ -148,9 +147,7 @@ const mitBereitschaft = (
   if ((eingabe.einsaetze ?? []).length === 0 && (eingabe.rufdienste ?? []).length === 0)
     return null;
   const ergebnis = bereitschaftstage(tage, eingabe);
-  if (!ergebnis.ok) return null;
-  // a finding of a joined shift also names the days its stamped work lies on, so it never vanishes
-  return mitStempeltagen(bereitschaftBefunde(ergebnis.wert, optionen).befunde, tage, ergebnis.wert);
+  return ergebnis.ok ? bereitschaftBefunde(ergebnis.wert, optionen).befunde : null;
 };
 
 /**
@@ -184,7 +181,7 @@ const summenDesMonats = (
   tage: readonly PruefTag[],
   aufzeichnung: readonly Aufzeichnung[],
   abwesenheiten: readonly Abwesenheit[],
-  weitere: { plan: ReadonlyMap<Tag, number>; einsatzMinuten: ReadonlyMap<Tag, number> },
+  plan: ReadonlyMap<Tag, number>,
 ): { summen: Summen | null; nichtHinterlegt: Tag[]; befunde: Befund[] } => {
   // a day of the plan needs no model: the plan is its Soll (S-505)
   const ohneModell = aufzeichnung
@@ -200,7 +197,7 @@ const summenDesMonats = (
     beschaeftigung,
     arbeitstage: tage,
     abwesenheiten,
-    ...weitere,
+    plan,
   });
   if (!stand.ok)
     return {
@@ -289,13 +286,22 @@ export const monatJetzt = (
     weitere,
   );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
-  // a call-out adds its own minutes on the day its record names; stamped work keeps its day
-  const einsatzMinuten = einsatzMinutenDerTage(tage, alle);
+  // the Ist counts the working days as the records file them: a call-out joins its shift, and a
+  // joined shift belongs to the day it begins on, its stamps included (R-12, reviews of S-505)
+  const ist = mitEinsaetzen(alle, weitere.einsaetze).tage.filter(
+    (tag) => monatVon(tag.tag) === monat,
+  );
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
-  const stand = summenDesMonats(db, betriebId, nutzerId, monat, imMonat, tage, abwesenheiten, {
-    plan: weitere.plan,
-    einsatzMinuten,
-  });
+  const stand = summenDesMonats(
+    db,
+    betriebId,
+    nutzerId,
+    monat,
+    ist,
+    tage,
+    abwesenheiten,
+    weitere.plan,
+  );
   const feiertageAmOrt = feiertageUm(standortVon(db, betriebId), monat);
   const { von, bis } = lesefenster(monat);
   const rufdienste = rufdiensteVon(db, betriebId, nutzerId, tagInBerlin(von), tagInBerlin(bis));

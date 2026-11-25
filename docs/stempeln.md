@@ -164,12 +164,12 @@ hin und zurück (§ 5 ArbZG, [Rufbereitschaft](bereitschaft.md#rufbereitschaft-r
   in der [Audit-Kette](audit-kette.md).
 - Ein Einsatz zählt zum Arbeitstag der Schicht, die höchstens 9 Stunden vorher endet, sonst zum Tag
   seines Beginns (R-12). Im **Monat** steht er beim Tag („Einsatz 22:00–23:30 (1:30)“), seine Minuten
-  zählen in Dauer und Ist; was zugleich gestempelt ist, zählt nicht doppelt. Gestempelte Arbeit
-  bleibt immer an dem Tag, an dem ihre Stempelungen sie ablegen, auch wenn ein Einsatz kurz davor
-  endet; nur die Prüfung der Ruhezeit und der Höchstarbeitszeit liest beides als eine Schicht. Ein Befund
-  dieser Schicht steht dann auch im Monat der gestempelten Arbeit. Ein Einsatz am Ersten, der zur
-  Schicht des abgeschlossenen Vortags gehört, wird abgelehnt, wie eine Stempelung. Ein Einsatz, der einen
-  abgeschlossenen Monat ändern würde, wird abgelehnt.
+  zählen in Dauer und Ist; was zugleich gestempelt ist, zählt nicht doppelt. Beginnt binnen 15 min
+  nach einem Einsatz gestempelte Arbeit, ist beides eine Schicht des Tags, an dem der Einsatz
+  begann, auch über ein Monatsende: Der Monat nennt dann die Stempelungen des Ersten bei seinem
+  letzten Tag, und die Lücke ist Arbeitszeit, wie gestempelt. Eine Stempelung oder ein Einsatz, der
+  einen abgeschlossenen Monat ändern würde, wird abgelehnt; abgeschlossen wird ein Monat erst 9 h
+  nach seinem letzten Einsatz.
 - Ohne das Modul Dienstplan gibt es keine Rufbereitschaft und damit keinen neuen Einsatz;
   vorhandene Einsätze bleiben im Monat.
 

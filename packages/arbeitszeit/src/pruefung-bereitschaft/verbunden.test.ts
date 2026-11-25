@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { tage } from "../pruefung/testhilfen.ts";
 import { DI, kommen, MO, SPAETER, schicht, uhr, um } from "./testhilfen.ts";
-import { mitEinsaetzen } from "./verbunden.ts";
+import { einsatzTag, mitEinsaetzen } from "./verbunden.ts";
 
 /*
  * The working days with call-outs as the record of times reads them (R-12, reviews of S-505): a
@@ -30,7 +30,7 @@ describe("mitEinsaetzen", () => {
       [einsatz(uhr(MO, "23:00"), uhr(DI, "0:30")), einsatz(uhr(DI, "20:00"), null)],
     );
     expect(minuten(ergebnis)).toEqual([["2026-11-16", 90]]);
-    expect(ergebnis.tagVon(um(uhr(DI, "20:00")))).toBe("2026-11-17");
+    expect(einsatzTag(ergebnis, einsatz(uhr(DI, "20:00"), null))).toBe("2026-11-17");
   });
 
   it("what is stamped at the same time counts once", () => {

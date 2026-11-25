@@ -4,13 +4,13 @@ import {
   type Befund,
   beginnInBerlin,
   type Einsatzspanne,
-  einsatzAnteile,
+  einsatzTag,
   ersterTag,
   letzterTag,
   type Monat,
   type Monatsstand,
+  mitEinsaetzen,
   monatVon,
-  type PruefTag,
   plusMonate,
   plusTage,
   type Stempelart,
@@ -19,7 +19,7 @@ import {
   stempeltage,
   type Tag,
   tageImMonat,
-  zusatzMinutenJeTag,
+  type VerbundenerTag,
 } from "@soll/arbeitszeit";
 import { kanonisch, sha256 } from "../audit/hash.ts";
 
@@ -113,59 +113,70 @@ export const amTag = (abwesenheiten: readonly Abwesenheit[], tag: Tag): Tagesabw
 };
 
 /**
- * The working day of each call-out (R-12, `einsatzAnteile`): the day of the stamped shift it lies in
- * or follows within 9 hours, else the day it begins on; it never moves stamped work (review of
- * S-505). The stamps are read up to the end of the month's window, so closing, the check page and
- * the lock assign them alike.
+ * The working days of a person with the call-outs joined in (R-12, `mitEinsaetzen`): a call-out
+ * joins the shift it belongs to, and the joined shift belongs to the day it begins on, its stamps
+ * included, as the same times stamped would (reviews of S-505). Read with the stamps up to `bis`.
  */
-export const einsatzTage = (
-  monat: Monat,
+export const verbundeneTage = (
   stempelungen: readonly Stempelung[],
   einsaetze: readonly Einsatzspanne[],
-): Tag[] => {
-  const ergebnis = arbeitstage(stempelungen, lesefenster(monat).bis);
-  return einsatzAnteile(ergebnis.ok ? ergebnis.wert : [], einsaetze).map(({ tag }) => tag);
+  bis: number,
+): VerbundenerTag[] => {
+  const ergebnis = arbeitstage(stempelungen, bis);
+  return mitEinsaetzen(ergebnis.ok ? ergebnis.wert : [], einsaetze).tage;
 };
 
 /**
- * The minutes the call-outs of a month's records add per working day (R-12, `zusatzMinutenJeTag`):
- * each on the day its record names, without what the stamped working days already count, with a
- * gap under 15 minutes to other work, so the Ist, the time sheet and the Prüfexport show what the
- * same times would give stamped (review of S-505)
+ * The working day of every stamp and call-out: a stamp's is that of its shift, moved to the day the
+ * joined shift begins when a call-out joins it before its start; a call-out's is that of the shift
+ * it joins, else the day it begins on. The stamps are read up to the end of the month's window, so
+ * closing, the check page and the lock assign them alike.
  */
-export const einsatzMinutenDerTage = (
-  aufzeichnung: readonly Pick<Aufzeichnung, "tag" | "einsaetze">[],
-  gestempelt: readonly PruefTag[],
-): Map<Tag, number> =>
-  zusatzMinutenJeTag(
-    gestempelt,
-    aufzeichnung
-      .flatMap((tag) =>
-        (tag.einsaetze ?? []).map(([beginn, ende]) => ({ tag: tag.tag, beginn, ende })),
-      )
-      .sort((a, b) => a.beginn - b.beginn),
-  );
+const tageDerEintraege = (
+  monat: Monat,
+  sortiert: readonly Stempelung[],
+  einsaetze: readonly Einsatzspanne[],
+) => {
+  const stempelTag = stempeltage(sortiert);
+  const ergebnis = arbeitstage(sortiert, lesefenster(monat).bis);
+  const gestempelt = ergebnis.ok ? ergebnis.wert : [];
+  const verbunden = mitEinsaetzen(gestempelt, einsaetze);
+  const schichtBeginn = (tag: Tag, zeitpunkt: number) =>
+    gestempelt
+      .find((t) => t.tag === tag)
+      ?.schichten.find(
+        (schicht) =>
+          schicht.beginn <= zeitpunkt && (schicht.ende === null || zeitpunkt <= schicht.ende),
+      )?.beginn;
+  return {
+    stempel: (stempel: Stempelung): Tag | undefined => {
+      const tag = stempelTag.get(stempelSchluessel(stempel));
+      if (tag === undefined || einsaetze.length === 0) return tag;
+      const beginn = schichtBeginn(tag, stempel.zeitpunkt);
+      return (beginn === undefined ? null : verbunden.tagVon(beginn)) ?? tag;
+    },
+    einsatz: (einsatz: Einsatzspanne): Tag => einsatzTag(verbunden, einsatz),
+  };
+};
 
 /** The call-outs of each working day, in time order */
 const einsaetzeJeTag = (
-  monat: Monat,
-  stempelungen: readonly Stempelung[],
   einsaetze: readonly Einsatzspanne[],
+  tagVon: (einsatz: Einsatzspanne) => Tag,
 ): Map<Tag, [number, number | null][]> => {
-  const sortiert = [...einsaetze].sort((a, b) => a.beginn - b.beginn);
-  const tage = einsatzTage(monat, stempelungen, sortiert);
   const jeTag = new Map<Tag, [number, number | null][]>();
-  sortiert.forEach(({ beginn, ende }, index) => {
-    const tag = tage[index] as Tag;
-    jeTag.set(tag, [...(jeTag.get(tag) ?? []), [beginn, ende]]);
-  });
+  for (const einsatz of [...einsaetze].sort((a, b) => a.beginn - b.beginn)) {
+    const tag = tagVon(einsatz);
+    jeTag.set(tag, [...(jeTag.get(tag) ?? []), [einsatz.beginn, einsatz.ende]]);
+  }
   return jeTag;
 };
 
 /**
  * The records of every day of the month: each stamp goes to the working day of its shift (a night
  * shift's Gehen after midnight to the day the shift began; CLAUDE.md, "Time"), each approved absence
- * to its day, each call-out to its working day (R-12). Pass the stamps and call-outs of
+ * to its day, each call-out to its working day, and the stamps of a shift a call-out joins before it
+ * to the day the joined shift begins on (R-12, reviews of S-505). Pass the stamps and call-outs of
  * `lesefenster(monat)`.
  */
 export const aufzeichnungen = (
@@ -176,14 +187,14 @@ export const aufzeichnungen = (
   weitere: Weitere = {},
 ): Aufzeichnung[] => {
   const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
-  const tagVon = stempeltage(sortiert);
+  const tagVon = tageDerEintraege(monat, sortiert, weitere.einsaetze ?? []);
   const jeTag = new Map<Tag, [Stempelart, number][]>();
   for (const stempel of sortiert) {
-    const tag = tagVon.get(stempelSchluessel(stempel));
+    const tag = tagVon.stempel(stempel);
     if (tag === undefined || monatVon(tag) !== monat) continue;
     jeTag.set(tag, [...(jeTag.get(tag) ?? []), [stempel.art, stempel.zeitpunkt]]);
   }
-  const einsaetze = einsaetzeJeTag(monat, sortiert, weitere.einsaetze ?? []);
+  const einsaetze = einsaetzeJeTag(weitere.einsaetze ?? [], tagVon.einsatz);
   return tageImMonat(monat).map((tag) => {
     const abwesend = amTag(abwesenheiten, tag);
     const einsatz = einsaetze.get(tag) ?? [];
@@ -198,6 +209,23 @@ export const aufzeichnungen = (
     };
   });
 };
+
+/**
+ * What the lock of a closed month compares (docs/plan.md, "Monat gesperrt"): the stamps and the
+ * call-outs each day of the month records, read from the same window as closing and the check page;
+ * a call-out can move the stamps of a shift it joins and a stamp a call-out (R-12, S-505)
+ */
+export const aufzeichnungsKern = (
+  monat: Monat,
+  stempelungen: readonly Stempelung[],
+  einsaetze: readonly Einsatzspanne[],
+): string =>
+  kanonisch(
+    aufzeichnungen(monat, stempelungen, () => null, [], { einsaetze }).map((tag) => [
+      tag.stempel,
+      tag.einsaetze ?? [],
+    ]),
+  );
 
 /** A finding reduced to what the sheet shows, so extra fields of a rule do not enter the hash */
 export const alsBlattbefund = ({ regel, norm, schwere, art, tage }: Befund): Blattbefund => ({

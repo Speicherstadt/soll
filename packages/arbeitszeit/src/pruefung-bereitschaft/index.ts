@@ -1,12 +1,4 @@
 export {
-  type EinsatzAnteil,
-  type Einsatzeintrag,
-  type Einsatzspanne,
-  einsatzAnteile,
-  einsatzMinutenJeTag,
-  zusatzMinutenJeTag,
-} from "./anteile.ts";
-export {
   type BereitschaftBefund,
   type BereitschaftOptionen,
   bereitschaftBefunde,
@@ -27,6 +19,11 @@ export {
   type BereitschaftGrenzen,
   bereitschaftGrenzenAm,
 } from "./grenzen.ts";
+export {
+  type Inhaltstag,
+  type Tageswerte,
+  tageswerteDesInhalts,
+} from "./tageswerte.ts";
 export type { Tarif, TarifBefund, TarifRuhezeitBefund } from "./tarif.ts";
 export type {
   BereitschaftEingabe,
@@ -35,4 +32,11 @@ export type {
   Rufdienst,
   Spanne,
 } from "./typen.ts";
-export { arbeitstagMit, mitStempeltagen } from "./zuordnung.ts";
+export {
+  type Einsatzspanne,
+  einsatzTag,
+  type MitEinsaetzen,
+  mitEinsaetzen,
+  type VerbundenerTag,
+} from "./verbunden.ts";
+export { arbeitstagMit } from "./zuordnung.ts";

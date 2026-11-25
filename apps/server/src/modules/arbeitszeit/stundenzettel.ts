@@ -1,12 +1,7 @@
-import {
-  type Abwesenheitsart,
-  arbeitstage,
-  type Stempelung,
-  sichtbareArt,
-} from "@soll/arbeitszeit";
+import { type Abwesenheitsart, sichtbareArt, tageswerteDesInhalts } from "@soll/arbeitszeit";
 import type { Stundenzettel } from "@soll/export";
 import type { MonatStatus } from "./monatsabschluss.ts";
-import { einsatzMinutenDerTage, type Tagesabwesenheit } from "./monatsinhalt.ts";
+import type { Tagesabwesenheit } from "./monatsinhalt.ts";
 
 /** The words of the sheet for absences, German like the whole sheet */
 const ABWESENHEIT: Record<Abwesenheitsart | "abwesend", string> = {
@@ -64,25 +59,16 @@ export const stundenzettelAus = (
   const { inhalt } = status;
   const gesundheit = angaben.gesundheit ?? true;
   const befunde = inhalt.befunde.filter((befund) => gesundheit || befund.regel !== "R-24");
-  const stempel: Stempelung[] = inhalt.tage.flatMap((tag) =>
-    tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
-  );
-  const ergebnis = arbeitstage(stempel, status.abschluss?.am ?? angaben.jetzt);
-  const tage = new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag]));
-  // what the call-outs add, without what is stamped at the same time: the sheet shows the Ist
-  const einsatzMinuten = einsatzMinutenDerTage(inhalt.tage, ergebnis.ok ? ergebnis.wert : []);
+  // with the call-outs joined in, the sheet shows the Ist of each day (S-505)
+  const werte = tageswerteDesInhalts(inhalt.tage, status.abschluss?.am ?? angaben.jetzt);
   return {
     betrieb: angaben.betrieb,
     person: angaben.person,
     monat: inhalt.monat,
     tage: inhalt.tage.map((aufzeichnung) => {
-      const tag = tage.get(aufzeichnung.tag);
       return {
         tag: aufzeichnung.tag,
-        beginn: tag?.beginn ?? null,
-        ende: tag?.ende ?? null,
-        pauseMinuten: tag?.pausenMinuten ?? 0,
-        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + (einsatzMinuten.get(aufzeichnung.tag) ?? 0),
+        ...werte(aufzeichnung),
         // on a day of the plan its Soll is the plan's (S-505)
         sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
         abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),

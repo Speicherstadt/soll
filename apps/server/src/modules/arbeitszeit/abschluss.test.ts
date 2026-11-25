@@ -16,8 +16,13 @@ const TAG = 24 * STUNDE;
 const MONAT = "2026-10";
 
 /** A database that knows only that October is closed: `abgeschlosseneMonate` reads it */
+// closed months answer October; the person's call-outs (read in order, S-505) are none
 const nurOktoberZu = {
-  select: () => ({ from: () => ({ where: () => ({ all: () => [{ monat: MONAT }] }) }) }),
+  select: () => ({
+    from: () => ({
+      where: () => ({ all: () => [{ monat: MONAT }], orderBy: () => ({ all: () => [] }) }),
+    }),
+  }),
 } as unknown as Db;
 
 /** mulberry32: a small seeded generator, so a failing case can be replayed */

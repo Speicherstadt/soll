@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { nurLesendOeffnen } from "./oeffnen.ts";
 import { betriebe } from "./schema.ts";
 import { testDatenbank } from "./test-db.ts";
 
@@ -34,5 +35,24 @@ describe("the connection the modules get", () => {
     expect(db.select().from(betriebe).all()).toEqual([
       expect.objectContaining({ betriebId: "weber", name: "Weber", angelegtAm: 1 }),
     ]);
+  });
+});
+
+describe("a database opened read-only from outside the server (S-904)", () => {
+  it("sees what the server's connection wrote and refuses every write", async () => {
+    const { schreibDb, pfad } = testDatenbank();
+    const { schreiben } = await import("../modules/audit/index.ts");
+    schreiben(schreibDb, { betriebId: "weber", akteur: "jonas", jetzt: 1 }, (s) =>
+      s.einfuegen("betriebe", { betriebId: "weber", name: "Weber", angelegtAm: 1 }),
+    );
+    const { db, schliessen } = nurLesendOeffnen(pfad);
+    try {
+      expect(db.select({ name: betriebe.name }).from(betriebe).all()).toEqual([{ name: "Weber" }]);
+      expect(() =>
+        db.insert(betriebe).values({ betriebId: "elbblick", name: "Café", angelegtAm: 1 }).run(),
+      ).toThrow(/readonly/i);
+    } finally {
+      schliessen();
+    }
   });
 });

@@ -735,6 +735,40 @@ Alle Punkte: nach S-305.
 - [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
 
+## Übergabe
+
+Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streichen.
+
+**Angefangene Punkte (Entwurf, ungetestet):** Weiterbauen auf dem Branch des Pull Requests, nicht
+neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
+requests“).
+
+- [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
+- [ ] S-606 Haben – #48; offen: Doku in `docs/projektzeit.md`, Entscheidungen, Haken
+- [ ] S-904 Lasttest – #49; offen: Zeitüberschreitungen in den Tests klären, Schwelle festlegen
+  und als Entscheidung eintragen, Doku, Haken
+- [ ] S-803 Terminal offline – noch nicht begonnen
+
+**Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604
+(#43), S-605 (#42), S-802 (#45), S-906 (#44). Das Review (`tdd-review`) wird für jeden nachgeholt,
+Befunde gehen als eigene Pull Requests mit fehlschlagendem Test zuerst. Ab sofort gilt wieder das
+Review vor jedem Merge.
+
+**Offene Nacharbeiten** (beim Bauen aufgefallen, noch ohne Pull Request):
+
+- [ ] SvEV § 1: Aufteilung bei 25 €/h auf drei Teile (nur ein Test liegt vor)
+- [ ] Dienstplan zeigt „nicht hinterlegt“, wenn ein Jahreswert fehlt
+- [ ] Doppeltes Antippen beim Stempeln: kurze Sperre (Vorschlag 1,5 s), Entscheidung fehlt
+- [ ] Abgeschlossener Monat sperrt die Projektzeit nicht; entscheiden und eintragen
+- [ ] Solo-Betrieb: Oberfläche für „später einladen“ fehlt
+- [ ] Projektzeit über MCP buchen
+- [ ] Inhaber kann API-Zugänge anderer nicht widerrufen
+- [ ] OpenAPI-Dokument durch einen externen Validator prüfen
+- [ ] Quadlet und arm64-Image nicht geprüft
+- [ ] S-605: Storno eines unterschriebenen Stundennachweises fehlt
+- [ ] Gesetzeswächter: Workflow einmal von Hand starten und die Prüfsummen in
+  `scripts/gesetze/normen.json` übernehmen
+
 ## Zurückgestellt
 
 Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie zurück.

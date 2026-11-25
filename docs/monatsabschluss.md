@@ -117,7 +117,7 @@ entfernt (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO):
 
 | Monat | Frist | Grund |
 | --- | --- | --- |
-| an einem Tag Stundenlohn, Minijob, ein Zuschlag oder kein Arbeitszeitmodell | 8 Jahre | das Lohnbüro bucht aus ihm Stunden oder Beträge; er ist Buchungsbeleg (§ 147 Abs. 1 Nr. 4, Abs. 3 Satz 1 AO, § 257 Abs. 4 HGB) |
+| an einem Tag (auch einem, den ein im Monat gebuchter Gegeneintrag korrigiert) Stundenlohn, Minijob, ein Zuschlag oder kein Arbeitszeitmodell | 8 Jahre | das Lohnbüro bucht aus ihm Stunden oder Beträge; er ist Buchungsbeleg (§ 147 Abs. 1 Nr. 4, Abs. 3 Satz 1 AO, § 257 Abs. 4 HGB) |
 | sonst (fester Monatslohn ohne Zuschläge) | 2 Jahre | Aufzeichnung der Arbeitszeit (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG) |
 
 Die Frist beginnt mit dem Ende des Kalenderjahres, in dem der Monat abgeschlossen wurde: Oktober 2026,
@@ -125,7 +125,7 @@ abgeschlossen im November 2026, ohne Lohnbezug, wird am 1. Januar 2029 entfernt.
 abgeschlossen wurde, wird nicht entfernt.
 
 Der Server prüft das beim Start und dann alle sechs Stunden. Entfernt werden die Stempelungen des
-Monats (jede Fassung einer korrigierten Stempelung mit), die in ihm gebuchten Gegeneinträge, die
+Monats (jede Fassung einer korrigierten Stempelung mit; eine entfernte Stempelung mit dem Monat der Schicht, zu der sie gehörte), die in ihm gebuchten Gegeneinträge, die
 Bestätigungen und der Abschluss, die Abwesenheiten, die ganz in entfernten Monaten liegen (auch
 abgelehnte und zurückgezogene Anträge; eine Abwesenheit, die in einen noch aufbewahrten Monat reicht,
 bleibt bis zu dessen Ende), und mit ihnen der gespeicherte Inhalt ihrer Einträge in der

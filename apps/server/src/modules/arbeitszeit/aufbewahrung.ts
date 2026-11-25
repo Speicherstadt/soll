@@ -27,15 +27,19 @@ const gebucht = (modell: Lohnmodell | undefined): boolean =>
 /**
  * 8 years when the month is a voucher of payroll on any day (§ 147 Abs. 1 Nr. 4, Abs. 3 Satz 1 AO,
  * § 257 Abs. 1 Nr. 4, Abs. 4 HGB, 8 years since 1 January 2025), else 2 years as the record of
- * working time (§ 16 Abs. 2 ArbZG). The 6 years of other documents (§ 147 Abs. 3 AO) and of the
+ * working time (§ 16 Abs. 2 ArbZG). The days of the counter-entries booked in the month count too:
+ * payroll posts each under the model of the day it corrects. The 6 years of other documents (§ 147 Abs. 3 AO) and of the
  * payroll account (§ 41 Abs. 1 EStG) do not apply: the payroll account is kept by the payroll office,
  * and a month that payroll did not post from is no tax document of the business.
  */
 export const aufbewahrungsjahre = (
   modelle: readonly Lohnmodell[],
   monat: Monat,
+  korrigierteTage: readonly Tag[] = [],
 ): Aufbewahrungsjahre =>
-  tageImMonat(monat).some((tag) => gebucht(modellAm(modelle, tag))) ? 8 : 2;
+  [...tageImMonat(monat), ...korrigierteTage].some((tag) => gebucht(modellAm(modelle, tag)))
+    ? 8
+    : 2;
 
 /**
  * The first day the content may be removed: the period starts with the end of the calendar year the

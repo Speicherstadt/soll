@@ -4,6 +4,7 @@ import {
   monatVon,
   stempelSchluessel,
   stempeltage,
+  type Tag,
   tagInBerlin,
 } from "@soll/arbeitszeit";
 import { and, asc, eq, isNotNull, lt } from "drizzle-orm";
@@ -43,6 +44,24 @@ type Abschluss = Pick<
 >;
 type Stempelzeile = typeof stempelungen.$inferSelect;
 
+/**
+ * The days the counter-entries booked in a month correct: payroll posts each under the model of
+ * that day (`lohnmonat` in @soll/export), so they count for the month's years too
+ */
+const korrigierteTage = (db: Db, a: Abschluss): Tag[] =>
+  db
+    .select({ tag: korrekturen.tag })
+    .from(korrekturen)
+    .where(
+      and(
+        eq(korrekturen.betriebId, a.betriebId),
+        eq(korrekturen.nutzerId, a.nutzerId),
+        eq(korrekturen.gebuchtIn, a.monat),
+      ),
+    )
+    .all()
+    .map(({ tag }) => tag as Tag);
+
 /** The closed months whose period has ended by `jetzt`, the oldest first */
 const faellige = (db: Db, jetzt: number): (Abschluss & { jahre: Aufbewahrungsjahre })[] => {
   const heute = tagInBerlin(jetzt);
@@ -70,9 +89,28 @@ const faellige = (db: Db, jetzt: number): (Abschluss & { jahre: Aufbewahrungsjah
       jahre: aufbewahrungsjahre(
         lohnmodelle(db, abschluss.betriebId, abschluss.nutzerId),
         abschluss.monat,
+        korrigierteTage(db, abschluss),
       ),
     }))
     .filter((abschluss) => aussonderbarAb(abschluss.erstelltAm, abschluss.jahre) <= heute);
+};
+
+/**
+ * Whether a removed stamp goes with month `monat`: it has no working day of its own, so it goes with
+ * the one it would have in force among the stamps in force now (a Gehen of a night shift with the
+ * day the shift began), and only once the month of its calendar day is removed too; until then it
+ * stays as part of the correction history of a month that is kept (GoBD Rz. 107 ff.)
+ */
+const entfernteGehoert = (
+  inKraft: readonly Stempelzeile[],
+  z: Stempelzeile,
+  monat: Monat,
+  weg: ReadonlySet<Monat>,
+): boolean => {
+  const alsInKraft = { ...z, entfernt: false };
+  const tag = stempeltage([...inKraft, alsInKraft]).get(stempelSchluessel(alsInKraft));
+  const kalender = monatVon(tagInBerlin(z.zeitpunkt));
+  return monatVon(tag ?? tagInBerlin(z.zeitpunkt)) === monat && weg.has(kalender);
 };
 
 /**
@@ -106,9 +144,10 @@ const stempelzeilen = (
     (z) => !nachfolger.has(z.stempelId) && !z.entfernt && z.zeitpunkt >= von && z.zeitpunkt < bis,
   );
   const tage = stempeltage(imFenster);
+  const weg = new Set([a.monat, ...ausgesonderteMonate(db, a.betriebId, a.nutzerId)]);
   const gehoert = (z: Stempelzeile): boolean =>
     z.entfernt
-      ? monatVon(tagInBerlin(z.zeitpunkt)) === a.monat
+      ? entfernteGehoert(imFenster, z, a.monat, weg)
       : monatVon(tage.get(stempelSchluessel(z)) ?? tagInBerlin(z.zeitpunkt)) === a.monat &&
         z.zeitpunkt >= von &&
         z.zeitpunkt < bis;

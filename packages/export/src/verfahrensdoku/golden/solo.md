@@ -40,7 +40,9 @@ Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Tablet
 
 Haben: Eine Übergabe der Projektzeit an eine Buchhaltung ist nicht eingerichtet.
 
-Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau mit den Befunden der Regeln und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Ein in Soll abgeschlossener Monat nimmt nichts an; was im alten Programm abgeschlossen war, schließt Soll mit Grund ab. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.
+Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.
+
+Solange das Modul Arbeitszeit ausgeschaltet ist, lehnt der Import Zeiten und Abwesenheiten ab.
 
 Bisher hat der Betrieb nichts aus anderen Programmen übernommen.
 

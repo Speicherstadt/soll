@@ -59,7 +59,9 @@ DATEV: Der Export für das Lohnbüro ist nicht eingerichtet.
 
 Prüfexport: Für Zoll und Arbeitsschutz gibt Soll die Arbeitstage von Personen in einem Zeitraum als CSV und PDF aus, mit Änderungen von Hand, Gegeneinträgen und dem Prüfwert jedes abgeschlossenen Monats (§ 16 Abs. 2 ArbZG, § 17 Abs. 1 MiLoG).
 
-Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau mit den Befunden der Regeln und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Ein in Soll abgeschlossener Monat nimmt nichts an; was im alten Programm abgeschlossen war, schließt Soll mit Grund ab. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.
+Importe: Daten aus anderen Programmen übernimmt nur der Inhaber, nach Vorschau und einem Probelauf, der nichts schreibt. Die Originaldatei liegt unverändert unter ihrem SHA-256 im Datenverzeichnis; jeder Import ist eine nur angefügte Zeile mit Werkzeug, Datei, Zuordnung und Ergebnis, und jede übernommene Zeile trägt den Import und ihre Kennung im alten Programm und steht in der Audit-Kette. Was nicht übernommen wurde, bleibt im bisherigen Verfahren; es gehört in einen eigenen Abschnitt am Ende.
+
+Zeiten und Abwesenheiten prüft die Vorschau mit den Regeln. Ein in Soll abgeschlossener Monat nimmt nichts an; was im alten Programm abgeschlossen war, schließt Soll mit Grund ab.
 
 Bisher übernommen: 2 Importe aus soll-csv.
 

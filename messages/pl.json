@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "Nie przyjęto bez sieci: {art} o {uhrzeit}, nr {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "nieznany PIN, karta lub kod QR",
   "terminal_grund_ausweis_unlesbar": "nieczytelny identyfikator",
+  "terminal_grund_gesperrt": "terminal zablokowany do północy (PIN nie sprawdzono)",
   "terminal_grund_zukunft": "czas tabletu jest po wysłaniu",
   "terminal_grund_abgeschlossen": "miesiąc już zamknięty",
   "terminal_entkoppeln": "Rozłącz",

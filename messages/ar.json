@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "لم يُقبل دون شبكة: {art} في {uhrzeit}، رقم {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "رمز PIN أو البطاقة أو رمز QR غير معروف",
   "terminal_grund_ausweis_unlesbar": "تعذّرت قراءة الهوية",
+  "terminal_grund_gesperrt": "الجهاز الطرفي مقفل حتى منتصف الليل (لم يُتحقق من رمز PIN)",
   "terminal_grund_zukunft": "وقت الجهاز اللوحي بعد الإرسال",
   "terminal_grund_abgeschlossen": "الشهر مغلق بالفعل",
   "terminal_entkoppeln": "إلغاء الربط",

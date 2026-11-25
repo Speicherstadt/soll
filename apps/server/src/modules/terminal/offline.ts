@@ -1,6 +1,7 @@
 import {
   ausweisZusatz,
   nummernLuecken,
+  offlineZeitpunkt,
   type Stempelart,
   terminalNachricht,
 } from "@soll/arbeitszeit";
@@ -12,6 +13,7 @@ import {
   offlineStempeln,
   schluesselPruefen,
   signaturGueltig,
+  stempelungenIn,
 } from "../arbeitszeit/index.ts";
 import { sha256 } from "../audit/hash.ts";
 import { schreiben } from "../audit/index.ts";
@@ -74,18 +76,19 @@ export type OfflineEingabe = {
 };
 
 /** Why an entry with a valid signature made no stamp; it is kept, the owner sees it */
-export type Ablehnung = "ausweis_unlesbar" | "ausweis_unbekannt" | "zukunft" | "abgeschlossen";
+export type Ablehnung =
+  | "ausweis_unlesbar"
+  | "ausweis_unbekannt"
+  | "gesperrt"
+  | "zukunft"
+  | "abgeschlossen";
 
 export type OfflineErgebnis =
   /** `vorhanden`: the same entry came before; this is its answer again */
   | { art: "gestempelt"; stempelId: string; vorhanden: boolean }
   | { art: "abgelehnt"; grund: Ablehnung; vorhanden: boolean }
-  /** not taken now: kept on the tablet (gesperrt, schluessel_fehlt) or wrong for good */
-  | {
-      art: "fehler";
-      fehler: "signatur" | "schluessel_fehlt" | "doppelt" | "gesperrt";
-      gesperrtBis?: number;
-    };
+  /** not taken now: kept on the tablet (schluessel_fehlt) or wrong for good */
+  | { art: "fehler"; fehler: "signatur" | "schluessel_fehlt" | "doppelt" };
 
 type EintragZeile = typeof terminalEintraege.$inferSelect;
 
@@ -107,6 +110,25 @@ const wieVorher = (zeile: EintragZeile): OfflineErgebnis =>
   zeile.stempelId !== null
     ? { art: "gestempelt", stempelId: zeile.stempelId, vorhanden: true }
     : { art: "abgelehnt", grund: zeile.grund as Ablehnung, vorhanden: true };
+
+/**
+ * How long after the tap a live stamp of the same person and kind from a terminal is the same tap:
+ * the kiosk queues a stamp whose online answer it did not get, and the server may have stamped it
+ * (review of S-803)
+ */
+export const SELBER_TIPP_MS = 60_000;
+
+/** A live terminal stamp of the person, of this kind, from the tap to a minute after it */
+const schonLive = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  art: Stempelart,
+  getippt: number,
+): string | undefined =>
+  stempelungenIn(db, betriebId, nutzerId, getippt - 5_000, getippt + SELBER_TIPP_MS).find(
+    (stempel) => stempel.quelle === "terminal" && !stempel.offline && stempel.art === art,
+  )?.stempelId;
 
 /** The parts of an entry the server keeps: number, kind, the device's time and the hash */
 const zeileVon = (terminal: Terminal, eingabe: OfflineEingabe, hash: string, jetzt: number) => ({
@@ -134,8 +156,10 @@ export type OfflineAbhaengigkeiten = {
  * (the same content) or is refused (another content). Then the credential is opened and recognises
  * the person as online (`erkennen`: a wrong one counts toward the lock and stands in the audit
  * chain, a SUN message counts once); the stamp is the person's, from the terminal, marked offline,
- * at the device's time moved by the error of its clock. A locked terminal takes nothing: the entry
- * waits on the tablet. Refusals with a valid signature are kept with their reason.
+ * at the device's time moved by the error of its clock. Nothing waits on a lock: a guessable
+ * credential after the day's last wrong try is refused as `gesperrt` (sperre.ts). A live stamp of the
+ * same tap (its answer was lost) is taken as this entry's stamp. Refusals with a valid signature are
+ * kept with their reason.
  */
 export const offlineEintragAnnehmen = async (
   abh: OfflineAbhaengigkeiten,
@@ -171,12 +195,22 @@ export const offlineEintragAnnehmen = async (
   );
   const ausweis = klartext === null ? null : abh.ausweisAus(klartext);
   if (!ausweis) return ablehnen("ausweis_unlesbar");
-  const erkannt = erkennen(db, schreibDb, aktuell, ausweis, abh.schluessel, jetzt);
-  if (!erkannt.ok && erkannt.grund === "gesperrt" && !erkannt.gezaehlt)
-    return { art: "fehler", fehler: "gesperrt", gesperrtBis: erkannt.gesperrtBis };
-  if (!erkannt.ok) return ablehnen("ausweis_unbekannt");
+  const zeit = offlineZeitpunkt({ ...eingabe, empfangen: jetzt });
+  if (!zeit.ok) return ablehnen("zukunft");
+  const erkannt = erkennen(db, schreibDb, aktuell, ausweis, abh.schluessel, jetzt, zeit.zeitpunkt);
+  if (!erkannt.ok)
+    return ablehnen(
+      erkannt.grund === "gesperrt" && !erkannt.gezaehlt ? "gesperrt" : "ausweis_unbekannt",
+    );
   // the person stamps, through the terminal: they are the actor, the row names the terminal
   const kontext = { betriebId: terminal.betriebId, akteur: erkannt.nutzerId, jetzt };
+  const live = schonLive(db, terminal.betriebId, erkannt.nutzerId, eingabe.art, zeit.zeitpunkt);
+  if (live) {
+    schreiben(schreibDb, kontext, (s) =>
+      s.einfuegen("terminalEintraege", { ...zeile, stempelId: live, grund: null }),
+    );
+    return { art: "gestempelt", stempelId: live, vorhanden: true };
+  }
   const ergebnis = offlineStempeln(
     db,
     schreibDb,

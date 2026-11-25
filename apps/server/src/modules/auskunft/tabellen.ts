@@ -50,6 +50,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   haben_uebergaben:
     "ausgenommen: Leistung des Betriebs an seinen Kunden ohne Namen der Person; die Buchung selbst steht unter projektzeiten",
   karten: "karten (Art, wann und von wem eingetragen, widerrufen; ohne UID, Schlüssel und Zähler)",
+  karten_lesungen:
+    "ausgenommen: Lesezähler der Karten mit Zeit des Lesens; die Stempelung selbst steht unter stempelungen",
   abwesenheiten:
     "abwesenheiten (Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer; keine Diagnose)",
   personenangaben:
@@ -129,6 +131,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ),
   haben_zugaenge: aus("keine Daten der Person (Zugang des Betriebs zu Haben)"),
   haben_uebergaben: aus("keine eigenen Daten: die Buchungen stehen unter projektzeiten"),
+  karten_lesungen: aus("Lesezähler der Karten sieht der Inhaber sonst nirgends"),
   karten: frei(
     "welche Karten der Inhaber der Person eingetragen hat, wie die Einstellungen es zeigen",
   ),

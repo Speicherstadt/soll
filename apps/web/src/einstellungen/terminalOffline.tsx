@@ -12,6 +12,7 @@ export type OfflineStand = {
 const GRUENDE: Record<string, () => string> = {
   ausweis_unbekannt: () => m.terminal_grund_ausweis_unbekannt(),
   ausweis_unlesbar: () => m.terminal_grund_ausweis_unlesbar(),
+  gesperrt: () => m.terminal_grund_gesperrt(),
   zukunft: () => m.terminal_grund_zukunft(),
   abgeschlossen: () => m.terminal_grund_abgeschlossen(),
 };

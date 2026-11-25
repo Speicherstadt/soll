@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "Не прийнято без мережі: {art} о {uhrzeit}, № {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "PIN, картка або QR-код невідомі",
   "terminal_grund_ausweis_unlesbar": "посвідчення не читається",
+  "terminal_grund_gesperrt": "термінал заблоковано до півночі (PIN не перевірено)",
   "terminal_grund_zukunft": "час планшета пізніший за надсилання",
   "terminal_grund_abgeschlossen": "місяць уже закрито",
   "terminal_entkoppeln": "Від’єднати",

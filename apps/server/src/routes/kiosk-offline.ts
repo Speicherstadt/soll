@@ -30,19 +30,18 @@ export const kioskOfflineSchema = z
   })
   .strict();
 
-const GRUND_STATUS = { signatur: 422, schluessel_fehlt: 409, doppelt: 409, gesperrt: 423 } as const;
+const GRUND_STATUS = { signatur: 422, schluessel_fehlt: 409, doppelt: 409 } as const;
 
 /**
  * The answer to an entry: 201 with the stamp's id for a new one, 200 for the same entry again; 422
- * with the reason for an entry refused and kept (the tablet does not send it again), 423 while the
- * terminal is locked and 409 `schluessel_fehlt` before its key is registered (the entry waits)
+ * with the reason for an entry refused and kept (the tablet does not send it again, also `gesperrt`)
+ * and 409 `schluessel_fehlt` before its key is registered (the entry waits)
  */
 const antwort = (c: Context<KioskAnfrage>, ergebnis: OfflineErgebnis) => {
   if (ergebnis.art === "gestempelt")
     return c.json({ stempelId: ergebnis.stempelId }, ergebnis.vorhanden ? 200 : 201);
   if (ergebnis.art === "abgelehnt") return c.json({ fehler: ergebnis.grund }, 422);
-  const zusatz = ergebnis.gesperrtBis === undefined ? {} : { gesperrtBis: ergebnis.gesperrtBis };
-  return c.json({ fehler: ergebnis.fehler, ...zusatz }, GRUND_STATUS[ergebnis.fehler]);
+  return c.json({ fehler: ergebnis.fehler }, GRUND_STATUS[ergebnis.fehler]);
 };
 
 /**

@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "Not accepted without network: {art} at {uhrzeit}, no. {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "PIN, card or QR code unknown",
   "terminal_grund_ausweis_unlesbar": "credential not readable",
+  "terminal_grund_gesperrt": "terminal locked until midnight (PIN not checked)",
   "terminal_grund_zukunft": "tablet's time is after sending",
   "terminal_grund_abgeschlossen": "month already closed",
   "terminal_entkoppeln": "Unpair",

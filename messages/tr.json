@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "Ağ yokken kabul edilmedi: {art} saat {uhrzeit}, no. {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "PIN, kart veya QR kodu bilinmiyor",
   "terminal_grund_ausweis_unlesbar": "kimlik okunamadı",
+  "terminal_grund_gesperrt": "terminal gece yarısına kadar kilitli (PIN kontrol edilmedi)",
   "terminal_grund_zukunft": "tabletin saati gönderimden sonra",
   "terminal_grund_abgeschlossen": "ay zaten kapatıldı",
   "terminal_entkoppeln": "Eşleştirmeyi kaldır",

@@ -90,12 +90,13 @@ describe("review of S-803: the offline queue of the terminal", { timeout: 60_000
     const e = await elbblick();
     await ntagKarte(e.inhaber, e.lea.nutzerId);
     await e.geraet.anfrage("/api/v1/kiosk/erkennen", { body: { sun: sun(6) } });
-    // counter 5 claims to be read after counter 6 was: a message read off the card and kept
+    // five minutes later, counter 5 comes as read just now: a message read off the card and kept
+    e.server.stelleUhr(JETZT + 5 * 60_000);
     const spaeter = await e.offline.stempeln({
       nummer: 1,
       ausweis: { sun: sun(5) },
-      geraetZeitpunkt: JETZT + 60_000,
-      gesendetAm: JETZT + 60_000,
+      geraetZeitpunkt: JETZT + 5 * 60_000,
+      gesendetAm: JETZT + 5 * 60_000,
     });
     expect(await json(spaeter)).toEqual({ fehler: "ausweis_unbekannt" });
   });

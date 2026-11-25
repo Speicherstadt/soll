@@ -142,9 +142,9 @@ describe("an entry of the terminal's offline queue (S-803)", { timeout: 20_000 }
     // the fifth wrong one locks the terminal and is itself refused for good
     expect((await e.offline.stempeln({ nummer: 5, ausweis: { pin: "600005" } })).status).toBe(422);
     expect((await json(await e.geraet.anfrage("/api/v1/kiosk"))).gesperrtBis).toBe(JETZT + 60_000);
-    // while locked, even Lea's entry waits on the tablet
-    const wartet = await e.offline.stempeln({ nummer: 6, ausweis: { pin: "471100" } });
-    expect(wartet.status).toBe(423);
+    // the short wait paces typing at the tablet; queued entries go on (review of S-803)
+    const lea = await e.offline.stempeln({ nummer: 6, ausweis: { pin: "471100" } });
+    expect(lea.status).toBe(201);
     const stand = await e.stand();
     expect(stand?.abgelehnt.map((a) => [a.nummer, a.grund])).toEqual(
       [1, 2, 3, 4, 5].map((nummer) => [nummer, "ausweis_unbekannt"]),
@@ -154,9 +154,6 @@ describe("an entry of the terminal's offline queue (S-803)", { timeout: 20_000 }
       .query("SELECT COUNT(*) AS n FROM audit_glieder WHERE akteur = ? AND tabelle = 'terminals'")
       .get(`terminal:${e.geraet.terminalId}`) as { n: number };
     expect(glieder.n).toBeGreaterThanOrEqual(5);
-    // after the lock, the entry that waited goes through
-    e.server.stelleUhr(JETZT + 61_000);
-    expect((await e.offline.stempeln({ nummer: 6, ausweis: { pin: "471100" } })).status).toBe(201);
   });
 
   it("shows the owner a gap in the numbers until the missing entry arrives", async () => {

@@ -6,8 +6,9 @@ import { personVonPin } from "../pin/index.ts";
 import { personVonAusweis } from "./ausweise.ts";
 import { belegPruefen } from "./beleg.ts";
 import { pinKennung, type TerminalSchluessel, uidNormalisieren } from "./geheimnis.ts";
-import { karteLesen, karteVonSun, karteVonUid } from "./karten.ts";
-import { istGesperrt, nachFehlversuch, type Sperrstand } from "./sperre.ts";
+import { karteVonSun, karteVonUid } from "./karten.ts";
+import { lesungMerken, wiederholt } from "./lesungen.ts";
+import { istGesperrt, nachFehlversuch, offlineGesperrt, type Sperrstand } from "./sperre.ts";
 import type { Sun } from "./sun.ts";
 import { type Terminal, terminalAkteur, terminalLesen } from "./terminals.ts";
 
@@ -85,12 +86,14 @@ const trefferVon = (
     : {};
 };
 
-/** A SUN message whose read counter is not above the last one seen was read before: a replay */
-const wiederholt = (db: Db, betriebId: string, zaehler: Treffer["zaehler"]): boolean => {
-  if (!zaehler) return false;
-  const zuletzt = karteLesen(db, betriebId, zaehler.karteId)?.zaehler ?? null;
-  return zuletzt !== null && zaehler.wert <= zuletzt;
-};
+/**
+ * Whether the terminal's lock stops this try: online any lock; for an entry of the offline queue
+ * only the lock until midnight, and only for a credential that can be guessed (sperre.ts)
+ */
+const gesperrt = (stand: Sperrstand, jetzt: number, ausweis: Ausweis, offline?: number) =>
+  offline === undefined
+    ? istGesperrt(stand, jetzt)
+    : offlineGesperrt(stand, jetzt, "pin" in ausweis);
 
 /**
  * Recognises a person at a terminal (S-801, S-802). A locked terminal compares nothing; each wrong
@@ -98,7 +101,9 @@ const wiederholt = (db: Db, betriebId: string, zaehler: Treffer["zaehler"]): boo
  * the lock of the terminal (sperre.ts) and stands in the audit chain; a person recognised lifts
  * nothing, so one's own PIN between guesses does not reset the count. The count and a card's read
  * counter are read again inside the write transaction, which holds the write lock, so parallel
- * tries are not lost and one SUN message cannot count twice (as in modules/pin).
+ * tries are not lost and one SUN message cannot count twice (as in modules/pin). `offline` is the
+ * instant of an entry from the tablet's offline queue (S-803): it changes how the lock and an older
+ * SUN counter count (sperre.ts, lesungen.ts).
  */
 export const erkennen = (
   db: Db,
@@ -107,8 +112,9 @@ export const erkennen = (
   ausweis: Ausweis,
   schluessel: TerminalSchluessel,
   jetzt: number,
+  offline?: number,
 ): Erkennung => {
-  if (istGesperrt(sperrstand(terminal), jetzt))
+  if (gesperrt(sperrstand(terminal), jetzt, ausweis, offline))
     return { ok: false, grund: "gesperrt", gesperrtBis: terminal.gesperrtBis ?? jetzt };
   const treffer = trefferVon(db, terminal, ausweis, schluessel, jetzt);
   const erkannt = stempelt(db, terminal.betriebId, treffer.nutzerId);
@@ -120,15 +126,11 @@ export const erkennen = (
   return schreiben(schreibDb, kontext, (s): Erkennung => {
     const aktuell = terminalLesen(db, terminal.betriebId, terminal.terminalId) ?? terminal;
     const stand = sperrstand(aktuell);
-    if (istGesperrt(stand, jetzt))
+    if (gesperrt(stand, jetzt, ausweis, offline))
       return { ok: false, grund: "gesperrt", gesperrtBis: stand.gesperrtBis ?? jetzt };
-    if (erkannt && !wiederholt(db, terminal.betriebId, treffer.zaehler)) {
+    if (erkannt && !wiederholt(db, terminal.betriebId, treffer.zaehler, offline)) {
       if (treffer.zaehler)
-        s.aendern(
-          "karten",
-          { karteId: treffer.zaehler.karteId },
-          { zaehler: treffer.zaehler.wert },
-        );
+        lesungMerken(db, s, terminal.betriebId, treffer.zaehler, offline ?? jetzt);
       return { ok: true, nutzerId: treffer.nutzerId as string };
     }
     const neu = nachFehlversuch(stand, jetzt);

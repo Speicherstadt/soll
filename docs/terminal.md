@@ -160,14 +160,25 @@ Was dabei auf dem Tablet liegt und wie der Server es prüft:
   Person mit dem entschlüsselten Ausweis wie am Terminal mit Netz und stempelt für sie: Quelle
   „Terminal“, das Terminal, als **offline** markiert, zur Zeit des Tablets, verschoben um die
   Abweichung seiner Uhr beim Senden (wie [ohne Netz am Handy](stempeln.md)). Eine falsche PIN oder
-  Karte zählt zur [Sperre](#sperre) und steht in der Audit-Kette, eine SUN-Nachricht zählt nur
-  einmal. Ist das Terminal gesperrt, wartet der Eintrag, bis die Sperre endet oder der Inhaber sie
-  aufhebt.
+  Karte zählt zur [Sperre](#sperre) und steht in der Audit-Kette. Die kurzen Wartezeiten der Sperre
+  halten Einträge ohne Netz nicht auf; nach dem zwanzigsten falschen Versuch des Tages lehnt der
+  Server eine PIN (auch mit Karte) ungeprüft als „gesperrt“ ab, QR-Code und NTAG 424 DNA prüft er
+  weiter. So hält niemand mit Rateversuchen ohne Netz die echten Stempelungen dahinter auf.
+- **SUN-Nachricht**: Jede zählt nur einmal. Eine Nachricht aus der Warteschlange darf einen
+  kleineren Lesezähler haben als die Karte inzwischen mit Netz gezeigt hat, wenn sie vor diesem
+  Lesen getippt wurde; Soll merkt sich dafür jeden Lesezähler mit seiner Zeit.
+- **Ausweis an seinen Eintrag gebunden**: Ein verschlüsselter Ausweis öffnet sich nur in dem
+  Eintrag (Terminal, Nummer, Art, Zeit), für den er getippt wurde; aus der Ablage des Tablets lässt
+  er sich nicht in einen neuen Eintrag übernehmen.
+- **Antwort verloren**: Hat der Server eine Stempelung mit Netz gemacht, aber das Tablet die Antwort
+  nicht bekommen, legt das Tablet sie in die Warteschlange; beim Übertragen erkennt der Server
+  dieselbe Stempelung (dieselbe Person und Art vom Terminal binnen einer Minute) und macht keine
+  zweite.
 - **Derselbe Eintrag zweimal** ergibt eine Stempelung; ein anderer Inhalt unter einer schon
   vergebenen Nummer wird abgelehnt.
 - **Was der Inhaber sieht**: Unter **Einstellungen → Terminal** steht bei jedem Terminal jeder
   Eintrag, den der Server nicht angenommen hat, mit Grund (PIN, Karte oder QR-Code unbekannt,
-  Ausweis nicht lesbar, Monat schon abgeschlossen), und jede Lücke in den Nummern. Ohne Netz kann
+  Ausweis nicht lesbar, Terminal bis Mitternacht gesperrt, Monat schon abgeschlossen), und jede Lücke in den Nummern. Ohne Netz kann
   das Tablet eine falsche PIN nicht erkennen; die Person sieht „gespeichert“, der Inhaber später die
   Ablehnung und trägt die Stempelung bei Bedarf mit Grund nach.
 - **Entkoppeln** wirkt auch hier: Ein widerrufenes Terminal überträgt nichts mehr.
@@ -194,4 +205,4 @@ und zeigt ohne Netz „Keine Verbindung“.
 | `POST /api/v1/kiosk/erkennen` | Tablet mit Token | `{ pin }`, `{ qr }`, `{ karte, pin }`, `{ sun: { e, c } }` oder `{ beleg }`: Person und Tag, nach `sun` mit `beleg`; 401 mit den übrigen Versuchen, 423 mit dem Ende der Sperre |
 | `POST /api/v1/kiosk/stempeln` | Tablet mit Token | `{ ausweis, art }`: erkennt und stempelt |
 | `PUT /api/v1/kiosk/schluessel` | Tablet mit Token | `{ schluessel }` (JWK, P-256): öffentlicher Schlüssel der Warteschlange, einmal je Kopplung; 409 `vergeben` bei einem anderen |
-| `POST /api/v1/kiosk/offline` | Tablet mit Token | `{ nummer, art, geraetZeitpunkt, gesendetAm, ausweis, signatur }`: ein Eintrag ohne Netz; 201 neu, 200 derselbe noch einmal, 409 `doppelt`, 422 mit Grund (bleibt abgelehnt), 423 gesperrt und 409 `schluessel_fehlt` (wartet) |
+| `POST /api/v1/kiosk/offline` | Tablet mit Token | `{ nummer, art, geraetZeitpunkt, gesendetAm, ausweis, signatur }`: ein Eintrag ohne Netz; 201 neu, 200 derselbe noch einmal, 409 `doppelt`, 422 mit Grund (bleibt abgelehnt, auch `gesperrt`), 409 `schluessel_fehlt` (wartet) |

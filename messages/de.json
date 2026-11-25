@@ -635,6 +635,7 @@
   "terminal_offline_abgelehnt": "Ohne Netz nicht angenommen: {art} um {uhrzeit}, Nr. {nummer} – {grund}",
   "terminal_grund_ausweis_unbekannt": "PIN, Karte oder QR-Code unbekannt",
   "terminal_grund_ausweis_unlesbar": "Ausweis nicht lesbar",
+  "terminal_grund_gesperrt": "Terminal bis Mitternacht gesperrt (PIN nicht geprüft)",
   "terminal_grund_zukunft": "Zeit des Tablets liegt nach dem Senden",
   "terminal_grund_abgeschlossen": "Monat schon abgeschlossen",
   "terminal_entkoppeln": "Entkoppeln",

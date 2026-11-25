@@ -43,6 +43,8 @@ describe("modules switched off", () => {
       "Prüfexport",
       "DATEV",
       "Schicht",
+      "schließt Soll mit Grund ab",
+      "abgeschlossener Monat nimmt nichts an",
     ])
       expect(text, verfahren).not.toContain(verfahren);
   });

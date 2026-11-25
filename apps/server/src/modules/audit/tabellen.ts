@@ -35,6 +35,7 @@ import {
   stundennachweise,
   stundensaetze,
   taetigkeiten,
+  terminalEintraege,
   terminals,
 } from "../../db/schema.ts";
 
@@ -72,6 +73,7 @@ export const kettenTabellen = {
   bedarfe: { tabelle: bedarfe, schluessel: ["bedarfId"] },
   personenangaben: { tabelle: personenangaben, schluessel: ["nutzerId"] },
   terminals: { tabelle: terminals, schluessel: ["terminalId"] },
+  terminalEintraege: { tabelle: terminalEintraege, schluessel: ["terminalId", "nummer"] },
   ausweise: { tabelle: ausweise, schluessel: ["nutzerId"] },
   karten: { tabelle: karten, schluessel: ["karteId"] },
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },

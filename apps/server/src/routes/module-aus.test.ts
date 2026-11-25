@@ -45,6 +45,8 @@ const OHNE_MODUL: readonly string[] = [
   "GET /api/v1/kiosk",
   "POST /api/v1/kiosk/erkennen",
   "POST /api/v1/kiosk/stempeln",
+  "PUT /api/v1/kiosk/schluessel",
+  "POST /api/v1/kiosk/offline",
 ];
 
 const json = async (antwort: Response) => (await antwort.json()) as Record<string, unknown>;

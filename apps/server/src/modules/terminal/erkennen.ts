@@ -24,7 +24,8 @@ export type Ausweis =
 
 export type Erkennung =
   | { ok: true; nutzerId: string }
-  | { ok: false; grund: "gesperrt"; gesperrtBis: number }
+  /** `gezaehlt`: this try was compared and counted, and it locked the terminal */
+  | { ok: false; grund: "gesperrt"; gesperrtBis: number; gezaehlt?: true }
   | { ok: false; grund: "unbekannt"; fehlversuche: number };
 
 /** Who an identification names, and for a SUN message the card's read counter to take over */
@@ -133,7 +134,7 @@ export const erkennen = (
     const neu = nachFehlversuch(stand, jetzt);
     s.aendern("terminals", { terminalId: terminal.terminalId }, neu);
     return neu.gesperrtBis !== null && neu.gesperrtBis > jetzt
-      ? { ok: false, grund: "gesperrt", gesperrtBis: neu.gesperrtBis }
+      ? { ok: false, grund: "gesperrt", gesperrtBis: neu.gesperrtBis, gezaehlt: true }
       : { ok: false, grund: "unbekannt", fehlversuche: neu.fehlversuche };
   });
 };

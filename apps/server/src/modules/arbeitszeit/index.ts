@@ -19,6 +19,8 @@ export {
   lueckenVon,
   type OeffentlicherSchluessel,
   type SignaturErgebnis,
+  schluesselPruefen,
+  signaturGueltig,
   signaturPruefen,
 } from "./geraete.ts";
 export { arbeitstagVon, sollGrundlagen } from "./grundlagen.ts";
@@ -45,6 +47,7 @@ export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
 export { pruefexportPerson } from "./pruefexport.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
+  type Dazu,
   hatStempelungen,
   nachtragen,
   offlineStempeln,

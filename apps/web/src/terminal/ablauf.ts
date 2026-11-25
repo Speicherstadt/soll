@@ -1,3 +1,4 @@
+import type { Stempelart } from "@soll/arbeitszeit";
 import { skipToken, useQuery } from "@tanstack/solid-query";
 import { createEffect, createSignal, onSettled, snapshot } from "solid-js";
 import { PFAD } from "../abfragen/schluessel.ts";
@@ -11,6 +12,8 @@ import {
 } from "./geraet.ts";
 import { entkoppelt, type Meldung, meldungAus } from "./meldung.ts";
 import type { NfcKarte } from "./nfc.ts";
+import { type OfflineAusweis, offlineAusweis } from "./offline/schlange.ts";
+import { kioskWarteschlange } from "./offline/warteschlange.ts";
 import type { Ausweis, Erkannt, Gestempelt, KioskStand, Kopplung } from "./typen.ts";
 
 /** How long a recognised person may choose before the kiosk goes back to the clock */
@@ -32,7 +35,10 @@ export type Ansicht =
   | { art: "bereit" }
   | { art: "scannen" }
   | { art: "erkannt"; daten: Erkannt; ausweis: Ausweis; bis: number }
-  | { art: "gestempelt"; daten: Gestempelt; bis: number };
+  | { art: "gestempelt"; daten: Gestempelt; bis: number }
+  /** no network: the person chooses without their state, the stamp waits on the tablet (S-803) */
+  | { art: "offline"; ausweis: OfflineAusweis; bis: number }
+  | { art: "gespeichert"; stempelart: Stempelart; zeitpunkt: number; bis: number };
 
 /** The signals of the kiosk: its pairing, what it shows, the last message, the clock */
 const kioskZustand = () => {
@@ -63,11 +69,17 @@ const kioskZustand = () => {
     setMeldung(null);
     setAnsicht({ art: "bereit" });
   };
-  /** A refusal: a revoked tablet goes back to pairing, anything else becomes a message */
-  const abgelehnt = (antwort: Parameters<typeof meldungAus>[0]) => {
+  const schlange = kioskWarteschlange(kopplung, vergessen);
+  /**
+   * A refusal: a revoked tablet goes back to pairing, anything else becomes a message; no network
+   * is no message where stamps can wait (the clock shows the state, S-803)
+   */
+  const abgelehnt = (antwort: Parameters<typeof meldungAus>[0], bereit = schlange.bereit()) => {
     zurueck();
     if (entkoppelt(antwort)) return vergessen();
-    setMeldung(meldungAus(antwort));
+    const ohneNetz = !antwort.ok && antwort.status === 0;
+    if (ohneNetz) schlange.netz(0);
+    setMeldung(ohneNetz && bereit ? null : meldungAus(antwort));
   };
   return {
     kopplung,
@@ -86,6 +98,7 @@ const kioskZustand = () => {
     zurueck,
     gekoppelt,
     abgelehnt,
+    schlange,
   };
 };
 
@@ -111,9 +124,12 @@ const kioskAufrufe = (z: Zustand) => {
     z.gekoppelt(antwort.daten);
     return null;
   };
+  const offline = ohneNetzAufrufe(z);
   const erkennen = (ausweis: Ausweis) =>
     einmal(async (token) => {
       const antwort = await kioskAnfrage<Erkannt>(token, "/erkennen", ausweis);
+      z.schlange.netz(antwort.status);
+      if (!antwort.ok && antwort.status === 0 && offline.ohneStand(ausweis)) return;
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setMeldung(null);
       // a SUN message counts once: the next tap stamps with the server's receipt (S-802)
@@ -141,20 +157,56 @@ const kioskAufrufe = (z: Zustand) => {
     z.setMeldung(null);
     z.setKarte({ uid: karte.uid, bis: Date.now() + ERKANNT_MS });
   };
-  const stempeln = (art: string) =>
+  const stempeln = (art: Stempelart) =>
     einmal(async (token) => {
       const aktuell = z.ansicht();
+      if (aktuell.art === "offline") return offline.speichern(aktuell.ausweis, art);
       if (aktuell.art !== "erkannt") return;
       const antwort = await kioskAnfrage<Gestempelt>(token, "/stempeln", {
         ausweis: aktuell.ausweis,
         art,
         geraetZeitpunkt: Date.now(),
       });
+      z.schlange.netz(antwort.status);
+      const wartet = offlineAusweis(aktuell.ausweis);
+      // the network went between recognising and stamping: the stamp waits on the tablet
+      if (!antwort.ok && antwort.status === 0 && wartet && z.schlange.bereit())
+        return offline.speichern(wartet, art);
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setAnsicht({ art: "gestempelt", daten: antwort.daten, bis: Date.now() + GESTEMPELT_MS });
     });
   return { koppeln, erkennen, pin, karteGelesen, stempeln };
 };
+
+/**
+ * Without a network (S-803): the person is not recognised, as only the server can; the kiosk offers
+ * Kommen, Pause and Gehen and keeps the stamp with the credential encrypted, to be sent later. Soll
+ * never stamps by itself: only what the person taps waits.
+ */
+const ohneNetzAufrufe = (z: Zustand) => ({
+  /** goes on without the person's state, where the credential can wait; false where it cannot */
+  ohneStand: (ausweis: Ausweis): boolean => {
+    const wartet = offlineAusweis(ausweis);
+    if (!wartet || !z.schlange.bereit()) return false;
+    z.setMeldung(null);
+    z.setAnsicht({ art: "offline", ausweis: wartet, bis: Date.now() + ERKANNT_MS });
+    return true;
+  },
+  speichern: async (ausweis: OfflineAusweis, art: Stempelart) => {
+    const eintrag = await z.schlange.aufnehmen(ausweis, art);
+    if (!eintrag) {
+      z.zurueck();
+      z.setMeldung({ art: "fehler" });
+      return;
+    }
+    z.setAnsicht({
+      art: "gespeichert",
+      stempelart: art,
+      zeitpunkt: eintrag.geraetZeitpunkt,
+      bis: Date.now() + GESTEMPELT_MS,
+    });
+  },
+});
 
 /**
  * The kiosk's state as a query (docs/entwicklung.md, "Daten laden"), asked with the device token on
@@ -178,13 +230,23 @@ const kioskStand = (z: Zustand) => {
       if (!abfrage.isSuccess) return null;
       const antwort = abfrage.data;
       const am = abfrage.dataUpdatedAt;
+      const kopplung = z.kopplung();
       return antwort.ok
-        ? { am, gesperrtBis: antwort.daten.gesperrtBis }
-        : { am, abgelehnt: snapshot(antwort) };
+        ? {
+            am,
+            gesperrtBis: antwort.daten.gesperrtBis,
+            ausweisSchluessel: snapshot(antwort.daten.ausweisSchluessel),
+            kopplung,
+          }
+        : { am, abgelehnt: snapshot(antwort), bereit: z.schlange.bereit() };
     },
     (neu) => {
       if (!neu) return;
-      if ("abgelehnt" in neu) return z.abgelehnt(neu.abgelehnt);
+      if ("abgelehnt" in neu) return z.abgelehnt(neu.abgelehnt, neu.bereit);
+      z.schlange.netz(200);
+      // the key pair of the offline queue, registered on the first start of a pairing (S-803)
+      if (neu.ausweisSchluessel && neu.kopplung)
+        void z.schlange.vorbereiten(neu.kopplung, neu.ausweisSchluessel);
       const bis = neu.gesperrtBis;
       if (bis !== null) z.setMeldung({ art: "gesperrt", bis });
       // only a lock the server no longer knows goes; any other message stays
@@ -229,6 +291,7 @@ export const kioskAblauf = () => {
     karte: z.karte,
     nfc: z.nfc,
     setNfc: z.setNfc,
+    schlange: z.schlange,
     zurueck: z.zurueck,
     scannen: () => z.setAnsicht({ art: "scannen" }),
     ...aufrufe,

@@ -662,7 +662,7 @@ Alle Punkte: nach S-305.
   Betrieb Karten eines anderen sieht oder ändert; die Auskunft nennt die Karten der Person ohne UID
   und Schlüssel; ein abgeschaltetes Modul Terminal wird abgelehnt; axe in hell und dunkel; Texte in
   allen sechs Sprachen.
-- [ ] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
+- [x] **S-803 Terminal offline** – Warteschlange aus S-305 auf dem Gerät, Anzeige des Stands.
   Fertig, wenn: ein Tablet ohne Netz weiter Stempelungen per PIN, QR-Code und NFC-Karte annimmt,
   sie in einer Warteschlange auf dem Gerät hält und nach der Rückkehr des Netzes überträgt
   (Playwright `@terminal` mit `context.setOffline`), und die Ansicht den Stand zeigt (online oder
@@ -768,7 +768,7 @@ Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streich
 neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
 requests“).
 
-- [ ] S-803 Terminal offline – noch nicht begonnen
+- keine
 
 **Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604
 (#43), S-605 (#42), S-802 (#45), S-906 (#44). Das Review (`tdd-review`) wird für jeden nachgeholt,

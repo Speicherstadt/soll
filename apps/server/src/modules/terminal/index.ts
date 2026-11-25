@@ -18,6 +18,15 @@ export {
   karteEntziehen,
   kartenVon,
 } from "./karten.ts";
+export {
+  type Ablehnung,
+  type OfflineAbhaengigkeiten,
+  type OfflineErgebnis,
+  type OfflineStand,
+  offlineEintragAnnehmen,
+  offlineStand,
+  terminalSchluesselAnmelden,
+} from "./offline.ts";
 export { FEHLVERSUCHE_BIS_SPERRE } from "./sperre.ts";
 export {
   KOPPLUNG_GILT_MS,

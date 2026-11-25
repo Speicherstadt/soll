@@ -8,7 +8,9 @@ import { integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm
  * (`token_hash`). Both are random values kept only as SHA-256. A revoked terminal
  * (`widerrufen_am`) is refused. Wrong PINs and QR codes (`fehlversuche`) lock it until
  * `gesperrt_bis`, each lock (`sperren`) longer than the last; both count per calendar day
- * (`fehler_tag`, Europe/Berlin), and a person recognised lifts nothing.
+ * (`fehler_tag`, Europe/Berlin), and a person recognised lifts nothing. `schluessel` is the public
+ * half of the tablet's non-extractable ECDSA P-256 key (JWK, canonical JSON of kty, crv, x and y),
+ * against which the server checks the entries of its offline queue (S-803); set once per pairing.
  */
 export const terminals = sqliteTable(
   "terminals",
@@ -25,6 +27,7 @@ export const terminals = sqliteTable(
     sperren: integer("sperren").notNull().default(0),
     gesperrtBis: integer("gesperrt_bis"),
     fehlerTag: text("fehler_tag"),
+    schluessel: text("schluessel"),
     angelegtVon: text("angelegt_von").notNull(),
     angelegtAm: integer("angelegt_am").notNull(),
   },
@@ -74,4 +77,27 @@ export const karten = sqliteTable(
     primaryKey({ columns: [t.betriebId, t.karteId] }),
     uniqueIndex("karten_uid").on(t.betriebId, t.uidKennung),
   ],
+);
+
+/**
+ * Every entry of a terminal's offline queue the server received with a valid signature (S-803), by
+ * its running number: the SHA-256 of the signed text (`inhalt_hash`) and what came of it, the stamp
+ * made (`stempel_id`) or why it was refused (`grund`). The same entry again gives the same answer;
+ * another content under a number already taken is refused; a missing number is a gap the owner
+ * sees. The credential itself is never stored.
+ */
+export const terminalEintraege = sqliteTable(
+  "terminal_eintraege",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    terminalId: text("terminal_id").notNull(),
+    nummer: integer("nummer").notNull(),
+    inhaltHash: text("inhalt_hash").notNull(),
+    art: text("art").notNull(),
+    geraetZeitpunkt: integer("geraet_zeitpunkt").notNull(),
+    stempelId: text("stempel_id"),
+    grund: text("grund"),
+    empfangenAm: integer("empfangen_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.terminalId, t.nummer] })],
 );

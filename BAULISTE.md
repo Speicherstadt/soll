@@ -538,6 +538,46 @@ Alle Punkte: nach S-306.
   axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
+  Fertig, wenn: ein Planer eine Rufbereitschaft in die Woche plant und veröffentlicht, die Person
+  sie in App und Kalender sieht, in ihr einen Einsatz beginnt und beendet, der Einsatz im Monat als
+  Arbeitszeit zählt, und ein Betrieb mit „Soll aus dem Plan“ im Monat das Soll aus den
+  veröffentlichten Schichten gegen das Ist sieht (Playwright). Dazu: Rufbereitschaft ist keine
+  Arbeitszeit, nur ihre Einsätze samt Wegezeit sind es und unterbrechen die Ruhezeit (§§ 2, 5 ArbZG;
+  EuGH C-518/15 Matzak, C-344/19, C-580/19), Bereitschaftsdienst bleibt Arbeitszeit (R-11), und
+  eine Rufbereitschaft mit einer Reaktionszeit unter 30 min oder ohne eingestellte zählt für die
+  Grenzwerte ganz (R-12); geplante Rufbereitschaften sind eine eigene Tabelle mit `betrieb_id` über
+  eine neue Migration (Standort, Person, Tag des Beginns, Beginn und Ende als Zeitpunkte,
+  Reaktionszeit in ganzen Minuten oder keine), keine neue Spalte an `schichten` (Entscheidung aus
+  S-503), Entwurf bis zur Veröffentlichung wie eine Schicht: nur Inhaber und Planer sehen und ändern
+  sie, „Veröffentlichen“ nimmt die der Woche am Standort mit, die Benachrichtigung aus S-503 nennt
+  sie, der ICS-Feed zeigt die eigenen veröffentlichten als „Rufbereitschaft“ (RFC 5545, Test), und
+  eine Uhrzeit, die es wegen der Zeitumstellung nicht gibt, lehnt der Server ab; die Prüfung im Plan
+  (S-502) wendet jetzt auch R-11 und R-12 mit ihren eigenen Funktionen an (`bereitschaftstage`,
+  `bereitschaftBefunde`), vor heute mit den erfassten Einsätzen, ab heute mit der geplanten
+  Rufbereitschaft, und ein Befund steht auch an einer Rufbereitschaft (Vitest über Mitternacht und
+  beide Nächte der Zeitumstellung, Fälle aus `docs/regeln.md`, Playwright-Fall für R-12 im Plan);
+  ein Einsatz wird von der Person live begonnen und beendet (Uhr des Servers) oder mit Beginn, Ende
+  und Grund nachgetragen, entfernt nur mit Grund, alles über die Audit-Kette; er beginnt in einer
+  eigenen veröffentlichten Rufbereitschaft, sonst lehnt der Server ab, wird nie selbst beendet
+  (ein offener Einsatz hält den Monatsabschluss auf wie eine offene Schicht) und zählt zum
+  Arbeitstag nach R-12; ein Einsatz, der den Inhalt eines abgeschlossenen Monats änderte, wird
+  abgelehnt; Inhaber und Planer tragen für alle nach, das Lohnbüro liest; der Monat zählt die
+  Einsätze ins Ist (gestempelte Arbeit nicht doppelt) und prüft seine Tage mit R-11 und R-12, die
+  Aufzeichnungen eines Tags nennen die Einsätze nur, wenn es welche gibt, so dass Inhalt und
+  Prüfwert schon abgeschlossener Monate gleich bleiben (Test); „Soll aus dem Plan“ ist eine
+  Einstellung des Inhabers ab einem Tag nach dem letzten abgeschlossenen Monat, gespeichert als
+  Verlauf über die Audit-Kette, nur mit eingeschaltetem Modul Dienstplan: ab dann ist das Soll eines
+  Tages die Summe der veröffentlichten geplanten Minuten (Arbeit ohne Pause, ganze Minuten, Tag des
+  Beginns, eine Nachtschicht in den Nächten der Zeitumstellung mit 7 oder 9 Stunden), Entwürfe
+  zählen nicht, Abwesenheiten bekommen dieses Soll gutgeschrieben (Ausfallprinzip, § 4 Abs. 1
+  EntgFG), und der Monat zeigt je Tag, woher das Soll kommt, Soll gegen Ist in ganzen Minuten;
+  abgeschlossene Monate behalten Inhalt und Prüfwert (Test); keine Summe je Person im Plan (BetrVG
+  § 87, Entscheidung aus S-501); Zuschläge für Rufbereitschaft fallen nicht unter § 3b EStG, nur der
+  Hinweis in der Doku; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
+  ändert, dass das abgeschaltete Modul abgelehnt wird, und je Rolle; Playwright in `desktop` und
+  `@phone`, axe grün in hell und dunkel; Texte in allen sechs Sprachen, Normen auf Deutsch; Doku in
+  `docs/dienstplan.md`, `docs/regeln.md` und `docs/stempeln.md`, README, Entscheidungen im
+  Projektplan.
 
 ## Phase 6 – Projektzeit und Anbindungen
 

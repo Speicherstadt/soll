@@ -1,4 +1,4 @@
-import type { Tag } from "@soll/arbeitszeit";
+import { plusTage, type Tag } from "@soll/arbeitszeit";
 import { MAX_DATENSAETZE, type PersonioAbzug } from "@soll/import";
 import { type KimaiFehler, KOPFWERT, statusFehler } from "./kimai-abruf.ts";
 import type { Holen, VerbindungsFehler } from "./kimai-holen.ts";
@@ -142,7 +142,8 @@ const LISTEN = (von: Tag, bis: Tag) =>
       {
         limit: "100",
         "start.date_time.gte": `${von}T00:00:00`,
-        "start.date_time.lte": `${bis}T23:59:59`,
+        // a day more: the breaks of a night shift that begins on the last day (the reader drops its work)
+        "start.date_time.lte": `${plusTage(bis, 1)}T23:59:59`,
       },
     ],
     [

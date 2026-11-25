@@ -86,7 +86,8 @@ describe("review S-704: night shift on the last day of the period", () => {
       ).daten.zeiten.map((z) => [z.tag, z.beginn, z.ende]);
     expect(lesen("2026-09-01", "2026-09-30")).toEqual([
       ["2026-09-30", 1320, 60],
-      ["2026-09-30", 90, 360],
+      // the piece after the break is a span of its own, on the day it begins (as S-703, S-705)
+      ["2026-10-01", 90, 360],
     ]);
     expect(lesen("2026-10-01", "2026-10-31")).toEqual([["2026-10-01", 480, 720]]);
   });

@@ -1,4 +1,4 @@
-import { istTag } from "@soll/arbeitszeit";
+import { istTag, plusTage } from "@soll/arbeitszeit";
 import { einmal, personen } from "../abzug-gemeinsam.ts";
 import { type Gelesen, leer, MAX_DATENSAETZE } from "../modell.ts";
 import { textAusBytes } from "../text.ts";
@@ -23,7 +23,7 @@ export {
   personioAbzugText,
 } from "./abzug.ts";
 
-/** The period of the head: periods that begin on another day were not asked for */
+/** The period of the head: work that begins on another day was not asked for */
 const zeitraumVon = (kopf: Record<string, unknown>): { von: string; bis: string } | null => {
   const { von, bis } = kopf;
   return typeof von === "string" && typeof bis === "string" && istTag(von) && istTag(bis)
@@ -36,8 +36,11 @@ const datenAus = (bestand: Bestand, zeitraum: { von: string; bis: string } | nul
   const person = personen(einmal(bestand.personen, fehler));
   const arten = einmal(bestand.arten, fehler);
   const perioden = einmal(bestand.anwesenheiten, fehler).filter((p) => {
+    if (zeitraum === null) return true;
     const tag = tagVon(p.beginn);
-    return zeitraum === null || (tag >= zeitraum.von && tag <= zeitraum.bis);
+    // work that begins in the period; its breaks may lie on the day after (a night shift), and a
+    // break without work of the period takes nothing away
+    return tag >= zeitraum.von && tag <= (p.arbeit ? zeitraum.bis : plusTage(zeitraum.bis, 1));
   });
   const zeiten = zeitenAus(perioden, person);
   const abwesenheiten = abwesenheitenAus(einmal(bestand.abwesenheiten, fehler), arten, person);

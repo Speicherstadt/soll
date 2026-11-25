@@ -324,7 +324,7 @@ keinem Protokoll, keiner Antwort und nicht in der Datei.
 | Abwesenheit | Abwesenheit mit der zugeordneten Art, genehmigt; beginnt sie mit der zweiten Hälfte des Tages, ist der erste Tag halb, endet sie mit der ersten, der letzte |
 | Abwesenheitsart | Art der Zuordnung, mit ihrem Namen in Personio („Urlaub“, „Krankheit“ …) |
 
-Personio schreibt Uhrzeiten ohne Zeitzone; Soll liest sie in Europe/Berlin. Übernommen werden nur
+Personio schreibt Uhrzeiten ohne Zeitzone; Soll liest sie in Europe/Berlin. Übernommen wird Arbeit, die im Zeitraum beginnt; die Pause einer Nachtschicht am letzten Tag nach Mitternacht holt Soll mit und nimmt sie heraus. Übernommen werden nur
 bestätigte Anwesenheiten und genehmigte Abwesenheiten (oder solche, für die Personio keine Freigabe
 führt). Mit Zeile genannt und nicht übernommen werden: eine Anwesenheit oder Abwesenheit, die noch
 auf eine Entscheidung wartet, eine offene Anwesenheit ohne Ende, eine Abwesenheit ohne Ende, eine

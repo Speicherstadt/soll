@@ -855,7 +855,7 @@ S-701 und unabhängig voneinander.
     der Zukunft). `POST /api/v1/importe/abruf` (nur Inhaber) holt mit
     `POST https://api.personio.de/v2/auth/token` (`application/x-www-form-urlencoded`,
     `grant_type=client_credentials`) ein Token und damit nacheinander `GET /v2/persons` (`limit` 50),
-    `/v2/absence-types` (50), `/v2/attendance-periods` (`start.date_time.gte`/`.lte`, 100) und
+    `/v2/absence-types` (50), `/v2/attendance-periods` (`start.date_time.gte`/`.lte`, `.lte` einen Tag nach dem Zeitraum für die Pausen einer Nachtschicht, 100) und
     `/v2/absence-periods` (`starts_from.date_time.lte`, `ends_at.date_time.gte`, 100), Seite für Seite
     nach `_meta.links.next.href`; danach widerruft er das Token (`POST /v2/auth/revoke`). Die
     Adresse ist fest (für die Tests ein Ersatz, den nur der Betreiber setzt), der Inhaber gibt keine

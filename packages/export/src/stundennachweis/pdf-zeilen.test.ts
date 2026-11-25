@@ -67,6 +67,15 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(text).not.toContain("?");
   });
 
+  it("prints a tab and other blank space in a note as a space, not a question mark", async () => {
+    // pasted from a spreadsheet; U+2028 is a line break of its own
+    const notiz = "Spalte eins\tSpalte zwei\u000bdrei\u2028Zeile vier";
+    const text = pdfText(await stundennachweisPdf(nachweis([buchung(notiz)]), HASH));
+    for (const teil of ["Spalte eins", "Spalte zwei", "drei", "Zeile vier"])
+      expect(text).toContain(teil);
+    expect(text).not.toContain("?");
+  });
+
   it(
     "keeps a note of many lines out of the bottom margin",
     async () => {

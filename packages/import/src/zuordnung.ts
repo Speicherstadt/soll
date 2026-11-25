@@ -21,6 +21,16 @@ export type Zuordnung = {
   /** by the id in the old tool; missing: created anew */
   kunden: Record<string, Ziel>;
   projekte: Record<string, Ziel>;
+  /**
+   * The project and activity of a time as the file names them, to an order and an activity of Soll
+   * (S-702); null or missing: no booking. The activity "" is the one for times without one.
+   */
+  buchung?: Buchungszuordnung | undefined;
+};
+
+export type Buchungszuordnung = {
+  projekte: Record<string, string | null>;
+  taetigkeiten: Record<string, string | null>;
 };
 
 export type Mitglied = { nutzerId: string; name: string };
@@ -95,6 +105,36 @@ export const artenAus = (daten: ImportDaten) =>
     daten.abwesenheiten.map((satz) => satz.art),
     "art",
   );
+
+/** The projects the times of a file name, with how many times name each */
+export const zeitProjekteAus = (daten: ImportDaten) =>
+  gezaehlt(
+    daten.zeiten.flatMap((zeit) => (zeit.projekt === undefined ? [] : [zeit.projekt])),
+    "wert",
+  );
+
+/**
+ * The activities the times of a file name; "" counts the times with a project but no activity,
+ * which take the activity the owner chooses for them
+ */
+export const zeitTaetigkeitenAus = (daten: ImportDaten) =>
+  gezaehlt(
+    daten.zeiten.flatMap((zeit) =>
+      zeit.taetigkeit !== undefined ? [zeit.taetigkeit] : zeit.projekt !== undefined ? [""] : [],
+    ),
+    "wert",
+  );
+
+/** Something of Soll a value may name: its id and the words it is known by (name, number) */
+export type Kandidat = { id: string; woerter: readonly string[] };
+
+/** The one candidate one of whose words matches the value, or null: with none or two, the owner chooses */
+export const kandidatVorschlag = (wert: string, kandidaten: readonly Kandidat[]): string | null => {
+  const gesucht = schluessel(wert);
+  if (gesucht === "") return null;
+  const treffer = kandidaten.filter((k) => k.woerter.some((wort) => schluessel(wort) === gesucht));
+  return treffer.length === 1 ? (treffer[0] as Kandidat).id : null;
+};
 
 /** What Soll proposes: members by name, kinds by word, every customer and order created anew */
 export const vorschlag = (daten: ImportDaten, mitglieder: readonly Mitglied[]): Zuordnung => ({

@@ -10,6 +10,9 @@ import type { ImportDaten } from "@soll/import";
 export type Art = keyof ImportDaten;
 export const ARTEN: readonly Art[] = ["zeiten", "abwesenheiten", "kunden", "projekte"];
 
+/** What a plan counts: the records of the file, and the bookings made from times (S-702) */
+export type PlanArt = Art | "buchungen";
+
 export const PLAN_GRUENDE = [
   "person_unbekannt",
   "modul_aus",
@@ -26,11 +29,11 @@ export const PLAN_GRUENDE = [
 ] as const;
 export type PlanGrund = (typeof PLAN_GRUENDE)[number];
 
-export type Abgelehnt = { art: Art; zeile: number; externalId: string; grund: PlanGrund };
+export type Abgelehnt = { art: PlanArt; zeile: number; externalId: string; grund: PlanGrund };
 
 /** Per kind: created, there already, left out by the owner, refused */
 export type Anzahl = { neu: number; vorhanden: number; ausgelassen: number; abgelehnt: number };
-export type Zahlen = Record<Art, Anzahl>;
+export type Zahlen = Record<PlanArt, Anzahl>;
 
 export type NeueStempelung = Stempelung & { nutzerId: string; externId: string };
 export type NeueAbwesenheit = {
@@ -49,6 +52,17 @@ export type NeuesProjekt = {
   externId: string;
 };
 
+/** A booking of project time made from a time with a project or an activity (S-702) */
+export type NeueBuchung = {
+  nutzerId: string;
+  projektId: string | null;
+  taetigkeitId: string;
+  beginn: number;
+  ende: number;
+  tag: Tag;
+  externId: string;
+};
+
 /** A month of a person the old tool had closed, to be closed as taken over */
 export type Monatssperre = { nutzerId: string; monat: Monat };
 
@@ -57,6 +71,7 @@ export type Plan = {
   abwesenheiten: NeueAbwesenheit[];
   kunden: NeuerKunde[];
   projekte: NeuesProjekt[];
+  buchungen: NeueBuchung[];
   monate: Monatssperre[];
   zahlen: Zahlen;
   abgelehnt: Abgelehnt[];
@@ -89,7 +104,11 @@ export type Stand = {
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;
+    /** the bookings made from times of this tool, by their id (S-702) */
+    buchungen: ReadonlySet<string>;
   };
+  /** whether a span would overlap a booking of the person there already (S-702) */
+  buchungUeberschneidet: (nutzerId: string, spanne: { beginn: number; ende: number }) => boolean;
   /** the customers and orders of the business, for a mapping to an existing one */
   kunden: ReadonlySet<string>;
   projekte: ReadonlySet<string>;
@@ -111,6 +130,7 @@ export const keineZahlen = (): Zahlen => ({
   abwesenheiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   kunden: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   projekte: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+  buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
 });
 
 export const STEMPELARTEN: readonly Stempelart[] = [

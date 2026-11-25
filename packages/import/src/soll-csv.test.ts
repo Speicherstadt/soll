@@ -2,6 +2,7 @@ import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { MAX_DATENSAETZE } from "./modell.ts";
 import { SOLL_CSV_FELDER, sollCsvLesen } from "./soll-csv.ts";
+import { inZeit } from "./zeit-testhilfen.ts";
 
 const KOPF = "Typ;Kennung;Person;Datum;Beginn;Ende;Pause;Bis;Art;Kunde;Name;Nummer";
 
@@ -139,15 +140,8 @@ const feld = fc.oneof(
   fc.string({ maxLength: 12 }),
 );
 
-/** Fails a case that takes longer than this: a reader must never hang on a file */
-const HOECHSTENS_MS = 1_000;
-
-const schnell = (text: string) => {
-  const start = performance.now();
-  const gelesen = sollCsvLesen(text);
-  expect(performance.now() - start).toBeLessThan(HOECHSTENS_MS);
-  return gelesen;
-};
+/** Fails a case that takes longer than its limit (zeit-testhilfen.ts): a reader must never hang */
+const schnell = (text: string) => inZeit(() => sollCsvLesen(text));
 
 describe("Soll-CSV under fuzzing", () => {
   it("never throws or hangs on any text, and names lines that exist", () => {

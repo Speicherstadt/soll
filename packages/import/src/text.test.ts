@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { textVon } from "./datei.ts";
+import { textAusBytes as textVon } from "./text.ts";
 
 describe("the text of an uploaded file", () => {
   it("reads UTF-8, and Windows-1252 as Excel saves a CSV in a German locale", () => {

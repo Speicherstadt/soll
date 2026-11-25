@@ -62,12 +62,13 @@ Person ein. Es gibt zwei Arten:
 
 Die UID speichert Soll nur als Kennung mit einem geheimen Schlüssel (wie die PIN), die beiden
 Schlüssel einer NTAG 424 DNA nur verschlüsselt; die Liste zeigt Name, Art und Datum, nie UID oder
-Schlüssel. Jede UID gibt es im Betrieb einmal. Schlüssel aus lauter Nullen, der Zustand ab Werk,
+Schlüssel. Jede UID gibt es unter den Karten in Gebrauch im Betrieb einmal. Schlüssel aus lauter Nullen, der Zustand ab Werk,
 lehnt Soll ab: Sie kennt jeder.
 
 **Entziehen** sperrt eine Karte sofort und löscht ihre Schlüssel. Wird dieselbe Karte später wieder
-eingetragen, bleibt ihr Lesezähler: Eine Nachricht, die sie vorher erzeugt hat, gilt auch danach
-nicht.
+eingetragen, ist sie eine neue Karte der neuen Person: Die entzogene bleibt mit ihrem Verlauf bei der
+Person, die sie vorher hatte, auch in deren Auskunft. Der Lesezähler bleibt: Eine Nachricht, die die
+Karte vorher erzeugt hat, gilt auch danach nicht.
 
 ### Die SUN-Nachricht prüfen
 

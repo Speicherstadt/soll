@@ -1,3 +1,4 @@
+import { isNull } from "drizzle-orm";
 import { integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 /* The tables of the terminal (S-801, S-802); re-exported by ../schema.ts */
@@ -51,10 +52,12 @@ export const ausweise = sqliteTable(
  * A person's NFC card for the terminal (S-802). `art` "uid" is a plain card: its UID can be copied,
  * so it recognises the person only together with their PIN; "ntag424" is an NTAG 424 DNA that
  * recognises the person alone by its SUN message. The UID is kept only as a keyed hash
- * (`uid_kennung`, like the PIN's), once per business; the card's SDMMetaReadKey and SDMFileReadKey
- * only encrypted (`schluessel`). `zaehler` is the highest read counter seen, so a SUN message read
- * once is refused the next time. Revoking (`widerrufen_am`) deletes the keys and keeps the row with
- * its counter: the card's counter never goes back, so neither may Soll's.
+ * (`uid_kennung`, like the PIN's), once per business among the cards in use; the card's
+ * SDMMetaReadKey and SDMFileReadKey only encrypted (`schluessel`). `zaehler` is the highest read
+ * counter seen, so a SUN message read once is refused the next time. Revoking (`widerrufen_am`)
+ * deletes the keys and keeps the row with its counter and its person; a card entered again is a
+ * new row for its new person that starts from that counter: the card's counter never goes back, so
+ * neither may Soll's.
  */
 export const karten = sqliteTable(
   "karten",
@@ -72,6 +75,6 @@ export const karten = sqliteTable(
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.karteId] }),
-    uniqueIndex("karten_uid").on(t.betriebId, t.uidKennung),
+    uniqueIndex("karten_uid_aktiv").on(t.betriebId, t.uidKennung).where(isNull(t.widerrufenAm)),
   ],
 );

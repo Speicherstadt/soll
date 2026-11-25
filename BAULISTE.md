@@ -749,6 +749,35 @@ Alle Punkte: nach S-305.
 - [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
   `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle
   nennen).
+  Fertig, wenn: der Inhaber eines Betriebs die Verfahrensdokumentation nach GoBD (BMF-Schreiben vom
+  28.11.2019, Rz. 151 bis 155) in der App ansieht und als PDF und als Markdown herunterlädt, bei
+  jedem Aufruf aus dem Stand seines Betriebs erzeugt. Gliederung nach Rz. 153 und Rz. 100 ff.:
+  allgemeine Beschreibung, Anwenderdokumentation, technische Systemdokumentation,
+  Betriebsdokumentation, internes Kontrollsystem. Aus dem Stand kommen: Name und Land des Betriebs,
+  die eingeschalteten Module (ein abgeschaltetes heißt so, seine Abläufe fehlen), Standorte, die
+  Rollen mit der Zahl ihrer Mitglieder und was jede darf (aus `auth/rollen.ts`, ohne Namen und
+  E-Mail-Adressen), API-Zugänge (Zahl gültiger), die Fristen der Aufbewahrung je Monatsabschluss und
+  die Zahl abgeschlossener und ausgesonderter Monate (S-901), Audit-Kette mit aktuellem Prüfwert und
+  dem Ergebnis der Kettenprüfung beim Erzeugen, Stundenzettel und Prüfseite, Sicherung und
+  Wiederherstellung (S-905), Terminal mit Kopplung, PIN, QR-Code, NFC-Karten und Warteschlange ohne
+  Netz (S-801 bis S-803, nur bei eingeschaltetem Modul, mit Zahl der Terminals und Karten), DATEV
+  (eingerichtet oder nicht, ohne Personalnummern), Haben (nur die Adresse, nie das Token), Importe
+  (gibt es noch keinen, sagt sie das). Was nur der Betrieb wissen kann (Rechtsform, Anschrift,
+  Verantwortliche, Datensicherung, Ort der Aufbewahrung, Betrieb des Servers, Ablage der Schlüssel)
+  speichert der Inhaber über die Audit-Kette; ein leeres Feld steht als „Fehlt“ im Dokument, und das
+  Dokument heißt dann unvollständig. Dazu kann er bis zu 20 eigene Abschnitte mit Titel und Text
+  anlegen. Jede Fassung trägt Tag, Version von Soll und Prüfwert (Rz. 154), und das Dokument nennt
+  jede gespeicherte Änderung der Angaben mit Tag und Kettenglied. Dasselbe Stand-Objekt und derselbe
+  Tag ergeben byte-gleich dasselbe Markdown und dasselbe PDF (Golden-Tests für „Weber Haustechnik“
+  und „Café Elbblick“). Markdown maskiert Text aus Angaben (kein HTML, keine Formatierung). Nur der
+  Inhaber liest, speichert und lädt herunter (Recht `verfahrensdoku:verwalten`); jede andere Rolle
+  bekommt 403, ungültige Angaben 400. Ein Test je Endpunkt zeigt, dass kein Betrieb Angaben oder
+  Stand eines anderen sieht oder ändert. Texte des Dokuments Deutsch (für die deutsche
+  Finanzverwaltung), Gliederung, Datenmodell, Lücken und Markdown aus
+  `packages/gobd-kern/src/verfahrensdoku/` in `firsttris/haben` kopiert mit Quelle im Kommentar;
+  keine Abhängigkeit von Haben. Oberfläche auf Deutsch und Englisch, axe hell und dunkel,
+  Playwright am Desktop (Angaben speichern, Markdown und PDF herunterladen), Doku-Seite, README,
+  Entscheidungen im Projektplan.
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
 - [x] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.

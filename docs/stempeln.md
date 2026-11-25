@@ -162,14 +162,14 @@ hin und zurück (§ 5 ArbZG, [Rufbereitschaft](bereitschaft.md#rufbereitschaft-r
   sein, unter 24 Stunden dauern und darf keinen anderen überschneiden. Inhaber und Planer tragen für
   alle nach, das Lohnbüro liest nur. Entfernt wird ein Einsatz nur mit Grund; er bleibt als entfernt
   in der [Audit-Kette](audit-kette.md).
-- Ein Einsatz zählt zum Arbeitstag der Schicht, die höchstens 9 Stunden vorher endet, sonst zum Tag
-  seines Beginns (R-12). Im **Monat** steht er beim Tag („Einsatz 22:00–23:30 (1:30)“), seine Minuten
-  zählen in Dauer und Ist; was zugleich gestempelt ist, zählt nicht doppelt. Beginnt binnen 15 min
-  nach einem Einsatz gestempelte Arbeit, ist beides eine Schicht des Tags, an dem der Einsatz
-  begann, auch über ein Monatsende: Der Monat nennt dann die Stempelungen des Ersten bei seinem
-  letzten Tag, und die Lücke ist Arbeitszeit, wie gestempelt. Eine Stempelung oder ein Einsatz, der
-  einen abgeschlossenen Monat ändern würde, wird abgelehnt; abgeschlossen wird ein Monat erst 9 h
-  nach seinem letzten Einsatz.
+- Ein Einsatz zählt genau wie dieselben Zeiten gestempelt, Kommen am Beginn und Gehen am Ende, ein
+  laufender wie ein offenes Kommen (R-12): Er gehört zur Schicht, die höchstens 9 Stunden vorher
+  endet, und gestempelte Arbeit binnen 9 Stunden nach ihm gehört zu seiner Schicht und mit ihr zum
+  Tag, an dem sie beginnt, auch über ein Monatsende. Im **Monat** steht er beim Tag („Einsatz
+  22:00–23:30 (1:30)“), seine Minuten zählen in Dauer und Ist; was zugleich gestempelt ist, zählt
+  nicht doppelt. Eine Stempelung oder ein Einsatz, der einen abgeschlossenen Monat ändern würde,
+  wird abgelehnt; abgeschlossen wird ein Monat erst 9 h nach seinem letzten Einsatz, und nicht,
+  solange ein Einsatz läuft, der seine letzte Schicht fortsetzt.
 - Ohne das Modul Dienstplan gibt es keine Rufbereitschaft und damit keinen neuen Einsatz;
   vorhandene Einsätze bleiben im Monat.
 

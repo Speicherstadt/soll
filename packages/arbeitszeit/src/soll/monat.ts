@@ -12,7 +12,7 @@ import { ABWESENHEITSARTEN, type Abwesenheit } from "./typen.ts";
 
 /**
  * A month's Soll and Ist: the absences and the working days (S-201) of the person, with the
- * call-outs from a Rufbereitschaft joined in (S-505, `mitEinsaetzen`)
+ * call-outs from a Rufbereitschaft read as stamped (S-505, `arbeitstage`)
  */
 export type MonatsEingaben = SollGrundlagen & {
   abwesenheiten?: readonly Abwesenheit[];

@@ -1,4 +1,4 @@
-import type { Stueck } from "../arbeitstag/schichten.ts";
+import { NEUE_SCHICHT_AB, type Stueck } from "../arbeitstag/schichten.ts";
 import type { Befund } from "../befund.ts";
 import { plusTage, type Tag, tagAus } from "../kalender/tag.ts";
 import { beginnInBerlin, tagInBerlin } from "../kalender/zeit.ts";
@@ -50,7 +50,7 @@ export type Ruhe = { von: Tag; bis: Tag | null; beginn: number; ende: number; mi
 
 /**
  * A piece of work a rest can follow or end: a whole shift, or a block of a shift with call-outs;
- * `ersteDerSchicht` for the first piece of its shift that is not a call-out
+ * `ersteDerSchicht` for a piece that ends the rest before it (`ruheEndend`)
  */
 type Stelle = {
   tag: Tag;
@@ -66,6 +66,26 @@ const imEinsatz = (schicht: PruefSchicht, block: Stueck): boolean =>
   );
 
 /**
+ * R-12: the blocks of a shift with call-outs whose start ends a rest, by index: its first block that
+ * is not a call-out, and any later one 9 hours or more after the shift's other work before it. A
+ * call-out keeps a shift together as the same times stamped do (R-29), but no rest goes on through
+ * other work after it: after a call-out a new rest begins, up to the next other work.
+ */
+export const ruheEndend = (
+  bloecke: readonly { block: Stueck; einsatz: boolean }[],
+): Set<number> => {
+  const ergebnis = new Set<number>();
+  let letzteArbeit: number | null = null;
+  bloecke.forEach(({ block, einsatz }, index) => {
+    if (einsatz) return;
+    if (letzteArbeit === null || block.beginn - letzteArbeit >= NEUE_SCHICHT_AB)
+      ergebnis.add(index);
+    letzteArbeit = block.ende;
+  });
+  return ergebnis;
+};
+
+/**
  * The pieces of a shift: the whole shift (no end while it is open), or, when it holds call-outs in
  * Rufbereitschaft (R-12), each block, so that a call-out's end begins a rest of its own
  */
@@ -76,20 +96,21 @@ const stellen = (schicht: PruefSchicht): Stelle[] => {
       { tag, beginn: schicht.beginn, ende: schicht.ende, einsatz: false, ersteDerSchicht: true },
     ];
   const bloecke = schicht.bloecke.map((block) => ({ block, einsatz: imEinsatz(schicht, block) }));
-  const erste = bloecke.find((teil) => !teil.einsatz);
-  return bloecke.map((teil) => ({
+  const endend = ruheEndend(bloecke);
+  return bloecke.map((teil, index) => ({
     tag,
     beginn: teil.block.beginn,
     ende: teil.block.ende,
     einsatz: teil.einsatz,
-    ersteDerSchicht: teil === erste,
+    ersteDerSchicht: endend.has(index),
   }));
 };
 
 /**
  * The pieces whose start ends the rest before them: the first piece of each shift that is not a
  * call-out, whatever its calendar day (two shifts of one day are two working days by the 9 hours of
- * S-201); after a call-out a new rest begins (R-12)
+ * S-201), and other work 9 hours or more after the last before it: after a call-out a new rest
+ * begins (R-12, `ruheEndend`)
  */
 const ersteArbeit = (stellen: readonly Stelle[]): Set<Stelle> =>
   new Set(stellen.filter((stelle) => stelle.ersteDerSchicht && !stelle.einsatz));

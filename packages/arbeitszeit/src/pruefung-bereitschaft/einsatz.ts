@@ -2,7 +2,7 @@ import type { Stueck } from "../arbeitstag/schichten.ts";
 import type { Befund } from "../befund.ts";
 import type { Tag } from "../kalender/tag.ts";
 import type { Branche } from "../pruefung/grenzen.ts";
-import type { RuhezeitBefund } from "../pruefung/ruhezeit.ts";
+import { type RuhezeitBefund, ruheEndend } from "../pruefung/ruhezeit.ts";
 import { sortiert } from "../pruefung/typen.ts";
 import { bereitschaftGrenzenAm } from "./grenzen.ts";
 import type { BereitschaftsSchicht, BereitschaftsTag } from "./typen.ts";
@@ -30,7 +30,7 @@ export type EinsatzAusgleichBefund = Befund<"einsatz_ausgleich"> & {
 
 /**
  * A block of work in time order: a call-out, or other work (an open shift from its start);
- * `ersteDerSchicht` for the first block of its shift that is not a call-out
+ * `ersteDerSchicht` for a block that ends the rest before it (`ruheEndend`)
  */
 type Stelle = { tag: Tag; block: Stueck; einsatz: boolean; ersteDerSchicht: boolean };
 
@@ -42,12 +42,12 @@ const bloeckeDer = (schicht: BereitschaftsSchicht): Stelle[] => {
     block,
     einsatz: istEinsatz(schicht.einsaetze, block),
   }));
-  const erste = bloecke.find((teil) => !teil.einsatz);
-  return bloecke.map((teil) => ({
+  const endend = ruheEndend(bloecke);
+  return bloecke.map((teil, index) => ({
     tag: schicht.tag,
     block: teil.block,
     einsatz: teil.einsatz,
-    ersteDerSchicht: teil === erste,
+    ersteDerSchicht: endend.has(index),
   }));
 };
 

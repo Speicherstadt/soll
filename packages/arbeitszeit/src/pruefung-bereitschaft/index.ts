@@ -32,11 +32,4 @@ export type {
   Rufdienst,
   Spanne,
 } from "./typen.ts";
-export {
-  type Einsatzspanne,
-  einsatzTag,
-  type MitEinsaetzen,
-  mitEinsaetzen,
-  type VerbundenerTag,
-} from "./verbunden.ts";
 export { arbeitstagMit } from "./zuordnung.ts";

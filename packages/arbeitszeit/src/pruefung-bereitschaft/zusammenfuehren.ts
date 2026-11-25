@@ -1,10 +1,9 @@
-import type { Stueck } from "../arbeitstag/schichten.ts";
 import {
-  beginntSchicht,
-  LAENGSTE_SCHICHT,
   type Pause,
   type Schicht,
+  type Stueck,
   schichtAus,
+  schichtgruppen,
 } from "../arbeitstag/schichten.ts";
 import type { Rohstueck } from "../arbeitstag/stempelungen.ts";
 import type { Tag } from "../kalender/tag.ts";
@@ -16,10 +15,9 @@ import type { BereitschaftsSchicht, BereitschaftsTag, Spanne } from "./typen.ts"
  * Working days rebuilt from their stretches of work with Bereitschaft and call-outs added. The shifts
  * are cut as S-201 cuts stamped ones (Grundbegriff „Schicht“: from 9 hours off a new shift, never
  * 24 hours past its start; a break under 15 minutes is working time), so a call-out or a duty that
- * follows a shift within 9 hours belongs to its working day, as stamped work would. A call-out
- * never joins two pieces of other work, though: after it a new rest begins (R-12), so the next shift
- * is a working day of its own unless it follows other work within 9 hours, or the call-out within
- * less than 15 minutes (then it is one stretch of work).
+ * follows a shift within 9 hours belongs to its working day, and work that follows a call-out
+ * within 9 hours belongs to the call-out's, exactly as the same times stamped would (R-12, R-29;
+ * reviews of S-505). Only the rest reads call-outs apart (`ruhezeit`, R-12).
  */
 
 /** A shift as it comes in: of S-201, planned, or already of S-206 */
@@ -121,67 +119,20 @@ const markiert = (
   };
 };
 
-/** § 4 Satz 2 ArbZG: an interruption under 15 minutes is working time, so the work goes on */
-const KLEINSTE_RUHEPAUSE = 15 * 60_000;
-
-type Teil = Rohstueck & { einsatz: boolean };
-
-/**
- * Whether a stretch begins a new shift. A call-out follows the rule of S-201 (`beginntSchicht`);
- * other work after call-outs measures its 9 hours from the last other work, unless it goes on from
- * the call-out within 15 minutes.
- */
-const neueSchicht = (
-  erstes: Teil,
-  vorher: Teil,
-  letzteArbeit: Teil | null,
-  teil: Teil,
-): boolean => {
-  if (teil.einsatz || !vorher.einsatz) return beginntSchicht(erstes.beginn, vorher, teil.beginn);
-  if (teil.beginn - erstes.beginn >= LAENGSTE_SCHICHT) return true;
-  if (teil.beginn - (vorher.ende as number) < KLEINSTE_RUHEPAUSE) return false;
-  return letzteArbeit === null || beginntSchicht(erstes.beginn, letzteArbeit, teil.beginn);
-};
-
-/** The stretches of each shift, as indexes, in time order */
-const schichtgruppen = (teile: readonly Teil[]): number[][] => {
-  const gruppen: number[][] = [];
-  let letzteArbeit: Teil | null = null;
-  teile.forEach((teil, index) => {
-    const gruppe = gruppen.at(-1);
-    const erstes = gruppe === undefined ? undefined : teile[gruppe[0] as number];
-    const vorher = teile[index - 1];
-    if (gruppe === undefined || erstes === undefined || vorher === undefined) gruppen.push([index]);
-    else if (neueSchicht(erstes, vorher, letzteArbeit, teil)) gruppen.push([index]);
-    else gruppe.push(index);
-    if (!teil.einsatz) letzteArbeit = teil;
-  });
-  return gruppen;
-};
-
 /** The closed shifts of the stretches, cut as S-201 cuts stamped work */
 const schichtenAus = (bestand: Bestand): BereitschaftsSchicht[] => {
   const bereitschaft = vereinigt(bestand.bereitschaft);
   const bereitschaftsdienst = vereinigt(bestand.bereitschaftsdienst);
   const werk = vereinigt([...bestand.arbeit, ...bereitschaft]);
   const einsaetze = ohne(bestand.einsaetze, werk);
-  const teil =
-    (einsatz: boolean) =>
-    ({ beginn, ende }: Spanne): Teil => ({
-      beginn,
-      ende,
-      endetMit: "gehen",
-      nachPause: false,
-      einsatz,
-    });
-  const roh = [...werk.map(teil(false)), ...einsaetze.map(teil(true))].sort(
-    (a, b) => a.beginn - b.beginn,
-  );
+  const roh = [...werk, ...einsaetze]
+    .map(({ beginn, ende }): Rohstueck => ({ beginn, ende, endetMit: "gehen", nachPause: false }))
+    .sort((a, b) => a.beginn - b.beginn);
   const gruppen = schichtgruppen(roh);
   return gruppen.map((gruppe, index) => {
     const naechste = roh[gruppen[index + 1]?.[0] ?? -1]?.beginn ?? null;
     const schicht = schichtAus(
-      gruppe.map((stueck) => roh[stueck] as Teil),
+      gruppe.map((stueck) => roh[stueck] as Rohstueck),
       false,
       naechste,
     );

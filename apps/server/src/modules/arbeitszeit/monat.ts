@@ -12,7 +12,6 @@ import {
   hoechstarbeitszeit,
   letzterTag,
   type Monat,
-  mitEinsaetzen,
   monatsstand,
   monatVon,
   type PruefTag,
@@ -136,17 +135,20 @@ const neutraleTage = (abwesenheiten: readonly Abwesenheit[]): Set<Tag> =>
   );
 
 /**
- * §§ 3 to 5 ArbZG on the days with the call-outs and the published Rufbereitschaft (R-11, R-12,
- * S-505), null without either: then the days stay those of the stamps (S-206)
+ * §§ 3 to 5 ArbZG on the days with call-outs or published Rufbereitschaft (R-11, R-12, S-505), null
+ * without either. The days are those of `arbeitstage`, call-outs read as stamped; the duties that
+ * count fully are added, and the rest reads the blocks that are only call-outs apart (R-12).
  */
 const mitBereitschaft = (
   tage: readonly Arbeitstag[],
-  eingabe: BereitschaftEingabe,
+  rufdienste: BereitschaftEingabe["rufdienste"],
   optionen: { jetzt: number; feiertage: ReadonlySet<Tag>; neutral: ReadonlySet<Tag> },
 ): Befund[] | null => {
-  if ((eingabe.einsaetze ?? []).length === 0 && (eingabe.rufdienste ?? []).length === 0)
-    return null;
-  const ergebnis = bereitschaftstage(tage, eingabe);
+  const einsaetze = tage.some((tag) =>
+    tag.schichten.some((schicht) => (schicht.einsaetze ?? []).length > 0),
+  );
+  if (!einsaetze && (rufdienste ?? []).length === 0) return null;
+  const ergebnis = bereitschaftstage(tage, { rufdienste: rufdienste ?? [] });
   return ergebnis.ok ? bereitschaftBefunde(ergebnis.wert, optionen).befunde : null;
 };
 
@@ -160,11 +162,11 @@ const befundeDesMonats = (
   tage: readonly Arbeitstag[],
   monat: Monat,
   optionen: { jetzt: number; feiertage: ReadonlySet<Tag>; neutral: ReadonlySet<Tag> },
-  bereitschaft: BereitschaftEingabe,
+  rufdienste: BereitschaftEingabe["rufdienste"],
 ): Befund[] =>
   [
     ...tage.flatMap((tag) => tag.befunde),
-    ...(mitBereitschaft(tage, bereitschaft, optionen) ?? [
+    ...(mitBereitschaft(tage, rufdienste, optionen) ?? [
       ...hoechstarbeitszeit(tage).befunde,
       ...ausgleichszeitraum(tage, optionen).befunde,
       ...ruhepausen(tage).befunde,
@@ -274,10 +276,12 @@ export const monatJetzt = (
   jetzt: number,
 ): { inhalt: Monatsinhalt; offeneTage: Tag[] } => {
   const stempel = stempelDesMonats(db, betriebId, nutzerId, monat);
-  const ergebnis = arbeitstage(stempel, jetzt);
+  const weitere = weitereDesMonats(db, betriebId, nutzerId, monat);
+  // call-outs are read as the same times stamped: the Ist, the findings and the open shifts that
+  // block closing come from one run (R-12, R-29, reviews of S-505)
+  const ergebnis = arbeitstage(stempel, jetzt, weitere.einsaetze);
   const alle = ergebnis.ok ? ergebnis.wert : [];
   const abwesenheiten = abwesenheitenDesMonats(db, betriebId, nutzerId, monat, tagInBerlin(jetzt));
-  const weitere = weitereDesMonats(db, betriebId, nutzerId, monat);
   const tage = aufzeichnungen(
     monat,
     stempel,
@@ -286,18 +290,13 @@ export const monatJetzt = (
     weitere,
   );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
-  // the Ist counts the working days as the records file them: a call-out joins its shift, and a
-  // joined shift belongs to the day it begins on, its stamps included (R-12, reviews of S-505)
-  const ist = mitEinsaetzen(alle, weitere.einsaetze).tage.filter(
-    (tag) => monatVon(tag.tag) === monat,
-  );
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
   const stand = summenDesMonats(
     db,
     betriebId,
     nutzerId,
     monat,
-    ist,
+    imMonat,
     tage,
     abwesenheiten,
     weitere.plan,
@@ -314,28 +313,24 @@ export const monatJetzt = (
       summen: stand.summen && mitGegeneintraegen(stand.summen, gegeneintraege),
       nichtHinterlegt: stand.nichtHinterlegt,
       befunde: [
-        ...befundeDesMonats(alle, monat, optionen, {
-          einsaetze: weitere.einsaetze.flatMap(({ beginn, ende }) =>
-            ende === null ? [] : [{ beginn, ende }],
-          ),
-          rufdienste: rufdienste.map(({ beginn, ende, reaktionMinuten }) => ({
+        ...befundeDesMonats(
+          alle,
+          monat,
+          optionen,
+          rufdienste.map(({ beginn, ende, reaktionMinuten }) => ({
             beginn,
             ende,
             ...(reaktionMinuten === null ? {} : { reaktionMinuten }),
           })),
-        }),
+        ),
         ...stand.befunde,
       ],
       gegeneintraege,
     }),
-    // a day with a shift or a call-out still open; a stamp without Kommen opens none (R-01)
-    offeneTage: [
-      ...imMonat
-        .filter((tag) => tag.schichten.some((schicht) => schicht.offen !== null))
-        .map((tag) => tag.tag),
-      ...tage
-        .filter((tag) => (tag.einsaetze ?? []).some(([, ende]) => ende === null))
-        .map((tag) => tag.tag),
-    ].sort(),
+    // a day with a shift still open, a running call-out's as an open Kommen's; a stamp without
+    // Kommen opens none (R-01)
+    offeneTage: imMonat
+      .filter((tag) => tag.schichten.some((schicht) => schicht.offen !== null))
+      .map((tag) => tag.tag),
   };
 };

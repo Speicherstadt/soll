@@ -28,6 +28,11 @@ export type Schicht = {
   arbeitsMinuten: number;
   pausenMinuten: number;
   offen: Offen | null;
+  /**
+   * the blocks that are only call-outs from a Rufbereitschaft, whose end begins a rest and whose
+   * start ends none (R-12); given only where there are any
+   */
+  einsaetze?: Stueck[];
 };
 
 const MINUTE = 60_000;

@@ -28,6 +28,7 @@ describe("R-12: Rufbereitschaft", () => {
   });
 
   it("Verstoß: Einsatz Mo 23:00 – Di 0:30, Di Schicht 8:00 (7:30 Ruhe) – „Ruhezeit durch Einsatz unterbrochen“", () => {
+    // as stamped, Di 8:00 goes on the call-out's shift of Mo (R-29); the rest after it still counts
     const eingabe = einsatz(uhr(MO, "23:00"), uhr(DI, "0:30"));
     expect(pruefe(diSchicht(), eingabe).befunde).toEqual([
       {
@@ -35,7 +36,7 @@ describe("R-12: Rufbereitschaft", () => {
         norm: "§ 5 Abs. 1 ArbZG",
         schwere: "verstoss",
         art: "ruhezeit_durch_einsatz_unterbrochen",
-        tage: ["2026-11-16", "2026-11-17"],
+        tage: ["2026-11-16"],
         ruhe: { beginn: um(uhr(DI, "0:30")), ende: um(uhr(DI, "8:00")), minuten: 450 },
         mindestens: 660,
         fehlt: 210,
@@ -181,7 +182,17 @@ describe("R-12: Rufbereitschaft", () => {
   it("Krankenhaus: Mo bis 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 – Hinweis „Einsatz ausgleichen 2:00“", () => {
     const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
     const eingabe = einsatz(uhr(MO, "23:00"), uhr(DI, "1:00"));
+    // as stamped, Mo 18:00 to Di 14:00 is one shift of Mo (R-29): 10 h in its Werktag (R-02)
     expect(pruefe(stempel, eingabe, KRANKENHAUS).befunde).toEqual([
+      {
+        regel: "R-02",
+        norm: "§ 3 Satz 2 ArbZG",
+        schwere: "hinweis",
+        art: "ueber_8h",
+        tage: ["2026-11-16"],
+        minuten: 600,
+        ueber: 120,
+      },
       {
         regel: "R-12",
         norm: "§ 5 Abs. 3 ArbZG",
@@ -194,21 +205,27 @@ describe("R-12: Rufbereitschaft", () => {
     ]);
     // anywhere else the call-out interrupts the rest
     expect(kurz(pruefe(stempel, eingabe))).toEqual([
-      ["R-12", "ruhezeit_durch_einsatz_unterbrochen", ["2026-11-16", "2026-11-17"]],
+      ["R-02", "ueber_8h", ["2026-11-16"]],
+      ["R-12", "ruhezeit_durch_einsatz_unterbrochen", ["2026-11-16"]],
     ]);
   });
 
   it("Krankenhaus, Grenze: Einsatz Mo 22:00 – Di 3:30 (5:30) – Hinweis „Einsatz ausgleichen 5:30“", () => {
     const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
     const ergebnis = pruefe(stempel, einsatz(uhr(MO, "22:00"), uhr(DI, "3:30")), KRANKENHAUS);
-    expect(kurz(ergebnis)).toEqual([["R-12", "einsatz_ausgleich", ["2026-11-16"]]]);
-    expect(ergebnis.befunde[0]).toMatchObject({ minuten: 330 });
+    // one shift of Mo as stamped (R-29): 13:30 in its Werktag, a Verstoß of R-02
+    expect(kurz(ergebnis)).toEqual([
+      ["R-02", "ueber_10h", ["2026-11-16"]],
+      ["R-12", "einsatz_ausgleich", ["2026-11-16"]],
+    ]);
+    expect(ergebnis.befunde[1]).toMatchObject({ minuten: 330 });
   });
 
   it("Krankenhaus, über die Hälfte: Einsatz Mo 22:00 – Di 3:31 (5:31) – Verstoß (4:29 Ruhe)", () => {
     const stempel = [...schicht(uhr(MO, "18:00"), uhr(MO, "20:00")), ...diSchicht()];
     const ergebnis = pruefe(stempel, einsatz(uhr(MO, "22:00"), uhr(DI, "3:31")), KRANKENHAUS);
     expect(ergebnis.befunde).toMatchObject([
+      { regel: "R-02", art: "ueber_10h", minuten: 811 },
       {
         regel: "R-12",
         norm: "§ 5 Abs. 2 ArbZG",

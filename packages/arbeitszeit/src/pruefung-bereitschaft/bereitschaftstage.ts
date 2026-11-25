@@ -37,8 +37,8 @@ export const zaehltVoll = (dienst: Rufdienst): boolean => {
  * (`PruefTag`), in calendar order. Bereitschaftsdienst and Rufbereitschaft that counts fully are
  * working time (R-11, R-12, Matzak), but only Bereitschaftsdienst is marked for § 7 Abs. 1 Nr. 1
  * Buchst. a ArbZG; already stamped work is not counted twice. A call-out is working
- * time on the day its shift begins; what lies within less than 15 minutes of other work is part of
- * that work, otherwise it is a block of its own that ends no rest and begins a new one (R-12).
+ * time cut into shifts as the same times stamped (R-12, R-29); a block that is only a call-out ends
+ * no rest and begins a new one (`ruhezeit`).
  * Rufbereitschaft without a call-out adds nothing. Days of S-206 may come in again.
  */
 export const bereitschaftstage = (

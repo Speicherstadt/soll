@@ -514,18 +514,20 @@ ohne sie gilt der Fall „Pause“.
   von Soll und als solche gekennzeichnet). Ohne eingestellte Reaktionszeit wertet Soll sie ebenso
   (vorsichtige Vorgabe: eine kurze ist nicht auszuschließen). Sie zählt dann für jeden Grenzwert,
   ist aber kein Bereitschaftsdienst für § 7 Abs. 1 Nr. 1 Buchst. a ArbZG (R-11).
-- **Einsatz und Arbeitstag**: Ein Einsatz zählt zum Arbeitstag der Schicht, zu der er nach dem
-  Grundbegriff „Schicht“ gehört, also zu einer Schicht, die höchstens 9 h vorher endet, sonst zum Tag,
-  an dem er beginnt. Ein Einsatz verbindet nie zwei Stücke anderer Arbeit zu einer Schicht: Die
-  nächste Schicht ist ein eigener Arbeitstag, wenn sie nicht binnen 9 h nach anderer Arbeit beginnt.
-  Liegen weniger als 15 min zwischen einem Einsatz und anderer Arbeit, ist er ein Stück dieser Arbeit
-  (§ 4 Satz 2 ArbZG); zwei Einsätze mit weniger als 15 min Abstand sind einer.
-  Die verbundene Schicht gehört mit ihren Stempelungen zum Tag, an dem sie beginnt, wie dieselben
-  Zeiten gestempelt, für Aufzeichnung, Ist, Lohn und Prüfung; was zugleich gestempelt ist, zählt
-  einmal (S-505).
-- **Ruhezeit**: Gemessen wird vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten
-  anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme von R-05.
-  Beginnt nach einem Einsatz eine eigene Schicht am selben Kalendertag, endet die Ruhezeit mit ihr.
+- **Einsatz und Arbeitstag**: Ein Einsatz ist für Arbeitstag, Schicht, Pausen, Ist, Lohn,
+  Zuschläge, Befunde, Sperre und Abschluss dasselbe wie dieselben Zeiten gestempelt: Kommen am
+  Beginn, Gehen am Ende, ein laufender Einsatz ein offenes Kommen. Soll liest ihn mit denselben
+  Funktionen wie Stempelungen (Grundbegriff „Schicht“, R-01, R-04): Er gehört zur Schicht, die
+  höchstens 9 h vorher endet, sonst beginnt er eine; andere Arbeit binnen 9 h nach ihm gehört zu
+  seiner Schicht, und die Schicht gehört mit allen Stempelungen zum Tag, an dem sie beginnt. Eine
+  Lücke unter 15 min ist Arbeitszeit, eine längere eine Ruhepause (§ 4 ArbZG). Was zugleich
+  gestempelt ist, zählt einmal. Eine offene Schicht nimmt einen Einsatz in ihren 24 h auf und bleibt
+  offen, bis ihr Gehen gestempelt ist; Soll beendet sie nie selbst (Review S-505, fünfte Runde).
+- **Ruhezeit**: Nur die Ruhezeit liest einen Einsatz anders als gestempelte Arbeit. Gemessen wird
+  vom Ende der letzten Arbeit, auch eines Einsatzes, bis zur ersten anderen Arbeit, die einen
+  Arbeitstag beginnt oder 9 h oder mehr nach der anderen Arbeit davor liegt, mit den Grenzwerten und
+  der Branchenausnahme von R-05. Beginnt nach einem Einsatz eine eigene Schicht am selben
+  Kalendertag, endet die Ruhezeit mit ihr.
   Die Ruhezeit vor einem Einsatz zählt nicht, denn nach ihm beginnt eine neue; nur die 11 h nach
   einem Tag über 12 h (§ 7 Abs. 9 ArbZG, R-11) endet er.
 - **Ausnahmen**: Krankenhäuser und Pflege dürfen Kürzungen bis zur Hälfte der Ruhezeit zu anderen
@@ -557,15 +559,17 @@ ohne sie gilt der Fall „Pause“.
 | zwei Einsätze | Einsätze Mo 22:00 – 23:00 und Di 2:00 – 3:00, Di Schicht 14:00 (11:00 Ruhe nach dem zweiten) | 2:00 Arbeitszeit am Mo, kein Befund | § 5 Abs. 1 ArbZG |
 | zwei Einsätze, Verstoß | Einsätze Mo 22:00 – 23:00 und Di 3:00 – 4:00, Di Schicht 14:00 (10:00 Ruhe nach dem zweiten) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo und Di | § 5 Abs. 1 ArbZG |
 | Gastronomie | Gastronomie, Einsatz Mo 23:00 – Di 0:30, Di Schicht 10:30 (10:00 Ruhe) | Hinweis nach R-05 „Ausgleich bis … nötig“ | § 5 Abs. 2 ArbZG |
-| Krankenhaus | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 (12:00 zwischen den Schichten) | Hinweis „Einsatz ausgleichen 2:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
-| Krankenhaus, Grenze | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:30 (5:30), Di Schicht 8:00 | Hinweis „Einsatz ausgleichen 5:30“, kein Verstoß | § 5 Abs. 3 ArbZG („nicht mehr als die Hälfte der Ruhezeit“) |
-| Krankenhaus, über die Hälfte | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:31 (5:31), Di Schicht 8:00 (4:29 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 3 ArbZG |
+| Krankenhaus | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 23:00 – Di 1:00, Di Schicht 8:00 – 14:00 (12:00 zwischen den Schichten) | Hinweis „Einsatz ausgleichen 2:00“, kein Verstoß nach R-12; wie gestempelt eine Schicht des Mo mit 10:00, Hinweis nach R-02 | § 5 Abs. 3 ArbZG; § 3 Satz 2 ArbZG |
+| Krankenhaus, Grenze | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:30 (5:30), Di Schicht 8:00 – 14:00 | Hinweis „Einsatz ausgleichen 5:30“; wie gestempelt eine Schicht des Mo mit 13:30, Verstoß nach R-02 | § 5 Abs. 3 ArbZG („nicht mehr als die Hälfte der Ruhezeit“); § 3 ArbZG |
+| Krankenhaus, über die Hälfte | Krankenhaus, Mo Schicht 18:00 – 20:00, Einsatz Mo 22:00 – Di 3:31 (5:31), Di Schicht 8:00 – 14:00 (4:29 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ und nach R-02 | § 5 Abs. 3 ArbZG; § 3 ArbZG |
 | selber Tag | Mo Schicht 5:00 – 9:00, Einsatz Mo 12:00 – 13:00, Mo Schicht 18:30 (eigene Schicht, 5:30 Ruhe) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ für Mo | § 5 Abs. 1 ArbZG |
 | Krankenhaus, selber Tag | Krankenhaus, dieselbe Lage | Hinweis „Einsatz ausgleichen 1:00“, kein Verstoß | § 5 Abs. 3 ArbZG |
 | Krankenhaus, selber Tag über 12 h | Krankenhaus, Einstellung nach § 7, Mo Schicht 0:00 – 6:00, Einsatz Mo 10:00 – 11:00, Mo Schicht 17:00 – 23:00 und Bereitschaftsdienst 23:15 – 23:45, Di Schicht 12:00 | Hinweis „über 10 h nur mit Tarif“ und „Einsatz ausgleichen“, kein Verstoß: die Ruhezeit 6:00 – 17:00 liegt vor dem Ende der Arbeit des Tages | § 5 Abs. 3, § 7 Abs. 9 ArbZG |
 | Krankenhaus, Einsatz nach über 12 h | Krankenhaus, Einstellung nach § 7, Mo Schicht 7:00 – 14:00 und Bereitschaftsdienst 14:00 – 20:00 (13:00), Einsatz Di 6:00 – 7:00 (eigene Schicht), Di Schicht 17:00 | Verstoß „Ruhezeit nach über 12 h“ für die 10:00 von Mo 20:00 bis zum Einsatz; die Verkürzung nach § 5 Abs. 2 danach rettet sie nicht | § 7 Abs. 9 ArbZG („im unmittelbaren Anschluss an die Beendigung der Arbeitszeit“) |
 | Herbst | Einsatz Sa 24.10.2026 23:00 – So 0:30, So Schicht 10:30 (11:00 echte Zeit) | kein Befund | § 5 Abs. 1 ArbZG; SoZV (Ende der Sommerzeit) |
 | Frühjahr | Einsatz Sa 27.03.2027 23:00 – So 0:30, So Schicht 11:00 (9:30 echte Zeit) | Verstoß „Ruhezeit durch Einsatz unterbrochen“ | § 5 Abs. 1 ArbZG; SoZV (Beginn der Sommerzeit) |
+| wie gestempelt | Zufällige Einsätze und gestempelte Arbeit, die sich nicht überschneiden, über beide Zeitumstellungen | dieselben Arbeitstage, Schichten, Pausen, Ist, Befunde nach R-01, R-02 und R-04, DATEV-Stunden und -Zuschläge wie dieselben Zeiten gestempelt | R-29; Review S-505 (Eigenschaftstest) |
+| laufender Einsatz am Monatsende | Mo Schicht 31.10.2026 14:00 – 22:00, Einsatz ab 1.11. 2:00 begonnen und noch nicht beendet, Abschluss des Oktobers um 7:30 | der Oktober hat eine offene Schicht und wird nicht abgeschlossen, wie mit einem offenen Kommen um 2:00; der Einsatz lässt sich beenden und zählt | § 2 Abs. 1 ArbZG; BAG 1 ABR 22/21 |
 
 Die Fälle ohne Angabe der Reaktionszeit haben eine Reaktionszeit von 30 min oder mehr.
 
@@ -1109,8 +1113,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 - **Rufbereitschaft**: Eine Pauschale für Rufbereitschaft ist kein Zuschlag „für tatsächlich
   geleistete Sonntags-, Feiertags- oder Nachtarbeit“ (§ 3b Abs. 1 EStG) und nicht steuerfrei; Soll
   rechnet sie nicht. Ein Einsatz ist geleistete Arbeit, seine Minuten bekommen die Zuschläge dieser
-  Regel (S-505), nie weniger als dieselben Zeiten gestempelt: Er ist ein Block der Schicht, der er
-  nach R-12 angehört, und die Schicht gehört zu ihrem ersten Tag, auch über ein Monatsende.
+  Regel (S-505), genau wie dieselben Zeiten gestempelt: Soll liest ihn als Kommen und Gehen mit den
+  Stempelungen (R-12), die Schicht gehört zu ihrem ersten Tag, auch über ein Monatsende.
 
 | Fall | Lage (Grundlohn 20 €, gezahlt 25 % Nacht) | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1140,6 +1144,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Einsatz nach Mitternacht | 20 € je Stunde, gezahlt 25 % Nacht und 40 % von 0 bis 4 Uhr; gestempelt Mi 3.6.2026 22:00 – 23:30, Einsatz Do 0:30 – 2:00 (dieselbe Schicht nach R-12) | dieselben Zuschläge wie gestempelt Do 0:30 – 2:00: die 40 %, denn die Schicht wurde vor 0 Uhr aufgenommen | § 3b Abs. 3 Nr. 1 EStG; R-12 (S-505) |
 | Einsatz vor gestempelter Arbeit | dieselben Sätze; Einsatz Mi 3.6.2026 22:00 – 23:50, gestempelt Do 0:00 – 3:00 | 300 min wie gestempelt (die 10 min dazwischen sind Arbeitszeit) und dieselben Zuschläge mit 40 % von 0 bis 3 Uhr | § 3b Abs. 3 Nr. 1 EStG; § 4 Satz 2 ArbZG; R-12 (S-505) |
 | Einsatz am Monatsende | dieselben Sätze; Einsatz Di 30.6.2026 22:00 – 23:50, gestempelt Mi 1.7. 0:00 – 3:00 | eine Schicht des 30.6. im Juni: 300 min und 40 % von 0 bis 3 Uhr wie gestempelt, der Juli zählt nichts davon | § 3b Abs. 3 Nr. 1 EStG; CLAUDE.md, „Time“ (S-505) |
+| Arbeit Stunden nach dem Einsatz | dieselben Sätze; Einsatz Mi 3.6.2026 21:00 – 23:00, gestempelt Do 2:00 – 4:00 (3 h später) | eine Schicht des 3.6. wie gestempelt: 40 % von 2 bis 4 Uhr, nicht 25 % | § 3b Abs. 3 Nr. 1 EStG; R-01 (Review S-505, fünfte Runde) |
 | Einsatz und Rufbereitschaft | Pauschale für Rufbereitschaft Mo 18:00 – Di 6:00, kein Einsatz | kein steuerfreier Teil, Soll rechnet keine Pauschale | § 3b Abs. 1 EStG („tatsächlich geleistete“ Arbeit) |
 
 ## Mitbestimmung und Datenschutz

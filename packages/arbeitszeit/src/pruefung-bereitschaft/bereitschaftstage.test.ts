@@ -166,7 +166,8 @@ describe("bereitschaftstage", () => {
   });
 
   it("names a day before the first rule version „nicht hinterlegt“ instead of judging it", () => {
-    const stempel = schicht("2025-12-31T08:00+01:00", "2025-12-31T12:00+01:00");
+    // 9:30 after the call-out: a shift of its own (R-01)
+    const stempel = schicht("2025-12-31T10:00+01:00", "2025-12-31T14:00+01:00");
     const eingabe = { einsaetze: [spanne("2025-12-30T23:00+01:00", "2025-12-31T00:30+01:00")] };
     expect(pruefe(stempel, eingabe)).toEqual({
       befunde: [],

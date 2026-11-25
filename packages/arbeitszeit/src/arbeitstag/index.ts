@@ -4,9 +4,12 @@ export {
   arbeitstage,
   type Stempelbefund,
   type StempelbefundArt,
+  type Stempeltage,
   stempelSchluessel,
   stempeltage,
+  stempeltageMit,
 } from "./arbeitstag.ts";
+export { type Einsatzspanne, mitEinsatzstempeln } from "./einsaetze.ts";
 export {
   LAENGSTE_SCHICHT,
   NEUE_SCHICHT_AB,

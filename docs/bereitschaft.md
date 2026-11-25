@@ -53,15 +53,17 @@ Schicht ist: Wer nach 13 Stunden um 20:00 geht und um 6:00 zum Einsatz kommt, ha
 Rufbereitschaft selbst ist keine Arbeitszeit. Ein **Einsatz** ist Arbeitszeit, vom Anruf bis zum
 Ende der Arbeit samt Weg, und er unterbricht die Ruhezeit: Nach ihm beginnt eine neue.
 
-- **Arbeitstag**: Ein Einsatz gehört zur Schicht, die höchstens 9 Stunden vorher endet (Grundbegriff
-  „Schicht“), sonst zum Tag, an dem er beginnt. Ein Einsatz Mo 23:00 bis Di 0:30 nach einer Schicht
-  am Montag zählt zum Montag. Ein Einsatz verbindet aber nie zwei Stücke anderer Arbeit: Die nächste
-  Schicht ist ein eigener Arbeitstag, wenn sie nicht binnen 9 Stunden nach anderer Arbeit beginnt.
+- **Arbeitstag**: Ein Einsatz zählt genau wie dieselben Zeiten gestempelt, Kommen am Beginn und
+  Gehen am Ende: für Arbeitstag, Ist, Lohn, Zuschläge, Befunde und den Monatsabschluss. Er gehört
+  zur Schicht, die höchstens 9 Stunden vorher endet (Grundbegriff „Schicht“), sonst beginnt er eine;
+  Arbeit binnen 9 Stunden nach ihm gehört zu seiner Schicht. Ein Einsatz Mo 23:00 bis Di 0:30 nach
+  einer Schicht am Montag zählt zum Montag, und eine Schicht Di 8:00 danach auch.
 - **Kurze Abstände**: Weniger als 15 Minuten zwischen einem Einsatz und anderer Arbeit sind
-  Arbeitszeit (§ 4 Satz 2 ArbZG), der Einsatz ist dann ein Stück dieser Arbeit; zwei Einsätze mit
-  weniger als 15 Minuten Abstand sind einer.
-- **Ruhezeit**: Soll misst vom Ende der letzten Arbeit, auch eines Einsatzes, bis zum Beginn der
-  ersten anderen Arbeit des nächsten Arbeitstags, mit den Grenzwerten und der Branchenausnahme der
+  Arbeitszeit (§ 4 Satz 2 ArbZG), längere eine Ruhepause, wie gestempelt.
+- **Ruhezeit**: Nur hier zählt ein Einsatz anders als gestempelte Arbeit. Soll misst vom Ende der
+  letzten Arbeit, auch eines Einsatzes, bis zum Beginn der ersten anderen Arbeit, die einen
+  Arbeitstag beginnt oder 9 Stunden nach der anderen Arbeit davor liegt, mit den Grenzwerten und der
+  Branchenausnahme der
   [Ruhezeit](pruefung.md#ruhezeit-r-05-5-arbzg); beginnt nach einem Einsatz eine eigene Schicht am
   selben Kalendertag, endet die Ruhezeit mit ihr. Ist sie zu kurz und beginnt sie mit dem Ende eines
   Einsatzes, heißt der Befund „Ruhezeit durch Einsatz unterbrochen“ (R-12) und nennt den Einsatz.

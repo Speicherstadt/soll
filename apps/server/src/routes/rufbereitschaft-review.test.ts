@@ -60,7 +60,7 @@ describe("review S-505: call-out overlapping stamped work", () => {
 });
 
 describe("review S-505, round 4: work joining a call-out of a closed month", () => {
-  it("stamps on 1 November within 15 min after a call-out on a closed 31 October are refused", async () => {
+  it("stamps on 1 November within 9 h after a call-out on a closed 31 October are refused", async () => {
     const w = await mitPlan();
     await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
     expect(
@@ -73,36 +73,26 @@ describe("review S-505, round 4: work joining a call-out of a closed month", () 
     });
     expect(zu.status).toBe(201);
     const oktober = await summen(w.jonas, "2026-10", w.jonas.nutzerId);
-    // an open Kommen joins nothing yet (R-01); its Gehen would close a shift that begins on 31.10.
-    // with the call-out and so change the closed October: refused, as a stamp continuing a shift of
-    // a closed month always is
-    const kommen = await nachtrag(w.jonas, {
-      art: "kommen",
-      zeitpunkt: um("2026-11-01T00:00:00+01:00"),
-      grund: "Zettel",
-    });
-    expect(kommen.status).toBe(201);
-    const gehen = await nachtrag(w.jonas, {
-      art: "gehen",
-      zeitpunkt: um("2026-11-01T08:00:00+01:00"),
-      grund: "Zettel",
-    });
-    expect(gehen.status).toBe(409);
+    // the call-out is read as stamped (R-29): a Kommen under 9 h after it, open or not, continues
+    // its shift of 31.10. and so the closed October, refused as any such stamp is (round 5)
+    for (const zeit of ["2026-11-01T00:00:00+01:00", "2026-11-01T08:49:00+01:00"]) {
+      const kommen = await nachtrag(w.jonas, {
+        art: "kommen",
+        zeitpunkt: um(zeit),
+        grund: "Zettel",
+      });
+      expect({ zeit, status: kommen.status }).toEqual({ zeit, status: 409 });
+    }
     expect(await summen(w.jonas, "2026-10", w.jonas.nutzerId)).toEqual(oktober);
-    // from 15 min after the call-out on it is a shift of its own of 1.11. and counts in November
+    // from 9 h after the call-out on it is a shift of its own of 1.11. and counts in November
     const vorher = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten as number;
-    const kommenId = (await json(kommen)).stempelId as string;
-    const verschoben = await w.jonas.anfrage(`/api/v1/arbeitszeit/stempelungen/${kommenId}`, {
-      method: "PATCH",
-      body: { art: "kommen", zeitpunkt: um("2026-11-01T00:05:00+01:00"), grund: "Zettel" },
-    });
-    expect(verschoben.status).toBe(201);
-    const gehenNeu = await nachtrag(w.jonas, {
-      art: "gehen",
-      zeitpunkt: um("2026-11-01T08:05:00+01:00"),
-      grund: "Zettel",
-    });
-    expect(gehenNeu.status).toBe(201);
+    for (const [art, zeit] of [
+      ["kommen", "2026-11-01T08:50:00+01:00"],
+      ["gehen", "2026-11-01T16:50:00+01:00"],
+    ] as const)
+      expect((await nachtrag(w.jonas, { art, zeitpunkt: um(zeit), grund: "Zettel" })).status).toBe(
+        201,
+      );
     const nachher = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten;
     expect(nachher).toBe(vorher + 480);
   });

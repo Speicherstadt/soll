@@ -78,9 +78,9 @@ describe("review r3: invariants over random inputs", () => {
         benannt: mischen(r, e.benannt ?? []),
       });
       expect(gemischt, `seed ${seed}`).toEqual(w);
-      // no pot below zero by leave taken unless it was taken beyond all leave Soll knows: then
-      // none is open (a correction below zero leaves its own pot below zero, it was not taken)
-      if (w.toepfe.some((t) => t.restHalbtage < Math.min(0, t.anspruchHalbtage)))
+      // no pot below zero unless the leave taken or corrected went beyond all leave Soll knows:
+      // then none is open (an advance counts against the other years)
+      if (w.toepfe.some((t) => t.restHalbtage < 0))
         expect(
           w.toepfe.filter((t) => t.restHalbtage > 0),
           `seed ${seed}`,

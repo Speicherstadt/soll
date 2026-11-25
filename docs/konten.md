@@ -131,7 +131,10 @@ des Folgejahres (§ 7 Abs. 3 Satz 4). Genommener Urlaub zählt zuerst gegen den 
 Urlaub. Wer mehr nimmt, als sein Jahr hergibt (Vorgriff), dem zählt der Rest gegen den Urlaub des
 Folgejahres: 22 Tage im Jahr 2026 bei je 20 Tagen ergeben 2026 genommen 20, 2027 genommen 2 und
 offen 18, und nur diese 18 können verfallen. Ist das Folgejahr noch nicht bekannt, zeigt das Konto
-den Rest des Jahres unter null (−2 Tage), bis der Urlaub des Folgejahres feststeht.
+den Rest des Jahres unter null (−2 Tage), bis der Urlaub des Folgejahres feststeht. Genauso zählt
+eine Korrektur, die ein Jahr unter null bringt (etwa ein Vorgriff aus dem alten Tool), gegen den
+Urlaub der anderen Jahre: −2 Tage für 2025 bei 20 Tagen 2026 lassen 18 Tage offen, und nur diese
+nennt ein Hinweis.
 
 Urlaub verfällt nur, wenn der Betrieb die Person **rechtzeitig** auf den offenen Urlaub und den
 Verfall hingewiesen hat (EuGH C-684/16, Max-Planck; BAG, 19.02.2019, 9 AZR 423/16). Soll verlangt

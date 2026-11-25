@@ -151,6 +151,33 @@ const entnehmen = (laeufe: readonly Lauf[], eintrag: GenommenerUrlaub) => {
   }
 };
 
+/** Before every day: an offset of a year's leave below zero is no leave taken on a day */
+const VOR_ALLEM: Tag = "0000-01-01";
+
+/**
+ * A year whose leave a correction put below zero (an advance the old tool granted, `urlaub_korrektur`
+ * below zero) counts against the leave of the other years like leave taken in advance, the oldest
+ * first: so the account and a notice name only leave that is open (§ 7 Abs. 3 BUrlG; EuGH C-684/16).
+ * What no other year covers stays below zero in its own year. The year keeps its own entitlement
+ * raised by what was offset, the others count it as taken before every day.
+ */
+const ausgleichen = (laeufe: readonly Lauf[]) => {
+  for (const lauf of laeufe) {
+    let fehlt = -lauf.topf.restHalbtage;
+    for (const andere of laeufe) {
+      if (fehlt <= 0) break;
+      if (andere === lauf || andere.topf.restHalbtage <= 0) continue;
+      const teil = Math.min(fehlt, andere.topf.restHalbtage);
+      andere.topf.restHalbtage -= teil;
+      andere.topf.genommenHalbtage += teil;
+      andere.entnommen.push({ tag: VOR_ALLEM, halbtage: teil });
+      lauf.topf.anspruchHalbtage += teil;
+      lauf.topf.restHalbtage += teil;
+      fehlt -= teil;
+    }
+  }
+};
+
 /**
  * Takes the leave up to `heute` off the pots and lets expire what notices named, day by day; sets
  * each pot's first notice and returns per year when it expired and when it may next
@@ -171,6 +198,7 @@ export const ablaufen = (
       zuletzt: null,
     };
   });
+  ausgleichen(laeufe);
   const genommen = e.genommen
     .filter((g) => g.tag <= e.heute)
     .sort((a, b) => a.tag.localeCompare(b.tag));

@@ -1,4 +1,4 @@
-import type { LeseFehler } from "@soll/import";
+import { type LeseFehler, WERKZEUGE } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { lesefehlerText } from "./texte.ts";
@@ -24,6 +24,7 @@ export const Lesefehler = (props: { fehler: Liste<LeseFehler> }) => (
 
 /** Step 2: the exported file; the server reads it and answers with the preview */
 export const DateiSchritt = (props: {
+  quelle: string;
   vorschau: Vorschau | null;
   gewaehlt: (datei: Datei) => void;
   zuGross: () => void;
@@ -44,7 +45,7 @@ export const DateiSchritt = (props: {
         <input
           id={id}
           type="file"
-          accept=".csv,text/csv,text/plain"
+          accept={(WERKZEUGE.find((w) => w.id === props.quelle)?.endungen ?? [".csv"]).join(",")}
           class="text-muted-foreground file:me-3 file:h-9 file:rounded-sm file:border file:border-border file:bg-background file:px-3 file:text-foreground"
           onChange={(event) => void waehlen(event.currentTarget.files?.[0])}
         />

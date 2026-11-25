@@ -6,6 +6,13 @@ import type { LeseFehler, Ziel } from "@soll/import";
 export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte";
 export const ARTEN: readonly Art[] = ["zeiten", "abwesenheiten", "kunden", "projekte"];
 
+/** What a dry run and a takeover count: the records, and the bookings made from times (S-702) */
+export type PlanArt = Art | "buchungen";
+export const PLAN_ARTEN: readonly PlanArt[] = [...ARTEN, "buchungen"];
+
+/** A value of the file's column Projekt or Tätigkeit, with how many times name it (S-702) */
+export type Wertvorschlag = { wert: string; datensaetze: number; vorschlag: string | null };
+
 export type Liste<T> = { anzahl: number; liste: T[] };
 
 export type Vorschaubefund = {
@@ -32,14 +39,20 @@ export type Vorschau = {
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: Liste<Vorschaubefund>;
+  buchung: {
+    projekte: Wertvorschlag[];
+    taetigkeiten: Wertvorschlag[];
+    buchbareProjekte: { projektId: string; name: string; nummer: string; kunde: string }[];
+    buchbareTaetigkeiten: { taetigkeitId: string; name: string; fest: boolean }[];
+  };
 };
 
 export type Anzahl = { neu: number; vorhanden: number; ausgelassen: number; abgelehnt: number };
-export type Abgelehnt = { art: Art; zeile: number; externalId: string; grund: string };
+export type Abgelehnt = { art: PlanArt; zeile: number; externalId: string; grund: string };
 export type Monatssperre = { nutzerId: string; monat: string };
 
 export type Probelauf = {
-  zahlen: Record<Art, Anzahl>;
+  zahlen: Record<PlanArt, Anzahl>;
   lesefehler: Liste<LeseFehler>;
   abgelehnt: Liste<Abgelehnt>;
   monate: Monatssperre[];
@@ -60,7 +73,7 @@ export type ImportEintrag = {
   dateiSha256: string;
   dateiBytes: number;
   abgeschlossenBis: string | null;
-  zahlen: Record<Art, Anzahl>;
+  zahlen: Record<PlanArt, Anzahl>;
   von: string;
   am: number;
 };

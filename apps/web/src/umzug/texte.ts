@@ -1,7 +1,7 @@
 import type { LeseFehler, LeseGrund } from "@soll/import";
 import { m } from "../paraglide/messages.js";
 import { getLocale } from "../paraglide/runtime.js";
-import type { Art } from "./typen.ts";
+import type { PlanArt } from "./typen.ts";
 import type { Schritt } from "./zustand.ts";
 
 /* The words of the move page in the language of the app (S-701) */
@@ -17,6 +17,7 @@ export const SCHRITT_NAMEN: Record<Schritt, () => string> = {
 /** How to export the data of each tool, by its id in packages/import */
 export const ANLEITUNG: Record<string, () => string> = {
   "soll-csv": () => m.umzug_anleitung_soll_csv(),
+  tabelle: () => m.umzug_anleitung_tabelle(),
 };
 
 const LESEGRUND: Record<LeseGrund, () => string> = {
@@ -34,13 +35,26 @@ const LESEGRUND: Record<LeseGrund, () => string> = {
   pause_ungueltig: () => m.umzug_lese_pause_ungueltig(),
   art_fehlt: () => m.umzug_lese_art_fehlt(),
   kunde_unbekannt: () => m.umzug_lese_kunde_unbekannt(),
+  spalte_fehlt: () => m.umzug_lese_spalte_fehlt(),
+  zeile_doppelt: () => m.umzug_lese_zeile_doppelt(),
+  dauer_ungueltig: () => m.umzug_lese_dauer_ungueltig(),
+  dauer_abweichend: () => m.umzug_lese_dauer_abweichend(),
 };
 
-/** A line the reader refused, with the value it held */
+/** The name of a field in the language of the app, or the field itself */
+const feldName = (feld: string): string => FELD_NAMEN[feld]?.() ?? feld;
+
+/** A line the reader refused, with the value it held and the column it stands in (S-702) */
 export const lesefehlerText = (fehler: LeseFehler): string => {
   const grund = LESEGRUND[fehler.grund]();
-  const mitWert = fehler.wert ? `${grund} (${fehler.wert})` : grund;
-  return m.umzug_zeile({ zeile: fehler.zeile, grund: mitWert });
+  const benannt =
+    fehler.grund === "spalte_fehlt" && fehler.feld ? `${grund}: ${feldName(fehler.feld)}` : grund;
+  const mitWert = fehler.wert ? `${benannt} (${fehler.wert})` : benannt;
+  const mitSpalte =
+    fehler.spalte === undefined
+      ? mitWert
+      : m.umzug_in_spalte({ grund: mitWert, spalte: fehler.spalte });
+  return m.umzug_zeile({ zeile: fehler.zeile, grund: mitSpalte });
 };
 
 const PLANGRUND: Record<string, () => string> = {
@@ -61,11 +75,12 @@ const PLANGRUND: Record<string, () => string> = {
 export const abgelehntText = (zeile: number, grund: string): string =>
   m.umzug_zeile({ zeile, grund: PLANGRUND[grund]?.() ?? grund });
 
-export const ART_NAMEN: Record<Art, () => string> = {
+export const ART_NAMEN: Record<PlanArt, () => string> = {
   zeiten: () => m.umzug_art_zeiten(),
   abwesenheiten: () => m.umzug_art_abwesenheiten(),
   kunden: () => m.umzug_art_kunden(),
   projekte: () => m.umzug_art_projekte(),
+  buchungen: () => m.umzug_art_buchungen(),
 };
 
 export const FELD_NAMEN: Record<string, () => string> = {
@@ -81,6 +96,9 @@ export const FELD_NAMEN: Record<string, () => string> = {
   kunde: () => m.umzug_feld_kunde(),
   name: () => m.umzug_feld_name(),
   nummer: () => m.umzug_feld_nummer(),
+  dauer: () => m.umzug_feld_dauer(),
+  projekt: () => m.umzug_feld_projekt(),
+  taetigkeit: () => m.umzug_feld_taetigkeit(),
 };
 
 /** A calendar day, read at noon so no time zone moves it */

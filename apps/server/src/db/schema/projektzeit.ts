@@ -140,9 +140,14 @@ export const projektzeiten = sqliteTable(
     abgerechnetAm: integer("abgerechnet_am"),
     centProStunde: integer("cent_pro_stunde"),
     angelegtAm: integer("angelegt_am").notNull(),
+    /** a booking taken over from a spreadsheet: the import, the tool and its id there (S-702) */
+    importId: text("import_id"),
+    externQuelle: text("extern_quelle"),
+    externId: text("extern_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.buchungId] }),
+    uniqueIndex("projektzeiten_extern").on(t.betriebId, t.externQuelle, t.externId),
     index("projektzeiten_person").on(t.betriebId, t.nutzerId, t.beginn),
     index("projektzeiten_projekt").on(t.betriebId, t.projektId),
     index("projektzeiten_taetigkeit").on(t.betriebId, t.taetigkeitId),

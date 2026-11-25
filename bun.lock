@@ -77,7 +77,9 @@
       "name": "@soll/import",
       "version": "0.0.0",
       "dependencies": {
+        "@noble/hashes": "2.4.0",
         "@soll/arbeitszeit": "workspace:*",
+        "fflate": "0.8.3",
       },
       "devDependencies": {
         "fast-check": "4.10.2",

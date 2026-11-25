@@ -53,9 +53,16 @@ export {
 } from "./taetigkeiten.ts";
 export { type BuchungMitBezug, buchungenImAuftrag, buchungenMitBezug } from "./uebergabe.ts";
 export {
+  type BuchbaresProjekt,
+  type BuchbareTaetigkeit,
+  buchbar,
+  buchungenUebernehmen,
+  buchungUeberschneidet,
   kundenUebernehmen,
   projekteUebernehmen,
+  type UebernommeneBuchung,
   type UebernommenerKunde,
   type UebernommenesProjekt,
+  uebernommeneBuchungen,
 } from "./uebernahme.ts";
 export { type Verbrauch, verbrauchJeProjekt } from "./verbrauch.ts";

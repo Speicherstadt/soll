@@ -1,34 +1,22 @@
 import { Database } from "bun:sqlite";
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { oeffneDatenbank } from "../../db/oeffnen.ts";
+import { nachDemTest, temporaerOrdner } from "../../test-ordner.ts";
 import { aktuellerPruefwert, kettePruefen, schreiben } from "../audit/index.ts";
 import { sichern, standardZiel, wiederherstellen } from "./index.ts";
 
 const JETZT = 1_790_000_000_000;
 
-const ordner = () => {
-  const pfad = mkdtempSync(join(tmpdir(), "soll-sicherung-"));
-  afterEach(() => rmSync(pfad, { recursive: true, force: true }));
-  return pfad;
-};
+const ordner = () => temporaerOrdner("soll-sicherung-");
 
 /** Weber Haustechnik and Café Elbblick, each with links in its chain, in a live data directory */
 const laufenderServer = () => {
   const daten = ordner();
   const pfad = join(daten, "soll.db");
   const offen = oeffneDatenbank(pfad, JETZT);
-  afterEach(() => offen.schliessen());
+  nachDemTest(() => offen.schliessen());
   const weber = { betriebId: "weber", akteur: "jonas", jetzt: JETZT };
   const elbblick = { betriebId: "elbblick", akteur: "mia", jetzt: JETZT };
   schreiben(offen.schreibDb, weber, (s) =>

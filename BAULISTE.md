@@ -751,6 +751,26 @@ Alle Punkte: nach S-305.
   nennen).
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
+  Fertig, wenn: drei Seiten auf Deutsch unter `docs/` stehen, in `mkdocs.yml` verlinkt und jede als
+  Vorlage gekennzeichnet, die juristisch zu prüfen ist (Schritte für Menschen). Das **Infoblatt**
+  enthält die Angaben nach Art. 13 Abs. 1 und 2 DSGVO mit Platzhaltern für das, was nur der Betrieb
+  weiß (Name, Anschrift, Datenschutzbeauftragter, Lohnbüro, Aufsichtsbehörde): was Soll aufzeichnet
+  und wozu (§ 3 Abs. 2 Nr. 1 ArbSchG nach BAG 1 ABR 22/21, § 16 Abs. 2 ArbZG, § 17 MiLoG, Lohn),
+  die Rechtsgrundlagen (Art. 6 Abs. 1 lit. b und c, Art. 9 Abs. 2 lit. b, Art. 88 DSGVO, § 26 BDSG),
+  Empfänger (Lohnbüro und DATEV, Haben, Kunden bei Stundennachweisen), die Fristen aus S-901 (2 und
+  8 Jahre), die Rechte nach Art. 15 bis 21 und 77 DSGVO mit der Auskunft als Download (S-309) und
+  was Soll nie tut (Standort, Fotos, Fingerabdrücke, Diagnose, Auswertung je Person ohne Schalter,
+  automatisches Ausstempeln, Entscheidungen nach Art. 22). Die **Betriebsvereinbarung** nach § 87
+  Abs. 1 Nr. 6 BetrVG regelt genau die Funktionen und Schalter, die Soll auf `main` hat: Module,
+  Rollen, Auswertung je Person (S-604), Terminal mit PIN, QR-Code und NFC-Karte (S-801, S-802),
+  Erinnerungen per Web Push und Mail (S-307), Zugänge zur API und MCP (S-607), Kalender-Feed
+  (S-503), Haben (S-606), DATEV (S-308), Auskunft und Prüfexport (S-309); Importe (S-701) erst, wenn
+  es sie gibt. Das **Löschkonzept** folgt DIN 66398 (Datenarten, Löschklassen mit Frist und
+  Startereignis, Umsetzung, Verantwortung, Sicherungen, Löschsperren) und nennt **jede Tabelle** der
+  Datenbank mit Löschklasse und dem, was der Code heute tut; wo Soll nichts löscht, steht das als
+  offener Punkt da. Ein Test vergleicht die Tabellen des Löschkonzepts mit allen Tabellen von
+  `db/schema.ts` und `db/auth-schema.ts`, so dass keine neue Tabelle ohne Löschregel bleibt. Ob das
+  Infoblatt als PDF aus der App kommt, entscheidet `docs/plan.md`.
 - [x] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
   Fertig, wenn: `bun run lasttest` den Server auf einer leeren Datenbank in einem temporären
   Verzeichnis auf Port 28300 startet, 50 Betriebe mit je 50 Personen über die HTTP-API anlegt (echte

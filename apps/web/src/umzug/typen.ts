@@ -3,7 +3,14 @@ import type { LeseFehler, Ziel } from "@soll/import";
 
 /* What the API of imports answers (apps/server, routes/importe.ts; S-701) */
 
-export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte" | "taetigkeiten" | "buchungen";
+export type Art =
+  | "zeiten"
+  | "abwesenheiten"
+  | "kunden"
+  | "projekte"
+  | "taetigkeiten"
+  | "buchungen"
+  | "salden";
 export const ARTEN: readonly Art[] = [
   "zeiten",
   "abwesenheiten",
@@ -11,7 +18,17 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "salden",
 ];
+
+/** The balances of a person on a cut-off date in the file (S-708) */
+export type Saldo = {
+  zeile: number;
+  person: string;
+  stichtag: string;
+  ueberstundenMinuten: number | null;
+  urlaubHalbtage: number | null;
+};
 
 /**
  * What a dry run and a takeover count: the records; bookings are those a tool kept (S-705) and
@@ -51,6 +68,7 @@ export type Vorschau = {
   vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: Liste<Vorschaubefund>;
+  salden: Liste<Saldo>;
   buchung: {
     projekte: Wertvorschlag[];
     taetigkeiten: Wertvorschlag[];

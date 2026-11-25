@@ -901,7 +901,7 @@ S-701 und unabhängig voneinander.
 - [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
   Abwesenheiten.
 - [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
-- [ ] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
+- [x] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
   oder aus dem Import, im Audit-Log.
   nach: S-402, S-701. Fertig, wenn: ein Startsaldo von Hand und aus einer Datei dasselbe Konto ergibt,
   ein zweiter Import nichts doppelt anlegt und der Prüfwert der Person ihn deckt. Genauer:

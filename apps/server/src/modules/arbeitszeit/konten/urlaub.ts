@@ -8,6 +8,7 @@ import {
   type Urlaubsjahr,
   type Urlaubskonto,
   type UrlaubskontoEingaben,
+  urlaubAbStichtag,
   urlaubGenommen,
   urlaubsanspruch,
   urlaubskonto,
@@ -17,6 +18,7 @@ import { abwesenheitenIn, tageDerAbwesenheiten } from "../abwesenheiten/lesen.ts
 import { tageMitSoll } from "../abwesenheiten/stand.ts";
 import { sollGrundlagen } from "../grundlagen.ts";
 import { type AnpassungZeile, anpassungenVon, ausgesondertAb, hinweiseVon } from "./lesen.ts";
+import { type Urlaubsbeginn, urlaubsbeginnVon } from "./stichtag.ts";
 
 /*
  * The leave account of a person (S-402, R-23): from the year Soll knows the leave from, each year's
@@ -35,6 +37,8 @@ export type UrlaubsGrundlage = {
   ok: true;
   /** the first year of the account: of the leave brought in (`urlaub_start`), else of joining */
   startJahr: number;
+  /** the first day the account holds: 1 January of `startJahr`, or the cut-off date (S-708) */
+  beginn: Tag;
   /** the day the person joined, as Soll knows it (`beschaeftigungVon`) */
   eintritt: Tag;
   eingaben: UrlaubskontoEingaben;
@@ -44,9 +48,18 @@ export type UrlaubsGrundlage = {
 
 const NICHT_HINTERLEGT: KontoLuecke = { ok: false, grund: "nicht_hinterlegt", monate: [] };
 
-const startJahrVon = (anpassungen: readonly AnpassungZeile[], grundlagen: SollGrundlagen) =>
-  anpassungen.find((a) => a.art === "urlaub_start")?.jahr ??
-  jahrVon(grundlagen.beschaeftigung.eintritt);
+const beginnVon = (anpassungen: readonly AnpassungZeile[], grundlagen: SollGrundlagen) =>
+  urlaubsbeginnVon(anpassungen) ?? {
+    jahr: jahrVon(grundlagen.beschaeftigung.eintritt),
+    stichtag: null,
+  };
+
+/** The inputs from the cut-off date on, where the account begins on one (R-34) */
+const abStichtag = (eingaben: UrlaubskontoEingaben, beginn: Urlaubsbeginn) => {
+  if (beginn.stichtag === null) return eingaben;
+  const ab = urlaubAbStichtag(eingaben, beginn.stichtag);
+  return ab.ok ? ab.wert : null;
+};
 
 /**
  * The leave of each year from `start` to this one; Teilurlaub under § 5 Abs. 1 Buchst. a BUrlG is
@@ -111,24 +124,31 @@ export const urlaubsGrundlage = (
   const grundlagen = sollGrundlagen(db, betriebId, nutzerId);
   if (grundlagen === null) return NICHT_HINTERLEGT;
   const anpassungen = anpassungenVon(db, betriebId, nutzerId);
-  const startJahr = startJahrVon(anpassungen, grundlagen);
-  const ab: Tag = `${String(startJahr).padStart(4, "0")}-01-01`;
+  const beginn = beginnVon(anpassungen, grundlagen);
+  const startJahr = beginn.jahr;
+  const ab: Tag = beginn.stichtag?.tag ?? `${String(startJahr).padStart(4, "0")}-01-01`;
   const ausgesondert = ausgesondertAb(db, betriebId, nutzerId, ab);
   if (ausgesondert.length > 0) return { ok: false, grund: "ausgesondert", monate: ausgesondert };
   const jahre = jahreVon(grundlagen, startJahr, jahrVon(heute));
   const genommen = genommenAb(db, grundlagen, { betriebId, nutzerId }, ab, heute);
   if (jahre === null || genommen === null) return NICHT_HINTERLEGT;
-  return {
-    ok: true,
-    startJahr,
-    eintritt: grundlagen.beschaeftigung.eintritt,
-    eingaben: {
+  const eingaben = abStichtag(
+    {
       jahre,
       genommen: genommen.filter((g) => g.tag <= heute),
       anpassungen: urlaubsAnpassungen(anpassungen),
       hinweise: hinweiseVon(db, betriebId, nutzerId).map((h) => h.tag as Tag),
       heute,
     },
+    beginn,
+  );
+  if (eingaben === null) return NICHT_HINTERLEGT;
+  return {
+    ok: true,
+    startJahr,
+    beginn: ab,
+    eintritt: grundlagen.beschaeftigung.eintritt,
+    eingaben,
     geplantHalbtage: genommen
       .filter((g) => g.tag > heute)
       .reduce((summe, g) => summe + g.halbtage, 0),

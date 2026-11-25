@@ -29,7 +29,8 @@ export type Anpassungsart =
   | "auszahlung"
   | "korrektur"
   | "urlaub_start"
-  | "urlaub_korrektur";
+  | "urlaub_korrektur"
+  | "urlaub_stichtag";
 
 export type Anpassung = {
   anpassungId: string;

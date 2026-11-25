@@ -1,19 +1,17 @@
-import { SOLL_CSV_VORLAGE, WERKZEUGE } from "@soll/import";
+import { SOLL_CSV_VORLAGE, SOLL_SALDEN_VORLAGE, WERKZEUGE } from "@soll/import";
 import { Button } from "@soll/ui";
 import { For, Show } from "solid-js";
 import { PFAD } from "../abfragen/schluessel.ts";
 import { m } from "../paraglide/messages.js";
 import { ANLEITUNG } from "./texte.ts";
 
-/** The template of the Soll-CSV as a download, made in the browser */
-const vorlageLaden = () => {
+/** A template of the Soll-CSV as a download, made in the browser */
+const vorlageLaden = (inhalt: string, name: string) => {
   // a byte order mark, so Excel opens the umlauts as UTF-8
-  const url = URL.createObjectURL(
-    new Blob([`﻿${SOLL_CSV_VORLAGE}`], { type: "text/csv;charset=utf-8" }),
-  );
+  const url = URL.createObjectURL(new Blob([`﻿${inhalt}`], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = "soll-vorlage.csv";
+  link.download = name;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
@@ -65,9 +63,21 @@ export const WerkzeugSchritt = (props: { quelle: string; waehlen: (quelle: strin
           </h3>
           <p class="text-muted-foreground">{anleitung()()}</p>
           <Show when={props.quelle === "soll-csv"}>
-            <Button variant="outline" class="self-start" onClick={vorlageLaden}>
-              {m.umzug_vorlage()}
-            </Button>
+            <div class="flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                onClick={() => vorlageLaden(SOLL_CSV_VORLAGE, "soll-vorlage.csv")}
+              >
+                {m.umzug_vorlage()}
+              </Button>
+              {/* the balances on a cut-off date (S-708) */}
+              <Button
+                variant="outline"
+                onClick={() => vorlageLaden(SOLL_SALDEN_VORLAGE, "soll-salden.csv")}
+              >
+                {m.umzug_vorlage_salden()}
+              </Button>
+            </div>
           </Show>
           <Vorlagen quelle={props.quelle} />
         </section>

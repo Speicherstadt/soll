@@ -5,7 +5,7 @@ import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema
 import { kanonisch } from "../audit/hash.ts";
 import { formatPruefwert, type Kontext, schreiben } from "../audit/index.ts";
 import { monatJetzt } from "./monat.ts";
-import { abweichendeTage, inhaltHash, type Monatsinhalt } from "./monatsinhalt.ts";
+import { bestaetigungGilt, inhaltHash, type Monatsinhalt } from "./monatsinhalt.ts";
 
 /*
  * Closing a month (S-306): the person confirms, then the business closes. The closing row carries
@@ -133,12 +133,12 @@ export const monatStatus = (
       ? {
           von: bestaetigt.erstelltVon,
           am: bestaetigt.erstelltAm,
-          // a confirmation holds for the records the person saw, not for a later change
-          gueltig:
-            abweichendeTage(
-              inhaltVon(bestaetigt).tage,
-              (geschlossen ? inhaltVon(geschlossen) : jetztStand.inhalt).tage,
-            ).length === 0,
+          // a confirmation holds for the records the person saw, not for a later change, nor for
+          // a start balance added after it (S-708)
+          gueltig: bestaetigungGilt(
+            inhaltVon(bestaetigt),
+            geschlossen ? inhaltVon(geschlossen) : jetztStand.inhalt,
+          ),
         }
       : null,
     abschluss: geschlossen

@@ -1,15 +1,17 @@
 import { jahrVon, monatVon, type Tag, tagInBerlin, verfallHinweis } from "@soll/arbeitszeit";
 import type { Db, SchreibDb } from "../../../db/oeffnen.ts";
-import { type Kontext, schreiben } from "../../audit/index.ts";
+import { type Kontext, type Schreiber, schreiben } from "../../audit/index.ts";
 import { beschaeftigungVon } from "../grundlagen.ts";
 import { type AnpassungZeile, anpassungenVon, type HinweisZeile, hinweiseVon } from "./lesen.ts";
+import { stichtagGesperrt, URLAUBSBEGINN, urlaubsbeginnVon } from "./stichtag.ts";
 import { stundenAnpassungPasst } from "./ueberstunden.ts";
 import { urlaubsGrundlage } from "./urlaub.ts";
 
 /*
- * Changing the accounts (S-402): only by hand and only appended, each in the audit chain. A change of
- * the overtime account is for a month in whole minutes, one of the leave account for a year in half
- * days; a notice on leave expiring keeps its day and what it named.
+ * Changing the accounts (S-402): only by hand or from an import (S-708) and only appended, each in
+ * the audit chain. A change of the overtime account is for a month in whole minutes, one of the
+ * leave account for a year in half days, the leave on a cut-off date for its month; a notice on
+ * leave expiring keeps its day and what it named.
  */
 
 export type Anpassung =
@@ -19,12 +21,14 @@ export type Anpassung =
       minuten: number;
       grund: string;
     }
-  | { art: "urlaub_start" | "urlaub_korrektur"; jahr: number; halbtage: number; grund: string };
+  | { art: "urlaub_start" | "urlaub_korrektur"; jahr: number; halbtage: number; grund: string }
+  /** the leave open on the first day of `monat`, the leave of its year included (S-708, R-34) */
+  | { art: "urlaub_stichtag"; monat: string; halbtage: number; grund: string };
 
 export type KontoFehler =
   /** a second start of an account */
   | "vorhanden"
-  /** a start after a closed month or another change, which the account cannot place */
+  /** a start after or in a closed month or after another change, which the account cannot place */
   | "widerspruch"
   /** a notice after today, or before the leave account begins */
   | "ungueltig"
@@ -33,7 +37,15 @@ export type KontoFehler =
 
 export type KontoErgebnis<T> = { ok: true; wert: T } | { ok: false; fehler: KontoFehler };
 
-const alsZeile = (kontext: Kontext, nutzerId: string, a: Anpassung): AnpassungZeile => ({
+/** Where a change taken over from another tool comes from (S-708); null for one by hand */
+export type Uebernommen = { importId: string; quelle: string; externId: string } | null;
+
+export const alsZeile = (
+  kontext: Kontext,
+  nutzerId: string,
+  a: Anpassung,
+  herkunft: Uebernommen = null,
+): AnpassungZeile => ({
   betriebId: kontext.betriebId,
   anpassungId: crypto.randomUUID(),
   nutzerId,
@@ -45,40 +57,78 @@ const alsZeile = (kontext: Kontext, nutzerId: string, a: Anpassung): AnpassungZe
   grund: a.grund,
   erstelltVon: kontext.akteur,
   erstelltAm: kontext.jetzt,
+  importId: herkunft?.importId ?? null,
+  externQuelle: herkunft?.quelle ?? null,
+  externId: herkunft?.externId ?? null,
 });
 
 /**
  * Whether the month or year of a change is plausible (reviews of S-402): never before the person
  * joined. A change of the overtime account is for a month up to this one: a month ahead would lower
  * today's balance for what has not happened, and a start balance ahead would drop every month closed
- * before it. Leave is brought in up to next year, a correction of leave is for the year before the
- * account begins (it holds the leave brought in) up to next year.
+ * before it; so is a cut-off date of leave (S-708). Leave is brought in up to next year, a
+ * correction of leave is for the year before the account begins (it holds the leave brought in) up
+ * to next year.
  */
 const zeitPasst = (
   db: Db,
   kontext: Kontext,
-  nutzerId: string,
+  wer: { nutzerId: string; frueher: Tag | null },
   anpassung: Anpassung,
   bisher: readonly AnpassungZeile[],
 ): boolean => {
-  const eintritt = beschaeftigungVon(db, kontext.betriebId, nutzerId)?.eintritt;
+  const bekannt = beschaeftigungVon(db, kontext.betriebId, wer.nutzerId)?.eintritt;
+  const eintritt = [bekannt, wer.frueher ?? undefined].filter((t) => t !== undefined).sort()[0];
   if (eintritt === undefined) return false;
   const heute = tagInBerlin(kontext.jetzt);
   if ("monat" in anpassung)
     return anpassung.monat >= monatVon(eintritt) && anpassung.monat <= monatVon(heute);
-  const start = bisher.find((a) => a.art === "urlaub_start")?.jahr ?? jahrVon(eintritt);
+  const start = urlaubsbeginnVon(bisher)?.jahr ?? jahrVon(eintritt);
   const ab = anpassung.art === "urlaub_start" ? jahrVon(eintritt) : start - 1;
   return anpassung.jahr >= ab && anpassung.jahr <= jahrVon(heute) + 1;
 };
 
 /**
  * Leave brought in from a year after a notice already given would move the account's start past
- * that notice, and the notice would name leave the account no longer holds (review S-402)
+ * that notice, and the notice would name leave the account no longer holds (review S-402); so would
+ * a cut-off date after a notice (S-708)
  */
 const nachHinweis = (db: Db, kontext: Kontext, nutzerId: string, anpassung: Anpassung) => {
-  if (anpassung.art !== "urlaub_start") return false;
+  if (anpassung.art !== "urlaub_start" && anpassung.art !== "urlaub_stichtag") return false;
   const [erster] = hinweiseVon(db, kontext.betriebId, nutzerId);
-  return erster !== undefined && anpassung.jahr > jahrVon(erster.tag as Tag);
+  if (erster === undefined) return false;
+  return "jahr" in anpassung
+    ? anpassung.jahr > jahrVon(erster.tag as Tag)
+    : `${anpassung.monat}-01` > erster.tag;
+};
+
+/** A second start of the same account: of the overtime, or of the leave in either form */
+const zweiterStart = (bisher: readonly AnpassungZeile[], anpassung: Anpassung): boolean => {
+  if (anpassung.art === "startsaldo") return bisher.some((a) => a.art === "startsaldo");
+  return URLAUBSBEGINN.has(anpassung.art) && bisher.some((a) => URLAUBSBEGINN.has(a.art));
+};
+
+/**
+ * Whether a change of a person's accounts may be recorded, without writing it: by hand and from an
+ * import alike (S-708), so both refuse the same. `frueher` is the first day of the person's times
+ * an import takes over with it: the person joined no later (`beschaeftigungVon`).
+ */
+export const anpassungPruefen = (
+  db: Db,
+  kontext: Kontext,
+  nutzerId: string,
+  anpassung: Anpassung,
+  frueher: Tag | null = null,
+): KontoFehler | null => {
+  const bisher = anpassungenVon(db, kontext.betriebId, nutzerId);
+  if (zweiterStart(bisher, anpassung)) return "vorhanden";
+  if (!zeitPasst(db, kontext, { nutzerId, frueher }, anpassung, bisher)) return "ungueltig";
+  if (nachHinweis(db, kontext, nutzerId, anpassung)) return "widerspruch";
+  if (stichtagGesperrt(db, kontext.betriebId, nutzerId, anpassung)) return "widerspruch";
+  const zeile = alsZeile(kontext, nutzerId, anpassung);
+  if ("minuten" in anpassung && !stundenAnpassungPasst(db, kontext.betriebId, nutzerId, zeile))
+    return "widerspruch";
+  return null;
 };
 
 /** Records a change of a person's accounts by hand */
@@ -89,19 +139,30 @@ export const anpassungAnlegen = (
   nutzerId: string,
   anpassung: Anpassung,
 ): KontoErgebnis<AnpassungZeile> => {
+  const fehler = anpassungPruefen(db, kontext, nutzerId, anpassung);
+  if (fehler !== null) return { ok: false, fehler };
   const zeile = alsZeile(kontext, nutzerId, anpassung);
-  const bisher = anpassungenVon(db, kontext.betriebId, nutzerId);
-  if (anpassung.art === "urlaub_start" || anpassung.art === "startsaldo")
-    if (bisher.some((a) => a.art === anpassung.art)) return { ok: false, fehler: "vorhanden" };
-  if (!zeitPasst(db, kontext, nutzerId, anpassung, bisher))
-    return { ok: false, fehler: "ungueltig" };
-  if (nachHinweis(db, kontext, nutzerId, anpassung)) return { ok: false, fehler: "widerspruch" };
-  if ("monat" in anpassung && !stundenAnpassungPasst(db, kontext.betriebId, nutzerId, zeile))
-    return { ok: false, fehler: "widerspruch" };
   return {
     ok: true,
     wert: schreiben(schreibDb, kontext, (s) => s.einfuegen("kontoAnpassungen", zeile)),
   };
+};
+
+/** A start balance planned by an import (S-708), checked with `anpassungPruefen` against the same */
+export type UebernommeneAnpassung = { nutzerId: string; anpassung: Anpassung; externId: string };
+
+/** Writes the start balances of an import in its one transaction, each with its origin */
+export const anpassungenUebernehmen = (
+  s: Schreiber,
+  kontext: Kontext,
+  herkunft: { importId: string; quelle: string },
+  neue: readonly UebernommeneAnpassung[],
+): void => {
+  for (const neu of neue)
+    s.einfuegen(
+      "kontoAnpassungen",
+      alsZeile(kontext, neu.nutzerId, neu.anpassung, { ...herkunft, externId: neu.externId }),
+    );
 };
 
 /**
@@ -121,8 +182,7 @@ export const hinweisGeben = (
   const grundlage = urlaubsGrundlage(db, kontext.betriebId, nutzerId, heute);
   if (!grundlage.ok) return { ok: false, fehler: "nicht_hinterlegt" };
   // a notice can be given only to someone employed, and only for the leave the account holds
-  if (tag < grundlage.eintritt || tag < `${String(grundlage.startJahr).padStart(4, "0")}-01-01`)
-    return { ok: false, fehler: "ungueltig" };
+  if (tag < grundlage.eintritt || tag < grundlage.beginn) return { ok: false, fehler: "ungueltig" };
   if (hinweiseVon(db, kontext.betriebId, nutzerId).some((h) => h.tag === tag))
     return { ok: false, fehler: "vorhanden" };
   const inhalt = verfallHinweis(grundlage.eingaben, tag);

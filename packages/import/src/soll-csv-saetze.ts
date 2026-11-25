@@ -2,10 +2,12 @@ import {
   type ImportAbwesenheit,
   type ImportKunde,
   type ImportProjekt,
+  type ImportSaldo,
   type ImportZeit,
   type LeseFehler,
   MAX_TEXT,
 } from "./modell.ts";
+import { saldoMinutenLesen, urlaubHalbtageLesen } from "./saldo-werte.ts";
 import { schluessel } from "./text.ts";
 import { datumLesen, minutenLesen, uhrzeitLesen } from "./werte.ts";
 
@@ -25,6 +27,9 @@ export const SOLL_CSV_FELDER = [
   "kunde",
   "name",
   "nummer",
+  // the balances on a cut-off date (S-708)
+  "ueberstunden",
+  "resturlaub",
 ] as const;
 export type SollCsvFeld = (typeof SOLL_CSV_FELDER)[number];
 
@@ -35,7 +40,8 @@ export type Satz =
   | { art: "zeiten"; wert: ImportZeit }
   | { art: "abwesenheiten"; wert: ImportAbwesenheit }
   | { art: "kunden"; wert: ImportKunde }
-  | { art: "projekte"; wert: ImportProjekt };
+  | { art: "projekte"; wert: ImportProjekt }
+  | { art: "salden"; wert: ImportSaldo };
 
 /** The words of the column `Typ`, German and English */
 type SatzArt = Satz["art"];
@@ -52,6 +58,9 @@ const TYPEN: Record<string, SatzArt> = {
   auftrag: "projekte",
   project: "projekte",
   order: "projekte",
+  saldo: "salden",
+  salden: "salden",
+  balance: "salden",
 };
 
 /** Why a field cannot be read; the line is added by the caller */
@@ -143,11 +152,41 @@ const projektLesen = (
   return istFehler(kunde) ? kunde : { externalId, zeile, kunde, ...teile };
 };
 
+/** A value of a balance, null when the field is empty, else the reason it cannot be read */
+const saldoWert = (
+  felder: Felder,
+  feld: "ueberstunden" | "resturlaub",
+  lesen: (text: string) => number | null,
+): number | null | Fehler => {
+  if (felder[feld] === "") return null;
+  return lesen(felder[feld]) ?? { grund: "saldo_ungueltig", feld, wert: felder[feld] };
+};
+
+/**
+ * The balances of a person on a cut-off date (S-708): the column Datum is the cut-off date, the
+ * first day of a month; overtime, leave or both
+ */
+const saldoLesen = (externalId: string, zeile: number, felder: Felder): ImportSaldo | Fehler => {
+  const person = text(felder, "person", "person_fehlt");
+  if (istFehler(person)) return person;
+  const stichtag = datumLesen(felder.datum);
+  if (stichtag === null || !stichtag.endsWith("-01"))
+    return { grund: "stichtag_ungueltig", feld: "datum", wert: felder.datum };
+  const ueberstundenMinuten = saldoWert(felder, "ueberstunden", saldoMinutenLesen);
+  if (istFehler(ueberstundenMinuten)) return ueberstundenMinuten;
+  const urlaubHalbtage = saldoWert(felder, "resturlaub", urlaubHalbtageLesen);
+  if (istFehler(urlaubHalbtage)) return urlaubHalbtage;
+  if (ueberstundenMinuten === null && urlaubHalbtage === null)
+    return { grund: "saldo_ungueltig", feld: "ueberstunden", wert: "" };
+  return { externalId, zeile, person, stichtag, ueberstundenMinuten, urlaubHalbtage };
+};
+
 const LESER = {
   zeiten: zeitLesen,
   abwesenheiten: abwesenheitLesen,
   kunden: kundeLesen,
   projekte: projektLesen,
+  salden: saldoLesen,
 } as const;
 
 /** The list of the model a line goes to by its column `Typ`, or undefined */

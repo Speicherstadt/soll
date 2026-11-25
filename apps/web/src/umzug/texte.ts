@@ -47,6 +47,8 @@ const LESEGRUND: Record<LeseGrund, () => string> = {
   dauer_abweichend: () => m.umzug_lese_dauer_abweichend(),
   projekt_unbekannt: () => m.umzug_lese_projekt_unbekannt(),
   taetigkeit_unbekannt: () => m.umzug_lese_taetigkeit_unbekannt(),
+  stichtag_ungueltig: () => m.umzug_lese_stichtag_ungueltig(),
+  saldo_ungueltig: () => m.umzug_lese_saldo_ungueltig(),
 };
 
 /** The name of a field in the language of the app, or the field itself */
@@ -79,6 +81,9 @@ const PLANGRUND: Record<string, () => string> = {
   taetigkeit_unbekannt: () => m.umzug_grund_taetigkeit_unbekannt(),
   zuordnung_abweichend: () => m.umzug_grund_zuordnung_abweichend(),
   geaendert_im_alten_tool: () => m.umzug_grund_geaendert_im_alten_tool(),
+  saldo_vorhanden: () => m.umzug_grund_saldo_vorhanden(),
+  vor_eintritt: () => m.umzug_grund_vor_eintritt(),
+  widerspruch: () => m.umzug_grund_widerspruch(),
 };
 
 export const abgelehntText = (zeile: number, grund: string): string =>
@@ -91,6 +96,7 @@ export const ART_NAMEN: Record<PlanArt, () => string> = {
   projekte: () => m.umzug_art_projekte(),
   taetigkeiten: () => m.umzug_art_taetigkeiten(),
   buchungen: () => m.umzug_art_buchungen(),
+  salden: () => m.umzug_art_salden(),
 };
 
 export const FELD_NAMEN: Record<string, () => string> = {
@@ -109,6 +115,8 @@ export const FELD_NAMEN: Record<string, () => string> = {
   dauer: () => m.umzug_feld_dauer(),
   projekt: () => m.umzug_feld_projekt(),
   taetigkeit: () => m.umzug_feld_taetigkeit(),
+  ueberstunden: () => m.umzug_feld_ueberstunden(),
+  resturlaub: () => m.umzug_feld_resturlaub(),
 };
 
 /** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-703, S-705), naming the tool */

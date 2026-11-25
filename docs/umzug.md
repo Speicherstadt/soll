@@ -1,9 +1,10 @@
 ---
 title: Umzug aus anderen Tools
 description: >-
-  Wie Soll Zeiten, Abwesenheiten, Kunden, Aufträge und Tätigkeiten aus einem anderen Tool oder einer
-  Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo), mit Vorschau, Probelauf,
-  aufbewahrter Originaldatei, ohne Dubletten und mit den im alten Tool abgeschlossenen Monaten.
+  Wie Soll Zeiten, Abwesenheiten, Salden zum Stichtag, Kunden, Aufträge und Tätigkeiten aus einem
+  anderen Tool oder einer Excel-Tabelle übernimmt – als Datei oder über die API (Clockodo), mit
+  Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und mit den im alten Tool
+  abgeschlossenen Monaten.
 ---
 
 # Umzug aus anderen Tools
@@ -34,6 +35,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | --- | --- |
 | Zeit (Tag, Beginn, Ende, Pause) | Stempelungen Kommen und Gehen, bei einer Pause dazu Pause-Beginn und Pause-Ende in der Mitte der Zeit; Quelle `import`. Ein Ende vor dem Beginn liegt am nächsten Tag, der Arbeitstag ist der Tag des Beginns. |
 | Abwesenheit (Art, von, bis) | Abwesenheit mit der zugeordneten Art, **genehmigt** (sie wurde im alten Tool gewährt oder fand statt) |
+| Saldo (Stichtag, Überstunden, Resturlaub) | Startsaldo des Überstundenkontos und Resturlaub zum Stichtag (siehe [Salden zum Stichtag](#salden-zum-stichtag)) |
 | Kunde, Auftrag | Kunde und Auftrag des Moduls Projektzeit, mit Name und Nummer |
 | Projekt und Tätigkeit einer Zeit (Excel und CSV) | Buchungen der Projektzeit auf einem vorhandenen Auftrag und einer Tätigkeit, je Arbeitsstück vor und nach der Pause |
 | Tätigkeit (bei Clockodo: Leistung) | Tätigkeit des Moduls Projektzeit, nicht abrechenbar, bis der Inhaber es ändert |
@@ -137,16 +139,18 @@ Vorlage lässt sich im ersten Schritt herunterladen.
 
 | Spalte | Bedeutung |
 | --- | --- |
-| Typ | `zeit`, `abwesenheit`, `kunde` oder `projekt` (auch `time`, `absence`, `customer`, `project`) |
+| Typ | `zeit`, `abwesenheit`, `kunde`, `projekt` oder `saldo` (auch `time`, `absence`, `customer`, `project`, `balance`) |
 | Kennung | die Kennung im alten Tool, je Typ eindeutig |
-| Person | Name oder Kennung der Person (Zeit, Abwesenheit) |
-| Datum | Tag der Zeit oder erster Tag der Abwesenheit, `2026-09-01` oder `01.09.2026` |
+| Person | Name oder Kennung der Person (Zeit, Abwesenheit, Saldo) |
+| Datum | Tag der Zeit, erster Tag der Abwesenheit oder Stichtag des Saldos, `2026-09-01` oder `01.09.2026` |
 | Beginn, Ende | Uhrzeit `7:00` (Zeit) |
 | Pause | Minuten (`30`) oder Stunden und Minuten (`0:30`), leer für keine |
 | Bis | letzter Tag der Abwesenheit, leer für einen Tag |
 | Art | Art der Abwesenheit, wie das alte Tool sie nennt |
 | Kunde | Kennung des Kunden eines Auftrags in derselben Datei |
 | Name, Nummer | Name und Nummer eines Kunden oder Auftrags |
+| Überstunden | Überstunden zum Stichtag mit Vorzeichen, `-12:30` oder `7,5` Stunden (Saldo) |
+| Resturlaub | offener Urlaub zum Stichtag in Tagen, `8` oder `8,5` (Saldo) |
 
 ```text
 Typ;Kennung;Person;Datum;Beginn;Ende;Pause;Bis;Art;Kunde;Name;Nummer
@@ -158,6 +162,40 @@ projekt;p-1;;;;;;;;k-1;Bad Elbhof;A-17
 
 Eine Datei in UTF-8 (auch mit Byte-Order-Mark, wie Excel sie schreibt) oder in Windows-1252 liest
 Soll gleichermaßen.
+
+### Salden zum Stichtag
+
+Wer mitten im Jahr wechselt, bringt Überstunden und Resturlaub mit. Dafür gibt es im ersten Schritt
+eine zweite Vorlage, `soll-salden.csv`: je Person eine Zeile vom Typ `saldo` mit dem **Stichtag**
+(dem Ersten eines Monats), den **Überstunden** und dem **Resturlaub** an diesem Tag, wie das alte
+Tool sie zeigt. Eine der beiden Zahlen darf fehlen.
+
+```text
+Typ;Kennung;Person;Datum;Überstunden;Resturlaub
+saldo;s-1;Sandra Kühn;01.10.2026;-3:15;8,5
+```
+
+- Ab dem Stichtag rechnet Soll die Konten selbst. Die Überstunden werden der Startsaldo des
+  Überstundenkontos, der Resturlaub ist **aller** Urlaub, der am Stichtag offen ist, auch der des
+  laufenden Jahres (in Clockodo: Anspruch und Übertrag des Jahres abzüglich der genommenen Tage). Wie das
+  rechnet, steht unter [Konten](konten.md#salden-zum-stichtag).
+- Die Vorschau zeigt die Salden je Person, zum Vergleich mit dem alten Tool. Der Probelauf prüft sie
+  nach denselben Regeln wie einen Startsaldo von Hand: abgelehnt mit Zeile wird ein Saldo, wenn die
+  Person schon einen Startsaldo hat (auch zwei Zeilen für dieselbe Person), der Stichtag in der
+  Zukunft oder vor dem Eintritt liegt, in einem in Soll abgeschlossenen Monat oder danach, oder
+  nach einem Hinweis auf Verfall. Als Eintritt zählen auch die Zeiten, die dieselbe Datei
+  mitbringt.
+- Übernommen wird jeder Saldo als Anpassung der Konten mit dem Grund „übernommen aus Soll-CSV
+  (Import …)“, dem Import und der Kennung (`<Kennung>/ueberstunden`, `<Kennung>/urlaub`), vor den
+  Monaten, die das alte Tool abgeschlossen hatte: Der Abschluss des Stichtagsmonats trägt den
+  Saldo, der Prüfwert der Person deckt ihn.
+- Ein zweiter Lauf findet den Saldo wieder („schon da“). Steht in der Datei inzwischen ein anderer
+  Wert, meldet der Probelauf „im alten Tool geändert“; überschrieben wird nichts. Korrigiert wird
+  unter Konten mit einer Korrektur und Grund.
+- Clockodo und Kimai liefern keine Salden über den Import: Kimai führt in seiner API kein Konto,
+  und wie Clockodo seine Jahresberichte rechnet (`userreports`), legt seine Beschreibung nicht so
+  fest, dass Soll die Zahl ohne Raten übernehmen könnte. Die Zahl aus dem alten Tool kommt über die
+  Vorlage. Personio bringt seine Salden mit dem eigenen Werkzeug.
 
 ### Excel/CSV mit freien Spalten
 

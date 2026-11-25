@@ -88,6 +88,7 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | R-31 | Gesundheitsdaten, Auskunft, Löschen | Art. 5, 9, 15, 17, 88 DSGVO | Verstoß |
 | R-32 | Minijob-Grenze, gelegentliches Überschreiten | § 8 Abs. 1, 1a, 1b SGB IV | Hinweis / Verstoß |
 | R-33 | Soll, Ist und Überstundenkonto | § 611a Abs. 1 BGB; § 2 Abs. 1 EntgFG | – (Berechnung) |
+| R-34 | Salden zum Stichtag | § 7 Abs. 3, § 5 Abs. 3 BUrlG | – (Berechnung) |
 
 Jede Norm der Tabelle „Rechtlicher Rahmen“ im [Projektplan](plan.md#rechtlicher-rahmen) hat eine
 Regel:
@@ -1238,6 +1239,38 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
 | Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | docs/plan.md, „Abwesenheiten im Soll“ |
 | Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | docs/plan.md, „Konten“ |
+
+### R-34 Salden zum Stichtag
+
+- **Norm**: § 7 Abs. 3 BUrlG (Übertragung und Verfall); § 5 Abs. 3 BUrlG (zu viel gewährter Urlaub
+  wird nicht zurückgefordert); EuGH C-684/16 (Max-Planck) und BAG, 19.02.2019, 9 AZR 423/16
+  (Verfall nur nach Hinweis); § 611a Abs. 1 BGB (das Überstundenkonto).
+- **Regel**: Wer von einem anderen Tool kommt, bringt je Person einen Stichtag mit, den Ersten eines
+  Monats, und die Salden an diesem Tag (S-708). Die Überstunden zum Stichtag sind der Startsaldo des
+  Überstundenkontos (R-33); ein Monat davor zählt nicht, auch wenn er erst später abgeschlossen
+  wird. Der Resturlaub zum Stichtag ist aller Urlaub, der an diesem Tag offen ist, der des laufenden
+  Jahres eingeschlossen: Er ersetzt den Jahresurlaub des Stichtagsjahres, Urlaub vor dem Stichtag
+  zählt nicht mehr (das alte Tool hat ihn schon abgezogen), ein Hinweis auf Verfall vor dem
+  Stichtag auch nicht; die Jahre danach rechnet Soll nach R-23. Der Resturlaub gilt ganz als Urlaub
+  des Stichtagsjahres, auch ein Rest aus dem Vorjahr: Er verfällt frühestens mit Ablauf des
+  31. März des Folgejahres und nur nach einem Hinweis (R-23). Das ist die für die Person günstigere
+  Lesart; Soll weiß nicht, welcher Teil aus dem Vorjahr stammt und ob dafür ein Hinweis kam.
+  Negativer Resturlaub und ein Stichtag, der kein Monatserster ist, sind ungültig.
+- **Schwere**: kein Befund; eine Berechnung.
+
+| Fall | Lage (Modell Mo–Fr, 25 Urlaubstage) | Erwartet | Quelle |
+| --- | --- | --- | --- |
+| erlaubt | Stichtag 1.10.2026, Resturlaub 8,5 Tage, Urlaub am 10.9.2026 in Soll | Rest 8,5 Tage; der Jahresurlaub 2026 und der Urlaub vom 10.9. zählen nicht | Projektplan, „Salden zum Stichtag“ |
+| Urlaub nach dem Stichtag | wie oben, 2 Tage Urlaub am 2. und 3.11.2026 | Rest 6,5 Tage | § 7 Abs. 3 BUrlG |
+| Folgejahr | wie oben, Stand 1.2.2027 | Rest 33,5 Tage (8,5 aus 2026 und 25 aus 2027) | § 7 Abs. 3 BUrlG |
+| ohne Hinweis | Stichtag 1.10.2026, 8,5 Tage, kein Hinweis, Stand 1.4.2027 | die 8,5 Tage verfallen nicht, Hinweis „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 20.12.2022, 9 AZR 266/20 |
+| mit Hinweis | wie oben, Hinweis am 2.11.2026, Stand 1.4.2027 | die 8,5 Tage sind mit Ablauf des 31.3.2027 verfallen | § 7 Abs. 3 Satz 3 BUrlG; BAG, 19.02.2019, 9 AZR 423/16 |
+| Rest aus dem Vorjahr | Stichtag 1.2.2026, 30 Tage (davon 5 aus 2025), kein Hinweis, Stand 1.4.2026 | alle 30 Tage offen; sie zählen als Urlaub 2026 und verfallen frühestens mit Ablauf des 31.3.2027 | § 7 Abs. 3 BUrlG; zugunsten der Person |
+| Hinweis vor dem Stichtag | Hinweis am 15.9.2026, Stichtag 1.10.2026, Stand 1.4.2027 | der Hinweis zählt nicht, die 8,5 Tage verfallen nicht | EuGH C-684/16 (ein Hinweis nennt den Urlaub, den er nennt) |
+| Grenze | Stichtag 1.10.2026, Resturlaub 0 Tage | gültig, Rest 0 Tage | § 5 Abs. 3 BUrlG |
+| Verstoß | Resturlaub −2 Tage | ungültig (zu viel gewährter Urlaub wird nicht zurückgefordert) | § 5 Abs. 3 BUrlG |
+| kein Monatserster | Stichtag 15.10.2026 | ungültig | Projektplan, „Salden zum Stichtag“ |
+| Überstunden | Startsaldo −3:15 zum 1.10.2026, September +5:00 erst danach abgeschlossen, Oktober +2:00 | Saldo −1:15; der September zählt nicht | Projektplan, „Anpassungen der Konten“ |
 
 ## Was Soll nicht prüft
 

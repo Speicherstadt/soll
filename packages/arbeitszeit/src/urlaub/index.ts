@@ -23,6 +23,12 @@ export {
   mindesturlaub,
 } from "./mindesturlaub.ts";
 export {
+  istStichtag,
+  type StichtagErgebnis,
+  type UrlaubStichtag,
+  urlaubAbStichtag,
+} from "./stichtag.ts";
+export {
   type GenommenerUrlaub,
   type Urlaubsanpassung,
   type Urlaubsjahr,

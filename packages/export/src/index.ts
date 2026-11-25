@@ -27,6 +27,7 @@ export {
   type Stundenzettel,
   stundenzettelPdf,
   type ZettelBefund,
+  type ZettelStartsaldo,
   type ZettelTag,
 } from "./stundenzettel/pdf.ts";
 export { pdfInhalt, pdfText } from "./stundenzettel/text.ts";

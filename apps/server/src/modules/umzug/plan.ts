@@ -1,4 +1,4 @@
-import { type Monat, monatVon } from "@soll/arbeitszeit";
+import { type Monat, monatVon, type Tag, tagInBerlin } from "@soll/arbeitszeit";
 import type { ImportDaten, ImportZeit, Zuordnung } from "@soll/import";
 import {
   abwesenheitPlanen,
@@ -19,6 +19,7 @@ import {
   taetigkeitPlanen,
   zaehlen,
 } from "./plan-projekte.ts";
+import { saldoPlanen } from "./plan-salden.ts";
 import {
   type Art,
   keineZahlen,
@@ -221,6 +222,34 @@ const toolBuchungenPlanen = (
   }
 };
 
+/** The first day of each person's stamps this plan writes: the person worked from then on */
+const erstePlanTage = (stempel: readonly NeueStempelung[]): Map<string, Tag> => {
+  const erste = new Map<string, Tag>();
+  for (const { nutzerId, zeitpunkt } of stempel) {
+    const tag = tagInBerlin(zeitpunkt);
+    const bisher = erste.get(nutzerId);
+    if (bisher === undefined || tag < bisher) erste.set(nutzerId, tag);
+  }
+  return erste;
+};
+
+/**
+ * The balances on a cut-off date (S-708); they close no month: the takeover writes them before the
+ * months closed as taken over, whose contents then carry them
+ */
+const saldenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
+  const geplant = new Set<string>();
+  const ab = erstePlanTage(bau.stempelungen);
+  for (const satz of daten.salden) {
+    const nutzerId = personVon(bau, "salden", satz, zuordnung, stand);
+    if (nutzerId === null) continue;
+    const ergebnis = saldoPlanen(satz, nutzerId, { stand, geplant, ab: ab.get(nutzerId) ?? null });
+    if (ergebnis.art === "abgelehnt") ablehnen(bau, "salden", satz, ergebnis.grund);
+    else bau.zahlen.salden[ergebnis.art] += 1;
+    if (ergebnis.art === "neu") bau.salden.push(...ergebnis.teile);
+  }
+};
+
 /** The months up to `bis` a person's records reach that are not closed in Soll yet */
 const zuSperren = (bau: Bau, bis: Monat | null, stand: Stand): Monatssperre[] =>
   bis === null
@@ -245,6 +274,7 @@ export const planen = (
     projekte: [],
     taetigkeiten: [],
     buchungen: [],
+    salden: [],
     monate: [],
     zahlen: keineZahlen(),
     abgelehnt: [],
@@ -254,6 +284,7 @@ export const planen = (
   const verworfen = zeitenPlanen(bau, daten, zuordnung, stand);
   toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids, verworfen });
   abwesenheitenPlanen(bau, daten, zuordnung, stand);
+  saldenPlanen(bau, daten, zuordnung, stand);
   const { beruehrt: _, ...plan } = bau;
   return {
     ...plan,

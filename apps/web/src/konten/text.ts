@@ -12,7 +12,12 @@ export const ART: Record<Anpassungsart, () => string> = {
   korrektur: () => m.konten_art_korrektur(),
   urlaub_start: () => m.konten_art_urlaub_start(),
   urlaub_korrektur: () => m.konten_art_urlaub_korrektur(),
+  urlaub_stichtag: () => m.konten_art_urlaub_stichtag(),
 };
+
+/** A start on a cut-off date counts from the first day of its month (S-708) */
+const amStichtag = (a: Anpassung): boolean =>
+  (a.art === "startsaldo" || a.art === "urlaub_stichtag") && a.monat !== null;
 
 export const FEHLER: Record<string, () => string> = {
   vorhanden: () => m.konten_fehler_vorhanden(),
@@ -90,7 +95,9 @@ export const hinweisText = (inhalt: readonly HinweisPosten[]): string =>
 
 /** A change by hand as one line: what, for when, how much */
 export const anpassungText = (a: Anpassung): string => {
-  const wann = a.monat ?? String(a.jahr ?? "");
+  const wann = amStichtag(a)
+    ? m.konten_stichtag_wann({ datum: tagText(`${a.monat}-01`, true) })
+    : (a.monat ?? String(a.jahr ?? ""));
   const wert =
     a.minuten !== null
       ? saldoText(a.art === "auszahlung" ? -a.minuten : a.minuten)

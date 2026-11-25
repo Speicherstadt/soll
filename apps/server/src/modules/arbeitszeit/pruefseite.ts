@@ -1,5 +1,5 @@
 import { type Monat, type Tag, tagInBerlin } from "@soll/arbeitszeit";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt, lt } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch, sha256 } from "../audit/hash.ts";
@@ -51,12 +51,39 @@ const zeileVon = (db: Db, betriebId: string, abschlussId: string) =>
 type Glied = typeof auditGlieder.$inferSelect;
 
 /**
+ * Whether a link's time can be true: not after the time of the check, and not after the time of any
+ * link that follows it. A clock set forward for one run of the removal and back would else let a
+ * month pass as removed after its period long before that period ended.
+ */
+const nichtVorgestellt = (db: Db, betriebId: string, glied: Glied, jetzt: number): boolean => {
+  if (glied.zeitpunkt > jetzt) return false;
+  const frueher = db
+    .select({ seq: auditGlieder.seq })
+    .from(auditGlieder)
+    .where(
+      and(
+        eq(auditGlieder.betriebId, betriebId),
+        gt(auditGlieder.seq, glied.seq),
+        lt(auditGlieder.zeitpunkt, glied.zeitpunkt),
+      ),
+    )
+    .get();
+  return frueher === undefined;
+};
+
+/**
  * The removal of a closing (S-901), if it went through the chain: its row matches its link, the
  * chain up to that link is intact, it names the closing's link and came no sooner than the
  * retention period the person's models give. Else a removal written past the chain could hide a
  * changed month.
  */
-const aussonderungVon = (db: Db, betriebId: string, abschlussId: string, abschluss: Glied) => {
+const aussonderungVon = (
+  db: Db,
+  betriebId: string,
+  abschlussId: string,
+  abschluss: Glied,
+  jetzt: number,
+) => {
   const zeile = db
     .select()
     .from(aussonderungen)
@@ -86,7 +113,8 @@ const aussonderungVon = (db: Db, betriebId: string, abschlussId: string, abschlu
     sha256(kanonisch(zeile)) === glied.inhaltHash &&
     pruefwertPruefen(db, betriebId, formatPruefwert(glied)) === "gueltig" &&
     zeile.abgeschlossenAm === abschluss.zeitpunkt &&
-    aussonderbarAb(abschluss.zeitpunkt, jahre) <= tagInBerlin(glied.zeitpunkt);
+    aussonderbarAb(abschluss.zeitpunkt, jahre) <= tagInBerlin(glied.zeitpunkt) &&
+    nichtVorgestellt(db, betriebId, glied, jetzt);
   return echt ? zeile : null;
 };
 
@@ -96,7 +124,12 @@ const aussonderungVon = (db: Db, betriebId: string, abschlussId: string, abschlu
  * as it was, and the records of the month now must be those the row closed. A change past the chain
  * shows here, and so does a chain computed anew: the link with the number then carries another hash.
  */
-export const pruefwertEinesMonats = (db: Db, betriebId: string, text: string): Pruefung => {
+export const pruefwertEinesMonats = (
+  db: Db,
+  betriebId: string,
+  text: string,
+  jetzt: number,
+): Pruefung => {
   const kette = pruefwertPruefen(db, betriebId, text);
   if (kette === "unlesbar" || kette === "unbekannt") return { ergebnis: kette };
   if (kette === "abweichend") return { ergebnis: "abweichung", grund: "kette" };
@@ -113,7 +146,7 @@ export const pruefwertEinesMonats = (db: Db, betriebId: string, text: string): P
     return { ergebnis: "unbekannt" };
   const [abschlussId] = JSON.parse(glied.zeile) as [string];
   const zeile = zeileVon(db, betriebId, abschlussId);
-  const entfernt = zeile ? null : aussonderungVon(db, betriebId, abschlussId, glied);
+  const entfernt = zeile ? null : aussonderungVon(db, betriebId, abschlussId, glied, jetzt);
   if (entfernt)
     return {
       ergebnis: "ausgesondert",

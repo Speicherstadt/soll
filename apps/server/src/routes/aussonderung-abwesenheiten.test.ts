@@ -41,6 +41,8 @@ describe("removing the absences of a closed month after its retention period", (
     ]);
     expect(abwesenheitenVon(server, sandra.nutzerId)).toEqual([]);
     expect(kettePruefen(server.db, jonas.betriebId)).toEqual([]);
+    // the check happens after the removal: its link is no later than now
+    server.stelleUhr(Date.parse("2036-01-01T00:00:00+01:00"));
     expect(
       ((await pruefen(server, jonas.betriebId, pruefwert)) as { ergebnis: string }).ergebnis,
     ).toBe("ausgesondert");

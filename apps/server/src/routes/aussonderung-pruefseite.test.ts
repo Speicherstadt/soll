@@ -105,6 +105,8 @@ describe("S-901 review 2: removed stamps are removed at all", () => {
       { monat: "2026-10", jahre: 2 },
       { monat: "2026-11", jahre: 8 },
     ]);
+    // the check happens after the removal: its link is no later than now
+    server.stelleUhr(Date.parse("2036-01-01T00:00:00+01:00"));
     expect(await pruefen(server, jonas.betriebId, novPruefwert)).toMatchObject({
       ergebnis: "ausgesondert",
       monat: "2026-11",

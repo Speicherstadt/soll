@@ -97,6 +97,8 @@ describe("removing a closed month after its retention period", () => {
     expect(kettePruefen(server.db, elbblick.betriebId)).toEqual([]);
 
     // the Prüfwert Sandra holds is recognised: genuine, its content removed
+    // the check happens after the removal: its link is no later than now
+    server.stelleUhr(Date.parse("2036-01-01T00:00:00+01:00"));
     expect(await pruefen(server, jonas.betriebId, pruefwert)).toEqual({
       ergebnis: "ausgesondert",
       monat: "2026-10",
@@ -170,6 +172,8 @@ describe("removing a closed month after its retention period", () => {
     ]);
     expect(stempelVon(server, sandra.nutzerId)).toEqual([]);
     expect(kettePruefen(server.db, jonas.betriebId)).toEqual([]);
+    // the check happens after the removal: its link is no later than now
+    server.stelleUhr(Date.parse("2036-01-01T00:00:00+01:00"));
     expect(((await pruefen(server, jonas.betriebId, pruefwert)) as Json).ergebnis).toBe(
       "ausgesondert",
     );
@@ -204,6 +208,8 @@ describe("removing a closed month after its retention period", () => {
     aussondern(server.db, server.schreibDb, NEUJAHR_2029);
     // a removal record moved to an earlier day past the chain: it no longer matches its link
     server.sqlite.run("UPDATE aussonderungen SET ausgesondert_am = ausgesondert_am - 1");
+    // the check happens after the removal: its link is no later than now
+    server.stelleUhr(Date.parse("2036-01-01T00:00:00+01:00"));
     expect(await pruefen(server, jonas.betriebId, pruefwert)).toMatchObject({
       ergebnis: "abweichung",
       grund: "abschluss",

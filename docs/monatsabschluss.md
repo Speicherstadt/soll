@@ -107,8 +107,9 @@ stimmt: Wer ihn hat, hat den Stundenzettel bekommen.
 
 Nach Ablauf der Aufbewahrungsfrist (unten) antwortet die Prüfseite **Echt, Inhalt nach Ablauf der
 Frist entfernt**, mit Monat, Tag des Abschlusses, Tag der Aussonderung und Frist, aber ohne Namen.
-Das gilt nur, wenn die Aussonderung selbst in der Kette steht, zum Abschluss passt und nicht vor
-Ablauf der Frist kam; sonst bleibt es eine Abweichung.
+Das gilt nur, wenn die Aussonderung selbst in der Kette steht, nicht in der Zukunft oder nach einem
+späteren Eintrag datiert ist, zum Abschluss passt und nicht vor Ablauf der Frist kam; sonst bleibt es
+eine Abweichung.
 
 ## Aufbewahrung und Aussonderung
 

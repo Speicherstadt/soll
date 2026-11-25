@@ -2,6 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { auditGlieder } from "../../db/schema.ts";
 import { formatPruefwert, type TabellenName, zeilenId } from "../audit/index.ts";
+import { tauschGlieder } from "./tauschglieder.ts";
 
 /*
  * The links of the audit chain about the person: those that wrote one of the person's rows, with
@@ -46,13 +47,7 @@ export const pruefwerteJeAbschluss = (glieder: readonly Glied[]): Map<string, st
       .map((g) => [JSON.parse(g.zeile)[0] as string, formatPruefwert(g)]),
   );
 
-/**
- * Tables whose rows the person shares with another person: a swap (S-504) has whoever offered, whoever
- * took it and whoever decided. Their links name only the person; who else wrote one is withheld
- * (Art. 15 Abs. 4 DSGVO).
- */
-const GETEILT: ReadonlySet<string> = new Set<TabellenName>(["schichttausche"]);
-
+/** Who wrote a link of a swap, when it was not the person (tauschglieder.ts) */
 export const ANDERE_PERSON = "eine andere Person";
 
 export const kettenteil = (
@@ -64,13 +59,14 @@ export const kettenteil = (
   iso: (zeitpunkt: number) => string,
 ) => {
   const zu = gliederZu(db, betriebId, zeilen).sort((a, b) => a.seq - b.seq);
+  const getauscht = tauschGlieder(db, betriebId, zu);
   return {
     glieder: zu,
     teil: {
       zuDeinenDaten: zu.map((g) => ({
         nr: g.seq,
         zeitpunkt: iso(g.zeitpunkt),
-        von: GETEILT.has(g.tabelle) && g.akteur !== nutzerId ? ANDERE_PERSON : name(g.akteur),
+        von: getauscht.has(g.seq) && g.akteur !== nutzerId ? ANDERE_PERSON : name(g.akteur),
         tabelle: g.tabelle,
         zeile: JSON.parse(g.zeile) as unknown,
         aktion: g.aktion,

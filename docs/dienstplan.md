@@ -186,7 +186,7 @@ Plan an; eine Kollegin übernimmt sie, und Inhaber oder Planer geben den Tausch 
 - **Auskunft**: Die [Auskunft](pruefexport.md#auskunft-nach-art-15-dsgvo) nennt jeden Tausch, den jemand angeboten, an ihn
   gerichtet bekommen oder übernommen hat, ohne die andere Person und ohne den, der entschied; auch
   in der Audit-Kette steht bei einem Tausch, was jemand anderes schrieb, nur als „eine andere
-  Person“.
+  Person“, auch der Wechsel der Person an der Schicht selbst.
 
 ## Prüfung beim Einplanen
 

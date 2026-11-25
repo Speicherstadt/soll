@@ -709,7 +709,7 @@ S-701 und unabhängig voneinander.
     Übernahme und zeigt, dass der zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in
     `de` und `en` (Inhaberansicht); Doku `docs/umzug.md`, Zeile im README, Entscheidungen im
     Projektplan.
-- [ ] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
+- [x] **S-702 Excel und CSV** – freie Spaltenzuordnung (Person, Datum, Beginn, Ende, Pause, Projekt,
   Tätigkeit), Datums- und Zahlenformate aus Deutschland, Vorlage zum Herunterladen.
   Fertig, wenn: eine beliebige Tabelle mit einer Kopfzeile als CSV oder als Excel-Datei (`.xlsx`,
   erstes Blatt) Zeiten liefert, deren Spalten der Inhaber in der Oberfläche frei zuordnet und die der

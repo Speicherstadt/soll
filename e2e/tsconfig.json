@@ -5,5 +5,10 @@
     "rootDir": "..",
     "types": ["node"]
   },
-  "include": ["*.ts", "**/*.ts", "../playwright.config.ts"]
+  "include": [
+    "*.ts",
+    "**/*.ts",
+    "../playwright.config.ts",
+    "../packages/import/src/xlsx-schreiben.ts"
+  ]
 }

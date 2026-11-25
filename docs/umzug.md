@@ -1,9 +1,9 @@
 ---
 title: Umzug aus anderen Tools
 description: >-
-  Wie Soll Zeiten, Abwesenheiten, Kunden und Aufträge aus einem anderen Tool übernimmt – mit
-  Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und mit den im alten Tool
-  abgeschlossenen Monaten.
+  Wie Soll Zeiten, Abwesenheiten, Kunden und Aufträge aus einem anderen Tool oder einer
+  Excel-Tabelle übernimmt – mit Vorschau, Probelauf, aufbewahrter Originaldatei, ohne Dubletten und
+  mit den im alten Tool abgeschlossenen Monaten.
 ---
 
 # Umzug aus anderen Tools
@@ -34,6 +34,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | Zeit (Tag, Beginn, Ende, Pause) | Stempelungen Kommen und Gehen, bei einer Pause dazu Pause-Beginn und Pause-Ende in der Mitte der Zeit; Quelle `import`. Ein Ende vor dem Beginn liegt am nächsten Tag, der Arbeitstag ist der Tag des Beginns. |
 | Abwesenheit (Art, von, bis) | Abwesenheit mit der zugeordneten Art, **genehmigt** (sie wurde im alten Tool gewährt oder fand statt) |
 | Kunde, Auftrag | Kunde und Auftrag des Moduls Projektzeit, mit Name und Nummer |
+| Projekt und Tätigkeit einer Zeit (Excel und CSV) | Buchungen der Projektzeit auf einem vorhandenen Auftrag und einer Tätigkeit, je Arbeitsstück vor und nach der Pause |
 
 Personen legt der Import nicht an: Sie werden vorher eingeladen ([Einrichtung](einrichtung.md)) und
 in der Zuordnung gewählt. Eine Person, die auf „nicht übernehmen“ steht, und eine Abwesenheitsart
@@ -117,7 +118,7 @@ gespeichert: Er gilt nur für den einen Lauf. Diesen Weg bringen die einzelnen W
 | Werkzeug | Weg | Stand |
 | --- | --- | --- |
 | Soll-CSV | Datei | verfügbar |
-| Excel und CSV mit freien Spalten | Datei | folgt |
+| Excel/CSV mit freien Spalten | Datei | verfügbar |
 | Clockodo, Personio, Kimai | Datei und API | folgt |
 | Papershift, Planday, Crewmeister | Datei | folgt |
 | Toggl, Clockify | Datei und API | folgt |
@@ -151,3 +152,54 @@ projekt;p-1;;;;;;;;k-1;Bad Elbhof;A-17
 
 Eine Datei in UTF-8 (auch mit Byte-Order-Mark, wie Excel sie schreibt) oder in Windows-1252 liest
 Soll gleichermaßen.
+
+### Excel/CSV mit freien Spalten
+
+Für alles, was als Tabelle vorliegt: eine Excel-Mappe (`.xlsx`, gelesen wird das erste Blatt) oder
+eine CSV, die erste Zeile ist die Kopfzeile, jede weitere Zeile eine Arbeitszeit einer Person. Die
+Spalten dürfen heißen, wie sie wollen: Soll schlägt sie nach dem Kopf vor (Deutsch und Englisch, etwa
+„Mitarbeiter“, „Kommen“, „Gehen“, „Baustelle“), im Schritt **Zuordnung** wählst du für jede Angabe
+die Spalte selbst oder „keine“. Dieselbe Spalte darf Datum und Beginn sein, wenn sie beides enthält
+(`01.09.2026 07:00`). Fehlt eine nötige Spalte, nennt Soll sie („Zeile 1: Spalte fehlt: Person“).
+Im ersten Schritt liegen eine Vorlage als `soll-zeiten.xlsx` und als `soll-zeiten.csv` zum
+Herunterladen bereit.
+
+| Angabe | Nötig | So darf sie aussehen |
+| --- | --- | --- |
+| Person | ja | Name oder Kennung, wie das alte Tool sie schreibt |
+| Datum | ja | `01.09.2026`, `1.9.2026`, `1.9.26` (20xx), `2026-09-01`, auch mit Uhrzeit dahinter; in Excel ein Datum oder eine Seriennummer mit fünf Ziffern |
+| Beginn | ja | `7:00`, `07:00`, `7:00:00`, `700`, `0700`, `7`; in Excel eine Uhrzeit (Bruchteil eines Tages) |
+| Ende | ja, oder Dauer | wie Beginn; ein Ende vor dem Beginn liegt am nächsten Tag |
+| Dauer | statt Ende | Stunden: `8`, `7,5`, `7.5` oder `7:30`; ohne Ende ist Ende = Beginn + Dauer + Pause, mit Ende muss sie dazu passen |
+| Pause | nein | Minuten (`30`), `0:30` oder Dezimalstunden (`0,5`); leer für keine |
+| Projekt | nein | Name oder Nummer des Auftrags im alten Tool |
+| Tätigkeit | nein | Name der Tätigkeit im alten Tool |
+| Kennung | nein | eine eindeutige Nummer je Zeile, wenn das alte Tool eine hat |
+
+Gerechnet wird in ganzen Minuten, nie mit Kommazahlen, und immer zugunsten der Person: Sekunden am
+Beginn fallen weg, am Ende zählen sie als volle Minute; eine Dauer wie `7,33` Stunden (439,8
+Minuten) ergibt ohne Ende 440 Minuten; eine Pause wie `0,33` Stunden zählt 19 Minuten.
+
+**Projekt und Tätigkeit**: Jeder Wert der Spalten Projekt und Tätigkeit wird in der Zuordnung einem
+vorhandenen, nicht archivierten Auftrag (mit seinem Kunden) beziehungsweise einer Tätigkeit
+zugeordnet oder nicht übernommen; Soll schlägt den Auftrag oder die Tätigkeit gleichen Namens oder
+gleicher Nummer vor. Für Zeiten mit Projekt, aber ohne Tätigkeit, wählst du die Tätigkeit unter
+„ohne Tätigkeit“. Aus einer solchen Zeit werden neben den Stempelungen Buchungen der
+[Projektzeit](projektzeit.md): eine für jedes Arbeitsstück vor und nach der Pause in der Mitte, am
+Arbeitstag der Zeit, mit Import, Werkzeug und Kennung. Ist das Modul Projektzeit aus oder liegt
+schon eine Buchung der Person in der Spanne, lehnt der Probelauf die Buchung mit Zeile und Grund ab;
+die Zeit selbst wird trotzdem übernommen. Wird eine Zeit, die schon da ist, ein zweites Mal
+eingelesen, legt Soll ihre Buchungen nicht nachträglich an.
+
+**Wiederholbar ohne Kennung**: Hat die Tabelle keine Kennungsspalte, ist die Kennung einer Zeile
+der SHA-256 über Person, Tag, Beginn, Ende und Pause, wie Soll sie gelesen hat – nicht über die Datei
+und nicht über die Zeilennummer. Dieselbe Zeit in einer längeren, umsortierten oder anders
+geschriebenen Tabelle (`1.9.26` statt `01.09.2026`) ist darum wieder „schon da“. Steht dieselbe Zeit
+zweimal in der Datei, nennt Soll die zweite Zeile („dieselbe Zeit steht schon weiter oben“). Wurde
+eine Zeit im alten Tool geändert, ist sie eine neue Zeit und überschneidet sich mit der übernommenen;
+der Probelauf lehnt sie ab.
+
+**Sicher gelesen**: Soll liest die Excel-Datei selbst, ohne Makros und ohne Formeln auszuführen (eine
+Formel zählt mit ihrem gespeicherten Wert). Eine Mappe, die beim Entpacken größer als 50 MB würde,
+eine mit Verweisen auf andere Dateien oder Entitäten (DTD) und eine verschlüsselte lehnt Soll als
+„nicht lesbar“ ab; es gelten dieselben Grenzen wie oben (5 MB, 20.000 Zeilen, 200 Spalten).

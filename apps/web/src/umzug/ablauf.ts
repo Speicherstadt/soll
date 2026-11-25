@@ -51,7 +51,14 @@ const zustand = () => {
   const [probelauf, setProbelauf] = createSignal<Probelauf | null>(null);
   const [uebernahme, setUebernahme] = createSignal<Uebernahme | null>(null);
   const [fehler, setFehler] = createSignal("");
+  /**
+   * The readings of the file asked for (to drop the answer to an earlier one) and the columns
+   * chosen last, kept outside the signals: a choice made while a reading is on its way must build
+   * on the one before, which a signal shows only once the reading has settled (S-702)
+   */
+  const lesungen = { zahl: 0, wahl: {} as Record<string, string | null> };
   return {
+    lesungen,
     ...{ schritt, setSchritt, quelle, setQuelle, datei, setDatei, vorschau, setVorschau },
     ...{ spalten, setSpalten, zuordnung, setZuordnung, bis, setBis, probelauf, setProbelauf },
     ...{ uebernahme, setUebernahme, fehler, setFehler },
@@ -74,15 +81,22 @@ const aufrufe = () => ({
 
 type Aufrufe = ReturnType<typeof aufrufe>;
 
-/** Reads the file with the columns chosen; a new reading starts the mapping from Soll's proposal */
+/**
+ * Reads the file with the columns chosen; a new reading starts the mapping from Soll's proposal.
+ * Only the answer to the latest reading counts: an earlier one arriving late would undo a column
+ * chosen since (S-702)
+ */
 const vorschauLaden = async (
   z: Zustand,
   a: Aufrufe,
   datei: Datei,
   wahl: Record<string, string | null>,
 ) => {
+  const nummer = ++z.lesungen.zahl;
   const body = { quelle: z.quelle(), datei, spalten: spaltenwahl(wahl) };
   const antwort = await a.lesen.mutate(body);
+  if (nummer !== z.lesungen.zahl) return;
+  if (antwort.ok) z.lesungen.wahl = antwort.daten.spalten;
   z.setFehler(fehlerText(antwort));
   if (!antwort.ok) return;
   z.setDatei(datei);
@@ -99,7 +113,7 @@ const auswahl = (z: Zustand) => {
   return koerperVon({
     quelle: z.quelle(),
     datei,
-    spalten: spaltenwahl(z.spalten()),
+    spalten: spaltenwahl(z.lesungen.wahl),
     zuordnung: snapshot(z.zuordnung),
     abgeschlossenBis: z.bis(),
   });
@@ -115,7 +129,8 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
   };
   return {
     spalte: (feld, kopf) => {
-      const wahl = { ...z.spalten(), [feld]: kopf };
+      const wahl = { ...z.lesungen.wahl, [feld]: kopf };
+      z.lesungen.wahl = wahl;
       z.setSpalten(wahl);
       const datei = z.datei();
       if (datei) void vorschauLaden(z, a, datei, wahl);
@@ -171,6 +186,7 @@ const werkzeugWaehlen = (z: Zustand, quelle: string) => {
   z.setDatei(null);
   z.setVorschau(null);
   z.setSpalten({});
+  z.lesungen.wahl = {};
   z.setProbelauf(null);
 };
 

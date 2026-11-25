@@ -1012,7 +1012,7 @@
   "konten_fehler_vorhanden": "Das ist schon eingetragen.",
   "konten_fehler_widerspruch": "Überstunden zu Beginn gehen nur vor dem ersten abgeschlossenen Monat und vor jeder anderen Anpassung.",
   "konten_fehler_nicht_hinterlegt": "Das Urlaubskonto lässt sich noch nicht berechnen: es fehlt ein Arbeitszeitmodell oder ein Standort.",
-  "konten_fehler_ungueltig": "Bitte den Tag prüfen: nicht nach heute und nicht vor dem Beginn des Kontos.",
+  "konten_fehler_ungueltig": "Bitte Tag oder Jahr prüfen: nichts vor dem Eintritt, ein Hinweis nicht nach heute, ein Jahr höchstens das nächste.",
   "abw_team_standort": "Standort",
   "abw_team_zurueck": "Vier Wochen zurück",
   "abw_team_vor": "Vier Wochen vor",

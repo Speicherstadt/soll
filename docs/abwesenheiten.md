@@ -129,8 +129,9 @@ Zahl.
 
 Wer alle Zeiten sieht (Inhaber, Planer, Lohnbüro), wählt die Person über „Konten von“. Eine Liste
 der Konten aller Personen gibt es nicht (keine Auswertung je Person, BetrVG § 87 Abs. 1 Nr. 6). Der
-Planer sieht von einer anderen Person nur den Resturlaub und die Überstunden: Die genommenen Tage
-je Jahr verrieten Krankheit im Urlaub (§ 9 BUrlG), Auszahlungen gehören zur Lohnabrechnung.
+Planer sieht von einer anderen Person nur den Resturlaub und den Saldo der Überstunden: Die
+genommenen Tage je Jahr verrieten Krankheit im Urlaub (§ 9 BUrlG), die Monate des Kontos zeigten
+Auszahlungen, und die gehören zur Lohnabrechnung.
 
 ### Hinweis auf Verfall
 
@@ -140,8 +141,8 @@ wie viel Urlaub offen ist und wann er verfällt (§ 7 Abs. 3 BUrlG; EuGH C-684/1
 also bis 31. Dezember für den Urlaub, der mit dem 31. März des Folgejahres verfällt.
 
 Der Inhaber hält unter „Hinweis auf Verfall festhalten“ den Tag fest, an dem er den Hinweis gegeben
-hat: heute oder, für einen Hinweis auf Papier, einen Tag davor, nie in der Zukunft und nicht vor dem
-Beginn des Kontos. Soll speichert dazu, was der Hinweis an diesem Tag nannte (offene Tage je Jahr
+hat: heute oder, für einen Hinweis auf Papier, einen Tag davor, nie in der Zukunft, nicht vor dem
+Eintritt der Person und nicht vor dem Beginn des Kontos. Soll speichert dazu, was der Hinweis an diesem Tag nannte (offene Tage je Jahr
 und Tag des Verfalls), und zeigt ihn der Person mit Tag und Inhalt.
 
 | Hinweis | Folge |
@@ -160,11 +161,11 @@ geändert; eine falsche wird mit einer weiteren korrigiert.
 
 | Anpassung | Wofür |
 | --- | --- |
-| Überstunden zu Beginn | der Saldo, mit dem die Person zu Soll kommt; einmal, vor dem ersten abgeschlossenen Monat |
+| Überstunden zu Beginn | der Saldo, mit dem die Person zu Soll kommt; einmal, vor dem ersten abgeschlossenen Monat; er steht für alles davor, ein früherer Monat, der erst danach abgeschlossen wird, zählt nicht |
 | Überstunden ausgezahlt | ausbezahlte Stunden, sie gehen vom Konto ab |
 | Überstunden korrigiert | eine Korrektur mit Vorzeichen |
-| Resturlaub vor Soll | der Urlaub, der zu Beginn eines Jahres noch offen war; das Konto beginnt mit diesem Jahr |
-| Urlaub korrigiert | eine Korrektur des Urlaubs eines Jahres mit Vorzeichen, in halben Tagen |
+| Resturlaub vor Soll | der Urlaub, der zu Beginn eines Jahres noch offen war; das Konto beginnt mit diesem Jahr (vom Jahr des Eintritts bis zum nächsten Jahr) |
+| Urlaub korrigiert | eine Korrektur des Urlaubs eines Jahres mit Vorzeichen, in halben Tagen (vom Jahr vor dem Beginn des Kontos bis zum nächsten Jahr) |
 
 ## Wer sieht „krank“
 
@@ -218,8 +219,8 @@ weder Soll noch Ist und steht deshalb nicht im Inhalt.
 | API (unter `/api/v1/arbeitszeit/konten`) | Was |
 | --- | --- |
 | `GET /?nutzerId` | Resturlaub (`urlaub`) mit Jahren und Verfall, Überstunden (`ueberstunden`), Hinweise und Anpassungen; die eigenen oder mit `zeiten:alle` die einer Person |
-| `POST /:nutzerId/hinweise` | `tag` des Hinweises auf Verfall (nur Inhaber, `konten:pflegen`); 422 in der Zukunft oder vor dem Beginn des Kontos, 409 zweimal am selben Tag |
-| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat |
+| `POST /:nutzerId/hinweise` | `tag` des Hinweises auf Verfall (nur Inhaber, `konten:pflegen`); 422 in der Zukunft, vor dem Eintritt oder vor dem Beginn des Kontos, 409 zweimal am selben Tag |
+| `POST /:nutzerId/anpassungen` | `art` (`startsaldo`, `auszahlung`, `korrektur` mit `monat` und `minuten`; `urlaub_start`, `urlaub_korrektur` mit `jahr` und `halbtage`) und `grund` (nur Inhaber); 409 für einen zweiten Beginn oder einen Startsaldo nach einem abgeschlossenen Monat, 422 für ein Jahr außerhalb des Kontos |
 
 | Funktion in `packages/arbeitszeit` | Was |
 | --- | --- |

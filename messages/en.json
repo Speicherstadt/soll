@@ -1012,7 +1012,7 @@
   "konten_fehler_vorhanden": "This is already entered.",
   "konten_fehler_widerspruch": "Overtime at the start only goes before the first closed month and before any other change.",
   "konten_fehler_nicht_hinterlegt": "The leave account cannot be computed yet: a working-time model or a site is missing.",
-  "konten_fehler_ungueltig": "Please check the day: not after today and not before the account begins.",
+  "konten_fehler_ungueltig": "Please check the day or year: nothing before joining, a notice not after today, a year at most the next one.",
   "abw_team_standort": "Site",
   "abw_team_zurueck": "Four weeks back",
   "abw_team_vor": "Four weeks ahead",

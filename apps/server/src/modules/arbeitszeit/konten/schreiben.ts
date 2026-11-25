@@ -1,6 +1,7 @@
-import { type Tag, verfallHinweis } from "@soll/arbeitszeit";
+import { jahrVon, type Tag, tagInBerlin, verfallHinweis } from "@soll/arbeitszeit";
 import type { Db, SchreibDb } from "../../../db/oeffnen.ts";
 import { type Kontext, schreiben } from "../../audit/index.ts";
+import { beschaeftigungVon } from "../grundlagen.ts";
 import { type AnpassungZeile, anpassungenVon, type HinweisZeile, hinweiseVon } from "./lesen.ts";
 import { stundenAnpassungPasst } from "./ueberstunden.ts";
 import { urlaubsGrundlage } from "./urlaub.ts";
@@ -46,6 +47,27 @@ const alsZeile = (kontext: Kontext, nutzerId: string, a: Anpassung): AnpassungZe
   erstelltAm: kontext.jetzt,
 });
 
+/**
+ * Whether the year of a change of the leave account is plausible (review S-402): leave brought in
+ * from the year of joining to next year, a correction from the year before the account begins (it
+ * holds the leave brought in) to next year
+ */
+const jahrPasst = (
+  db: Db,
+  kontext: Kontext,
+  nutzerId: string,
+  anpassung: Anpassung,
+  bisher: readonly AnpassungZeile[],
+): boolean => {
+  if (!("jahr" in anpassung)) return true;
+  const eintritt = beschaeftigungVon(db, kontext.betriebId, nutzerId)?.eintritt;
+  if (eintritt === undefined) return false;
+  const bis = jahrVon(tagInBerlin(kontext.jetzt)) + 1;
+  const start = bisher.find((a) => a.art === "urlaub_start")?.jahr ?? jahrVon(eintritt);
+  const ab = anpassung.art === "urlaub_start" ? jahrVon(eintritt) : start - 1;
+  return anpassung.jahr >= ab && anpassung.jahr <= bis;
+};
+
 /** Records a change of a person's accounts by hand */
 export const anpassungAnlegen = (
   db: Db,
@@ -58,6 +80,8 @@ export const anpassungAnlegen = (
   const bisher = anpassungenVon(db, kontext.betriebId, nutzerId);
   if (anpassung.art === "urlaub_start" || anpassung.art === "startsaldo")
     if (bisher.some((a) => a.art === anpassung.art)) return { ok: false, fehler: "vorhanden" };
+  if (!jahrPasst(db, kontext, nutzerId, anpassung, bisher))
+    return { ok: false, fehler: "ungueltig" };
   if ("monat" in anpassung && !stundenAnpassungPasst(db, kontext.betriebId, nutzerId, zeile))
     return { ok: false, fehler: "widerspruch" };
   return {
@@ -68,8 +92,8 @@ export const anpassungAnlegen = (
 
 /**
  * Records that the business told the person on `tag` which leave is open and when it expires, with
- * what that notice named (`verfallHinweis`). Never after today, never before the account begins,
- * one per day.
+ * what that notice named (`verfallHinweis`). Never after today, never before the person joined or
+ * the account begins (review S-402), one per day.
  */
 export const hinweisGeben = (
   db: Db,
@@ -82,7 +106,8 @@ export const hinweisGeben = (
   if (tag > heute) return { ok: false, fehler: "ungueltig" };
   const grundlage = urlaubsGrundlage(db, kontext.betriebId, nutzerId, heute);
   if (!grundlage.ok) return { ok: false, fehler: "nicht_hinterlegt" };
-  if (tag < `${String(grundlage.startJahr).padStart(4, "0")}-01-01`)
+  // a notice can be given only to someone employed, and only for the leave the account holds
+  if (tag < grundlage.eintritt || tag < `${String(grundlage.startJahr).padStart(4, "0")}-01-01`)
     return { ok: false, fehler: "ungueltig" };
   if (hinweiseVon(db, kontext.betriebId, nutzerId).some((h) => h.tag === tag))
     return { ok: false, fehler: "vorhanden" };

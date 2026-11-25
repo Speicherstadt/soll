@@ -18,7 +18,8 @@ export type Ueberstunden =
   | {
       ok: true;
       saldoMinuten: number;
-      verlauf: { monat: Monat; saldoMinuten: number }[];
+      /** only for whoever sees everything of the person: the months would show a payout */
+      verlauf?: { monat: Monat; saldoMinuten: number }[];
       luecken: Monat[];
     }
   | Luecke;

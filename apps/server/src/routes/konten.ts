@@ -9,6 +9,7 @@ import {
   hinweiseVon,
   hinweisGeben,
   type KontoFehler,
+  type UeberstundenStand,
   type UrlaubskontoStand,
   ueberstundenVon,
   urlaubskontoVon,
@@ -74,6 +75,18 @@ const urlaubSicht = (stand: UrlaubskontoStand, voll: boolean) => {
     : kurz;
 };
 
+/**
+ * The overtime account as a reader may see it: whoever does not see everything of another person
+ * (a planner) gets only the balance and the open months, as the months would show a payout, which
+ * is payroll's (review S-402)
+ */
+const ueberstundenSicht = (stand: UeberstundenStand, voll: boolean) => {
+  if (!stand.ok) return stand;
+  return voll
+    ? { ok: true as const, ...stand.konto }
+    : { ok: true as const, saldoMinuten: stand.konto.saldoMinuten, luecken: stand.konto.luecken };
+};
+
 /** The accounts of one person; there is no list of everyone's (BetrVG § 87 Abs. 1 Nr. 6) */
 const konten = (db: Db, c: Context<Anfrage>, nutzerId: string, heute: Tag) => {
   const betriebId = c.get("betriebId");
@@ -87,7 +100,7 @@ const konten = (db: Db, c: Context<Anfrage>, nutzerId: string, heute: Tag) => {
     heute,
     rechte: { pflegen: darf(c.get("rolle"), "konten:pflegen") },
     urlaub: urlaubSicht(urlaubskontoVon(db, betriebId, nutzerId, heute), voll),
-    ueberstunden: ueberstunden.ok ? { ok: true, ...ueberstunden.konto } : ueberstunden,
+    ueberstunden: ueberstundenSicht(ueberstunden, voll),
     hinweise: voll
       ? hinweiseVon(db, betriebId, nutzerId).map(({ hinweisId, tag, inhalt, erstelltAm }) => ({
           hinweisId,

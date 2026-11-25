@@ -35,6 +35,8 @@ export type UrlaubsGrundlage = {
   ok: true;
   /** the first year of the account: of the leave brought in (`urlaub_start`), else of joining */
   startJahr: number;
+  /** the day the person joined, as Soll knows it (`beschaeftigungVon`) */
+  eintritt: Tag;
   eingaben: UrlaubskontoEingaben;
   /** approved leave on days after today: still open, but planned */
   geplantHalbtage: number;
@@ -119,6 +121,7 @@ export const urlaubsGrundlage = (
   return {
     ok: true,
     startJahr,
+    eintritt: grundlagen.beschaeftigung.eintritt,
     eingaben: {
       jahre,
       genommen: genommen.filter((g) => g.tag <= heute),

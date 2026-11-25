@@ -1012,7 +1012,7 @@
   "konten_fehler_vorhanden": "To jest już wpisane.",
   "konten_fehler_widerspruch": "Nadgodziny na początek można wpisać tylko przed pierwszym zamkniętym miesiącem i przed każdą inną zmianą.",
   "konten_fehler_nicht_hinterlegt": "Konta urlopowego nie da się jeszcze obliczyć: brakuje modelu czasu pracy lub lokalizacji.",
-  "konten_fehler_ungueltig": "Sprawdź dzień: nie po dzisiejszym i nie przed początkiem konta.",
+  "konten_fehler_ungueltig": "Sprawdź dzień lub rok: nic przed zatrudnieniem, informacja nie po dzisiejszym dniu, rok najwyżej następny.",
   "abw_team_standort": "Lokalizacja",
   "abw_team_zurueck": "Cztery tygodnie wstecz",
   "abw_team_vor": "Cztery tygodnie do przodu",

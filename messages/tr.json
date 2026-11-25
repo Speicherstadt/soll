@@ -1012,7 +1012,7 @@
   "konten_fehler_vorhanden": "Bu zaten kayıtlı.",
   "konten_fehler_widerspruch": "Başlangıçtaki fazla mesai yalnızca ilk kapatılan aydan ve diğer tüm değişikliklerden önce girilebilir.",
   "konten_fehler_nicht_hinterlegt": "İzin hesabı henüz hesaplanamıyor: çalışma süresi modeli veya işyeri eksik.",
-  "konten_fehler_ungueltig": "Lütfen günü kontrol et: bugünden sonra ve hesabın başlangıcından önce olamaz.",
+  "konten_fehler_ungueltig": "Lütfen günü veya yılı kontrol et: işe girişten önce olamaz, bildirim bugünden sonra olamaz, yıl en fazla gelecek yıl olabilir.",
   "abw_team_standort": "İşyeri",
   "abw_team_zurueck": "Dört hafta geri",
   "abw_team_vor": "Dört hafta ileri",

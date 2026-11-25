@@ -912,7 +912,7 @@ Alle Punkte: nach S-305.
   README aktuell.
 - [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
   Terminal.
-- [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
+- [x] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
   Fertig, wenn: `bun run demo [--ziel <verzeichnis>] [--heute <JJJJ-MM-TT>]` ein frisches
   Datenverzeichnis anlegt und ein vorhandenes `soll.db` verweigert (nie echte Daten, CLAUDE.md); die

@@ -95,19 +95,20 @@ export const tokenAus = (antwort: unknown, feld: string): Ergebnis<string> => {
 export type Seite = { daten: unknown[]; weiter: boolean };
 
 /**
- * Every record of a list, page by page: `url(n)` names page n (from 0), `seite` reads a body;
+ * Every record of a list, page by page: `url(n, gelesen)` names page n (from 0) after `gelesen`
+ * records (an offset, as the tool may give fewer than asked), `seite` reads a body;
  * `bisher` counts the records of the lists before. An empty page ends the list, and so does the
  * limit of records: a tool that always says "more" cannot keep a fetch going.
  */
 export const alleSeiten = async (
   k: Kontext,
-  url: (seite: number) => URL,
+  url: (seite: number, gelesen: number) => URL,
   seite: (antwort: unknown) => Seite | null,
   bisher: number,
 ): Promise<Ergebnis<unknown[]>> => {
   const saetze: unknown[] = [];
   for (let n = 0; ; n++) {
-    const geholt = await jsonHolen(k, url(n));
+    const geholt = await jsonHolen(k, url(n, saetze.length));
     if (!geholt.ok) return geholt;
     const gelesen = seite(geholt.wert);
     if (gelesen === null) return { ok: false, grund: "antwort_ungueltig" };

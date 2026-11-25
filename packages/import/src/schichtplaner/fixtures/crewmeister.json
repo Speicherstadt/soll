@@ -39,12 +39,30 @@
     }
   ],
   "absenceTypes": [
-    { "id": 31, "crewId": 9, "absenceTypeId": 1, "name": "Urlaub" },
-    { "id": 32, "crewId": 9, "absenceTypeId": 2, "name": "Krankheit" }
+    {
+      "id": 31,
+      "crewId": 9,
+      "absenceTypeId": 1,
+      "name": "Urlaub"
+    },
+    {
+      "id": 32,
+      "crewId": 9,
+      "absenceTypeId": 2,
+      "name": "Krankheit"
+    }
   ],
   "workplaces": [
-    { "id": 41, "crewId": 9, "name": "Küche" },
-    { "id": 42, "crewId": 9, "name": "Service" }
+    {
+      "id": 41,
+      "crewId": 9,
+      "name": "Küche"
+    },
+    {
+      "id": 42,
+      "crewId": 9,
+      "name": "Service"
+    }
   ],
   "shifts": [
     {
@@ -95,7 +113,8 @@
       "chainStartStampId": 9001,
       "stampStatus": "CLOSED",
       "location": "Elbchaussee",
-      "note": ""
+      "note": "",
+      "allocationDate": "2026-09-01"
     },
     {
       "id": 9002,
@@ -104,7 +123,8 @@
       "stampType": "START_BREAK",
       "timestamp": "2026-09-01T10:30:00+02:00",
       "chainStartStampId": 9001,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-01"
     },
     {
       "id": 9003,
@@ -113,7 +133,8 @@
       "stampType": "START_WORK",
       "timestamp": "2026-09-01T11:00:00+02:00",
       "chainStartStampId": 9001,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-01"
     },
     {
       "id": 9004,
@@ -122,7 +143,8 @@
       "stampType": "CLOCK_OUT",
       "timestamp": "2026-09-01T13:01:10Z",
       "chainStartStampId": 9001,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-01"
     },
     {
       "id": 9010,
@@ -131,7 +153,8 @@
       "stampType": "START_WORK",
       "timestamp": "2026-09-04T17:55:00+02:00",
       "chainStartStampId": 9010,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-04"
     },
     {
       "id": 9011,
@@ -140,7 +163,8 @@
       "stampType": "START_BREAK",
       "timestamp": "2026-09-04T22:00:00+02:00",
       "chainStartStampId": 9010,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-04"
     },
     {
       "id": 9012,
@@ -149,7 +173,8 @@
       "stampType": "START_WORK",
       "timestamp": "2026-09-04T22:30:00+02:00",
       "chainStartStampId": 9010,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-04"
     },
     {
       "id": 9013,
@@ -158,7 +183,8 @@
       "stampType": "CLOCK_OUT",
       "timestamp": "2026-09-05T02:05:00+02:00",
       "chainStartStampId": 9010,
-      "stampStatus": "CLOSED"
+      "stampStatus": "CLOSED",
+      "allocationDate": "2026-09-04"
     },
     {
       "id": 9014,
@@ -167,7 +193,8 @@
       "stampType": "START_WORK",
       "timestamp": "2026-09-04T23:00:00+02:00",
       "chainStartStampId": 9014,
-      "stampStatus": "INVALID"
+      "stampStatus": "INVALID",
+      "allocationDate": "2026-09-04"
     },
     {
       "id": 9020,
@@ -176,7 +203,8 @@
       "stampType": "START_WORK",
       "timestamp": "2026-09-07T09:00:00+02:00",
       "chainStartStampId": 9020,
-      "stampStatus": "OPEN"
+      "stampStatus": "OPEN",
+      "allocationDate": "2026-09-07"
     }
   ],
   "absences": [

@@ -126,10 +126,10 @@ export const plandayAbrufen = async (
   for (const [art, pfad, abfrage, versatz] of LISTEN({ ...zeitraum, zeitenBis })) {
     const geholt = await alleSeiten(
       k,
-      (n) =>
+      (_, gelesen) =>
         adresse(basis, pfad, {
           ...abfrage,
-          [versatz]: n * LIMIT,
+          [versatz]: gelesen,
           [versatz === "Offset" ? "Limit" : "limit"]: LIMIT,
         }),
       seite,

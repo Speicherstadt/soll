@@ -119,3 +119,25 @@ describe("review S-505, round 2: a finding of a joined shift never vanishes", ()
     expect(befunde.map((b) => [b.regel, b.norm])).toContainEqual(["R-02", "§ 3 Satz 2 ArbZG"]);
   });
 });
+
+describe("review S-505, round 2: a call-out on the 1st of a shift of a closed last day", () => {
+  it("is refused with monat_gesperrt, as a stamp would be", async () => {
+    const w = await mitPlan();
+    await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
+    for (const [art, zeit] of [
+      ["kommen", "2026-10-31T18:00:00+01:00"],
+      ["gehen", "2026-10-31T22:00:00+01:00"],
+    ] as const)
+      await nachtrag(w.jonas, { art, zeitpunkt: um(zeit), grund: "Zettel" });
+    await w.jonas.anfrage("/api/v1/arbeitszeit/monat/bestaetigen", { body: { monat: "2026-10" } });
+    await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-10", nutzerId: w.jonas.nutzerId },
+    });
+    const antwort = await nachtragen(
+      w.jonas,
+      einsatz("2026-11-01T01:00:00+01:00", "2026-11-01T02:00:00+01:00"),
+    );
+    expect(antwort.status).toBe(409);
+    expect(await json(antwort)).toEqual({ fehler: "monat_gesperrt" });
+  });
+});

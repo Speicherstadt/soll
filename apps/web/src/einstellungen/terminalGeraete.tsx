@@ -7,6 +7,7 @@ import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { codeAnzeige } from "../terminal/eingabe.ts";
 import { uhrzeitText, zeitpunktText } from "../zeiten/text.ts";
+import { type OfflineStand, TerminalOffline } from "./terminalOffline.tsx";
 
 type Geraet = {
   terminalId: string;
@@ -14,6 +15,7 @@ type Geraet = {
   gekoppeltAm: number | null;
   kopplungBis: number | null;
   gesperrtBis: number | null;
+  offline?: OfflineStand;
 };
 
 const statusText = (geraet: Geraet): string => {
@@ -27,7 +29,7 @@ const statusText = (geraet: Geraet): string => {
 /**
  * The owner's terminals (S-801): a pairing code for a new tablet, shown once with where to type it
  * and until when; the list of tablets with their state, each revocable at once, a locked one also
- * to be unlocked
+ * to be unlocked; gaps and refusals of a tablet's offline queue below it (S-803)
  */
 export const TerminalGeraete = () => {
   const abgefragt = abfrage<{ terminals: Geraet[] }>(ressourcen.terminalGeraete);
@@ -103,6 +105,7 @@ export const TerminalGeraete = () => {
                   <span class="flex flex-col">
                     <span class="font-medium">{geraet().name}</span>
                     <span class="text-muted-foreground">{statusText(geraet())}</span>
+                    <TerminalOffline stand={geraet().offline} />
                   </span>
                   <span class="flex gap-2">
                     <Show when={geraet().gesperrtBis !== null}>

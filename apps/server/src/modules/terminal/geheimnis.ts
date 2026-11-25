@@ -1,5 +1,6 @@
 import { createHmac, hkdfSync, randomBytes } from "node:crypto";
 import { sha256 } from "../audit/hash.ts";
+import { type AusweisSchluessel, ausweisSchluesselAus } from "./offline-schluessel.ts";
 
 /** A device token or a QR code: 32 random bytes, base64url; only its SHA-256 is stored */
 export const zufallsToken = (): string => randomBytes(32).toString("base64url");
@@ -34,13 +35,15 @@ const abgeleitet = (geheimerSchluessel: Uint8Array, zweck: string): Uint8Array =
 
 /**
  * The keys of the terminal, each derived for one purpose: the PIN lookup, the card lookup (S-802),
- * the receipt of a recognised card (beleg.ts) and, as it is, the key of the encrypted columns for
+ * the receipt of a recognised card (beleg.ts), the key pair for the credentials of the offline
+ * queue (S-803, offline-schluessel.ts) and, as it is, the key of the encrypted columns for
  * the cards' AES keys
  */
 export type TerminalSchluessel = {
   pin: Uint8Array;
   karte: Uint8Array;
   beleg: Uint8Array;
+  ausweis: AusweisSchluessel;
   spalten: Uint8Array;
 };
 
@@ -48,6 +51,7 @@ export const terminalSchluesselAus = (geheimerSchluessel: Uint8Array): TerminalS
   pin: pinSchluesselAus(geheimerSchluessel),
   karte: abgeleitet(geheimerSchluessel, "soll karten-kennung"),
   beleg: abgeleitet(geheimerSchluessel, "soll kiosk-beleg"),
+  ausweis: ausweisSchluesselAus(geheimerSchluessel),
   spalten: geheimerSchluessel,
 });
 

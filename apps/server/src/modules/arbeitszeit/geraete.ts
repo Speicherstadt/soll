@@ -24,6 +24,42 @@ const importieren = (schluessel: OeffentlicherSchluessel): Promise<CryptoKey | n
     .importKey("jwk", JSON.parse(kanonischerSchluessel(schluessel)), ALGORITHMUS, false, ["verify"])
     .catch(() => null);
 
+/**
+ * The canonical text of a public key, or null when it is no key of P-256: one text for one key,
+ * whatever else the JWK carried; also for the tablets of the terminal (S-803)
+ */
+export const schluesselPruefen = async (
+  schluessel: OeffentlicherSchluessel,
+): Promise<string | null> =>
+  (await importieren(schluessel)) ? kanonischerSchluessel(schluessel) : null;
+
+const bytesAus = (base64url: string): Uint8Array<ArrayBuffer> | null => {
+  if (!/^[A-Za-z0-9_-]+$/.test(base64url)) return null;
+  return new Uint8Array(Buffer.from(base64url, "base64url"));
+};
+
+/**
+ * Whether `signatur` (ECDSA P-256 with SHA-256, r and s as WebCrypto gives them, base64url) signs
+ * `nachricht` under the stored key (`schluesselPruefen`)
+ */
+export const signaturGueltig = async (
+  schluessel: string,
+  nachricht: string,
+  signatur: string,
+): Promise<boolean> => {
+  const oeffentlich = await importieren(JSON.parse(schluessel) as OeffentlicherSchluessel);
+  const bytes = bytesAus(signatur);
+  if (!oeffentlich || !bytes) return false;
+  return crypto.subtle
+    .verify(
+      { name: "ECDSA", hash: "SHA-256" },
+      oeffentlich,
+      bytes,
+      new TextEncoder().encode(nachricht),
+    )
+    .catch(() => false);
+};
+
 const geraetLesen = (db: Db, betriebId: string, geraetId: string) =>
   db
     .select()
@@ -46,8 +82,8 @@ export const geraetAnmelden = async (
   kontext: Kontext,
   angaben: { geraetId: string; schluessel: OeffentlicherSchluessel },
 ): Promise<AnmeldeErgebnis> => {
-  if (!(await importieren(angaben.schluessel))) return { ok: false, grund: "schluessel_ungueltig" };
-  const schluessel = kanonischerSchluessel(angaben.schluessel);
+  const schluessel = await schluesselPruefen(angaben.schluessel);
+  if (!schluessel) return { ok: false, grund: "schluessel_ungueltig" };
   // synchronous from here: no other write comes between reading and inserting
   const vorhanden = geraetLesen(db, kontext.betriebId, angaben.geraetId);
   if (vorhanden)
@@ -66,11 +102,6 @@ export const geraetAnmelden = async (
   return { ok: true, neu: true };
 };
 
-const bytesAus = (base64url: string): Uint8Array<ArrayBuffer> | null => {
-  if (!/^[A-Za-z0-9_-]+$/.test(base64url)) return null;
-  return new Uint8Array(Buffer.from(base64url, "base64url"));
-};
-
 export type SignaturErgebnis = { ok: true } | { ok: false; grund: "geraet_unbekannt" | "signatur" };
 
 /**
@@ -86,17 +117,7 @@ export const signaturPruefen = async (
 ): Promise<SignaturErgebnis> => {
   const geraet = geraetLesen(db, betriebId, eintrag.geraetId);
   if (!geraet || geraet.nutzerId !== nutzerId) return { ok: false, grund: "geraet_unbekannt" };
-  const schluessel = await importieren(JSON.parse(geraet.schluessel) as OeffentlicherSchluessel);
-  const bytes = bytesAus(signatur);
-  if (!schluessel || !bytes) return { ok: false, grund: "signatur" };
-  const gueltig = await crypto.subtle
-    .verify(
-      { name: "ECDSA", hash: "SHA-256" },
-      schluessel,
-      bytes,
-      new TextEncoder().encode(stempelNachricht(eintrag)),
-    )
-    .catch(() => false);
+  const gueltig = await signaturGueltig(geraet.schluessel, stempelNachricht(eintrag), signatur);
   return gueltig ? { ok: true } : { ok: false, grund: "signatur" };
 };
 

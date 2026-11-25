@@ -44,6 +44,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
   kalender_abos: "kalender (wann ausgestellt und in welcher Sprache, ohne Hash des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
+  terminal_eintraege:
+    "ausgenommen: Nummer und Ergebnis der Einträge eines Tablets ohne Netz, ohne Ausweis; die Stempelung selbst steht unter stempelungen",
   ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
   haben_zugaenge: "ausgenommen: Adresse und Token des Betriebs für Haben, keine Daten der Person",
   haben_uebergaben:
@@ -125,6 +127,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   api_zugaenge: aus("Zugänge der Person zur API sieht der Inhaber sonst nirgends"),
   kalender_abos: aus("ob die Person ihre Schichten abonniert, sieht der Inhaber sonst nirgends"),
   terminals: aus("keine Daten der Person (Tablets des Betriebs)"),
+  terminal_eintraege: aus("keine eigenen Daten: die Stempelungen stehen unter stempelungen"),
   ausweise: frei(
     "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",
   ),

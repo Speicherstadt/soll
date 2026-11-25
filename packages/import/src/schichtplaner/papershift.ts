@@ -48,14 +48,18 @@ const pausen = (s: Roh, beginn: number, ende: number): Luecke[] | null => {
 
 /**
  * A break of which only the length is known (`break_duration`, seconds) in the middle of the
- * session, rounded down to the minute: the work never shrinks (as Kimai's break, S-705)
+ * session, its length rounded down to the minute and its place on whole minutes: the work never
+ * shrinks (as Kimai's break, S-705) and the break the person took stays whole
  */
 const mittlerePause = (s: Roh, beginn: number, ende: number): Luecke[] => {
   const sekunden = s.break_duration;
   if (typeof sekunden !== "number" || !Number.isSafeInteger(sekunden) || sekunden <= 0) return [];
   const pause = Math.floor(sekunden / 60) * MINUTE;
-  if (pause === 0 || pause >= ende - beginn) return [];
-  const start = beginn + Math.floor((ende - beginn - pause) / 2 / MINUTE) * MINUTE;
+  // on whole minutes from the first one after the begin, so rounding the work outwards keeps the
+  // whole break (review S-706: from 08:00:30 a break off the minute shrank to 29 minutes, § 4 ArbZG)
+  const ab = Math.ceil(beginn / MINUTE) * MINUTE;
+  if (pause === 0 || ab + pause >= ende) return [];
+  const start = ab + Math.floor((ende - ab - pause) / 2 / MINUTE) * MINUTE;
   return [{ beginn: start, ende: start + pause }];
 };
 

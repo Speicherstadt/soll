@@ -38,10 +38,26 @@ const wann = (s: Roh): number => {
   return typeof z === "number" ? z : Number.MAX_SAFE_INTEGER;
 };
 
+/** A chain still running as one piece without an end, named by its first stamp */
+const laufend = (folge: readonly Roh[]): ArbeitSatz[] => {
+  const erster = folge[0];
+  return erster
+    ? [
+        {
+          kind: "work",
+          id: idText(erster.id),
+          person: idText(erster.userId),
+          begin: zeitpunkt(erster.timestamp),
+          end: null,
+        },
+      ]
+    : [];
+};
+
 /**
  * The pieces of work of the stamps: a chain (`chainStartStampId`, its start naming itself or none)
- * in time order, each START_WORK until the stamp after it; none after it: the piece still runs.
- * An INVALID stamp does not count.
+ * in time order, each START_WORK until the stamp after it. A chain whose last stamp is no
+ * CLOCK_OUT still runs and comes as one piece without an end. An INVALID stamp does not count.
  */
 const arbeit = (stamps: readonly Roh[]): ArbeitSatz[] => {
   const ketten = new Map<string, Roh[]>();
@@ -52,6 +68,9 @@ const arbeit = (stamps: readonly Roh[]): ArbeitSatz[] => {
   }
   return [...ketten.values()].flatMap((kette) => {
     const folge = [...kette].sort((a, b) => wann(a) - wann(b));
+    // a chain not clocked out still runs, on a break too (OPEN START_BREAK is ON_BREAK in
+    // hacs-crewmeister's derive_status): refused whole, never cut at the break (review S-706)
+    if (folge.at(-1)?.stampType !== "CLOCK_OUT") return laufend(folge);
     return folge.flatMap((s, i) => {
       if (s.stampType !== "START_WORK") return [];
       const naechster = folge[i + 1];

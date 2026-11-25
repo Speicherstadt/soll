@@ -79,7 +79,8 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
   });
 
   it("continues a row taller than a page on the next page, drawing nothing below the bottom", async () => {
-    const person = "Sandra Brandt ".repeat(120).trim();
+    // about three words a line: some 130 lines, more than two pages hold
+    const person = "Sandra Brandt ".repeat(200).trim();
     const pdf = await stundennachweisPdf(nachweis([buchung("", "Montage", person)]), HASH);
     const y = hoehen(pdf);
     expect(y.length).toBeGreaterThan(0);
@@ -87,14 +88,22 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(Math.min(...y)).toBeGreaterThanOrEqual(40);
     // every word of the name is drawn; the head of the table on each new page comes in between
     const text = await ohneUmbruch(pdf);
-    expect(text.match(/Sandra/g)).toHaveLength(120);
-    expect(text.match(/Brandt/g)).toHaveLength(120);
-    expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThanOrEqual(2);
+    expect(text.match(/Sandra/g)).toHaveLength(200);
+    expect(text.match(/Brandt/g)).toHaveLength(200);
+    expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThan(2);
   });
 
   it("repeats the head of the table on each page it goes on to", async () => {
     const zeilen = Array.from({ length: 80 }, () => buchung("Montage Vorwand"));
     const text = pdfText(await stundennachweisPdf(nachweis(zeilen), HASH));
     expect(text.match(/^Tätigkeit$/gm)).toHaveLength(2);
+  });
+
+  it("writes nothing into the bottom margin, whatever the number of rows", async () => {
+    for (let anzahl = 1; anzahl <= 70; anzahl++) {
+      const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
+      const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
+      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+    }
   });
 });

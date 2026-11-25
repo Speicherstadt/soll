@@ -749,7 +749,7 @@ Alle Punkte: nach S-305.
 - [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
   `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle
   nennen).
-- [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
+- [x] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
   Fertig, wenn: drei Seiten auf Deutsch unter `docs/` stehen, in `mkdocs.yml` verlinkt und jede als
   Vorlage gekennzeichnet, die juristisch zu prüfen ist (Schritte für Menschen). Das **Infoblatt**
@@ -853,6 +853,13 @@ requests“).
 - [ ] Dienstplan zeigt „nicht hinterlegt“, wenn ein Jahreswert fehlt
 - [ ] Doppeltes Antippen beim Stempeln: kurze Sperre (Vorschlag 1,5 s), Entscheidung fehlt
 - [ ] Abgeschlossener Monat sperrt die Projektzeit nicht; entscheiden und eintragen
+- [ ] Löschen nach dem Austritt (Löschkonzept, Klasse P): Angaben für die Prüfung, Zuordnungen,
+  Konten, Hinweise, Einstellungen der Erinnerungen, PIN, Geräte, Konto, wenn der letzte Monat der
+  Person ausgesondert ist
+- [ ] Fristen für Schichten und gesendete Erinnerungen (Klasse V) und für abgerechnete
+  Projektzeit, Stundennachweise und Übergaben an Haben (Klasse L)
+- [ ] Inhalte gelöschter Zeilen bleiben in `audit_inhalte`; abgelaufene Einladungen, Zugänge zur
+  API und Sitzungen bleiben als Zeile (`docs/loeschkonzept.md`, „Offene Punkte“)
 - [ ] Solo-Betrieb: Oberfläche für „später einladen“ fehlt
 - [ ] Projektzeit über MCP buchen
 - [ ] Inhaber kann API-Zugänge anderer nicht widerrufen
@@ -886,6 +893,8 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 - [ ] DATEV-Export bei einer Steuerberatung testweise importieren
 - [ ] Echte, anonymisierte Exporte aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister,
   Toggl und Clockify als Fixtures beisteuern
-- [ ] Vorlage der Betriebsvereinbarung juristisch prüfen lassen
+- [ ] Vorlagen zum Datenschutz juristisch prüfen lassen: Betriebsvereinbarung, Infoblatt für
+  Beschäftigte und Löschkonzept (`docs/betriebsvereinbarung.md`, `docs/infoblatt.md`,
+  `docs/loeschkonzept.md`)
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

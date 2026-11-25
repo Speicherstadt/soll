@@ -37,6 +37,7 @@ bun run solid2       # nur die Prüfung auf Formen aus Solid 1.x
 bun run e2e          # Playwright (App auf Port 5178, gebaute App mit Service Worker auf 5179)
 bun run gesetze      # Gesetzeswächter: Normen abrufen und vergleichen, Bericht auf der Konsole
 bun run lasttest     # Lasttest: 50 Betriebe mit je 50 Personen stempeln gleichzeitig (Port 28300)
+bun run demo         # Demo-Daten: Weber Haustechnik und Café Elbblick mit drei Monaten (demo.md)
 ```
 
 Die App ruft die API unter ihrer eigenen Adresse auf; Vite leitet `/api` an den Server weiter

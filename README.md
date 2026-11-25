@@ -106,7 +106,13 @@ Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), der Plan in der
 bun install
 bun run check        # Typen, Lint, Tests, Build
 bun run e2e          # Playwright: desktop, phone, terminal
+bun run demo         # Demo-Daten in ./demo-daten
 ```
+
+`bun run demo` legt die Testbetriebe „Weber Haustechnik“ und „Café Elbblick“ mit drei Monaten
+Stempelungen, Abwesenheiten, Dienstplänen, Projektzeit und abgeschlossenen Monaten in einem frischen
+Datenverzeichnis an, nur zum Ausprobieren: alle Konten haben dasselbe Passwort. Anmeldedaten und
+Ablauf unter [Demo-Daten](https://soll.work/demo.html).
 
 ---
 

@@ -1040,8 +1040,31 @@ Alle Punkte: nach S-305.
   README aktuell.
 - [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
   Terminal.
-- [ ] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
+- [x] **S-909 Testdaten** – `bun run demo` legt „Weber Haustechnik“ und „Café Elbblick“ mit drei
   Monaten Daten an.
+  Fertig, wenn: `bun run demo [--ziel <verzeichnis>] [--heute <JJJJ-MM-TT>]` ein frisches
+  Datenverzeichnis anlegt und ein vorhandenes `soll.db` verweigert (nie echte Daten, CLAUDE.md); die
+  zwei Betriebe und ihre Personen genau wie in CLAUDE.md, „Test data“, stehen (Weber Haustechnik,
+  Hamburg: Jonas Weber, Inhaber; Anna, Büro; Sandra und Max, Monteure; Leon, Auszubildender, 17;
+  Café Elbblick, Hamburg: Mia, Inhaberin; Tom, Lea und Yusuf in Schichten; Olena und Piotr auf
+  Minijob; Adressen unter `.test`); die drei vollen Monate vor dem Monat von `--heute` und dieser
+  Monat bis `--heute` über die echten Routen und damit über die Audit-Kette geschrieben sind, nicht
+  mit SQL an ihr vorbei: Stempelungen mit Pausen (Weber im Browser, das Café am gekoppelten Terminal
+  mit PIN), einige Korrekturen mit Grund (Nachtrag, Änderung), Abwesenheiten (Urlaub beantragt und
+  freigegeben, krank mit eAU, Kind krank), jeder volle Monat von der Person bestätigt und vom Betrieb
+  abgeschlossen mit Prüfwert, Wochenpläne des Cafés vorab geplant und veröffentlicht, Projektzeit
+  bei Weber mit Kunden, Aufträgen, Tätigkeiten, Buchungen und einem unterschriebenen
+  Stundennachweis; der Ablauf ist deterministisch (Zufall mit Startwert aus `--heute`: gleiche
+  Zeiten, Abwesenheiten und Buchungen bei gleichem `--heute`; Kennungen und Hashes vergibt Soll
+  selbst); Befunde sind absichtlich dabei, damit die Prüfansichten etwas zeigen (Höchstarbeitszeit
+  und Pause bei einem Notdienst, eine kurze Ruhezeit im Café, im Plan der kommenden Woche eine
+  Schicht über acht Stunden für Leon nach § 8 JArbSchG), eine Spätschicht über die Zeitumstellung
+  im Oktober zählt in echten Minuten; danach prüft jede Kette ohne Befund, und der Lauf gibt die
+  Anmeldedaten einmal aus, als nur für die Demo gekennzeichnet; ohne `SOLL_SECRET_KEY` erzeugt er
+  einen Schlüssel und gibt ihn einmal aus, schreibt ihn aber nirgends hin. Ein Vitest lässt die Demo
+  in ein temporäres Verzeichnis laufen und prüft Anzahlen, Ketten, einen Prüfwert auf der Prüfseite,
+  die Befunde, die Zeitumstellung, die Ablehnung eines vorhandenen `soll.db` und dieselben Zeiten
+  bei zweimal demselben `--heute`. Doku `docs/demo.md`, Abschnitt im README.
 
 ## Übergabe
 

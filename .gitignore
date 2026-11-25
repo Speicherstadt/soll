@@ -9,6 +9,7 @@ dist/
 soll.env
 !.env.example
 data/
+demo-daten/
 coverage/
 test-results/
 playwright-report/

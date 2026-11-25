@@ -20,6 +20,7 @@
     "e2e": "playwright test --trace off",
     "gesetze": "bun scripts/gesetze/gesetze.ts",
     "lasttest": "BUN_CONFIG_MAX_HTTP_REQUESTS=4096 bun apps/server/src/lasttest/main.ts",
+    "demo": "bun apps/server/src/demo/main.ts",
     "db:generate": "bun run --cwd apps/server drizzle-kit generate && bun scripts/migrationen.ts",
     "check": "bun run typecheck && bun run lint && bun run solid2 && bun run test && bun run build",
     "dev:server": "SOLL_PORT=18200 bun run --cwd apps/server dev",

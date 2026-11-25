@@ -113,3 +113,12 @@ export const datenbankKopieren = (quelle: string, ziel: string): void => {
     lesend.close();
   }
 };
+
+/**
+ * No sync to disk after each write, for a database made from scratch in a fresh directory that a
+ * crash leaves to be made again: the demo data (S-909, docs/plan.md "Demo-Daten"). Never for the
+ * server, which keeps `synchronous = FULL` (docs/plan.md, "Dauerhaftigkeit beim Schreiben").
+ */
+export const ohneSyncFuerNeueDaten = (datenbank: Datenbank): void => {
+  datenbank.sqlite.run("PRAGMA synchronous = OFF");
+};

@@ -1,6 +1,7 @@
 import type { Tag } from "@soll/arbeitszeit";
 import type { Sprache } from "../erinnerungen/index.ts";
-import type { Meldung, Zeitraum } from "./meldungen.ts";
+import type { Meldung, TauschArt, Zeitraum } from "./meldungen.ts";
+import { TAUSCH_TEXTE } from "./tauschtexte.ts";
 
 /*
  * The texts of the plan outside the app (S-503): the notifications in the language of each device
@@ -8,11 +9,14 @@ import type { Meldung, Zeitraum } from "./meldungen.ts";
  * app had when the feed was issued. The six languages of the app (docs/plan.md, "Sprachen").
  */
 
-type Werte = { kw: number; datum: string; zeit: string };
-type Vorlage = { titel: string; text: (w: Werte) => string };
+export type Werte = { kw: number; datum: string; zeit: string };
+export type Vorlage = { titel: string; text: (w: Werte) => string };
 type Woerter = { schicht: string; pause: string; minuten: string };
 
-const TEXTE: Record<Sprache, Record<Meldung["art"], Vorlage> & { woerter: Woerter }> = {
+const TEXTE: Record<
+  Sprache,
+  Record<Exclude<Meldung["art"], TauschArt>, Vorlage> & { woerter: Woerter }
+> = {
   de: {
     veroeffentlicht: {
       titel: "Dienstplan veröffentlicht",
@@ -133,11 +137,16 @@ const werteVon = (sprache: Sprache, schicht: Zeitraum): Werte => ({
 
 /** The title and text of a message about the plan in a language */
 export const meldungText = (meldung: Meldung, sprache: Sprache) => {
-  const vorlage = TEXTE[sprache][meldung.art];
-  const werte =
-    meldung.art === "veroeffentlicht"
-      ? { kw: meldung.kw, datum: "", zeit: "" }
-      : werteVon(sprache, meldung.schicht);
+  if (meldung.art === "veroeffentlicht") {
+    const vorlage = TEXTE[sprache].veroeffentlicht;
+    return { titel: vorlage.titel, text: vorlage.text({ kw: meldung.kw, datum: "", zeit: "" }) };
+  }
+  const { art } = meldung;
+  const vorlage =
+    art === "neu" || art === "geaendert" || art === "entfaellt"
+      ? TEXTE[sprache][art]
+      : TAUSCH_TEXTE[sprache][art];
+  const werte = werteVon(sprache, meldung.schicht);
   return { titel: vorlage.titel, text: vorlage.text(werte) };
 };
 

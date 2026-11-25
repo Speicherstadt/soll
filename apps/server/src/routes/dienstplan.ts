@@ -24,6 +24,7 @@ import {
 } from "../modules/dienstplan/index.ts";
 import type { ZustellDeps } from "../modules/erinnerungen/index.ts";
 import { kalenderRouten } from "./dienstplan-kalender.ts";
+import { tauschRouten } from "./dienstplan-tausch.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon } from "./stempel-antwort.ts";
 
@@ -224,7 +225,7 @@ export type PlanDeps = { zustellung: ZustellDeps | null; url: string };
 /**
  * The plan, below /api/v1/dienstplan (S-501): refused while the module is off. Owner and planner
  * plan the draft and publish a week; everyone else who works for the business reads only what is
- * published and subscribes to their own shifts as a calendar (S-503).
+ * published, subscribes to their own shifts as a calendar (S-503) and swaps them (S-504).
  */
 export const dienstplanRouten = (
   db: Db,
@@ -268,4 +269,5 @@ export const dienstplanRouten = (
     .route("/vorlagen", vorlagenRouten(db, schreibDb, jetzt))
     .route("/bedarf", bedarfRouten(db, schreibDb, jetzt))
     .route("/schichten", schichtRouten(db, schreibDb, jetzt, deps.zustellung))
-    .route("/kalender", kalenderRouten(db, schreibDb, jetzt, deps.url));
+    .route("/kalender", kalenderRouten(db, schreibDb, jetzt, deps.url))
+    .route("/tausch", tauschRouten(db, schreibDb, jetzt, deps.zustellung));

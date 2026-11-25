@@ -59,6 +59,9 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   urlaubshinweise: "urlaubshinweise (Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub)",
   verfahrensdoku_angaben:
     "ausgenommen: Angaben des Betriebs zu seiner Verfahrensdokumentation; die Person steht darin nur, wenn der Inhaber sie selbst als Verantwortliche einträgt, und die Glieder ihres Schreibens stehen unter auditKette",
+  schichttausche:
+    "schichttausche (angeboten, an dich gerichtet oder übernommen; Status, Zeiten, Grund einer Ablehnung, ohne die andere Person)",
+  tauschregeln: "ausgenommen: ob ein Tausch eine Freigabe braucht, Einstellung des Betriebs",
   importe:
     "ausgenommen: Vorgang des Betriebs; jede übernommene Zeile der Person steht mit Import, Werkzeug und Kennung unter stempelungen und abwesenheiten, die Originaldatei enthält Daten anderer Personen (Art. 15 Abs. 4)",
   // Better Auth's tables (db/auth-schema.ts)
@@ -151,6 +154,8 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ),
   urlaubshinweise: frei("Hinweise auf den Verfall, die der Inhaber selbst gibt (konten:pflegen)"),
   verfahrensdoku_angaben: aus("keine Daten der Person (Angaben des Betriebs, S-902)"),
+  schichttausche: frei("Tausche von Schichten, die Inhaber und Planer sehen und entscheiden"),
+  tauschregeln: aus("keine Daten der Person (Einstellung des Betriebs zum Tausch)"),
   importe: aus(
     "Vorgang des Betriebs; die übernommenen Zeilen stehen unter stempelungen und abwesenheiten",
   ),

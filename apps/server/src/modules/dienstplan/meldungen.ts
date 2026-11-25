@@ -23,9 +23,18 @@ export type Planstand = {
 /** The shift a message is about: its id names the notification, so each keeps its own */
 export type Zeitraum = { schichtId: string; tag: Tag; beginn: number; ende: number };
 
+/** The steps of a swap that tell someone (S-504) */
+export type TauschArt =
+  | "angeboten"
+  | "uebernommen"
+  | "freigabe"
+  | "freigegeben"
+  | "abgelehnt"
+  | "zurueckgezogen";
+
 export type Meldung =
   | { art: "veroeffentlicht"; nutzerId: string; standortId: string; tag: Tag; kw: number }
-  | { art: "neu" | "geaendert" | "entfaellt"; nutzerId: string; schicht: Zeitraum };
+  | { art: "neu" | "geaendert" | "entfaellt" | TauschArt; nutzerId: string; schicht: Zeitraum };
 
 const FELDER = [
   "standortId",

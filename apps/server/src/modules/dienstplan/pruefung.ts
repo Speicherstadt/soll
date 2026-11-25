@@ -68,11 +68,14 @@ const pruefungFuer = (
   nutzerId: string,
   standort: Standort,
   jetzt: number,
+  zusaetzlich: readonly Schicht[] = [],
 ): PlanPruefung | null => {
   const heute = tagInBerlin(jetzt);
   const betrieb = betriebLesen(db, betriebId);
   if (!betrieb) return null;
-  const geplant = schichtenAb(db, betriebId, nutzerId, heute);
+  const geplant = [...schichtenAb(db, betriebId, nutzerId, heute), ...zusaetzlich].sort(
+    (a, b) => a.beginn - b.beginn,
+  );
   const veroeffentlicht = new Map(geplant.map((s) => [s.schichtId, s.veroeffentlichtAm]));
   const von = beginnInBerlin(tagAus(jahrVon(heute) - 1, 1, 1));
   return {
@@ -90,6 +93,34 @@ const pruefungFuer = (
   };
 };
 
+const standortVon = (db: Db, betriebId: string, standortId: string): Standort | null => {
+  const ort = standorteLesen(db, betriebId).find((s) => s.standortId === standortId);
+  return ort ? { land: ort.land, regionen: ort.regionen } : null;
+};
+
+/**
+ * The findings for whoever takes over a shift (S-504), before it is approved: the rules of S-502 on
+ * that person's work and plan as if the shift were theirs, with the holidays of its site. Told is the
+ * shift with its approval, so the check counts today (docs/plan.md, "Schichttausch"). Only the
+ * findings that concern the shift; only whoever approves sees them (Art. 9 DSGVO).
+ */
+export const tauschBefunde = (
+  db: Db,
+  betriebId: string,
+  schicht: Schicht,
+  nutzerId: string,
+  jetzt: number,
+): PlanBefund[] => {
+  const standort = standortVon(db, betriebId, schicht.standortId);
+  if (!standort) return [];
+  const uebernommen = { ...schicht, nutzerId, veroeffentlichtAm: null };
+  const pruefung = pruefungFuer(db, betriebId, nutzerId, standort, jetzt, [uebernommen]);
+  if (!pruefung) return [];
+  return planBefunde(pruefung)
+    .befunde.filter((befund) => befund.schichtIds.includes(schicht.schichtId))
+    .map((befund) => ({ ...befund, schichtIds: [schicht.schichtId] }));
+};
+
 /**
  * The findings of the plan that concern the shifts shown (S-502): for each person planned among
  * them, the rules on what was worked and what is planned, with the holidays of the site of the week.
@@ -104,9 +135,8 @@ export const wochenBefunde = (
   jetzt: number,
 ): WochenBefund[] => {
   const heute = tagInBerlin(jetzt);
-  const ort = standorteLesen(db, betriebId).find((s) => s.standortId === standortId);
-  if (!ort) return [];
-  const standort: Standort = { land: ort.land, regionen: ort.regionen };
+  const standort = standortVon(db, betriebId, standortId);
+  if (!standort) return [];
   const ids = new Set(gezeigt.filter((s) => s.tag >= heute).map((s) => s.schichtId));
   const personen = new Set(
     gezeigt.flatMap((s) => (s.nutzerId && ids.has(s.schichtId) ? [s.nutzerId] : [])),

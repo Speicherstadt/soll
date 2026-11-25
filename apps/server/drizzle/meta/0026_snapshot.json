@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6757bdef-f17a-43fb-98fa-a73891bc33b0",
+  "id": "75562c4a-efef-4da4-be9b-f85dfb44c7f5",
   "prevId": "37de2da0-0b11-421d-81ac-c69148d549e8",
   "tables": {
     "arbeitszeitmodelle": {
@@ -3210,6 +3210,141 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "schichttausche": {
+      "name": "schichttausche",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tausch_id": {
+          "name": "tausch_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "schicht_id": {
+          "name": "schicht_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "anbieter_id": {
+          "name": "anbieter_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "an_nutzer_id": {
+          "name": "an_nutzer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "uebernehmer_id": {
+          "name": "uebernehmer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "grund": {
+          "name": "grund",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angeboten_am": {
+          "name": "angeboten_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "uebernommen_am": {
+          "name": "uebernommen_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "entschieden_von": {
+          "name": "entschieden_von",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "entschieden_am": {
+          "name": "entschieden_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "schichttausche_schicht": {
+          "name": "schichttausche_schicht",
+          "columns": [
+            "betrieb_id",
+            "schicht_id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "schichttausche_betrieb_id_tausch_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "tausch_id"
+          ],
+          "name": "schichttausche_betrieb_id_tausch_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "tauschregeln": {
+      "name": "tauschregeln",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ohne_freigabe": {
+          "name": "ohne_freigabe",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "stundennachweis_buchungen": {
       "name": "stundennachweis_buchungen",
       "columns": {
@@ -3748,94 +3883,6 @@
           "name": "terminals_betrieb_id_terminal_id_pk"
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "verfahrensdoku_angaben": {
-      "name": "verfahrensdoku_angaben",
-      "columns": {
-        "betrieb_id": {
-          "name": "betrieb_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "rechtsform": {
-          "name": "rechtsform",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "anschrift": {
-          "name": "anschrift",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "verantwortlich": {
-          "name": "verantwortlich",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "aufbewahrungsort": {
-          "name": "aufbewahrungsort",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "serverbetrieb": {
-          "name": "serverbetrieb",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "datensicherung": {
-          "name": "datensicherung",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "schluesselablage": {
-          "name": "schluesselablage",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "eigene": {
-          "name": "eigene",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'[]'"
-        },
-        "geaendert_am": {
-          "name": "geaendert_am",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },

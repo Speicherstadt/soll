@@ -9,6 +9,7 @@ import { type Kontenteil, kontenteil } from "./konten.ts";
 import { type Lohnteil, lohnteil } from "./lohn.ts";
 import { type Personenangabenteil, personenangabenteil } from "./personenangaben.ts";
 import { type Projektteil, projektteil } from "./projektzeit.ts";
+import { type Tauschteil, tauschteil } from "./tausch.ts";
 import { type Terminalteil, terminalteil } from "./terminal.ts";
 
 export { warMitglied } from "./kette.ts";
@@ -52,6 +53,7 @@ const zeilenVon = (
   abwesenheit: Abwesenheitsteil,
   angaben: Personenangabenteil,
   konten: Kontenteil,
+  tausch: Tauschteil,
   einladungen: { einladungId: string }[],
   zugaenge: { zugangId: string }[],
   kalender: unknown,
@@ -81,6 +83,7 @@ const zeilenVon = (
     personenangaben: angaben.personenangaben === null ? [] : [{ nutzerId }],
     kontoAnpassungen: konten.kontoAnpassungen.map(({ anpassungId }) => ({ anpassungId })),
     urlaubshinweise: konten.urlaubshinweise.map(({ hinweisId }) => ({ hinweisId })),
+    schichttausche: tausch.schichttausche.map(({ tauschId }) => ({ tauschId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -105,6 +108,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
   const abwesenheit = abwesenheitsteil(db, betriebId, nutzerId, name);
   const angaben = personenangabenteil(db, betriebId, nutzerId);
   const konten = kontenteil(db, betriebId, nutzerId, name);
+  const tausch = tauschteil(db, betriebId, nutzerId);
   const kette = kettenteil(
     db,
     betriebId,
@@ -119,6 +123,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
       abwesenheit,
       angaben,
       konten,
+      tausch,
       konto.einladungen,
       konto.zugaenge,
       konto.kalender,
@@ -143,6 +148,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     ...abwesenheit,
     ...angaben,
     ...konten,
+    ...tausch,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

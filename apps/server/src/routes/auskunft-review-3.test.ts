@@ -25,6 +25,8 @@ const FREIGEGEBEN = [
   "aussonderungen",
   "arbeitszeitmodelle",
   "schichten",
+  // the swaps of the person's shifts, which the owner approves (S-504)
+  "schichttausche",
   "stundensaetze",
   "projektzeiten",
   "personalnummer",

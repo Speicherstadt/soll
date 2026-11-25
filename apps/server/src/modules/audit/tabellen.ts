@@ -31,6 +31,7 @@ import {
   projektzeiten,
   pushAbos,
   schichten,
+  schichttausche,
   schichtvorlagen,
   standorte,
   stempelungen,
@@ -38,6 +39,7 @@ import {
   stundennachweise,
   stundensaetze,
   taetigkeiten,
+  tauschregeln,
   terminalEintraege,
   terminals,
   urlaubshinweise,
@@ -91,6 +93,8 @@ export const kettenTabellen = {
   kontoAnpassungen: { tabelle: kontoAnpassungen, schluessel: ["anpassungId"] },
   urlaubshinweise: { tabelle: urlaubshinweise, schluessel: ["hinweisId"] },
   verfahrensdokuAngaben: { tabelle: verfahrensdokuAngaben, schluessel: ["betriebId"] },
+  schichttausche: { tabelle: schichttausche, schluessel: ["tauschId"] },
+  tauschregeln: { tabelle: tauschregeln, schluessel: ["betriebId"] },
   importe: { tabelle: importe, schluessel: ["importId"] },
 } as const;
 

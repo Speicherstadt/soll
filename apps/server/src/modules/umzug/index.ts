@@ -27,6 +27,13 @@ export {
 } from "./kimai-holen.ts";
 export { type DateiErgebnis, type ImportEintrag, importDatei, importeLesen } from "./liste.ts";
 export { type PapershiftZugang, papershiftAbrufen } from "./papershift-abruf.ts";
+export {
+  PERSONIO_API,
+  type PersonioDeps,
+  type PersonioFehler,
+  type PersonioZugang,
+  personioAbrufen,
+} from "./personio-abruf.ts";
 export { PLAN_GRUENDE, type Zahlen } from "./plan-typen.ts";
 export { type PlandayZugang, plandayAbrufen } from "./planday-abruf.ts";
 export {

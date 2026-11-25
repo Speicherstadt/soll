@@ -1,5 +1,5 @@
 import { istTag, plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { abzugText, kimaiAbzugText, schichtplanerAbzugText } from "@soll/import";
+import { abzugText, kimaiAbzugText, personioAbzugText, schichtplanerAbzugText } from "@soll/import";
 import { Hono } from "hono";
 import { z } from "zod";
 import {
@@ -10,7 +10,9 @@ import {
   type KimaiFehler,
   kimaiAbrufen,
   MAX_BYTES,
+  type PersonioDeps,
   papershiftAbrufen,
+  personioAbrufen,
   plandayAbrufen,
   type SchichtplanerDeps,
 } from "../modules/umzug/index.ts";
@@ -18,7 +20,8 @@ import type { Anfrage } from "./kontext.ts";
 import { koerper, ungueltig } from "./projektzeit-gemeinsam.ts";
 
 /*
- * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai):
+ * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai, S-704 Personio,
+ * S-706 Papershift, Planday, Crewmeister):
  * POST /api/v1/importe/abruf with the access and a period answers with the file the fetch became,
  * which the app then sends to preview, dry run and takeover like any file. The access is used for
  * this one request: it is not stored, not logged and in no answer (docs/plan.md, "API-Zugang eines
@@ -52,6 +55,19 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
           token: z.string().trim().min(1).max(500),
           // only for a Kimai before API tokens (X-AUTH-USER); empty: the token as a bearer
           benutzer: z.string().trim().max(180).nullable().default(null),
+        })
+        .strict(),
+      ...zeitraum,
+    })
+    .strict(),
+  z
+    .object({
+      quelle: z.literal("personio"),
+      zugang: z
+        .object({
+          // the credentials of a custom integration; they go in a form, so any text can be sent
+          clientId: z.string().trim().min(1).max(200),
+          clientSecret: z.string().trim().min(1).max(500),
         })
         .strict(),
       ...zeitraum,
@@ -95,6 +111,7 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
 export type AbrufDeps = {
   clockodo: ClockodoDeps;
   kimai: KimaiDeps;
+  personio: PersonioDeps;
   schichtplaner: SchichtplanerDeps;
 };
 
@@ -137,6 +154,11 @@ const abrufen = async (deps: AbrufDeps, eingabe: Eingabe, heute: string) => {
       const zugang = { ...eingabe.zugang, benutzer: eingabe.zugang.benutzer || null };
       return alsDatei(await kimaiAbrufen(deps.kimai, zugang, zeitraum), kimaiAbzugText);
     }
+    case "personio":
+      return alsDatei(
+        await personioAbrufen(deps.personio, eingabe.zugang, zeitraum),
+        personioAbzugText,
+      );
     case "papershift":
       return alsDatei(
         await papershiftAbrufen(deps.schichtplaner, eingabe.zugang, bisHeute),

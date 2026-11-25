@@ -12,6 +12,8 @@ import {
   type ClockodoDeps,
   type Dateispeicher,
   type KimaiDeps,
+  PERSONIO_API,
+  type PersonioDeps,
   SCHICHTPLANER_ADRESSEN,
   type SchichtplanerDeps,
   sicherHolen,
@@ -89,6 +91,8 @@ export type AppDeps = {
   clockodo?: ClockodoDeps;
   /** How the server calls a Kimai instance for an import (S-705); a stand-in in tests */
   kimai?: KimaiDeps;
+  /** How the server calls Personio's API for an import (S-704); a stand-in in tests */
+  personio?: PersonioDeps;
   /** How the server calls Papershift, Planday and Crewmeister for an import (S-706) */
   schichtplaner?: SchichtplanerDeps;
 };
@@ -112,6 +116,7 @@ export const createApp = ({
   dateien,
   clockodo = { fetch, basis: CLOCKODO_API },
   kimai = { holen: sicherHolen(), erlaubt: new Set() },
+  personio = { holen: sicherHolen(), basis: PERSONIO_API },
   schichtplaner = { holen: sicherHolen(), adressen: SCHICHTPLANER_ADRESSEN },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
@@ -160,7 +165,7 @@ export const createApp = ({
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
     .route(
       "/importe",
-      importRouten(db, schreibDb, now, dateien, { clockodo, kimai, schichtplaner }),
+      importRouten(db, schreibDb, now, dateien, { clockodo, kimai, personio, schichtplaner }),
     )
     .route(
       "/",

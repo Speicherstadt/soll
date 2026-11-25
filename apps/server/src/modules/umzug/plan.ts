@@ -1,4 +1,4 @@
-import { type Monat, monatVon } from "@soll/arbeitszeit";
+import type { Monat } from "@soll/arbeitszeit";
 import type { ImportDaten, ImportZeit, Zuordnung } from "@soll/import";
 import {
   abwesenheitPlanen,
@@ -31,7 +31,7 @@ import {
   type Stand,
 } from "./plan-typen.ts";
 import { abwesenheitWieder, type Wiederfund, zeitWieder } from "./plan-wieder.ts";
-import { type Genommen, zeitPlanen } from "./plan-zeiten.ts";
+import { type Genommen, type Zeitplan, zeitenEinerPerson } from "./plan-zeiten.ts";
 
 /*
  * The plan of a takeover from the records of a file, the owner's mapping and the business as it
@@ -107,13 +107,41 @@ const buchungenVon = (
   }
 };
 
+/** The member a record's person is mapped to and may take times, or null (without side effects) */
+const zeitPerson = (zeit: ImportZeit, zuordnung: Zuordnung, stand: Stand): string | null => {
+  const nutzerId = zuordnung.personen[zeit.person] ?? null;
+  return nutzerId !== null && stand.mitglieder.has(nutzerId) && stand.module.arbeitszeit
+    ? nutzerId
+    : null;
+};
+
+/**
+ * The plan of the times not taken over before, person by person, so the spans of one shift are
+ * decided together (plan-zeiten.ts)
+ */
+const neueZeitenPlanen = (daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
+  const jePerson = new Map<string, ImportZeit[]>();
+  for (const zeit of daten.zeiten) {
+    const nutzerId = zeitPerson(zeit, zuordnung, stand);
+    if (nutzerId === null || zeitWieder(zeit, nutzerId, stand.vorhanden.stempelungen) !== null)
+      continue;
+    jePerson.set(nutzerId, [...(jePerson.get(nutzerId) ?? []), zeit]);
+  }
+  const genommen: Genommen = new Map();
+  const plaene = new Map<ImportZeit, Zeitplan>();
+  for (const [nutzerId, zeiten] of jePerson)
+    for (const [zeit, plan] of zeitenEinerPerson(zeiten, nutzerId, stand, genommen))
+      plaene.set(zeit, plan);
+  return plaene;
+};
+
 const zeitenPlanen = (
   bau: Bau,
   daten: ImportDaten,
   zuordnung: Zuordnung,
   stand: Stand,
 ): VerworfeneZeiten => {
-  const genommen: Genommen = new Map();
+  const plaene = neueZeitenPlanen(daten, zuordnung, stand);
   // the ids of the times not taken over, whose bookings of the tool stay out with them (S-705)
   const verworfen = new Set<string>();
   for (const zeit of daten.zeiten) {
@@ -130,15 +158,15 @@ const zeitenPlanen = (
       if (wieder !== "keine") bau.zahlen.buchungen[wieder] += 1;
       continue;
     }
-    const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
+    const ergebnis = plaene.get(zeit) as Zeitplan;
     if (typeof ergebnis === "string") {
       ablehnen(bau, "zeiten", zeit, ergebnis);
       verworfen.add(zeit.externalId);
     } else {
       bau.zahlen.zeiten.neu += 1;
-      bau.stempelungen.push(...ergebnis);
-      beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
-      buchungenVon(bau, zeit, nutzerId, ergebnis, { zuordnung, stand });
+      bau.stempelungen.push(...ergebnis.stempel);
+      beruehren(bau, nutzerId, [ergebnis.monat]);
+      buchungenVon(bau, zeit, nutzerId, ergebnis.stempel, { zuordnung, stand });
     }
   }
   return verworfen;

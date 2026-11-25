@@ -40,6 +40,11 @@ const envSchema = betriebsSchema
       .url({ protocol: /^https?$/ })
       .optional()
       .transform((url) => url?.replace(/\/+$/, "")),
+    // Personio's API for imports (S-704); set only to point the tests at a stand-in
+    SOLL_PERSONIO_API: z
+      .url({ protocol: /^https?$/ })
+      .optional()
+      .transform((url) => url?.replace(/\/+$/, "")),
     // one stand-in for Papershift, Planday and Crewmeister (S-706); set only in the e2e tests
     SOLL_SCHICHTPLANER_API: z
       .url({ protocol: /^https?$/ })
@@ -67,6 +72,8 @@ export type Env = {
   smtp: { url: string; von: string } | null;
   /** Clockodo's API for imports, or null for its real address (S-703) */
   clockodoApi: string | null;
+  /** Personio's API for imports, or null for its real address (S-704) */
+  personioApi: string | null;
   /** One stand-in for the shift planners' APIs, or null for their real addresses (S-706) */
   schichtplanerApi: string | null;
   /** Origins an import may call although http or private (S-705) */
@@ -89,6 +96,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
     clockodoApi: parsed.SOLL_CLOCKODO_API ?? null,
+    personioApi: parsed.SOLL_PERSONIO_API ?? null,
     schichtplanerApi: parsed.SOLL_SCHICHTPLANER_API ?? null,
     importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };

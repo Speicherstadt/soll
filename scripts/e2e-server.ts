@@ -22,6 +22,8 @@ const server = Bun.spawn(["bun", "apps/server/src/main.ts"], {
     SOLL_CLOCKODO_API: "http://127.0.0.1:28211/api",
     // imports from Kimai fetch from its stand-in on this machine (S-705), allowed by its origin
     SOLL_IMPORT_ALLOWED_ORIGINS: "http://127.0.0.1:28213",
+    // imports from Personio fetch from its stand-in (S-704), never from api.personio.de
+    SOLL_PERSONIO_API: "http://127.0.0.1:28214",
     // imports from Papershift, Planday and Crewmeister fetch from one stand-in (S-706)
     SOLL_SCHICHTPLANER_API: "http://127.0.0.1:28215",
   },
@@ -29,11 +31,12 @@ const server = Bun.spawn(["bun", "apps/server/src/main.ts"], {
   stderr: "inherit",
 });
 // the stand-ins the tests connect to, each on its own port: Haben (S-606), Clockodo (S-703), Kimai
-// (S-705) and the shift planners (S-706)
+// (S-705), Personio (S-704) and the shift planners (S-706)
 const ersatz = [
   "apps/server/src/haben-ersatz-dienst.ts",
   "apps/server/src/clockodo-ersatz-dienst.ts",
   "apps/server/src/kimai-ersatz-dienst.ts",
+  "apps/server/src/personio-ersatz-dienst.ts",
   "apps/server/src/schichtplaner-ersatz-dienst.ts",
 ].map((datei) => Bun.spawn(["bun", datei], { stdout: "inherit", stderr: "inherit" }));
 for (const signal of ["SIGINT", "SIGTERM"] as const)

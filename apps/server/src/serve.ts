@@ -16,6 +16,7 @@ import { DATENBANK } from "./modules/sicherung/index.ts";
 import {
   CLOCKODO_API,
   dateispeicher,
+  PERSONIO_API,
   SCHICHTPLANER_ADRESSEN,
   type SchichtplanerAdressen,
   sicherHolen,
@@ -86,6 +87,8 @@ export const serverStarten = () => {
     clockodo: { fetch, basis: env.clockodoApi ?? CLOCKODO_API },
     // Kimai instances for imports (S-705): public https only, unless the operator allows an origin
     kimai: { holen: sicherHolen(), erlaubt: env.importErlaubt },
+    // Personio's API for imports (S-704) at its fixed address; another only for the e2e stand-in
+    personio: { holen: sicherHolen(), basis: env.personioApi ?? PERSONIO_API },
     // Papershift, Planday and Crewmeister at their own addresses (S-706); a stand-in only in e2e
     schichtplaner: { holen: sicherHolen(), adressen: adressenVon(env.schichtplanerApi) },
   });

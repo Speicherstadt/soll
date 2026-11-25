@@ -3,6 +3,7 @@ import { createUniqueId, For, Match, Show, Switch } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { AbrufFormular } from "./abruf.tsx";
 import { KimaiAbrufFormular } from "./abruf-kimai.tsx";
+import { PersonioAbrufFormular } from "./abruf-personio.tsx";
 import { SchichtplanerAbrufFormular } from "./abruf-schichtplaner.tsx";
 import { lesefehlerText } from "./texte.ts";
 import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
@@ -58,7 +59,7 @@ type Weg = "datei" | "api";
 /** The shift planners, which share one form (S-706) */
 const SCHICHTPLANER = ["papershift", "planday", "crewmeister"] as const;
 
-/** File or API, for a tool that offers both (S-703); Kimai has only the API (S-705) */
+/** File or API, for a tool that offers both (S-703); Kimai, Personio and the shift planners have only the API */
 const Wegwahl = (props: { weg: Weg; setWeg: (weg: Weg) => void }) => (
   <fieldset class="flex flex-wrap gap-2">
     <legend class="mb-2 font-medium">{m.umzug_weg_frage()}</legend>
@@ -105,6 +106,9 @@ export const DateiSchritt = (props: {
         <Switch fallback={<AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />}>
           <Match when={props.quelle === "kimai"}>
             <KimaiAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+          </Match>
+          <Match when={props.quelle === "personio"}>
+            <PersonioAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
           </Match>
           <Match when={SCHICHTPLANER.find((id) => id === props.quelle)}>
             {(werkzeug) => (

@@ -214,7 +214,7 @@ const uebernehmen = async (z: Zustand, a: Aufrufe) => {
 const werkzeugWaehlen = (z: Zustand, quelle: string) => {
   if (quelle === z.quelle()) return;
   z.setQuelle(quelle);
-  // the first way of the tool: Kimai has only the API (S-705)
+  // the first way of the tool: Kimai and Personio have only the API (S-705, S-704)
   z.setWeg(WERKZEUGE.find((w) => w.id === quelle)?.wege[0] ?? "datei");
   z.setDatei(null);
   z.setVorschau(null);

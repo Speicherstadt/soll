@@ -101,16 +101,19 @@ export type ImportEintrag = {
   am: number;
 };
 
-/** A fetch over a tool's API (S-705): the instance, its token, the period */
 /** The file as the API takes it: its name and its bytes in base64 */
 export type Datei = { name: string; inhalt: string };
 
-/** What POST /importe/abruf takes (S-703): the access for this one fetch and the period */
-/** A fetch over a tool's API: Clockodo's access (S-703) or a Kimai instance with its token (S-705) */
+/**
+ * What POST /importe/abruf takes: the access for this one fetch and the period; Clockodo's access
+ * (S-703), a Kimai instance with its token (S-705), a Personio integration (S-704) or the
+ * access of a shift planner (S-706)
+ */
 export type Abruf = {
   zugang:
     | { nutzer: string; schluessel: string }
     | { instanz: string; token: string; benutzer: string | null }
+    | { clientId: string; clientSecret: string }
     // the shift planners (S-706): Papershift's token, Planday's app, a Crewmeister account
     | { token: string }
     | { appId: string; token: string }

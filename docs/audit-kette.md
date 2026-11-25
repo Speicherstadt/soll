@@ -38,7 +38,9 @@ kann seine Datenbank und seinen Code ändern. Dagegen steht der **Prüfwert** in
 
 Jeder Betrieb hat seine eigene Kette. Der Inhalt selbst liegt getrennt vom Glied. Nach Ablauf der
 Aufbewahrungsfrist kann er entfernt werden, ohne dass die Kette bricht, denn das Glied enthält nur
-seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.).
+seinen Hash (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO, GoBD Rz. 107 ff.). Ebenso entfernt das Entziehen einer
+[NFC-Karte](terminal.md) die Inhalte ihrer Glieder, weil jeder die verschlüsselten Schlüssel der
+Karte enthält.
 
 ## Was die Prüfung findet
 

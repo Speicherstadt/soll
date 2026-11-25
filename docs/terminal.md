@@ -65,7 +65,9 @@ Schlüssel einer NTAG 424 DNA nur verschlüsselt; die Liste zeigt Name, Art und 
 Schlüssel. Jede UID gibt es im Betrieb einmal. Schlüssel aus lauter Nullen, der Zustand ab Werk,
 lehnt Soll ab: Sie kennt jeder.
 
-**Entziehen** sperrt eine Karte sofort und löscht ihre Schlüssel. Wird dieselbe Karte später wieder
+**Entziehen** sperrt eine Karte sofort und löscht ihre Schlüssel, auch aus den gespeicherten
+Inhalten der [Audit-Kette](audit-kette.md): Die Glieder der Karte bleiben, die Kette prüft weiter
+fehlerfrei. Wird dieselbe Karte später wieder
 eingetragen, bleibt ihr Lesezähler: Eine Nachricht, die sie vorher erzeugt hat, gilt auch danach
 nicht.
 

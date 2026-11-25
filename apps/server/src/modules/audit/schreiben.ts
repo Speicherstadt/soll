@@ -1,5 +1,5 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
-import { and, eq, type SQL } from "drizzle-orm";
+import { and, eq, inArray, type SQL } from "drizzle-orm";
 import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { auditGlieder, auditInhalte, auditKoepfe } from "../../db/schema.ts";
@@ -22,6 +22,13 @@ export type Schreiber = {
     werte: Partial<Neu<N>>,
   ) => Zeile<N>;
   loeschen: <N extends TabellenName>(name: N, schluessel: Schluessel<N>) => Zeile<N>;
+  /**
+   * Removes the stored contents of every link a row has so far and keeps the links: the chain holds
+   * only each content's hash, so it still verifies (a removed content is allowed, pruefen.ts). For
+   * what must not outlive its purpose, such as a revoked card's keys; the write that ends the
+   * purpose stands in the chain beside it. Returns how many contents were removed.
+   */
+  inhalteEntfernen: <N extends TabellenName>(name: N, schluessel: Schluessel<N>) => number;
 };
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
@@ -142,6 +149,34 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
     });
     return zeile as never;
   },
+  inhalteEntfernen: (name, schluessel) => {
+    wo(name, kontext.betriebId, schluessel as Record<string, unknown>); // refuses a partial key
+    const zeile = zeilenId(name, schluessel as Record<string, unknown>);
+    const glieder = tx
+      .select({ seq: auditGlieder.seq })
+      .from(auditGlieder)
+      .where(
+        and(
+          eq(auditGlieder.betriebId, kontext.betriebId),
+          eq(auditGlieder.tabelle, name),
+          eq(auditGlieder.zeile, zeile),
+        ),
+      )
+      .all();
+    return tx
+      .delete(auditInhalte)
+      .where(
+        and(
+          eq(auditInhalte.betriebId, kontext.betriebId),
+          inArray(
+            auditInhalte.seq,
+            glieder.map((glied) => glied.seq),
+          ),
+        ),
+      )
+      .returning({ seq: auditInhalte.seq })
+      .all().length;
+  },
 });
 
 /**
@@ -155,6 +190,8 @@ const einzeln = (tx: Tx, kontext: Kontext): Schreiber => ({
     tx.transaction((sp) => schreiberFuer(sp, kontext).aendern(name, schluessel, werte)),
   loeschen: (name, schluessel) =>
     tx.transaction((sp) => schreiberFuer(sp, kontext).loeschen(name, schluessel)),
+  inhalteEntfernen: (name, schluessel) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).inhalteEntfernen(name, schluessel)),
 });
 
 const istVersprechen = (wert: unknown): wert is PromiseLike<unknown> =>
@@ -177,6 +214,10 @@ const nurWaehrend = (schreiber: Schreiber, offen: () => boolean): Schreiber => {
     loeschen: (name, schluessel) => {
       pruefen();
       return schreiber.loeschen(name, schluessel);
+    },
+    inhalteEntfernen: (name, schluessel) => {
+      pruefen();
+      return schreiber.inhalteEntfernen(name, schluessel);
     },
   };
 };

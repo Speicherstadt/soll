@@ -145,6 +145,16 @@ export const meldungText = (meldung: Meldung, sprache: Sprache) => {
 export const meldungZiel = (meldung: Meldung): string =>
   `/dienstplan?tag=${meldung.art === "veroeffentlicht" ? meldung.tag : meldung.schicht.tag}`;
 
+/**
+ * The tag of the notification on the device, which replaces an earlier one with the same tag: one
+ * per shift for its changes, so a later change replaces the earlier of the same shift and never the
+ * message about another; one per week and site for a publication (review of S-503)
+ */
+export const meldungTag = (meldung: Meldung): string =>
+  meldung.art === "veroeffentlicht"
+    ? `plan-${meldung.standortId}-${meldung.tag}`
+    : `plan-${meldung.schicht.schichtId}`;
+
 /** The title of a shift in the feed: "Schicht · Service", without a role "Schicht" */
 export const terminTitel = (sprache: Sprache, rolle: string): string =>
   rolle ? `${TEXTE[sprache].woerter.schicht} · ${rolle}` : TEXTE[sprache].woerter.schicht;

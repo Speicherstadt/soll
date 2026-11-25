@@ -9,6 +9,7 @@ import type { Tag } from "@soll/arbeitszeit";
 
 /** What a message needs of a shift, and what makes a change one */
 export type Planstand = {
+  schichtId: string;
   standortId: string;
   tag: Tag;
   beginn: number;
@@ -19,10 +20,11 @@ export type Planstand = {
   veroeffentlichtAm: number | null;
 };
 
-export type Zeitraum = { tag: Tag; beginn: number; ende: number };
+/** The shift a message is about: its id names the notification, so each keeps its own */
+export type Zeitraum = { schichtId: string; tag: Tag; beginn: number; ende: number };
 
 export type Meldung =
-  | { art: "veroeffentlicht"; nutzerId: string; tag: Tag; kw: number }
+  | { art: "veroeffentlicht"; nutzerId: string; standortId: string; tag: Tag; kw: number }
   | { art: "neu" | "geaendert" | "entfaellt"; nutzerId: string; schicht: Zeitraum };
 
 const FELDER = [
@@ -36,10 +38,17 @@ const FELDER = [
 ] as const satisfies readonly (keyof Planstand)[];
 
 /** Whether anything a person sees of a shift differs */
-export const unterscheidet = (alt: Planstand, neu: Omit<Planstand, "veroeffentlichtAm">): boolean =>
-  FELDER.some((feld) => alt[feld] !== neu[feld]);
+export const unterscheidet = (
+  alt: Planstand,
+  neu: Omit<Planstand, "schichtId" | "veroeffentlichtAm">,
+): boolean => FELDER.some((feld) => alt[feld] !== neu[feld]);
 
-const zeitraum = ({ tag, beginn, ende }: Planstand): Zeitraum => ({ tag, beginn, ende });
+const zeitraum = ({ schichtId, tag, beginn, ende }: Planstand): Zeitraum => ({
+  schichtId,
+  tag,
+  beginn,
+  ende,
+});
 
 /**
  * The messages of a change to a shift; `neu` null when it was removed. Only a published shift
@@ -68,12 +77,12 @@ export const aenderungsMeldungen = (alt: Planstand, neu: Planstand | null): Meld
 
 /**
  * The messages of a published week: one per person with a newly published shift; an open shift
- * tells nobody. `tag` is the Monday, `kw` the calendar week.
+ * tells nobody. `tag` is the Monday, `kw` the calendar week, `standortId` the site published.
  */
 export const veroeffentlichungsMeldungen = (
   schichten: readonly Pick<Planstand, "nutzerId">[],
-  woche: { tag: Tag; kw: number },
+  woche: { standortId: string; tag: Tag; kw: number },
 ): Meldung[] =>
   [...new Set(schichten.flatMap(({ nutzerId }) => (nutzerId === null ? [] : [nutzerId])))].map(
-    (nutzerId) => ({ art: "veroeffentlicht", nutzerId, tag: woche.tag, kw: woche.kw }),
+    (nutzerId) => ({ art: "veroeffentlicht", nutzerId, ...woche }),
   );

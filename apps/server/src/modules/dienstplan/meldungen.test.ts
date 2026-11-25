@@ -7,6 +7,7 @@ import {
 } from "./meldungen.ts";
 
 const SPAET: Planstand = {
+  schichtId: "spaet",
   standortId: "elbe",
   tag: "2026-11-23",
   beginn: Date.parse("2026-11-23T13:00:00Z"),
@@ -30,7 +31,12 @@ describe("aenderungsMeldungen", () => {
       {
         art: "geaendert",
         nutzerId: "tom",
-        schicht: { tag: "2026-11-23", beginn: SPAET.beginn, ende: spaeter.ende },
+        schicht: {
+          schichtId: "spaet",
+          tag: "2026-11-23",
+          beginn: SPAET.beginn,
+          ende: spaeter.ende,
+        },
       },
     ]);
   });
@@ -70,7 +76,7 @@ describe("aenderungsMeldungen", () => {
       {
         art: "entfaellt",
         nutzerId: "tom",
-        schicht: { tag: SPAET.tag, beginn: SPAET.beginn, ende: SPAET.ende },
+        schicht: { schichtId: "spaet", tag: SPAET.tag, beginn: SPAET.beginn, ende: SPAET.ende },
       },
     ]);
   });
@@ -96,11 +102,11 @@ describe("veroeffentlichungsMeldungen", () => {
   it("tells each person once, open shifts nobody", () => {
     const meldungen = veroeffentlichungsMeldungen(
       [{ nutzerId: "tom" }, { nutzerId: null }, { nutzerId: "tom" }, { nutzerId: "lea" }],
-      { tag: "2026-11-23", kw: 48 },
+      { standortId: "elbe", tag: "2026-11-23", kw: 48 },
     );
     expect(meldungen).toEqual([
-      { art: "veroeffentlicht", nutzerId: "tom", tag: "2026-11-23", kw: 48 },
-      { art: "veroeffentlicht", nutzerId: "lea", tag: "2026-11-23", kw: 48 },
+      { art: "veroeffentlicht", nutzerId: "tom", standortId: "elbe", tag: "2026-11-23", kw: 48 },
+      { art: "veroeffentlicht", nutzerId: "lea", standortId: "elbe", tag: "2026-11-23", kw: 48 },
     ]);
   });
 });

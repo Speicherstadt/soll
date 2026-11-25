@@ -6,7 +6,7 @@ import { benachrichtigen, type Kanal, type ZustellDeps } from "../erinnerungen/i
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { type Meldung, veroeffentlichungsMeldungen } from "./meldungen.ts";
 import { schichtenZwischen } from "./schichten.ts";
-import { meldungText, meldungZiel } from "./texte.ts";
+import { meldungTag, meldungText, meldungZiel } from "./texte.ts";
 
 /*
  * Publishing the plan (S-503): the drafts of a week at a site become what the people read, see in
@@ -41,7 +41,7 @@ export const wocheVeroeffentlichen = (
     });
   return {
     anzahl: entwuerfe.length,
-    meldungen: veroeffentlichungsMeldungen(entwuerfe, { tag: montag, kw: kw.nummer }),
+    meldungen: veroeffentlichungsMeldungen(entwuerfe, { standortId, tag: montag, kw: kw.nummer }),
   };
 };
 
@@ -66,7 +66,7 @@ export const planMelden = async (
       kanal: await benachrichtigen(deps, kontext, meldung.nutzerId, {
         text: (sprache) => meldungText(meldung, sprache),
         ziel: meldungZiel(meldung),
-        tag: `plan-${meldung.art}`,
+        tag: meldungTag(meldung),
       }),
     })),
   );

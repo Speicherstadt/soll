@@ -95,7 +95,7 @@ describe("the messages of a published week", () => {
           titel: "Rota published",
           text: "Your shifts for week 48 are in the plan.",
           ziel: "/dienstplan?tag=2026-11-23",
-          tag: "plan-veroeffentlicht",
+          tag: `plan-${c.standortId}-2026-11-23`,
         },
       ],
     ]);
@@ -146,7 +146,7 @@ describe("a change after publishing", () => {
         titel: "Schicht geändert",
         text: "Deine Schicht ist jetzt am Mo., 23.11., 14:00–23:00.",
         ziel: "/dienstplan?tag=2026-11-23",
-        tag: "plan-geaendert",
+        tag: `plan-${c.pfad.split("/").at(-1)}`,
       },
     ]);
     expect(kettePruefen(c.server.db, c.mia.betriebId)).toEqual([]);
@@ -176,7 +176,7 @@ describe("a change after publishing", () => {
         titel: "Schicht entfällt",
         text: "Deine Schicht am Mo., 23.11., 14:00–22:00 entfällt.",
         ziel: "/dienstplan?tag=2026-11-23",
-        tag: "plan-entfaellt",
+        tag: `plan-${c.pfad.split("/").at(-1)}`,
       },
     ]);
   });

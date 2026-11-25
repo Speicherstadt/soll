@@ -61,7 +61,7 @@ export const elbblick: DokuStandDaten = {
   module: { arbeitszeit: true, dienstplan: true, projektzeit: false, terminal: true },
   standorte: [{ name: "Café am Hafen", land: "HH", regionen: [] }],
   rollen: [
-    rolle("inhaber", 1, ["betrieb:lesen", "terminal:verwalten"]),
+    rolle("inhaber", 1, ["betrieb:lesen", "plan:planen", "terminal:verwalten"]),
     rolle("mitarbeiter", 5, ["betrieb:lesen", "stempeln", "plan:lesen"]),
     rolle("geraet", 0, ["pin:pruefen"]),
   ],

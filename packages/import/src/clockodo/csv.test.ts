@@ -126,6 +126,19 @@ describe("Clockodo's CSV backup of entries", () => {
     expect(gelesen.fehler).toEqual([{ zeile: 3, grund: "zeit_ungueltig", feld: "time_since" }]);
   });
 
+  it("names a block by its lowest id when entries begin in the same minute, in any line order", () => {
+    const kopf = BACKUP.split("\r\n")[0];
+    const zeile = (id: string, beginn: string) =>
+      `${id},11,,201,401,,60,,,,,${beginn},2026-09-01T09:00:00Z,0,,0,0,,,,1,Sandra Kühn,,Elbhof,Montage,,`;
+    const a = zeile("9", "2026-09-01T05:00:40Z");
+    const b = zeile("20", "2026-09-01T05:00:10Z");
+    for (const zeilen of [
+      [kopf, a, b],
+      [kopf, b, a],
+    ])
+      expect(clockodoLesen(zeilen.join("\n")).daten.zeiten.map((z) => z.externalId)).toEqual(["9"]);
+  });
+
   it("gives a night shift its day of begin and an end on the next day", () => {
     const kopf = BACKUP.split("\r\n")[0];
     const text = `${kopf}\n9,11,,201,401,,60,,,,,2026-09-01T20:00:00Z,2026-09-02T04:00:00Z,0,,0,0,,,,1,Sandra Kühn,,Elbhof,Montage,,`;

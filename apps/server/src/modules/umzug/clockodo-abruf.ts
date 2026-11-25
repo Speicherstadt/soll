@@ -73,6 +73,8 @@ const holen = async (
     antwort = await deps.fetch(`${deps.basis}${pfad}?${abfrageText(abfrage)}`, {
       headers: kopfzeilen(zugang),
       signal: AbortSignal.timeout(ZEITLIMIT_MS),
+      // the key goes to Clockodo only, never along a redirect to another host (review S-703)
+      redirect: "error",
     });
   } catch {
     return { ok: false, grund: "nicht_erreichbar" };
@@ -104,13 +106,17 @@ const seitenzahl = (body: Record<string, unknown>): number | null => {
   return typeof zahl === "number" && Number.isInteger(zahl) && zahl >= 0 ? zahl : null;
 };
 
-/** Every page of a list, one after the other (SDK `getAllPages`, without its parallel requests) */
+/**
+ * Every page of a list, one after the other (SDK `getAllPages`, without its parallel requests);
+ * `bisher` records of the fetch came before, and all together stay within one import's limit
+ */
 const alleSeiten = async (
   deps: ClockodoDeps,
   zugang: Zugang,
   pfad: string,
   feld: "data" | "entries",
-  abfrage: Abfrage = {},
+  abfrage: Abfrage,
+  bisher: number,
 ): Promise<Ergebnis<unknown[]>> => {
   const saetze: unknown[] = [];
   for (let seite = 1, seiten = 1; seite <= seiten; seite++) {
@@ -120,7 +126,7 @@ const alleSeiten = async (
     const zahl = seitenzahl(body.wert);
     if (!Array.isArray(liste) || zahl === null) return { ok: false, grund: "antwort_ungueltig" };
     saetze.push(...liste);
-    if (saetze.length > MAX_DATENSAETZE || zahl > MAX_SEITEN)
+    if (bisher + saetze.length > MAX_DATENSAETZE || zahl > MAX_SEITEN)
       return { ok: false, grund: "zu_viele" };
     seiten = zahl;
   }
@@ -176,10 +182,13 @@ export const clockodoAbrufen = async (
     entry: [],
     absence: [],
   };
+  // the limit holds for the whole file, as the reader counts its lines (review S-703)
+  let bisher = 0;
   for (const [art, pfad, feld, abfrage] of listen) {
-    const saetze = await alleSeiten(deps, zugang, pfad, feld, abfrage);
+    const saetze = await alleSeiten(deps, zugang, pfad, feld, abfrage, bisher);
     if (!saetze.ok) return saetze;
     abzug[art] = art === "absence" ? saetze.wert.filter(imZeitraum(von, bis)) : saetze.wert;
+    bisher += abzug[art].length;
   }
   return { ok: true, wert: abzug };
 };

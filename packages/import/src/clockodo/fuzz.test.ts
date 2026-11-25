@@ -99,6 +99,11 @@ describe("the Clockodo reader stays within 1 s for any file the server accepts",
     ["one long line of JSON", `${ABZUG_KOPF}\n{"kind":"user","name":"${"x".repeat(MAX_BYTES)}"}`],
     ["deeply nested JSON", `${ABZUG_KOPF}\n${"[".repeat(MAX_BYTES / 2)}`],
     [
+      "nested arrays in a record",
+      `${ABZUG_KOPF}\n{"kind":"user","name":${"[".repeat(MAX_BYTES / 2)}`,
+    ],
+    ["nested objects in a record", `${ABZUG_KOPF}\n${`{"a":`.repeat(MAX_BYTES / 5)}`],
+    [
       "the most entries of the backup",
       [CSV_KOPF, ...Array.from({ length: MAX_DATENSAETZE }, (_, i) => eintrag(i))].join("\n"),
     ],

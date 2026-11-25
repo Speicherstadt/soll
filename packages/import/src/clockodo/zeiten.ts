@@ -1,3 +1,4 @@
+import { plusTage } from "@soll/arbeitszeit";
 import type { ImportZeit, LeseFehler } from "../modell.ts";
 import { type Eintrag, ZEITEINTRAG } from "./bestand.ts";
 import { berlinerUhr } from "./uhr.ts";
@@ -27,9 +28,16 @@ const alsBlock = (eintrag: Eintrag): Block | LeseFehler => {
   return { zeile, id: eintrag.id, nutzer: eintrag.nutzer, beginn, ende };
 };
 
+/**
+ * Entries in time order; of two that begin in the same minute the lower Clockodo id first, so the
+ * id of a block does not hang on the order of the lines in a file
+ */
+const zeitfolge = (a: Block, b: Block): number =>
+  a.beginn - b.beginn || Number(a.id) - Number(b.id) || a.id.localeCompare(b.id);
+
 /** The blocks of one person's entries in time order: touching or overlapping ones merged */
 const zusammenfassen = (bloecke: readonly Block[]): Block[] => {
-  const sortiert = [...bloecke].sort((a, b) => a.beginn - b.beginn || a.zeile - b.zeile);
+  const sortiert = [...bloecke].sort(zeitfolge);
   const ergebnis: Block[] = [];
   for (const block of sortiert) {
     const letzter = ergebnis.at(-1);
@@ -41,7 +49,14 @@ const zusammenfassen = (bloecke: readonly Block[]): Block[] => {
 
 type Uhr = ReturnType<typeof berlinerUhr>;
 
-/** A block as a span on Berlin's clock, or why a day and two times cannot name it */
+/**
+ * A block as a span on Berlin's clock, or why a day and two times cannot name it. The planner
+ * rebuilds the instants from the day and the two times, an end at or before the begin on the next
+ * day (plan-zeiten.ts); a block whose end falls on another day than that rebuilds to another span
+ * (across the change to summer time, 23 h 30 min would become 30 min: review S-703), so it is
+ * refused rather than shortened. Two instants that are neither in the hour that comes twice nor on
+ * the wrong day come back exactly: an instant never lies in the hour the clocks skip.
+ */
 const alsZeit = (block: Block, person: string, uhr: Uhr): ImportZeit | LeseFehler => {
   const { zeile } = block;
   if (block.ende - block.beginn >= TAG)
@@ -49,13 +64,16 @@ const alsZeit = (block: Block, person: string, uhr: Uhr): ImportZeit | LeseFehle
   if (uhr.doppelt(block.beginn)) return { zeile, grund: "zeit_ungueltig", feld: "time_since" };
   if (uhr.doppelt(block.ende)) return { zeile, grund: "zeit_ungueltig", feld: "time_until" };
   const beginn = uhr.uhr(block.beginn);
+  const ende = uhr.uhr(block.ende);
+  const endeTag = ende.minute > beginn.minute ? beginn.tag : plusTage(beginn.tag, 1);
+  if (ende.tag !== endeTag) return { zeile, grund: "zeit_ungueltig", feld: "time_until" };
   return {
     externalId: block.id,
     zeile,
     person,
     tag: beginn.tag,
     beginn: beginn.minute,
-    ende: uhr.uhr(block.ende).minute,
+    ende: ende.minute,
     pauseMinuten: 0,
   };
 };

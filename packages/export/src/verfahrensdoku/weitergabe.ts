@@ -19,7 +19,7 @@ export const terminal = (s: DokuStandDaten): VerfahrensdokuAbschnitt => {
   if (!s.module.terminal)
     return abschnitt("3. Anwenderdokumentation: Terminal", {
       absaetze: [
-        "Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Terminals ab.",
+        "Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Tablets im Kiosk-Modus ab.",
       ],
     });
   const t = s.terminal;

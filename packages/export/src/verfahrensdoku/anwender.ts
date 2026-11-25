@@ -32,7 +32,7 @@ export const landName = (land: string | null): string =>
   land ? (LAND_NAMEN[land] ?? land) : "nicht hinterlegt";
 
 const MODUL_NAMEN: Record<keyof Module, string> = {
-  arbeitszeit: "Arbeitszeit (mit Abwesenheiten und Monatsabschluss)",
+  arbeitszeit: "Arbeitszeit (mit Abwesenheiten)",
   dienstplan: "Dienstplan",
   projektzeit: "Projektzeit",
   terminal: "Terminal",
@@ -55,7 +55,9 @@ export const allgemein = (s: DokuStandDaten): VerfahrensdokuAbschnitt => {
   ]);
   return abschnitt("1. Allgemeine Beschreibung", {
     absaetze: [
-      `${s.betrieb.name} zeichnet die Arbeitszeit seiner Beschäftigten elektronisch mit Soll ${s.version} auf, einer selbst betriebenen Software für Zeiterfassung und Dienstplanung. Die Pflicht zur Aufzeichnung folgt aus § 3 Abs. 2 Nr. 1 ArbSchG (BAG, Beschluss vom 13.09.2022, 1 ABR 22/21), § 16 Abs. 2 ArbZG und § 17 Abs. 1 MiLoG. Steuerlich bedeutsam sind die Aufzeichnungen, sobald sie Grundlage des Lohns sind (Stundenlohn, Minijob, Zuschläge; § 41 EStG, § 4 LStDV); dann gelten die GoBD.`,
+      s.module.arbeitszeit
+        ? `${s.betrieb.name} zeichnet die Arbeitszeit seiner Beschäftigten elektronisch mit Soll ${s.version} auf, einer selbst betriebenen Software für Zeiterfassung und Dienstplanung. Die Pflicht zur Aufzeichnung folgt aus § 3 Abs. 2 Nr. 1 ArbSchG (BAG, Beschluss vom 13.09.2022, 1 ABR 22/21), § 16 Abs. 2 ArbZG und § 17 Abs. 1 MiLoG. Steuerlich bedeutsam sind die Aufzeichnungen, sobald sie Grundlage des Lohns sind (Stundenlohn, Minijob, Zuschläge; § 41 EStG, § 4 LStDV); dann gelten die GoBD.`
+        : `${s.betrieb.name} nutzt Soll ${s.version}, eine selbst betriebene Software für Zeiterfassung und Dienstplanung, ohne das Modul Arbeitszeit. Die GoBD gelten für Aufzeichnungen, die Grundlage von Rechnungen sind, etwa abgerechnete Projektzeit.`,
       "Diese Verfahrensdokumentation beschreibt das Verfahren in Soll. Soll erzeugt sie bei jedem Abruf aus dem Stand des Betriebs und den Angaben, die nur der Betrieb machen kann; andere Programme und Abläufe des Betriebs gehören in die eigenen Abschnitte am Ende. Die Anleitung für Anwender steht unter https://soll.work/.",
       `Bundesland des Betriebs: ${landName(s.betrieb.land)}.`,
       ...angaben.absaetze,
@@ -65,22 +67,25 @@ export const allgemein = (s: DokuStandDaten): VerfahrensdokuAbschnitt => {
   });
 };
 
-const arbeitszeit = (an: boolean): string[] =>
-  an
+const erfassung = (terminal: boolean): string =>
+  `Erfassung: Jede Person stempelt selbst Kommen, Pause und Gehen in der App im Browser oder als PWA auf dem Handy, über die REST-API${terminal ? " oder am Terminal" : ""}. Jede Stempelung trägt die Zeit des Servers, ihre Quelle (${terminal ? "App, API, Terminal" : "App, API"}) und, wenn sie ohne Netz entstand, die Zeit des Geräts und die Marke „offline“. Soll stempelt nie selbst aus und rundet keine Arbeitszeit zum Nachteil der Person.`;
+
+const arbeitszeit = (module: Module): string[] =>
+  module.arbeitszeit
     ? [
-        "Erfassung: Jede Person stempelt selbst Kommen, Pause und Gehen in der App im Browser oder als PWA auf dem Handy, über die REST-API oder am Terminal. Jede Stempelung trägt die Zeit des Servers, ihre Quelle (App, API, Terminal) und, wenn sie ohne Netz entstand, die Zeit des Geräts und die Marke „offline“. Soll stempelt nie selbst aus und rundet keine Arbeitszeit zum Nachteil der Person.",
+        erfassung(module.terminal),
         "Ohne Netz hält das Gerät die Stempelung in einer Warteschlange, fortlaufend nummeriert und mit einem nicht exportierbaren Schlüssel des Geräts signiert (ECDSA P-256); der Server prüft Signatur, Gerät und Nummer, nimmt dieselbe Stempelung nur einmal an und zeigt eine Lücke in den Nummern als Hinweis.",
         "Änderungen: Nachtragen, Ändern und Entfernen einer Stempelung geht bis zum Monatsabschluss, immer mit Grund; die Person sieht, wer was wann und warum geändert hat. Abwesenheiten (Urlaub, Krankheit, Kinderkrankentage und andere) stehen ohne Diagnose und ohne hochgeladene Bescheinigung in Soll (Art. 9 DSGVO).",
         "Prüfung: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; jeder Befund nennt seine Norm. Die Regeln sind als Daten mit Gültigkeit hinterlegt, ebenso Mindestlohn und Minijob-Grenze je Jahr; fehlt ein Wert, heißt das Ergebnis „nicht hinterlegt“, nie der Wert eines anderen Jahres.",
         "Monatsabschluss: Die Person bestätigt ihren Monat, der Inhaber schließt ihn ab (ohne Bestätigung nur mit Grund). Danach ist der Monat gesperrt, eine Korrektur ist ein Gegeneintrag mit Grund im laufenden Monat. Die Person bekommt ihren Stundenzettel als PDF mit dem Prüfwert des Abschlusses.",
       ]
     : [
-        "Das Modul Arbeitszeit ist ausgeschaltet: Der Betrieb hat keine Beschäftigten, die stempeln. Sobald eine beschäftigte Person Mitglied wird, schaltet Soll es wieder ein, weil die Pflicht zur Aufzeichnung dann gilt.",
+        "Das Modul Arbeitszeit ist ausgeschaltet: Der Betrieb hat keine Beschäftigten, deren Arbeitszeit Soll aufzeichnet. Sobald eine beschäftigte Person Mitglied wird, schaltet Soll es wieder ein, weil die Pflicht zur Aufzeichnung dann gilt.",
       ];
 
 const weitere = (module: Module): string[] => [
   module.dienstplan
-    ? "Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen dieselben Regeln geprüft. Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung."
+    ? `Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft.${module.arbeitszeit ? " Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung." : ""}`
     : "",
   module.projektzeit
     ? "Projektzeit: Buchungen auf Kunden, Aufträge und Tätigkeiten stehen getrennt von der Arbeitszeit; sie bleiben änderbar, bis sie abgerechnet oder in einem unterschriebenen Stundennachweis sind, danach sind sie gesperrt."
@@ -89,5 +94,5 @@ const weitere = (module: Module): string[] => [
 
 export const anwender = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
   abschnitt("2. Anwenderdokumentation: Erfassung und Verarbeitung", {
-    absaetze: [...arbeitszeit(s.module.arbeitszeit), ...weitere(s.module)],
+    absaetze: [...arbeitszeit(s.module), ...weitere(s.module)],
   });

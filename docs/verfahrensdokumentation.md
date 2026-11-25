@@ -30,12 +30,14 @@ Systemdokumentation, Betriebsdokumentation) und Rz. 100 ff. (internes Kontrollsy
 | 4. Weitergabe und Übernahme | DATEV (eingerichtet oder nicht, Zahl der Lohnarten und Personalnummern), Prüfexport, Haben (nur die Adresse, nie das Token), Importe, Auskunft |
 | 5. Audit-Kette und Prüfwert | wie die [Audit-Kette](audit-kette.md) und der Prüfwert schützen, mit dem Prüfwert und der Zahl der Glieder beim Erzeugen und dem Ergebnis der Kettenprüfung, die dabei läuft |
 | 6. Programm und Datenhaltung | Version von Soll, SQLite, Migrationen, Formate für Zeit und Geld, Verschlüsselung der Geheimnisse, mehrere Betriebe in einer Instanz |
-| 7. Zugänge und Rechte | Anmeldung und Einladung, jede Rolle mit der Zahl ihrer Mitglieder und allem, was sie darf, Zahl der gültigen API-Zugänge; keine Namen und keine E-Mail-Adressen |
+| 7. Zugänge und Rechte | Anmeldung und Einladung, jede Rolle mit der Zahl ihrer Mitglieder und allem, was sie in den eingeschalteten Modulen darf, Zahl der API-Zugänge, mit denen man sich jetzt anmelden könnte (einer Person, die Mitglied ist, angelegt seit ihrer Mitgliedschaft, nicht abgelaufen); keine Namen und keine E-Mail-Adressen |
 | 8. Aufbewahrung und Aussonderung | Fristen je Monatsabschluss (2 oder 8 Jahre), Aussonderung, Zahl der aufbewahrten und der ausgesonderten Monate |
 | 9. Betrieb und Datensicherung | `soll backup` und `soll restore` ([Installation](installation.md#sicherung)), dazu Betrieb des Servers, Datensicherung und Ablage der Schlüssel aus den Angaben |
 | 10. Internes Kontrollsystem | Rechte auf dem Server, Bestätigen und Abschließen, Prüfwert bei den Beschäftigten, Lücken in Nummern, Plausibilität, Kontrolle der Kette |
 | 11. Fassungen | jede gespeicherte Änderung der Angaben mit Zeitpunkt und Kettenglied |
 | 12 ff. | die eigenen Abschnitte des Betriebs |
+
+Ein ausgeschaltetes Modul heißt im ersten Abschnitt so, und kein Abschnitt beschreibt seine Abläufe: Ohne Arbeitszeit fehlen Stempeln, Monatsabschluss, Stundenzettel, Prüfung nach dem Arbeitszeitgesetz, die Fristen je Monat, DATEV und Prüfexport, ohne Terminal das Terminal, ohne Dienstplan und Projektzeit deren Abläufe und Kontrollen; Rechte eines ausgeschalteten Moduls stehen nicht bei den Rollen.
 
 Oben steht der **Stand**: Tag, Version von Soll und der Prüfwert der Kette beim Erzeugen
 (Rz. 154). Eine Fassung, die der Betrieb herunterlädt und ablegt, bleibt damit eindeutig: Mit dem

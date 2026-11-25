@@ -21,7 +21,7 @@ Verantwortlich: Jonas Weber (Inhaber), vertreten durch Anna Weber (Büro)
 
 Ort der Aufbewahrung: Server im Büro in Hamburg, Sicherungen auf einem NAS im selben Gebäude
 
-- Modul Arbeitszeit (mit Abwesenheiten und Monatsabschluss): eingeschaltet
+- Modul Arbeitszeit (mit Abwesenheiten): eingeschaltet
 - Modul Dienstplan: ausgeschaltet
 - Modul Projektzeit: eingeschaltet
 - Modul Terminal: ausgeschaltet
@@ -29,7 +29,7 @@ Ort der Aufbewahrung: Server im Büro in Hamburg, Sicherungen auf einem NAS im s
 
 ## 2\. Anwenderdokumentation: Erfassung und Verarbeitung
 
-Erfassung: Jede Person stempelt selbst Kommen, Pause und Gehen in der App im Browser oder als PWA auf dem Handy, über die REST-API oder am Terminal. Jede Stempelung trägt die Zeit des Servers, ihre Quelle (App, API, Terminal) und, wenn sie ohne Netz entstand, die Zeit des Geräts und die Marke „offline“. Soll stempelt nie selbst aus und rundet keine Arbeitszeit zum Nachteil der Person.
+Erfassung: Jede Person stempelt selbst Kommen, Pause und Gehen in der App im Browser oder als PWA auf dem Handy, über die REST-API. Jede Stempelung trägt die Zeit des Servers, ihre Quelle (App, API) und, wenn sie ohne Netz entstand, die Zeit des Geräts und die Marke „offline“. Soll stempelt nie selbst aus und rundet keine Arbeitszeit zum Nachteil der Person.
 
 Ohne Netz hält das Gerät die Stempelung in einer Warteschlange, fortlaufend nummeriert und mit einem nicht exportierbaren Schlüssel des Geräts signiert (ECDSA P-256); der Server prüft Signatur, Gerät und Nummer, nimmt dieselbe Stempelung nur einmal an und zeigt eine Lücke in den Nummern als Hinweis.
 
@@ -43,7 +43,7 @@ Projektzeit: Buchungen auf Kunden, Aufträge und Tätigkeiten stehen getrennt vo
 
 ## 3\. Anwenderdokumentation: Terminal
 
-Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Terminals ab.
+Das Modul Terminal ist ausgeschaltet; der Server lehnt jede Anfrage eines Tablets im Kiosk-Modus ab.
 
 ## 4\. Anwenderdokumentation: Weitergabe und Übernahme von Daten
 
@@ -61,7 +61,7 @@ Auskunft: Jede Person kann ihre Daten nach Art. 15 DSGVO abrufen; der Inhaber er
 
 Jede Schreiboperation in den Tabellen von Soll hängt in derselben Transaktion ein Glied an die Audit-Kette des Betriebs an; einen anderen Weg in diese Tabellen gibt es nicht. Die Module des Servers lesen über eine Verbindung, die SQLite nur lesend öffnet; die einzige schreibende Verbindung gehört der Funktion, die das Glied anhängt. Schlägt das Anhängen fehl, bleibt von der Schreiboperation nichts in der Datenbank (GoBD Rz. 107 bis 110).
 
-Ein Glied enthält eine fortlaufende Nummer je Betrieb, den Zeitpunkt, den Akteur (die Person, auch wenn sie über einen API-Zugang schreibt, das Terminal oder Soll selbst, etwa bei der Aussonderung), Tabelle, Zeile und Art der Änderung, den SHA-256 des neuen Inhalts der Zeile, den Hash des Vorgängers und den SHA-256 über all das (Hash-Kette). Den alten Inhalt hält das vorige Glied derselben Zeile; so bleibt jede Änderung mit ihrem Stand davor erkennbar (Rz. 59 und 111).
+Ein Glied enthält eine fortlaufende Nummer je Betrieb, den Zeitpunkt, den Akteur (die Person, auch wenn sie über einen API-Zugang schreibt, ein Gerät des Betriebs oder Soll selbst), Tabelle, Zeile und Art der Änderung, den SHA-256 des neuen Inhalts der Zeile, den Hash des Vorgängers und den SHA-256 über all das (Hash-Kette). Den alten Inhalt hält das vorige Glied derselben Zeile; so bleibt jede Änderung mit ihrem Stand davor erkennbar (Rz. 59 und 111).
 
 Der Inhalt liegt getrennt vom Glied, das nur seinen Hash trägt. Nach Ablauf der Aufbewahrungsfrist entfernt die Aussonderung den Inhalt mit einem eigenen Glied; die Glieder bleiben, und die Kette prüft weiter ohne Befund (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO).
 
@@ -79,7 +79,7 @@ Die Prüfung beim Erzeugen dieses Dokuments fand keine Befunde.
 
 Eingesetzt ist Soll 1.0.0. Soll ist ein Server (eine einzelne ausführbare Datei, auch als Container-Image) mit einer SQLite-Datenbank im WAL-Modus und einer App für Browser, Handy (PWA) und Tablet (Terminal). Was sich je Version geändert hat, nennen die Versionshinweise; die Version steht im Stand jeder Fassung dieses Dokuments.
 
-Die Migrationen der Datenbank sind im Programm enthalten und laufen beim Start; eine schon angewendete Migration, die sich geändert hat oder fehlt, verhindert den Start. SQLite schreibt mit synchronous = FULL, so dass eine bestätigte Stempelung auch einen Stromausfall übersteht.
+Die Migrationen der Datenbank sind im Programm enthalten und laufen beim Start; eine schon angewendete Migration, die sich geändert hat oder fehlt, verhindert den Start. SQLite schreibt mit synchronous = FULL, so dass ein bestätigter Eintrag auch einen Stromausfall übersteht.
 
 Zeitpunkte stehen als Millisekunden in UTC, Kalendertage als JJJJ-MM-TT in Europe/Berlin, Dauern in ganzen Minuten, Geldbeträge in Cent; nichts wird als Gleitkommazahl gerechnet. Ein Arbeitstag ist der Tag, an dem die Schicht beginnt.
 
@@ -106,7 +106,7 @@ Aufbewahrt wird je abgeschlossenem Monat einer Person. Bucht das Lohnbüro aus d
 
 Nach Ablauf entfernt Soll den Inhalt des Monats (Stempelungen, Gegeneinträge, Bestätigung, Abschluss und Abwesenheiten, die nur ihn betreffen) mit den gespeicherten Inhalten ihrer Glieder; die Glieder bleiben, eine eigene Zeile hält fest, welcher Monat welcher Person mit welcher Frist entfernt wurde, und steht selbst in der Kette. Der Server prüft das beim Start und alle sechs Stunden. Die Ablaufhemmung während einer Außenprüfung (§ 147 Abs. 3 AO) kennt Soll nicht: Wer eine Prüfung hat, sichert vorher.
 
-Beim Erzeugen aufbewahrt: 15 abgeschlossene Monate von Personen. Nach Ablauf der Frist ausgesondert: 0 (0 nach 2 Jahren, 0 nach 8 Jahren).
+Beim Erzeugen: 15 abgeschlossene Monate von Personen aufbewahrt, nach Ablauf der Frist 0 ausgesondert (0 nach 2 Jahren, 0 nach 8 Jahren).
 
 ## 9\. Betriebsdokumentation: Betrieb und Datensicherung
 
@@ -126,9 +126,11 @@ Zugriff: Rechte hängen an der Rolle und werden bei jeder Anfrage auf dem Server
 
 Vier Augen beim Monat: Die Person bestätigt ihre Zeiten, der Inhaber schließt ab; ohne Bestätigung nur mit Grund, der auf dem Stundenzettel steht. Jede Änderung von Hand trägt einen Grund und ist für die Person sichtbar.
 
-Abstimmung: Jede Person hält mit dem Prüfwert auf ihrem Stundenzettel einen Beleg, den der Betrieb nicht ändern kann, und prüft ihn ohne Anmeldung auf der Prüfseite. Lücken in den Nummern der Geräte und Terminals zeigt Soll an, statt sie zu schließen.
+Abstimmung: Jede Person hält mit dem Prüfwert auf ihrem Stundenzettel einen Beleg, den der Betrieb nicht ändern kann, und prüft ihn ohne Anmeldung auf der Prüfseite. Lücken in den Nummern der Geräte zeigt Soll an, statt sie zu schließen.
 
 Plausibilität: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; Befunde nennen ihre Norm und stehen im Monatsabschluss. Fehlt ein Jahreswert oder ein Arbeitszeitmodell, rechnet Soll nicht mit einem anderen, sondern sagt „nicht hinterlegt“.
+
+Projektzeit: Abgerechnete Buchungen und Buchungen in einem unterschriebenen Stundennachweis sind gesperrt; der Nachweis trägt die Prüfsumme seines Inhalts.
 
 Kontrolle der Kette: Die Prüfung der Audit-Kette läuft bei jedem Erzeugen dieses Dokuments, bei jeder Wiederherstellung einer Sicherung und auf der Prüfseite für jeden Prüfwert; beim Erzeugen dieses Dokuments ohne Befund.
 

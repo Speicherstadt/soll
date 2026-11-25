@@ -1,5 +1,5 @@
 import type { DokuStandDaten, DokuTerminal } from "@soll/export";
-import { and, asc, count, eq, gt, isNull, or } from "drizzle-orm";
+import { and, asc, count, eq, gt, gte, isNull, or } from "drizzle-orm";
 import { ROLLEN, rechteDerRolle, rollenVon } from "../../auth/rollen.ts";
 import type { Db } from "../../db/oeffnen.ts";
 import {
@@ -117,6 +117,30 @@ const aufbewahrung = (db: Db, betriebId: string): DokuStandDaten["aufbewahrung"]
   };
 };
 
+/**
+ * The tokens that would sign in now, as `tokenAnmelden` decides (routes/zugang-anmeldung.ts): not
+ * expired, of a member, made since the current membership began; a revoked token has no row
+ */
+const gueltigeZugaenge = (db: Db, betriebId: string, jetzt: number): number =>
+  db
+    .select({ n: count() })
+    .from(apiZugaenge)
+    .innerJoin(
+      mitgliedschaften,
+      and(
+        eq(mitgliedschaften.betriebId, apiZugaenge.betriebId),
+        eq(mitgliedschaften.nutzerId, apiZugaenge.nutzerId),
+      ),
+    )
+    .where(
+      and(
+        eq(apiZugaenge.betriebId, betriebId),
+        or(isNull(apiZugaenge.gueltigBis), gt(apiZugaenge.gueltigBis, jetzt)),
+        gte(apiZugaenge.angelegtAm, mitgliedschaften.seit),
+      ),
+    )
+    .get()?.n ?? 0;
+
 const kette = (db: Db, betriebId: string): DokuStandDaten["kette"] => ({
   pruefwert: aktuellerPruefwert(db, betriebId),
   glieder:
@@ -146,14 +170,7 @@ export const standLesen = (
       .all()
       .map((s) => ({ name: s.name, land: s.land, regionen: JSON.parse(s.regionen) as string[] })),
     rollen: rollen(db, betriebId),
-    apiZugaenge: zaehlen(
-      db,
-      apiZugaenge,
-      and(
-        eq(apiZugaenge.betriebId, betriebId),
-        or(isNull(apiZugaenge.gueltigBis), gt(apiZugaenge.gueltigBis, jetzt)),
-      ),
-    ),
+    apiZugaenge: gueltigeZugaenge(db, betriebId, jetzt),
     kette: kette(db, betriebId),
     aufbewahrung: aufbewahrung(db, betriebId),
     terminal: terminalStand(db, betriebId),

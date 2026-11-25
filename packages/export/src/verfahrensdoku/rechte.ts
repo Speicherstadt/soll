@@ -1,3 +1,5 @@
+import type { Module } from "./typen.ts";
+
 /*
  * The roles of Soll and their rights in words, for the section on access (GoBD Rz. 100 and 103).
  * The server passes each role with the rights `apps/server/src/auth/rollen.ts` grants it; a test
@@ -45,6 +47,37 @@ export const RECHTE_TEXTE: Record<string, string> = {
   "auskunft:erteilen": "Auskunft nach Art. 15 DSGVO erteilen",
   "api:zugang": "eigene API-Zugänge anlegen",
   "verfahrensdoku:verwalten": "die Verfahrensdokumentation pflegen und herunterladen",
+};
+
+/**
+ * The module a right belongs to; a right without one holds whatever the business switched on.
+ * The document names a right only while its module is on.
+ */
+const RECHT_MODUL: Record<string, keyof Module> = {
+  "pin:setzen": "terminal",
+  "pin:pruefen": "terminal",
+  "terminal:verwalten": "terminal",
+  "modelle:lesen": "arbeitszeit",
+  "modelle:zuordnen": "arbeitszeit",
+  stempeln: "arbeitszeit",
+  "zeiten:alle": "arbeitszeit",
+  "zeiten:korrigieren": "arbeitszeit",
+  "monat:abschliessen": "arbeitszeit",
+  "abwesenheiten:freigeben": "arbeitszeit",
+  "abwesenheiten:gesundheit": "arbeitszeit",
+  "abwesenheiten:einstellen": "arbeitszeit",
+  "konten:pflegen": "arbeitszeit",
+  "erinnerungen:regeln": "arbeitszeit",
+  "lohn:datev": "arbeitszeit",
+  "projekte:lesen": "projektzeit",
+  "projekte:verwalten": "projektzeit",
+  "plan:lesen": "dienstplan",
+  "plan:planen": "dienstplan",
+};
+
+export const rechtAktiv = (recht: string, module: Module): boolean => {
+  const modul = RECHT_MODUL[recht];
+  return modul === undefined || module[modul];
 };
 
 export const rolleName = (rolle: string): string => ROLLEN_NAMEN[rolle] ?? rolle;

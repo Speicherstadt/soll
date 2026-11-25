@@ -16,7 +16,7 @@ Rechtsform: GmbH
 
 Anschrift: \# Elbstraße 5 \<b\>
 
-- Modul Arbeitszeit (mit Abwesenheiten und Monatsabschluss): eingeschaltet
+- Modul Arbeitszeit (mit Abwesenheiten): eingeschaltet
 - Modul Dienstplan: eingeschaltet
 - Modul Projektzeit: ausgeschaltet
 - Modul Terminal: eingeschaltet
@@ -38,7 +38,7 @@ Prüfung: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln gep
 
 Monatsabschluss: Die Person bestätigt ihren Monat, der Inhaber schließt ihn ab (ohne Bestätigung nur mit Grund). Danach ist der Monat gesperrt, eine Korrektur ist ein Gegeneintrag mit Grund im laufenden Monat. Die Person bekommt ihren Stundenzettel als PDF mit dem Prüfwert des Abschlusses.
 
-Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen dieselben Regeln geprüft. Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung.
+Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft. Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung.
 
 ## 3\. Anwenderdokumentation: Terminal
 
@@ -67,7 +67,7 @@ Auskunft: Jede Person kann ihre Daten nach Art. 15 DSGVO abrufen; der Inhaber er
 
 Jede Schreiboperation in den Tabellen von Soll hängt in derselben Transaktion ein Glied an die Audit-Kette des Betriebs an; einen anderen Weg in diese Tabellen gibt es nicht. Die Module des Servers lesen über eine Verbindung, die SQLite nur lesend öffnet; die einzige schreibende Verbindung gehört der Funktion, die das Glied anhängt. Schlägt das Anhängen fehl, bleibt von der Schreiboperation nichts in der Datenbank (GoBD Rz. 107 bis 110).
 
-Ein Glied enthält eine fortlaufende Nummer je Betrieb, den Zeitpunkt, den Akteur (die Person, auch wenn sie über einen API-Zugang schreibt, das Terminal oder Soll selbst, etwa bei der Aussonderung), Tabelle, Zeile und Art der Änderung, den SHA-256 des neuen Inhalts der Zeile, den Hash des Vorgängers und den SHA-256 über all das (Hash-Kette). Den alten Inhalt hält das vorige Glied derselben Zeile; so bleibt jede Änderung mit ihrem Stand davor erkennbar (Rz. 59 und 111).
+Ein Glied enthält eine fortlaufende Nummer je Betrieb, den Zeitpunkt, den Akteur (die Person, auch wenn sie über einen API-Zugang schreibt, ein Gerät des Betriebs oder Soll selbst), Tabelle, Zeile und Art der Änderung, den SHA-256 des neuen Inhalts der Zeile, den Hash des Vorgängers und den SHA-256 über all das (Hash-Kette). Den alten Inhalt hält das vorige Glied derselben Zeile; so bleibt jede Änderung mit ihrem Stand davor erkennbar (Rz. 59 und 111).
 
 Der Inhalt liegt getrennt vom Glied, das nur seinen Hash trägt. Nach Ablauf der Aufbewahrungsfrist entfernt die Aussonderung den Inhalt mit einem eigenen Glied; die Glieder bleiben, und die Kette prüft weiter ohne Befund (Art. 5 Abs. 1 lit. e und Art. 17 DSGVO).
 
@@ -85,7 +85,7 @@ Die Prüfung beim Erzeugen dieses Dokuments fand 2 Befunde; die Einzelheiten nen
 
 Eingesetzt ist Soll 1.0.0. Soll ist ein Server (eine einzelne ausführbare Datei, auch als Container-Image) mit einer SQLite-Datenbank im WAL-Modus und einer App für Browser, Handy (PWA) und Tablet (Terminal). Was sich je Version geändert hat, nennen die Versionshinweise; die Version steht im Stand jeder Fassung dieses Dokuments.
 
-Die Migrationen der Datenbank sind im Programm enthalten und laufen beim Start; eine schon angewendete Migration, die sich geändert hat oder fehlt, verhindert den Start. SQLite schreibt mit synchronous = FULL, so dass eine bestätigte Stempelung auch einen Stromausfall übersteht.
+Die Migrationen der Datenbank sind im Programm enthalten und laufen beim Start; eine schon angewendete Migration, die sich geändert hat oder fehlt, verhindert den Start. SQLite schreibt mit synchronous = FULL, so dass ein bestätigter Eintrag auch einen Stromausfall übersteht.
 
 Zeitpunkte stehen als Millisekunden in UTC, Kalendertage als JJJJ-MM-TT in Europe/Berlin, Dauern in ganzen Minuten, Geldbeträge in Cent; nichts wird als Gleitkommazahl gerechnet. Ein Arbeitstag ist der Tag, an dem die Schicht beginnt.
 
@@ -111,7 +111,7 @@ Aufbewahrt wird je abgeschlossenem Monat einer Person. Bucht das Lohnbüro aus d
 
 Nach Ablauf entfernt Soll den Inhalt des Monats (Stempelungen, Gegeneinträge, Bestätigung, Abschluss und Abwesenheiten, die nur ihn betreffen) mit den gespeicherten Inhalten ihrer Glieder; die Glieder bleiben, eine eigene Zeile hält fest, welcher Monat welcher Person mit welcher Frist entfernt wurde, und steht selbst in der Kette. Der Server prüft das beim Start und alle sechs Stunden. Die Ablaufhemmung während einer Außenprüfung (§ 147 Abs. 3 AO) kennt Soll nicht: Wer eine Prüfung hat, sichert vorher.
 
-Beim Erzeugen aufbewahrt: 1 abgeschlossene Monat von Personen. Nach Ablauf der Frist ausgesondert: 4 (3 nach 2 Jahren, 1 nach 8 Jahren).
+Beim Erzeugen: 1 abgeschlossene Monat von Personen aufbewahrt, nach Ablauf der Frist 4 ausgesondert (3 nach 2 Jahren, 1 nach 8 Jahren).
 
 ## 9\. Betriebsdokumentation: Betrieb und Datensicherung
 
@@ -134,6 +134,8 @@ Vier Augen beim Monat: Die Person bestätigt ihre Zeiten, der Inhaber schließt 
 Abstimmung: Jede Person hält mit dem Prüfwert auf ihrem Stundenzettel einen Beleg, den der Betrieb nicht ändern kann, und prüft ihn ohne Anmeldung auf der Prüfseite. Lücken in den Nummern der Geräte und Terminals zeigt Soll an, statt sie zu schließen.
 
 Plausibilität: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; Befunde nennen ihre Norm und stehen im Monatsabschluss. Fehlt ein Jahreswert oder ein Arbeitszeitmodell, rechnet Soll nicht mit einem anderen, sondern sagt „nicht hinterlegt“.
+
+Dienstplan: Die Beschäftigten sehen nur veröffentlichte Schichten; vor dem Veröffentlichen prüft Soll jede Schicht gegen die Regeln und nennt die Norm.
 
 Kontrolle der Kette: Die Prüfung der Audit-Kette läuft bei jedem Erzeugen dieses Dokuments, bei jeder Wiederherstellung einer Sicherung und auf der Prüfseite für jeden Prüfwert; beim Erzeugen dieses Dokuments mit Befund (Abschnitt 5).
 

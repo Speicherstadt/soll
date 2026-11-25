@@ -7,8 +7,11 @@ import type { Verfahrensdoku } from "./modell.ts";
  * (AGPL-3.0, same author); the Stand also names the Prüfwert in Soll.
  */
 
-/** Characters with a meaning in CommonMark, and < and > against HTML */
-const MARKDOWN = /[\\`*_{}[\]<>#|!~]/g;
+/**
+ * Characters with a meaning in CommonMark, < and > against HTML, and & against entity references
+ * ("&amp;" would show as "&", CommonMark 0.31, 2.5)
+ */
+const MARKDOWN = /[\\`*_{}[\]<>#|!~&]/g;
 
 export const markdownText = (text: string): string =>
   // "1." or "-" at the start of a line would become a list, "---" or "===" below a line a heading.

@@ -2,6 +2,7 @@ import { zeitpunktText } from "../stundenzettel/format.ts";
 import { allgemein, anwender } from "./anwender.ts";
 import { aufbewahrung, programm, sicherung, zugaenge } from "./betrieb.ts";
 import { ketteAbschnitt } from "./kern.ts";
+import { kontrollsystem } from "./kontrolle.ts";
 import {
   abschnitt,
   type Verfahrensdoku,
@@ -19,20 +20,6 @@ import { terminal, weitergabe } from "./weitergabe.ts";
  * apps/web/src/server/modules/verfahrensdoku/dokument.ts (AGPL-3.0, same author), does for Haben.
  * A pure function of the state and the day, so the same input gives the same document.
  */
-
-const kontrollsystem = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
-  abschnitt("10. Internes Kontrollsystem", {
-    absaetze: [
-      "Zugriff: Rechte hängen an der Rolle und werden bei jeder Anfrage auf dem Server geprüft, ebenso der Betrieb: Keine Anfrage liest oder schreibt Daten eines anderen Betriebs (GoBD Rz. 100 und 103).",
-      "Vier Augen beim Monat: Die Person bestätigt ihre Zeiten, der Inhaber schließt ab; ohne Bestätigung nur mit Grund, der auf dem Stundenzettel steht. Jede Änderung von Hand trägt einen Grund und ist für die Person sichtbar.",
-      "Abstimmung: Jede Person hält mit dem Prüfwert auf ihrem Stundenzettel einen Beleg, den der Betrieb nicht ändern kann, und prüft ihn ohne Anmeldung auf der Prüfseite. Lücken in den Nummern der Geräte und Terminals zeigt Soll an, statt sie zu schließen.",
-      "Plausibilität: Jeder Tag wird gegen das Arbeitszeitgesetz und die übrigen Regeln geprüft; Befunde nennen ihre Norm und stehen im Monatsabschluss. Fehlt ein Jahreswert oder ein Arbeitszeitmodell, rechnet Soll nicht mit einem anderen, sondern sagt „nicht hinterlegt“.",
-      `Kontrolle der Kette: Die Prüfung der Audit-Kette läuft bei jedem Erzeugen dieses Dokuments, bei jeder Wiederherstellung einer Sicherung und auf der Prüfseite für jeden Prüfwert; beim Erzeugen dieses Dokuments ${s.kette.befunde === 0 ? "ohne Befund" : "mit Befund (Abschnitt 5)"}.`,
-      s.angaben.verantwortlich.trim()
-        ? `Verantwortlich für das Verfahren: ${s.angaben.verantwortlich.trim()}`
-        : "",
-    ],
-  });
 
 const fassungen = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
   abschnitt("11. Fassungen dieser Dokumentation", {
@@ -65,7 +52,11 @@ export const verfahrensdokuAus = (s: DokuStandDaten, datum: string): Verfahrensd
     anwender(s),
     terminal(s),
     weitergabe(s),
-    ketteAbschnitt("5. Technische Systemdokumentation: Audit-Kette und Prüfwert", s.kette),
+    ketteAbschnitt(
+      "5. Technische Systemdokumentation: Audit-Kette und Prüfwert",
+      s.kette,
+      s.module.arbeitszeit,
+    ),
     programm(s),
     zugaenge(s),
     aufbewahrung(s),

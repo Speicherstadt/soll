@@ -20,9 +20,7 @@ describe("GET /api/v1/verfahrensdoku", () => {
     expect(dokument.luecken).toBe(7);
     expect(angaben.eigene).toEqual([]);
     const inhalt = text(dokument);
-    expect(inhalt).toContain(
-      "Modul Arbeitszeit (mit Abwesenheiten und Monatsabschluss): eingeschaltet",
-    );
+    expect(inhalt).toContain("Modul Arbeitszeit (mit Abwesenheiten): eingeschaltet");
     expect(inhalt).toContain("Mitarbeiter (1 Mitglied)");
     expect(inhalt).toContain("Inhaber (1 Mitglied)");
     expect(inhalt).toContain("Die Prüfung beim Erzeugen dieses Dokuments fand keine Befunde.");

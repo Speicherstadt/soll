@@ -156,6 +156,9 @@ describe("the import from Crewmeister (S-706)", () => {
       .get(e.mia.betriebId) as { erster_halb: number };
     expect(halb.erster_halb).toBe(1);
     expect(zaehlen(e, "stempelungen", "crewmeister")).toBe(8);
+    // Tom's Auskunft names where his shift came from (Art. 15 DSGVO; the new columns of S-706)
+    const auskunft = await json(await e.tom.anfrage("/api/v1/auskunft"));
+    expect(JSON.stringify(auskunft)).toContain('"quelle":"crewmeister","kennung":"8001"');
     const zweiter = await json(
       await e.mia.anfrage(IMP, {
         body: koerper("crewmeister", await abrufen(e, "crewmeister", CREWMEISTER), zuordnung(e)),

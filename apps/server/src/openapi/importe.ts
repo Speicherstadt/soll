@@ -24,7 +24,7 @@ export const IMPORTE: readonly Operation[] = [
     methode: "post",
     pfad: `${PFAD}/abruf`,
     zusammenfassung:
-      "Daten über die API eines Werkzeugs abrufen (Clockodo, Kimai); der Zugang gilt nur für diesen Abruf, die Antwort ist eine Datei für Vorschau und Übernahme (Inhaber)",
+      "Daten über die API eines Werkzeugs abrufen (Clockodo, Kimai, Papershift, Planday, Crewmeister); der Zugang gilt nur für diesen Abruf, die Antwort ist eine Datei für Vorschau und Übernahme (Inhaber)",
     bereich: "Umzug",
     koerper: abrufSchema,
   },

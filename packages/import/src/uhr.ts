@@ -1,8 +1,8 @@
 import { minuteInBerlin, type Tag, tagInBerlin } from "@soll/arbeitszeit";
 
 /*
- * The Berlin wall clock of many instants, fast (20,000 records within 1 s; the same clock as
- * Clockodo's reader in S-703). Berlin's offset is whole hours since 1893 and changes only at the
+ * The Berlin wall clock of many instants, fast (20,000 records within 1 s), for the readers of
+ * Clockodo (S-703) and Kimai (S-705). Berlin's offset is whole hours since 1893 and changes only at the
  * start of a UTC hour, so the clock of an hour's start is asked once and the minutes inside it are
  * added; and on a UTC day whose first and last hour have the same offset, that offset holds for
  * the whole day, so the day is asked twice and every instant in it is computed (S-705: 20,000

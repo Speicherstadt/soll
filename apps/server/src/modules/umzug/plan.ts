@@ -163,7 +163,7 @@ const uebernehmen = <T>(
   return ergebnis.art === "neu" || ergebnis.art === "vorhanden" ? ergebnis.id : null;
 };
 
-/** Customers, orders and activities; the ids in Soll of the orders and activities (S-705) */
+/** Customers, orders and activities (S-703); the ids in Soll of orders and activities (S-705) */
 const projekteUndKundenPlanen = (
   bau: Bau,
   daten: ImportDaten,
@@ -184,7 +184,7 @@ const projekteUndKundenPlanen = (
   }
   const taetigkeiten = new Map<string, string | null>();
   for (const taetigkeit of daten.taetigkeiten) {
-    const ziel = zuordnung.taetigkeiten?.[taetigkeit.externalId] ?? "neu";
+    const ziel = zuordnung.taetigkeiten[taetigkeit.externalId] ?? "neu";
     const ergebnis = taetigkeitPlanen(taetigkeit, ziel, stand);
     taetigkeiten.set(taetigkeit.externalId, uebernehmen(bau, "taetigkeiten", taetigkeit, ergebnis));
   }

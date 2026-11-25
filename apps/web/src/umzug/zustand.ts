@@ -19,8 +19,8 @@ export const base64Von = (bytes: Uint8Array): string => {
 };
 
 /**
- * Soll's proposal: members by name, kinds by word, every customer and order created anew, the
- * projects and activities of a spreadsheet's times to the order and activity known by their name
+ * Soll's proposal: members by name, kinds by word, every customer, order and activity created anew,
+ * the projects and activities of a spreadsheet's times to the order and activity known by their name
  */
 export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   personen: Object.fromEntries(vorschau.personen.map((p) => [p.person, p.vorschlag])),

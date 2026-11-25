@@ -1,19 +1,21 @@
-import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
+import { tagInBerlin } from "@soll/arbeitszeit";
 import { Button } from "@soll/ui";
 import { createSignal, createUniqueId, For } from "solid-js";
-import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import type { Abruf } from "./typen.ts";
 
 /*
- * The way in over a tool's API (S-705, Kimai): the instance, the token and the period of one fetch.
- * The token lives in this form only while it is typed and is cleared once the fetch is done; Soll
- * keeps it nowhere (docs/plan.md, "API-Zugang eines Werkzeugs").
+ * The way in over a tool's API (S-703): the access and the period of one fetch. The key lives in
+ * this form only while it is typed and is cleared once the fetch is done; Soll keeps it nowhere
+ * (docs/plan.md, "API-Zugang eines Werkzeugs").
  */
 
-const Feld = (props: {
+const FELD = "h-9 rounded-md border border-border bg-background px-2";
+
+/** A field of a fetch form, with an optional hint under it (also Kimai's, S-705) */
+export const Feld = (props: {
   name: string;
-  typ: "url" | "password" | "text" | "date";
+  typ: "email" | "password" | "date" | "url" | "text";
   wert: string;
   setzen: (wert: string) => void;
   hinweis?: string;
@@ -27,14 +29,14 @@ const Feld = (props: {
       <input
         id={id}
         type={props.typ}
-        class={feld}
+        class={FELD}
         autocomplete="off"
         value={props.wert}
         onInput={(event) => props.setzen(event.currentTarget.value)}
         aria-describedby={props.hinweis ? `${id}-hinweis` : undefined}
       />
       {props.hinweis && (
-        <span id={`${id}-hinweis`} class="text-[12px] text-muted-foreground">
+        <span id={`${id}-hinweis`} class="text-muted-foreground">
           {props.hinweis}
         </span>
       )}
@@ -47,60 +49,44 @@ export const AbrufFormular = (props: {
   abrufen: (abruf: Abruf) => Promise<boolean>;
 }) => {
   const heute = tagInBerlin(Date.now());
-  const [instanz, setInstanz] = createSignal("");
-  const [token, setToken] = createSignal("");
-  const [benutzer, setBenutzer] = createSignal("");
-  const [von, setVon] = createSignal(plusTage(heute, -364));
+  const [nutzer, setNutzer] = createSignal("");
+  const [schluessel, setSchluessel] = createSignal("");
+  const [von, setVon] = createSignal(`${heute.slice(0, 4)}-01-01`);
   const [bis, setBis] = createSignal(heute);
   const senden = async (event: SubmitEvent) => {
     event.preventDefault();
     const abruf = {
-      zugang: { instanz: instanz(), token: token(), benutzer: benutzer().trim() || null },
+      zugang: { nutzer: nutzer(), schluessel: schluessel() },
       von: von(),
       bis: bis(),
     };
-    if (await props.abrufen(abruf)) setToken("");
+    if (await props.abrufen(abruf)) setSchluessel("");
   };
   return (
     <form class="flex flex-col gap-4" onSubmit={(event) => void senden(event)}>
       <p class="text-muted-foreground">{m.umzug_abruf_text()}</p>
       <div class="grid gap-4 md:grid-cols-2">
+        <Feld name={m.umzug_abruf_nutzer()} typ="email" wert={nutzer()} setzen={setNutzer} />
         <Feld
-          name={m.umzug_abruf_instanz()}
-          typ="url"
-          wert={instanz()}
-          setzen={setInstanz}
-          hinweis={m.umzug_abruf_instanz_hinweis()}
-        />
-        <Feld
-          name={m.umzug_abruf_token()}
+          name={m.umzug_abruf_schluessel()}
           typ="password"
-          wert={token()}
-          setzen={setToken}
-          hinweis={m.umzug_abruf_token_hinweis()}
+          wert={schluessel()}
+          setzen={setSchluessel}
+          hinweis={m.umzug_abruf_schluessel_hinweis()}
         />
-        <Feld
-          name={m.umzug_abruf_benutzer()}
-          typ="text"
-          wert={benutzer()}
-          setzen={setBenutzer}
-          hinweis={m.umzug_abruf_benutzer_hinweis()}
-        />
-        <div class="grid grid-cols-2 gap-4">
-          <For
-            each={[
-              { name: m.umzug_abruf_von(), wert: von, setzen: setVon },
-              { name: m.umzug_abruf_bis(), wert: bis, setzen: setBis },
-            ]}
-          >
-            {(f) => <Feld name={f.name} typ="date" wert={f.wert()} setzen={f.setzen} />}
-          </For>
-        </div>
+        <For
+          each={[
+            { name: m.umzug_abruf_von(), wert: von, setzen: setVon },
+            { name: m.umzug_abruf_bis(), wert: bis, setzen: setBis },
+          ]}
+        >
+          {(feld) => <Feld name={feld.name} typ="date" wert={feld.wert()} setzen={feld.setzen} />}
+        </For>
       </div>
       <Button
         type="submit"
         class="self-start"
-        disabled={props.arbeitet || instanz().trim() === "" || token() === ""}
+        disabled={props.arbeitet || nutzer() === "" || schluessel() === ""}
       >
         {m.umzug_abruf_los()}
       </Button>

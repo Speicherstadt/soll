@@ -1,6 +1,3 @@
-import { MAX_TEXT } from "../modell.ts";
-import { bereinigt } from "../text.ts";
-
 /* The values of Kimai's data, read without a guess: what is not one of them is null (S-705) */
 
 const MINUTE = 60_000;
@@ -47,15 +44,4 @@ export const zeitpunktLesen = (wert: unknown): number | null => {
 export const sekundenLesen = (wert: unknown): number | null => {
   if (wert === null || wert === undefined) return 0;
   return typeof wert === "number" && Number.isSafeInteger(wert) && wert >= 0 ? wert : null;
-};
-
-/** A text of at most MAX_TEXT characters, its spaces folded, or null */
-export const kurzerText = (wert: unknown): string | null =>
-  typeof wert === "string" && wert.length <= MAX_TEXT ? bereinigt(wert) : null;
-
-/** An id as Kimai gives it, a whole number, as text; or null */
-export const kennungVon = (wert: unknown): string | null => {
-  if (typeof wert === "number" && Number.isSafeInteger(wert) && wert >= 0) return String(wert);
-  if (typeof wert === "string" && /^\d{1,15}$/.test(wert.trim())) return wert.trim();
-  return null;
 };

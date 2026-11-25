@@ -2,6 +2,7 @@ import { type LeseFehler, WERKZEUGE } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { AbrufFormular } from "./abruf.tsx";
+import { KimaiAbrufFormular } from "./abruf-kimai.tsx";
 import { lesefehlerText } from "./texte.ts";
 import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
 import { base64Von } from "./zustand.ts";
@@ -23,32 +24,11 @@ export const Lesefehler = (props: { fehler: Liste<LeseFehler> }) => (
   </Show>
 );
 
-/** What was read: the numbers of records and the lines refused */
-const Gelesen = (props: { vorschau: Vorschau }) => (
-  <>
-    <p role="status">
-      {m.umzug_gelesen({
-        zeiten: props.vorschau.anzahl.zeiten,
-        abwesenheiten: props.vorschau.anzahl.abwesenheiten,
-        kunden: props.vorschau.anzahl.kunden,
-        projekte: props.vorschau.anzahl.projekte,
-      })}
-    </p>
-    <Lesefehler fehler={props.vorschau.lesefehler} />
-  </>
-);
-
-type Props = {
+const Dateiwahl = (props: {
   quelle: string;
-  vorschau: Vorschau | null;
   gewaehlt: (datei: Datei) => void;
   zuGross: () => void;
-  arbeitet: boolean;
-  abrufen: (abruf: Abruf) => Promise<boolean>;
-};
-
-/** The file input for a tool whose export the owner uploads */
-const DateiWahl = (props: Props) => {
+}) => {
   const id = createUniqueId();
   const waehlen = async (datei: File | undefined) => {
     if (!datei) return;
@@ -57,35 +37,90 @@ const DateiWahl = (props: Props) => {
     props.gewaehlt({ name: datei.name, inhalt: base64Von(bytes) });
   };
   return (
-    <div class="flex flex-col gap-4">
-      <div class="flex flex-col gap-1.5">
-        <label for={id} class="font-medium">
-          {m.umzug_datei_waehlen()}
-        </label>
-        <input
-          id={id}
-          type="file"
-          accept={(WERKZEUGE.find((w) => w.id === props.quelle)?.endungen ?? [".csv"]).join(",")}
-          class="text-muted-foreground file:me-3 file:h-9 file:rounded-sm file:border file:border-border file:bg-background file:px-3 file:text-foreground"
-          onChange={(event) => void waehlen(event.currentTarget.files?.[0])}
-        />
-      </div>
+    <div class="flex flex-col gap-1.5">
+      <label for={id} class="font-medium">
+        {m.umzug_datei_waehlen()}
+      </label>
+      <input
+        id={id}
+        type="file"
+        accept={(WERKZEUGE.find((w) => w.id === props.quelle)?.endungen ?? [".csv"]).join(",")}
+        class="text-muted-foreground file:me-3 file:h-9 file:rounded-sm file:border file:border-border file:bg-background file:px-3 file:text-foreground"
+        onChange={(event) => void waehlen(event.currentTarget.files?.[0])}
+      />
     </div>
   );
 };
 
-/**
- * Step 2: the exported file, or for a tool with an API the fetch (S-705); the server reads the file
- * and answers with the preview
- */
-export const DateiSchritt = (props: Props) => (
-  <div class="flex flex-col gap-4">
-    <Show
-      when={WERKZEUGE.find((w) => w.id === props.quelle)?.weg === "api"}
-      fallback={<DateiWahl {...props} />}
-    >
-      <AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
-    </Show>
-    <Show when={props.vorschau}>{(vorschau) => <Gelesen vorschau={vorschau()} />}</Show>
-  </div>
+type Weg = "datei" | "api";
+
+/** File or API, for a tool that offers both (S-703); Kimai has only the API (S-705) */
+const Wegwahl = (props: { weg: Weg; setWeg: (weg: Weg) => void }) => (
+  <fieldset class="flex flex-wrap gap-2">
+    <legend class="mb-2 font-medium">{m.umzug_weg_frage()}</legend>
+    <For each={[["datei", m.umzug_weg_datei()] as const, ["api", m.umzug_weg_api()] as const]}>
+      {([weg, name]) => (
+        <label class="flex min-h-11 items-center gap-3 rounded-lg border border-border px-3">
+          <input
+            type="radio"
+            name="weg"
+            value={weg}
+            checked={props.weg === weg}
+            onChange={() => props.setWeg(weg)}
+          />
+          {name}
+        </label>
+      )}
+    </For>
+  </fieldset>
 );
+
+/** Step 2: the exported file or a fetch over the API; the server reads it and answers with the preview */
+export const DateiSchritt = (props: {
+  quelle: string;
+  vorschau: Vorschau | null;
+  wege: readonly Weg[];
+  weg: Weg;
+  setWeg: (weg: Weg) => void;
+  arbeitet: boolean;
+  gewaehlt: (datei: Datei) => void;
+  abrufen: (abruf: Abruf) => Promise<boolean>;
+  zuGross: () => void;
+}) => {
+  return (
+    <div class="flex flex-col gap-4">
+      <Show when={props.wege.length > 1}>
+        <Wegwahl weg={props.weg} setWeg={props.setWeg} />
+      </Show>
+      <Show
+        when={props.weg === "api"}
+        fallback={
+          <Dateiwahl quelle={props.quelle} gewaehlt={props.gewaehlt} zuGross={props.zuGross} />
+        }
+      >
+        <Show
+          when={props.quelle === "kimai"}
+          fallback={<AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />}
+        >
+          <KimaiAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+        </Show>
+      </Show>
+      <Show when={props.vorschau}>
+        {(vorschau) => (
+          <>
+            <p role="status">
+              {m.umzug_gelesen({
+                zeiten: vorschau().anzahl.zeiten,
+                abwesenheiten: vorschau().anzahl.abwesenheiten,
+                kunden: vorschau().anzahl.kunden,
+                projekte: vorschau().anzahl.projekte,
+                taetigkeiten: vorschau().anzahl.taetigkeiten,
+              })}
+            </p>
+            <Lesefehler fehler={vorschau().lesefehler} />
+          </>
+        )}
+      </Show>
+    </div>
+  );
+};

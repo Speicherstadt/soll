@@ -115,5 +115,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0028_import_buchungen",
     "sql": "ALTER TABLE `projektzeiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_extern` ON `projektzeiten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
+  },
+  {
+    "tag": "0029_import_taetigkeiten",
+    "sql": "ALTER TABLE `taetigkeiten` ADD `import_id` text;"
   }
 ];

@@ -3,13 +3,15 @@ import type { Ziel, Zuordnung } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { m } from "../paraglide/messages.js";
-import { taetigkeitName } from "../projekte/werte.ts";
 import { Abschnitt, type Option, Zeile } from "./auswahl.tsx";
 import { type BuchungAendern, BuchungZuordnung } from "./buchung.tsx";
 import { FELD_NAMEN } from "./texte.ts";
 import type { Vorschau } from "./typen.ts";
 
-/* Step 3: what each column, person, kind, customer and order of the file becomes in Soll (S-701) */
+/*
+ * Step 3: what each column, person, kind, customer, order and activity of the file becomes in Soll
+ * (S-701, S-703)
+ */
 
 const NICHT = "";
 
@@ -100,11 +102,6 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
     props.vorschau.vorhandeneKunden.map((k) => ({ id: k.kundeId, name: k.name }));
   const projekte = () =>
     props.vorschau.vorhandeneProjekte.map((p) => ({ id: p.projektId, name: p.name }));
-  const taetigkeiten = () =>
-    props.vorschau.vorhandeneTaetigkeiten.map((t) => ({
-      id: t.taetigkeitId,
-      name: taetigkeitName(t),
-    }));
   return (
     <>
       <Show when={props.vorschau.kunden.length > 0}>
@@ -137,21 +134,27 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
           </For>
         </Abschnitt>
       </Show>
-      <Show when={props.vorschau.taetigkeiten.length > 0}>
-        <Abschnitt titel={m.umzug_taetigkeiten_titel()}>
-          <For each={props.vorschau.taetigkeiten}>
-            {(t) => (
-              <Zeile
-                name={t.name}
-                wert={zielWert(props.zuordnung.taetigkeiten?.[t.externalId])}
-                optionen={zielOptionen(taetigkeiten())}
-                aendern={(wert) => props.aendern.taetigkeit(t.externalId, zielAus(wert))}
-              />
-            )}
-          </For>
-        </Abschnitt>
-      </Show>
     </>
+  );
+};
+
+/** Activities (Clockodo's services, S-703; Kimai's activities, S-705): created anew, matched or left out like customers */
+const Taetigkeiten = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern: Aendern }) => {
+  const vorhanden = () =>
+    props.vorschau.vorhandeneTaetigkeiten.map((t) => ({ id: t.taetigkeitId, name: t.name }));
+  return (
+    <Abschnitt titel={m.umzug_taetigkeiten_titel()}>
+      <For each={props.vorschau.taetigkeiten}>
+        {(t) => (
+          <Zeile
+            name={t.name}
+            wert={zielWert(props.zuordnung.taetigkeiten[t.externalId])}
+            optionen={zielOptionen(vorhanden())}
+            aendern={(wert) => props.aendern.taetigkeit(t.externalId, zielAus(wert))}
+          />
+        )}
+      </For>
+    </Abschnitt>
   );
 };
 
@@ -216,6 +219,9 @@ export const ZuordnungSchritt = (props: {
       <Arten vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
     </Show>
     <Projektzeit vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
+    <Show when={props.vorschau.taetigkeiten.length > 0}>
+      <Taetigkeiten vorschau={props.vorschau} zuordnung={props.zuordnung} aendern={props.aendern} />
+    </Show>
     <BuchungZuordnung
       vorschau={props.vorschau}
       zuordnung={props.zuordnung}

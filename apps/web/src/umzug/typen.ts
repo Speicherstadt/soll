@@ -47,9 +47,8 @@ export type Vorschau = {
   projekte: { externalId: string; name: string; nummer: string; kunde: string }[];
   vorhandeneKunden: { kundeId: string; name: string }[];
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
-  /** the activities of a tool that keeps them (S-705) */
   taetigkeiten: { externalId: string; name: string }[];
-  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string; fest: boolean }[];
+  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: Liste<Vorschaubefund>;
   buchung: {
@@ -93,13 +92,17 @@ export type ImportEintrag = {
 };
 
 /** A fetch over a tool's API (S-705): the instance, its token, the period */
+/** The file as the API takes it: its name and its bytes in base64 */
+export type Datei = { name: string; inhalt: string };
+
+/** What POST /importe/abruf takes (S-703): the access for this one fetch and the period */
+/** A fetch over a tool's API: Clockodo's access (S-703) or a Kimai instance with its token (S-705) */
 export type Abruf = {
-  zugang: { instanz: string; token: string; benutzer: string | null };
+  zugang:
+    | { nutzer: string; schluessel: string }
+    | { instanz: string; token: string; benutzer: string | null };
   von: string;
   bis: string;
 };
-
-/** The file as the API takes it: its name and its bytes in base64 */
-export type Datei = { name: string; inhalt: string };
 
 export type { Ziel };

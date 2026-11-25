@@ -4,7 +4,7 @@ import type { Db } from "../../db/oeffnen.ts";
 import { importe } from "../../db/schema.ts";
 import { namenVon } from "../mitglieder/index.ts";
 import type { Dateispeicher } from "./dateispeicher.ts";
-import type { Zahlen } from "./plan-typen.ts";
+import { keineZahlen, type Zahlen } from "./plan-typen.ts";
 
 /* The imports a business took over, newest first, and the original file of each (S-701) */
 
@@ -32,7 +32,8 @@ const alsEintrag = (zeile: Zeile, namen: Map<string, string>): ImportEintrag => 
   dateiSha256: zeile.dateiSha256,
   dateiBytes: zeile.dateiBytes,
   abgeschlossenBis: zeile.abgeschlossenBis,
-  zahlen: JSON.parse(zeile.zahlen) as Zahlen,
+  // an import before S-703 knew no activities: none of them
+  zahlen: { ...keineZahlen(), ...(JSON.parse(zeile.zahlen) as Partial<Zahlen>) },
   von: namen.get(zeile.erstelltVon) ?? "",
   am: zeile.erstelltAm,
 });

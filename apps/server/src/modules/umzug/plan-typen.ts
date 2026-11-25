@@ -119,7 +119,7 @@ export type Stand = {
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
     projekte: ReadonlySet<string>;
-    /** the activity created from an id (S-705) */
+    /** the activity created from an id (S-703, S-705) */
     taetigkeiten: ReadonlyMap<string, string>;
     /** the bookings made from times of this tool, by their id (S-702) */
     buchungen: ReadonlySet<string>;

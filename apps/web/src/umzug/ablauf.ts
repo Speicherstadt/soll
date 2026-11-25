@@ -1,5 +1,5 @@
 import { tagInBerlin } from "@soll/arbeitszeit";
-import type { Zuordnung } from "@soll/import";
+import { WERKZEUGE, type Zuordnung } from "@soll/import";
 import { createSignal, createStore, snapshot } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
 import { alle, PFAD } from "../abfragen/schluessel.ts";
@@ -12,7 +12,7 @@ import { koerperVon, letzterAbschliessbarer, spaltenwahl, zuordnungAus } from ".
 
 /*
  * The state of the move page and its calls (S-701): the file is sent with each call, the server
- * reads it again every time; a fetch over a tool's API becomes such a file (S-705); a change of the mapping drops the dry run, so the takeover always
+ * reads it again every time; a fetch over a tool's API becomes such a file (S-703, S-705); a change of the mapping drops the dry run, so the takeover always
  * follows a dry run of the mapping it takes over with.
  */
 
@@ -28,17 +28,20 @@ const AENDERT = () => [
   alle(PFAD.taetigkeiten),
 ];
 
-const fehlerText = (antwort: Antwort<unknown>): string => {
+/** What went wrong; `werkzeug` names the tool a fetch went to */
+const fehlerText = (antwort: Antwort<unknown>, werkzeug = ""): string => {
   if (antwort.ok) return "";
   if (antwort.status === 0) return m.fehler_netz();
   if (antwort.status === 413) return m.umzug_fehler_zu_gross();
   if (antwort.fehler === "gleichzeitig") return m.umzug_fehler_gleichzeitig();
-  return ABRUF_FEHLER[antwort.fehler ?? ""]?.() ?? m.fehler_speichern();
+  return ABRUF_FEHLER[antwort.fehler ?? ""]?.(werkzeug) ?? m.fehler_speichern();
 };
 
 const zustand = () => {
   const [schritt, setSchritt] = createSignal(0);
   const [quelle, setQuelle] = createSignal("soll-csv");
+  // the way in of a tool with an API as well as a file (S-703)
+  const [weg, setWeg] = createSignal<"datei" | "api">("datei");
   const [datei, setDatei] = createSignal<Datei | null>(null);
   const [vorschau, setVorschau] = createSignal<Vorschau | null>(null);
   const [spalten, setSpalten] = createSignal<Record<string, string | null>>({});
@@ -62,7 +65,8 @@ const zustand = () => {
   const lesungen = { zahl: 0, wahl: {} as Record<string, string | null> };
   return {
     lesungen,
-    ...{ schritt, setSchritt, quelle, setQuelle, datei, setDatei, vorschau, setVorschau },
+    ...{ schritt, setSchritt, quelle, setQuelle, weg, setWeg, datei, setDatei },
+    ...{ vorschau, setVorschau },
     ...{ spalten, setSpalten, zuordnung, setZuordnung, bis, setBis, probelauf, setProbelauf },
     ...{ uebernahme, setUebernahme, fehler, setFehler },
   };
@@ -160,7 +164,7 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
       }),
     taetigkeit: (id, ziel) =>
       geaendert((e) => {
-        e.taetigkeiten = { ...e.taetigkeiten, [id]: ziel };
+        e.taetigkeiten[id] = ziel;
       }),
     buchungProjekt: (wert, projektId) =>
       geaendert((e) => {
@@ -174,12 +178,12 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
 };
 
 /**
- * Fetches over the tool's API (S-705) and reads the file it became like an upload; true when it
- * came, so the form can forget the token
+ * Fetches the data over the tool's API; the file it becomes is read like an uploaded one. The access
+ * goes with this one call and is kept nowhere here (docs/plan.md, "API-Zugang eines Werkzeugs").
  */
 const abrufen = async (z: Zustand, a: Aufrufe, abruf: Abruf): Promise<boolean> => {
   const antwort = await a.abruf.mutate({ quelle: z.quelle(), ...abruf });
-  z.setFehler(fehlerText(antwort));
+  z.setFehler(fehlerText(antwort, WERKZEUGE.find((w) => w.id === z.quelle())?.name));
   if (!antwort.ok) return false;
   await vorschauLaden(z, a, antwort.daten.datei, {});
   return true;
@@ -206,6 +210,8 @@ const uebernehmen = async (z: Zustand, a: Aufrufe) => {
 const werkzeugWaehlen = (z: Zustand, quelle: string) => {
   if (quelle === z.quelle()) return;
   z.setQuelle(quelle);
+  // the first way of the tool: Kimai has only the API (S-705)
+  z.setWeg(WERKZEUGE.find((w) => w.id === quelle)?.wege[0] ?? "datei");
   z.setDatei(null);
   z.setVorschau(null);
   z.setSpalten({});

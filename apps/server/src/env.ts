@@ -35,6 +35,11 @@ const envSchema = betriebsSchema
     // mail over SMTP (S-306): both or neither; the password in the URL stays in the environment
     SOLL_SMTP_URL: z.url({ protocol: /^smtps?$/ }).optional(),
     SOLL_MAIL_VON: z.string().min(3).optional(),
+    // Clockodo's API for imports (S-703); set only to point the tests at a stand-in
+    SOLL_CLOCKODO_API: z
+      .url({ protocol: /^https?$/ })
+      .optional()
+      .transform((url) => url?.replace(/\/+$/, "")),
     // origins an import may call although http or private (S-705): a Kimai in the own network
     SOLL_IMPORT_ALLOWED_ORIGINS: z.string().optional(),
   })
@@ -55,6 +60,8 @@ export type Env = {
   url: string;
   /** SMTP for mail, or null when the instance sends none */
   smtp: { url: string; von: string } | null;
+  /** Clockodo's API for imports, or null for its real address (S-703) */
+  clockodoApi: string | null;
   /** Origins an import may call although http or private (S-705) */
   importErlaubt: ReadonlySet<string>;
 };
@@ -74,6 +81,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
       parsed.SOLL_SMTP_URL && parsed.SOLL_MAIL_VON
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
+    clockodoApi: parsed.SOLL_CLOCKODO_API ?? null,
     importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };
 };

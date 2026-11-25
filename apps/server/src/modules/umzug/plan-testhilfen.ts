@@ -68,6 +68,7 @@ export const ZUORDNUNG: Zuordnung = {
   arten: { Urlaub: "urlaub", Krank: "krank" },
   kunden: {},
   projekte: {},
+  taetigkeiten: {},
 };
 
 export const mitZeiten = (...zeiten: ImportDaten["zeiten"]): ImportDaten => ({ ...leer(), zeiten });

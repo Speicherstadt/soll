@@ -31,7 +31,7 @@ import { MAX_LISTE } from "./uebernahme.ts";
 
 /*
  * The preview of an import (BAULISTE.md S-701): what the reader found in the file, the lines it could
- * not read, what the mapping needs (persons, kinds, customers, orders, columns) with Soll's proposal,
+ * not read, what the mapping needs (persons, kinds, customers, orders, activities, columns) with Soll's proposal,
  * and the findings of the rules on the file's times. Nothing is written.
  */
 
@@ -49,9 +49,9 @@ export type Vorschau = {
   projekte: { externalId: string; name: string; nummer: string; kunde: string }[];
   vorhandeneKunden: { kundeId: string; name: string }[];
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
-  /** activities of a tool that keeps them (S-705), and those of the business to match them with */
   taetigkeiten: { externalId: string; name: string }[];
-  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string; fest: boolean }[];
+  /** the business's own activities, not the four fixed ones (they have no name of their own) */
+  vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: { anzahl: number; liste: Vorschaubefund[] };
   /** the projects and activities the times name, with Soll's proposal, and what may be booked */
@@ -134,8 +134,8 @@ export const vorschau = (
       kundeId,
     })),
     taetigkeiten: daten.taetigkeiten.map(({ externalId, name }) => ({ externalId, name })),
-    vorhandeneTaetigkeiten: taetigkeitenLesen(db, betriebId).map(
-      ({ taetigkeitId, name, fest }) => ({ taetigkeitId, name, fest }),
+    vorhandeneTaetigkeiten: taetigkeitenLesen(db, betriebId).flatMap((t) =>
+      t.fest ? [] : [{ taetigkeitId: t.taetigkeitId, name: t.name }],
     ),
     module: {
       arbeitszeit: modulAktiv(db, betriebId, "arbeitszeit"),

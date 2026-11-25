@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
+  // runs in the browser and on the server; `types` lets tests read their fixtures with node:fs,
+  // `resolveJsonModule` lets them import a fixture of JSON (S-705)
   "compilerOptions": {
     "outDir": "../../node_modules/.tsbuild/import",
+    "types": ["bun"],
     "resolveJsonModule": true
   },
   "include": ["src", "src/**/*.json"]

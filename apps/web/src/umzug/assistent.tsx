@@ -1,3 +1,4 @@
+import { WERKZEUGE } from "@soll/import";
 import { Button } from "@soll/ui";
 import { Match, Show, Switch } from "solid-js";
 import { m } from "../paraglide/messages.js";
@@ -59,10 +60,13 @@ const Schritt = (props: { ablauf: Ablauf }) => {
         <DateiSchritt
           quelle={a.quelle()}
           vorschau={a.vorschau()}
-          gewaehlt={(datei) => void a.dateiGewaehlt(datei)}
-          zuGross={() => a.setFehler(m.umzug_fehler_zu_gross())}
+          wege={WERKZEUGE.find((w) => w.id === a.quelle())?.wege ?? ["datei"]}
+          weg={a.weg()}
+          setWeg={a.setWeg}
           arbeitet={a.arbeitet()}
+          gewaehlt={(datei) => void a.dateiGewaehlt(datei)}
           abrufen={a.abrufen}
+          zuGross={() => a.setFehler(m.umzug_fehler_zu_gross())}
         />
       </Match>
       <Match when={a.schritt() === 2 && a.vorschau()}>

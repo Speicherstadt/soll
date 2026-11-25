@@ -17,6 +17,7 @@ export const SCHRITT_NAMEN: Record<Schritt, () => string> = {
 /** How to export the data of each tool, by its id in packages/import */
 export const ANLEITUNG: Record<string, () => string> = {
   "soll-csv": () => m.umzug_anleitung_soll_csv(),
+  clockodo: () => m.umzug_anleitung_clockodo(),
   tabelle: () => m.umzug_anleitung_tabelle(),
   kimai: () => m.umzug_anleitung_kimai(),
 };
@@ -36,11 +37,14 @@ const LESEGRUND: Record<LeseGrund, () => string> = {
   pause_ungueltig: () => m.umzug_lese_pause_ungueltig(),
   art_fehlt: () => m.umzug_lese_art_fehlt(),
   kunde_unbekannt: () => m.umzug_lese_kunde_unbekannt(),
+  laeuft_noch: () => m.umzug_lese_laeuft_noch(),
+  korrektur: () => m.umzug_lese_korrektur(),
+  teil_tag: () => m.umzug_lese_teil_tag(),
+  nicht_genehmigt: () => m.umzug_lese_nicht_genehmigt(),
   spalte_fehlt: () => m.umzug_lese_spalte_fehlt(),
   zeile_doppelt: () => m.umzug_lese_zeile_doppelt(),
   dauer_ungueltig: () => m.umzug_lese_dauer_ungueltig(),
   dauer_abweichend: () => m.umzug_lese_dauer_abweichend(),
-  laeuft_noch: () => m.umzug_lese_laeuft_noch(),
   projekt_unbekannt: () => m.umzug_lese_projekt_unbekannt(),
   taetigkeit_unbekannt: () => m.umzug_lese_taetigkeit_unbekannt(),
 };
@@ -107,16 +111,16 @@ export const FELD_NAMEN: Record<string, () => string> = {
   taetigkeit: () => m.umzug_feld_taetigkeit(),
 };
 
-/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-705) */
-export const ABRUF_FEHLER: Record<string, () => string> = {
+/** Why a fetch over a tool's API failed (routes/importe-abruf.ts, S-703, S-705), naming the tool */
+export const ABRUF_FEHLER: Record<string, (werkzeug: string) => string> = {
   adresse_ungueltig: () => m.umzug_abruf_adresse_ungueltig(),
   adresse_intern: () => m.umzug_abruf_adresse_intern(),
   weiterleitung: () => m.umzug_abruf_weiterleitung(),
-  zugang_abgelehnt: () => m.umzug_abruf_zugang_abgelehnt(),
+  zugang_abgelehnt: (werkzeug) => m.umzug_abruf_zugang_abgelehnt({ werkzeug }),
   rechte_fehlen: () => m.umzug_abruf_rechte_fehlen(),
-  zu_viele_anfragen: () => m.umzug_abruf_zu_viele_anfragen(),
-  nicht_erreichbar: () => m.umzug_abruf_nicht_erreichbar(),
-  antwort_ungueltig: () => m.umzug_abruf_antwort_ungueltig(),
+  zu_viele_anfragen: (werkzeug) => m.umzug_abruf_zu_viele_anfragen({ werkzeug }),
+  nicht_erreichbar: (werkzeug) => m.umzug_abruf_nicht_erreichbar({ werkzeug }),
+  antwort_ungueltig: (werkzeug) => m.umzug_abruf_antwort_ungueltig({ werkzeug }),
   antwort_zu_gross: () => m.umzug_abruf_antwort_zu_gross(),
   zu_viele: () => m.umzug_abruf_zu_viele(),
   zeitraum: () => m.umzug_abruf_zeitraum(),

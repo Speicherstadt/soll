@@ -46,6 +46,7 @@ export const zuordnungFuer = (sandra: string, max: string) => ({
   arten: { Urlaub: "urlaub" },
   kunden: {},
   projekte: {},
+  taetigkeiten: {},
 });
 
 export const koerper = (

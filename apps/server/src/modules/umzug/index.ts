@@ -1,7 +1,14 @@
 /**
  * The move from other tools (S-701): preview, dry run and takeover of an import, the original file
- * in the content-addressed store, the list of imports
+ * in the content-addressed store, the list of imports; the fetch from Clockodo's API (S-703)
  */
+export {
+  type AbrufFehler,
+  CLOCKODO_API,
+  type ClockodoDeps,
+  clockodoAbrufen,
+  type Zugang,
+} from "./clockodo-abruf.ts";
 export { MAX_BYTES } from "./datei.ts";
 export { type Dateispeicher, dateispeicher } from "./dateispeicher.ts";
 export {

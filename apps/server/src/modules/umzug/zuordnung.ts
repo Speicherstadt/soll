@@ -5,7 +5,7 @@ import { erfassteMitglieder } from "./stand.ts";
 
 /*
  * Whether a mapping names only what belongs to the business (BAULISTE.md S-701): members who
- * stamp, customers and orders of its own. A person or a customer of another business is refused
+ * stamp, customers, orders and activities of its own. A person or a customer of another business is refused
  * before anything is planned, so no import ever writes into another business's rows.
  */
 

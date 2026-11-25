@@ -1,15 +1,10 @@
 import { istTag } from "@soll/arbeitszeit";
-import {
-  type Gelesen,
-  type ImportDaten,
-  type LeseFehler,
-  leer,
-  MAX_DATENSAETZE,
-} from "../modell.ts";
+import { einmal, objekt, personen } from "../abzug-gemeinsam.ts";
+import { type Gelesen, type ImportDaten, leer, MAX_DATENSAETZE } from "../modell.ts";
 import { textAusBytes } from "../text.ts";
 import { berlinerUhr } from "../uhr.ts";
-import { abzugLesen, objekt } from "./abzug-lesen.ts";
-import type { Benannt, Bestand, Nutzer } from "./bestand.ts";
+import { abzugLesen } from "./abzug-lesen.ts";
+import type { Benannt, Bestand } from "./bestand.ts";
 import { zeitenAus } from "./zeiten.ts";
 
 /*
@@ -26,28 +21,6 @@ export {
   type KimaiArt,
   kimaiAbzugText,
 } from "./abzug.ts";
-
-/** Each id once; a second record of an id is refused with its line */
-const einmal = <T extends { zeile: number; id: string }>(
-  saetze: readonly T[],
-  fehler: LeseFehler[],
-): T[] => {
-  const gesehen = new Set<string>();
-  return saetze.filter((satz) => {
-    if (!gesehen.has(satz.id)) return gesehen.add(satz.id);
-    fehler.push({ zeile: satz.zeile, grund: "kennung_doppelt", feld: "id", wert: satz.id });
-    return false;
-  });
-};
-
-/** The name of each user; two of the same name are told apart by their id */
-const namenVon = (nutzer: readonly Nutzer[]): Map<string, string> => {
-  const zahl = new Map<string, number>();
-  for (const n of nutzer) zahl.set(n.name, (zahl.get(n.name) ?? 0) + 1);
-  return new Map(
-    nutzer.map((n) => [n.id, (zahl.get(n.name) ?? 0) > 1 ? `${n.name} (#${n.id})` : n.name]),
-  );
-};
 
 const alsKunde = ({ zeile, id, name, nummer }: Benannt) => ({
   externalId: id,
@@ -77,13 +50,13 @@ const datenAus = (bestand: Bestand, zeitraum: { von: string; bis: string } | nul
     return false;
   });
   const taetigkeiten = einmal(bestand.taetigkeiten, fehler);
-  const namen = namenVon(einmal(bestand.nutzer, fehler));
+  const person = personen(einmal(bestand.nutzer, fehler));
   const uhr = berlinerUhr();
   const zeitbuchungen = einmal(bestand.zeitbuchungen, fehler).filter((z) => {
     const tag = uhr.uhr(Math.floor(z.beginn / 60_000) * 60_000).tag;
     return zeitraum === null || (tag >= zeitraum.von && tag <= zeitraum.bis);
   });
-  const zeiten = zeitenAus(zeitbuchungen, (nutzer) => namen.get(nutzer) ?? `#${nutzer}`, {
+  const zeiten = zeitenAus(zeitbuchungen, person, {
     projekte: new Set(projekte.map((p) => p.id)),
     taetigkeiten: new Set(taetigkeiten.map((t) => t.id)),
   });

@@ -192,7 +192,7 @@ describe("kimaiLesen, single rules", () => {
       ],
       timesheet: [zeit(1, "2026-09-07T07:00:00+0200", "2026-09-07T08:00:00+0200", { user: 5 })],
     });
-    expect(g.daten.zeiten[0]?.person).toBe("Sandra (#5)");
+    expect(g.daten.zeiten[0]?.person).toBe("Sandra (5)");
   });
 
   it("refuses any file that is not a fetch from Kimai at its first line", () => {

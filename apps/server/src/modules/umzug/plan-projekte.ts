@@ -11,7 +11,7 @@ import type {
 /*
  * Customers and orders of another tool (BAULISTE.md S-701): created anew with the tool and their id
  * (`extern_quelle`, `extern_id`, S-601), matched with one the business has, or left out. One created
- * by an earlier import is found by its id and stays as it is.
+ * by an earlier import is found by its id and stays as it is. Activities (S-703) go the same way.
  */
 
 export type Ergebnis<T> =

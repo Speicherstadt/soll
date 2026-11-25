@@ -4,6 +4,7 @@ import { inZeit } from "../zeit-testhilfen.ts";
 import { crewmeisterAbzug } from "./crewmeister.ts";
 import { SCHICHTPLANER_FORMAT, schichtplanerAbzugText, schichtplanerLesen } from "./index.ts";
 import { papershiftAbzug } from "./papershift.ts";
+import { plandayAbzug } from "./planday.ts";
 
 /*
  * Fuzzing of the shift planners' reader and of the turning of their answers into records
@@ -159,6 +160,47 @@ describe("the turning of answers into records under fuzzing", () => {
         expect(() =>
           schichtplanerLesen("papershift")(new TextEncoder().encode(text)),
         ).not.toThrow();
+      }),
+    );
+  });
+
+  it("never throws for Planday, local times and breaks of any shape included", () => {
+    const ortszeit = fc.oneof(
+      zeitpunkt,
+      fc.constantFrom("2026-03-29T02:30", "2026-10-25T02:30:00", "2026-09-01T07:00", "x"),
+    );
+    const planday = fc.array(
+      fc.record({
+        id: kennung,
+        employeeId: kennung,
+        startDateTime: ortszeit,
+        endDateTime: ortszeit,
+        status: fc.constantFrom("Approved", "Submitted", "Draft", "x"),
+        manualBreaks: fc.oneof(
+          wert,
+          fc.array(fc.record({ startDateTime: ortszeit, endDateTime: ortszeit })),
+        ),
+        absencePeriod: fc.oneof(wert, fc.record({ start: ortszeit, end: ortszeit })),
+        absenceType: wert,
+      }),
+      { maxLength: 15 },
+    );
+    fc.assert(
+      fc.property(planday, antwort, fc.dictionary(fc.string(), antwort), (liste, a, breaks) => {
+        const text = schichtplanerAbzugText(
+          plandayAbzug(
+            {
+              employees: a,
+              positions: a,
+              shifts: liste,
+              punchClock: liste,
+              breaks,
+              absenceRequests: liste,
+            },
+            zeitraum,
+          ),
+        );
+        expect(() => schichtplanerLesen("planday")(new TextEncoder().encode(text))).not.toThrow();
       }),
     );
   });

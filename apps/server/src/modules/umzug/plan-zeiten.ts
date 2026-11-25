@@ -1,11 +1,19 @@
-import { eingabeInBerlin, monatVon, plusTage, type Stempelung } from "@soll/arbeitszeit";
+import {
+  eingabeInBerlin,
+  type Monat,
+  monatVon,
+  NEUE_SCHICHT_AB,
+  plusTage,
+  type Stempelung,
+} from "@soll/arbeitszeit";
 import type { ImportZeit } from "@soll/import";
 import type { NeueStempelung, PlanGrund, Stand } from "./plan-typen.ts";
 
 /*
  * A span of work of another tool as stamps of Soll (BAULISTE.md S-701): Kommen at the begin, Gehen
  * at the end, a break in the middle of the span as in the plan (S-502), all on whole minutes of a
- * clock in Berlin. The tool keeps no instants of a break, so the middle is the honest place.
+ * clock in Berlin. The tool keeps no instants of a break, so the middle is the honest place. The
+ * spans of one person that form a shift are taken or refused together (review S-704).
  */
 
 const MINUTE = 60_000;
@@ -66,33 +74,115 @@ const ueberschneiden = (a: Spanne, b: Spanne): boolean => a.kommen < b.gehen && 
 /** What the plan of times remembers per person: the spans it took so far */
 export type Genommen = Map<string, Spanne[]>;
 
-/** The stamps of one span of a person, or why it is refused */
-export const zeitPlanen = (
-  zeit: ImportZeit,
+/** A span of a person to plan, with its stamps */
+type Teil = { nummer: number; zeit: ImportZeit; stempel: Stempelung[]; spanne: Spanne };
+
+/** What became of a span: its stamps and the month of its shift, or why it is refused */
+export type Zeitplan = { stempel: NeueStempelung[]; monat: Monat } | PlanGrund;
+
+/**
+ * The spans of one person as shifts: in time order, a span that begins less than 9 hours after the
+ * end of the one before belongs to the same shift (`NEUE_SCHICHT_AB`, as Soll cuts shifts), so a
+ * night shift that a break after midnight splits into two spans stays one
+ */
+const schichtenVon = (teile: readonly Teil[]): Teil[][] => {
+  const schichten: Teil[][] = [];
+  let ende = Number.NEGATIVE_INFINITY;
+  for (const teil of [...teile].sort((a, b) => a.spanne.kommen - b.spanne.kommen)) {
+    const letzte = schichten.at(-1);
+    if (letzte && teil.spanne.kommen - ende < NEUE_SCHICHT_AB) letzte.push(teil);
+    else schichten.push([teil]);
+    ende = Math.max(ende, teil.spanne.gehen);
+  }
+  return schichten;
+};
+
+/** Why a span of a shift cannot be taken on its own terms, or null */
+const spanneGrund = (
+  spanne: Spanne,
+  nutzerId: string,
+  stand: Stand,
+  andere: readonly Spanne[],
+): PlanGrund | null => {
+  if (spanne.gehen > stand.jetzt) return "zukunft";
+  if (
+    inVorhandenen(spanne, stand.stempelVon(nutzerId)) ||
+    andere.some((b) => ueberschneiden(b, spanne))
+  )
+    return "ueberschneidung";
+  return null;
+};
+
+/**
+ * A shift is decided as a whole (CLAUDE.md: a working day is the day the shift starts): each span
+ * is first checked on its own as before (the future, an overlap; of two overlapping spans the one
+ * earlier in the file stays, review 2 S-705), then whether a month is closed is asked once for the
+ * spans that remain, for the month the shift starts in and for all their stamps together, so it
+ * never takes half a shift
+ */
+const schichtPlanen = (
+  schicht: readonly Teil[],
   nutzerId: string,
   stand: Stand,
   genommen: Genommen,
-): NeueStempelung[] | PlanGrund => {
-  const stempel = stempelAus(zeit);
-  if (typeof stempel === "string") return stempel;
-  const spanne = {
-    kommen: (stempel[0] as Stempelung).zeitpunkt,
-    gehen: (stempel.at(-1) as Stempelung).zeitpunkt,
-  };
-  if (spanne.gehen > stand.jetzt) return "zukunft";
+): Map<Teil, Zeitplan> => {
+  const plaene = new Map<Teil, Zeitplan>();
+  const bleiben: Teil[] = [];
   const bisher = genommen.get(nutzerId) ?? [];
-  if (
-    inVorhandenen(spanne, stand.stempelVon(nutzerId)) ||
-    bisher.some((b) => ueberschneiden(b, spanne))
-  )
-    return "ueberschneidung";
+  for (const teil of [...schicht].sort((a, b) => a.nummer - b.nummer)) {
+    const andere = [...bisher, ...bleiben.map((t) => t.spanne)];
+    const grund = spanneGrund(teil.spanne, nutzerId, stand, andere);
+    if (grund === null) bleiben.push(teil);
+    else plaene.set(teil, grund);
+  }
+  const monat = monatVon((schicht[0] as Teil).zeit.tag);
   // the stamps around are read only when the person has a closed month at all
   const geschlossen = stand.geschlossen(nutzerId);
-  if (
-    geschlossen.has(monatVon(zeit.tag)) ||
-    (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, stempel))
-  )
-    return "monat_abgeschlossen";
-  genommen.set(nutzerId, [...bisher, spanne]);
-  return stempel.map((s) => ({ ...s, nutzerId, externId: stempelKennung(zeit.externalId, s.art) }));
+  const alle = bleiben.flatMap((t) => t.stempel).sort((a, b) => a.zeitpunkt - b.zeitpunkt);
+  const zu =
+    bleiben.length > 0 &&
+    (geschlossen.has(monat) || (geschlossen.size > 0 && stand.stempelGesperrt(nutzerId, alle)));
+  if (!zu) genommen.set(nutzerId, [...bisher, ...bleiben.map((t) => t.spanne)]);
+  for (const teil of bleiben)
+    plaene.set(
+      teil,
+      zu
+        ? "monat_abgeschlossen"
+        : {
+            monat,
+            stempel: teil.stempel.map((st) => ({
+              ...st,
+              nutzerId,
+              externId: stempelKennung(teil.zeit.externalId, st.art),
+            })),
+          },
+    );
+  return plaene;
+};
+
+/** The plan of the new spans of one person, by span */
+export const zeitenEinerPerson = (
+  zeiten: readonly ImportZeit[],
+  nutzerId: string,
+  stand: Stand,
+  genommen: Genommen,
+): Map<ImportZeit, Zeitplan> => {
+  const plaene = new Map<ImportZeit, Zeitplan>();
+  const teile: Teil[] = [];
+  for (const zeit of zeiten) {
+    const stempel = stempelAus(zeit);
+    if (typeof stempel === "string") plaene.set(zeit, stempel);
+    else {
+      const spanne = {
+        kommen: (stempel[0] as Stempelung).zeitpunkt,
+        gehen: (stempel.at(-1) as Stempelung).zeitpunkt,
+      };
+      teile.push({ nummer: teile.length, zeit, stempel, spanne });
+    }
+  }
+  for (const schicht of schichtenVon(teile)) {
+    for (const [teil, plan] of schichtPlanen(schicht, nutzerId, stand, genommen))
+      plaene.set(teil.zeit, plan);
+  }
+  return plaene;
 };

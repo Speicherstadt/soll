@@ -98,7 +98,10 @@ zwei Zeiten mit weniger als neun Stunden Abstand, sind sie wie beim Stempeln ein
 
 - Ein Monat, den der Betrieb **in Soll** schon abgeschlossen hat, nimmt nichts an: Was ihn ändern
   würde, lehnt der Probelauf mit „Monat ist in Soll abgeschlossen“ ab. Die Korrektur bleibt der
-  Gegeneintrag ([Monatsabschluss](monatsabschluss.md)).
+  Gegeneintrag ([Monatsabschluss](monatsabschluss.md)). Zeiten einer Person, zwischen denen
+  weniger als 9 Stunden liegen, sind eine Schicht (wie Soll Schichten schneidet) und gehören zum
+  Monat ihres Beginns: Eine Nachtschicht vom 30.9. auf den 1.10. mit einer Pause nach Mitternacht
+  übernimmt Soll ganz oder gar nicht, nie zur Hälfte.
 - Waren Monate **im alten Tool** schon abgeschlossen, trägt der Inhaber in der Zuordnung den letzten
   davon ein (höchstens den Vormonat). Nach der Übernahme schließt Soll für jede Person jeden dieser
   Monate ab, in den Zeiten oder Abwesenheiten fallen, die jetzt übernommen werden oder schon übernommen waren (ein abgelehnter Datensatz schließt keinen Monat): eine Zeile in

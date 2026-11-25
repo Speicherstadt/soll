@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { tage } from "../pruefung/testhilfen.ts";
-import { einsatzAnteile } from "./anteile.ts";
+import { einsatzAnteile, zusatzMinutenJeTag } from "./anteile.ts";
 import { DI, kommen, MO, SPAETER, schicht, uhr, um } from "./testhilfen.ts";
 
 /*
@@ -75,5 +75,29 @@ describe("einsatzAnteile with an open shift (review S-505, round 2)", () => {
     expect(
       kurz(gestempelt, [{ beginn: um(uhr("18", "2:00")), ende: um(uhr("18", "3:00")) }]),
     ).toEqual([{ tag: "2026-11-18", minuten: 60 }]);
+  });
+});
+
+describe("zusatzMinutenJeTag (review S-505, round 3)", () => {
+  it("a gap under 15 min between a call-out and stamped work is working time, on the stamped day", () => {
+    // call-out Mo 22:00 – 23:50, stamped Di 0:00 – 3:00: 110 + 10 + 180 = 300 like stamped
+    const gestempelt = tage(schicht(uhr(DI, "0:00"), uhr(DI, "3:00")), SPAETER);
+    const zusatz = zusatzMinutenJeTag(gestempelt, [
+      { tag: "2026-11-16", beginn: um(uhr(MO, "22:00")), ende: um(uhr(MO, "23:50")) },
+    ]);
+    expect(zusatz).toEqual(
+      new Map([
+        ["2026-11-16", 110],
+        ["2026-11-17", 10],
+      ]),
+    );
+  });
+
+  it("a gap of 15 min or more is a Ruhepause and adds nothing", () => {
+    const gestempelt = tage(schicht(uhr(MO, "22:00"), uhr(MO, "23:30")), SPAETER);
+    const zusatz = zusatzMinutenJeTag(gestempelt, [
+      { tag: "2026-11-16", beginn: um(uhr(DI, "0:30")), ende: um(uhr(DI, "2:00")) },
+    ]);
+    expect(zusatz).toEqual(new Map([["2026-11-16", 90]]));
   });
 });

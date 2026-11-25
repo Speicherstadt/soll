@@ -510,6 +510,32 @@ Alle Punkte: nach S-306.
   eines anderen sieht oder ändert; Playwright in `desktop` und `@phone`, axe grün in hell und
   dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+  Fertig, wenn: ein Mitarbeiter eine eigene veröffentlichte Schicht zum Tausch anbietet, eine
+  Kollegin sie übernimmt und der Planer den Tausch mit den Befunden der Prüfung für die Übernehmende
+  freigibt, wonach die Schicht ihr gehört (Playwright). Dazu: angeboten wird nur eine eigene
+  veröffentlichte Schicht, die noch nicht begonnen hat, an alle, die sie übernehmen können
+  (Mitglieder mit `plan:lesen` und `stempeln`), oder an eine genannte Kollegin; je Schicht ein
+  offenes Angebot; übernehmen kann nur, an wen es gerichtet ist, nie der Anbietende und nicht, wer
+  zur selben Zeit schon eine veröffentlichte Schicht hat; Inhaber und Planer (`plan:planen`) geben
+  frei oder lehnen mit Grund ab (Test je Rolle); hat der Inhaber „Tausch ohne Freigabe“
+  eingestellt, gilt die Übernahme sofort, solange die Prüfung keinen Verstoß findet, sonst wartet
+  sie auf die Freigabe; die Schicht wechselt die Person erst mit der Freigabe, in einer Transaktion
+  mit dem Tausch über die Audit-Kette (Test); vor der Freigabe laufen die Regeln aus S-502 für die
+  Übernehmende, als hätte sie die Schicht (Tests für § 5 ArbZG, JArbSchG beim Auszubildenden Leon,
+  MuSchG), ihre Befunde mit Norm sieht nur, wer freigibt, nie Anbietender und Übernehmende
+  (Art. 9 DSGVO); die Freigabe ist eine neue Mitteilung nach § 12 TzBfG (`veroeffentlicht_am` neu,
+  Entscheidung aus S-503), vor ihr gilt für die Prüfung heute; jeder Schritt benachrichtigt über
+  die Zustellung aus S-503 (Web Push, sonst Mail; Test mit Push- und SMTP-Ersatz) mit dem Tag der
+  Schicht (`plan-<schichtId>`): das Angebot die, an die es geht, die Übernahme den Anbietenden und
+  wer freigibt, Freigabe und Ablehnung beide Seiten, das Zurückziehen die Übernehmende, nie den, der
+  handelt; der ICS-Feed beider Personen folgt der Freigabe (Test); der Anbietende zieht ein Angebot
+  zurück, solange es nicht entschieden ist; ein Angebot läuft ab, wenn die Schicht beginnt, und
+  eine Änderung oder das Entfernen der Schicht durch den Planer macht es hinfällig (Test); ein
+  Entwurf lässt sich nicht anbieten; ein Angebot hat keinen Grund des Anbietenden (keine
+  Gesundheitsdaten, Art. 9 DSGVO); der Tausch steht in der Auskunft (Art. 15 DSGVO) ohne Daten der
+  anderen Person; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
+  ändert, und dass das abgeschaltete Modul abgelehnt wird; Playwright in `desktop` und `@phone`,
+  axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
 

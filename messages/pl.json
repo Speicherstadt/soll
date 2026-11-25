@@ -600,6 +600,7 @@
   "kiosk_gesperrt": "Zbyt wiele błędnych prób. Ponownie możliwe za {sekunden} s.",
   "kiosk_gesperrt_heute": "Dziś zbyt wiele błędnych prób. Terminal jest zablokowany do północy.",
   "kiosk_ohne_netz": "Brak połączenia. Terminal przeładuje się, gdy sieć wróci.",
+  "kiosk_karte_nochmal": "Brak odpowiedzi serwera. Przyłóż kartę jeszcze raz.",
   "kiosk_abgeschlossen": "Ten miesiąc jest zamknięty. Zapytaj w biurze.",
   "kiosk_fehler": "Nie udało się. Spróbuj ponownie.",
   "kiosk_neustart": "Wystąpił błąd. Terminal za chwilę uruchomi się ponownie.",

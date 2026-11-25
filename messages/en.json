@@ -600,6 +600,7 @@
   "kiosk_gesperrt": "Too many wrong tries. Possible again in {sekunden} s.",
   "kiosk_gesperrt_heute": "Too many wrong tries today. The terminal is locked until midnight.",
   "kiosk_ohne_netz": "No connection. The terminal reloads as soon as the network is back.",
+  "kiosk_karte_nochmal": "No answer from the server. Please hold the card to the tablet again.",
   "kiosk_abgeschlossen": "This month is closed. Please ask at the office.",
   "kiosk_fehler": "That did not work. Please try again.",
   "kiosk_neustart": "An error occurred. The terminal restarts in a moment.",

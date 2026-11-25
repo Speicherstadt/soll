@@ -12,7 +12,12 @@ import {
 } from "./geraet.ts";
 import { entkoppelt, type Meldung, meldungAus } from "./meldung.ts";
 import type { NfcKarte } from "./nfc.ts";
-import { type OfflineAusweis, offlineAusweis } from "./offline/schlange.ts";
+import {
+  direktInWarteschlange,
+  nachErkennenOhneAntwort,
+  type OfflineAusweis,
+  offlineAusweis,
+} from "./offline/schlange.ts";
 import { kioskWarteschlange } from "./offline/warteschlange.ts";
 import type { Ausweis, Erkannt, Gestempelt, KioskStand, Kopplung } from "./typen.ts";
 
@@ -127,13 +132,15 @@ const kioskAufrufe = (z: Zustand) => {
   const offline = ohneNetzAufrufe(z);
   const erkennen = (ausweis: Ausweis) =>
     einmal(async (token) => {
+      const lage = { ohneNetz: z.schlange.ohneNetz(), bereit: z.schlange.bereit() };
+      if (direktInWarteschlange(ausweis, lage)) return offline.ohneStand(ausweis);
       // a card's older SUN message waiting on the tablet goes first: once the card is read online
       // with a higher counter, the server refuses it (docs/plan.md, "SUN-Nachricht aus der
       // Warteschlange")
       if ("sun" in ausweis) await z.schlange.zuerstSenden();
       const antwort = await kioskAnfrage<Erkannt>(token, "/erkennen", ausweis);
       z.schlange.netz(antwort.status);
-      if (!antwort.ok && antwort.status === 0 && offline.ohneStand(ausweis)) return;
+      if (!antwort.ok && antwort.status === 0) return offline.ohneAntwort(ausweis);
       if (!antwort.ok) return z.abgelehnt(antwort);
       z.setMeldung(null);
       // a SUN message counts once: the next tap stamps with the server's receipt (S-802)
@@ -187,30 +194,40 @@ const kioskAufrufe = (z: Zustand) => {
  * Kommen, Pause and Gehen and keeps the stamp with the credential encrypted, to be sent later. Soll
  * never stamps by itself: only what the person taps waits.
  */
-const ohneNetzAufrufe = (z: Zustand) => ({
-  /** goes on without the person's state, where the credential can wait; false where it cannot */
-  ohneStand: (ausweis: Ausweis): boolean => {
+const ohneNetzAufrufe = (z: Zustand) => {
+  /** goes on without the person's state, the credential to wait in the queue */
+  const ohneStand = (ausweis: Ausweis) => {
     const wartet = offlineAusweis(ausweis);
-    if (!wartet || !z.schlange.bereit()) return false;
+    if (!wartet) return;
     z.setMeldung(null);
+    z.setKarte(null);
     z.setAnsicht({ art: "offline", ausweis: wartet, bis: Date.now() + ERKANNT_MS });
-    return true;
-  },
-  speichern: async (ausweis: OfflineAusweis, art: Stempelart) => {
-    const eintrag = await z.schlange.aufnehmen(ausweis, art);
-    if (!eintrag) {
+  };
+  return {
+    ohneStand,
+    /** /erkennen went unanswered: wait, ask for a new tap of the card, or say there is no network */
+    ohneAntwort: (ausweis: Ausweis) => {
+      const weiter = nachErkennenOhneAntwort(ausweis, z.schlange.bereit());
+      if (weiter === "warteschlange") return ohneStand(ausweis);
       z.zurueck();
-      z.setMeldung({ art: "fehler" });
-      return;
-    }
-    z.setAnsicht({
-      art: "gespeichert",
-      stempelart: art,
-      zeitpunkt: eintrag.geraetZeitpunkt,
-      bis: Date.now() + GESTEMPELT_MS,
-    });
-  },
-});
+      z.setMeldung(weiter === "nochmal" ? { art: "nochmal" } : { art: "netz" });
+    },
+    speichern: async (ausweis: OfflineAusweis, art: Stempelart) => {
+      const eintrag = await z.schlange.aufnehmen(ausweis, art);
+      if (!eintrag) {
+        z.zurueck();
+        z.setMeldung({ art: "fehler" });
+        return;
+      }
+      z.setAnsicht({
+        art: "gespeichert",
+        stempelart: art,
+        zeitpunkt: eintrag.geraetZeitpunkt,
+        bis: Date.now() + GESTEMPELT_MS,
+      });
+    },
+  };
+};
 
 /**
  * The kiosk's state as a query (docs/entwicklung.md, "Daten laden"), asked with the device token on

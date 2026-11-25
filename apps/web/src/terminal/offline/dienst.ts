@@ -191,19 +191,22 @@ export const kioskSchlange = (abh: KioskAbhaengigkeiten) => {
     return { erledigt, wartend: 0, entkoppelt: false };
   };
 
-  /** The run under way, so a second call joins it instead of sending the same entries again */
+  /** The run under way: one at a time, so no entry goes out twice at once */
   let laeuft: Promise<Versand> | null = null;
 
   /**
    * Sends what waits, oldest number first; an entry taken or refused for good leaves the tablet,
-   * at the first that cannot go now the queue stops, so the numbers arrive in order. A stamp taken
-   * meanwhile waits for the next run; the server takes the same entry twice as once.
+   * at the first that cannot go now the queue stops, so the numbers arrive in order. A call waits
+   * for a run under way and then starts its own, so every entry stored before the call has had its
+   * turn when it returns (before a SUN message goes online, review of S-803, round 3).
    */
-  const uebertragen = (token: string, terminalId: string): Promise<Versand> => {
-    laeuft ??= senden(token, terminalId).finally(() => {
+  const uebertragen = async (token: string, terminalId: string): Promise<Versand> => {
+    while (laeuft) await laeuft.catch(() => undefined);
+    const lauf = senden(token, terminalId).finally(() => {
       laeuft = null;
     });
-    return laeuft;
+    laeuft = lauf;
+    return lauf;
   };
 
   /** What the kiosk shows: how many entries wait and when the server last took one */

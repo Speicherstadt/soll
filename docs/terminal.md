@@ -167,7 +167,10 @@ Was dabei auf dem Tablet liegt und wie der Server es prüft:
 - **SUN-Nachricht**: Jede zählt nur einmal, auch aus der Warteschlange. Wurde die Karte
   inzwischen mit Netz gelesen, gilt die ältere Nachricht als Wiederholung; der Inhaber sieht den
   Eintrag als abgelehnt und trägt die Stempelung nach. Damit das am selben Tablet nicht passiert,
-  überträgt es zuerst, was wartet, bevor es eine Karte mit Netz erkennt.
+  überträgt es zuerst, was wartet, bevor es eine Karte mit Netz erkennt. Ohne Netz geht die
+  Nachricht gleich in die Warteschlange. Bleibt die Antwort des Servers auf eine aufgelegte Karte
+  aus, bittet das Terminal, die Karte noch einmal aufzulegen: Die erste Nachricht kann der Server
+  schon gezählt haben, die nächste ist neu.
 - **Ausweis an seinen Eintrag gebunden**: Ein verschlüsselter Ausweis öffnet sich nur in dem
   Eintrag (Terminal, Nummer, Art, Zeit), für den er getippt wurde; aus der Ablage des Tablets lässt
   er sich nicht in einen neuen Eintrag übernehmen.

@@ -26,6 +26,28 @@ export type OfflineAusweis = Exclude<Ausweis, { beleg: string }>;
 export const offlineAusweis = (ausweis: Ausweis): OfflineAusweis | null =>
   "beleg" in ausweis ? null : ausweis;
 
+/**
+ * After /erkennen went unanswered: a SUN message asks for a new tap, as the server may already have
+ * taken its read counter and would refuse it from the queue as a replay; any other credential waits
+ * where the queue is ready, else the kiosk says it has no network (review of S-803, round 3)
+ */
+export const nachErkennenOhneAntwort = (
+  ausweis: Ausweis,
+  bereit: boolean,
+): "nochmal" | "warteschlange" | "meldung" => {
+  if ("sun" in ausweis) return "nochmal";
+  return bereit && offlineAusweis(ausweis) ? "warteschlange" : "meldung";
+};
+
+/**
+ * Whether a SUN message goes straight into the queue without asking the server: while the kiosk
+ * knows it has no network, so the message never reaches the server before its entry does
+ */
+export const direktInWarteschlange = (
+  ausweis: Ausweis,
+  lage: { ohneNetz: boolean; bereit: boolean },
+): boolean => "sun" in ausweis && lage.ohneNetz && lage.bereit;
+
 /** The entries in the order they were stamped */
 export const nachNummer = (eintraege: readonly KioskEintrag[]): KioskEintrag[] =>
   [...eintraege].sort((a, b) => a.nummer - b.nummer);

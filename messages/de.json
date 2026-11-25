@@ -600,6 +600,7 @@
   "kiosk_gesperrt": "Zu viele falsche Versuche. Wieder möglich in {sekunden} s.",
   "kiosk_gesperrt_heute": "Zu viele falsche Versuche heute. Das Terminal ist bis Mitternacht gesperrt.",
   "kiosk_ohne_netz": "Keine Verbindung. Das Terminal lädt neu, sobald das Netz zurück ist.",
+  "kiosk_karte_nochmal": "Keine Antwort vom Server. Bitte die Karte noch einmal auflegen.",
   "kiosk_abgeschlossen": "Dieser Monat ist abgeschlossen. Frag bitte im Büro nach.",
   "kiosk_fehler": "Das hat nicht geklappt. Bitte versuch es noch einmal.",
   "kiosk_neustart": "Ein Fehler ist aufgetreten. Das Terminal startet gleich neu.",

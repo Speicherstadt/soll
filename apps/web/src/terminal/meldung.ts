@@ -5,6 +5,8 @@ export type Meldung =
   | { art: "unbekannt"; rest: number }
   | { art: "gesperrt"; bis: number }
   | { art: "netz" }
+  /** a card's tap went unanswered: the next tap brings a new SUN message (S-803) */
+  | { art: "nochmal" }
   | { art: "modul_aus" }
   | { art: "abgeschlossen" }
   | { art: "fehler" };

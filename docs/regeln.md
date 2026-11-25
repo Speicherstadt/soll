@@ -943,7 +943,12 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
   Soll gewährt die Übertragung immer). Vor dem Verfall nennt Soll jeden Teil, den ein Hinweis
   verfallen lässt, mit seinem eigenen Tag („Verfall droht“), und als „Hinweis fällig“ oder „fehlt“
   genau den Teil, den kein Hinweis verfallen lässt.
-  Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub.
+  Genommener Urlaub zählt zuerst gegen den ältesten offenen Urlaub; was über den Urlaub seines
+  Jahres hinausgeht (Vorgriff), zählt gegen den Urlaub der folgenden Jahre, so verfällt nur Urlaub,
+  der wirklich offen ist. Geht er über jeden Urlaub hinaus, den Soll kennt (das Folgejahr ist noch
+  nicht da), steht der Rest seines Jahres unter null, bis der Urlaub des Folgejahres feststeht.
+  Ebenso zählt ein Jahr, das eine Korrektur unter null bringt (ein Vorgriff aus dem alten Tool),
+  gegen den Urlaub der anderen Jahre, den ältesten zuerst.
 - **Schwere**: Hinweis am Arbeitszeitmodell; Hinweis auf Verfall (S-208) zum 31. März, für
   übertragenen Teilurlaub nach § 7 Abs. 3 Satz 4 BUrlG zum 31. Dezember des Folgejahres.
 
@@ -973,6 +978,9 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | zwei Hinweise | wie oben, ein zweiter Hinweis am 1.12.2026 nennt 2 Tage | der letzte Hinweis gilt: 2 Tage verfallen, 1 Tag bleibt | BAG, 19.02.2019, 9 AZR 541/15 |
 | Hinweis nach dem Verfall | wie „Hinweis nennt weniger“, am 3.5.2027 nennt ein neuer Hinweis den übrigen Tag | er nennt den Verfall mit Ablauf des 31.3.2028 (nicht den vergangenen 31.3.2027); am 1.4.2028 ist auch dieser Tag verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
 | zwei Fristen | 2025 10 Tage, Hinweis am 1.10.2025 nennt 10, danach 5 Tage durch Korrektur dazu, ein später Hinweis am 2.2.2026 nennt 15, Stand 2.3.2026 | „Verfall droht“ für 10 Tage bis 31.3.2026 und für 5 Tage bis 31.3.2027, kein „Hinweis fehlt“; am 1.4.2027 sind alle 15 verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
+| Vorgriff | 2026 und 2027 je 20 Tage, 22 Tage im Jahr 2026 genommen, Hinweis am 1.10.2027 nennt 18 Tage aus 2027, Stand 3.4.2028 | 2 Tage zählen gegen 2027, 18 Tage verfallen, Rest 0 (nie unter null) | § 7 Abs. 3 BUrlG (nur offener Urlaub verfällt) |
+| Vorgriff ohne Folgejahr | 2026 20 Tage, 22 Tage genommen, Stand 1.12.2026 (2027 noch nicht bekannt) | Rest 2026: −2 Tage; ab 4.1.2027 mit 20 Tagen 2027: Rest 2026 0, Rest 2027 18 Tage | § 7 Abs. 3 BUrlG; Projektplan, „Verfall von Urlaub“ |
+| Vorgriff aus einer Korrektur | 2026 20 Tage, Korrektur für 2025 −2 Tage (Vorgriff aus dem alten Tool), Hinweis am 1.10.2026, Stand 1.4.2027 | offen und im Hinweis genannt 18 Tage aus 2026; am 1.4.2027 sind 18 Tage verfallen, Rest 0 (nie unter null) | § 7 Abs. 3 BUrlG; EuGH C-684/16 (der Hinweis nennt den offenen Urlaub richtig) |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
 Bruchteile werden nicht abgerundet, sondern bleiben geschuldet (BAG, 26.01.1989, 8 AZR 730/87).

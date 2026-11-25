@@ -126,14 +126,17 @@ const vorausrechnen = (lauf: Lauf): { tag: Tag; halbtage: number }[] => {
 };
 
 /**
- * Takes one day of leave off the pots, the oldest first: it expires first, so the person keeps the
- * most (docs/plan.md, "Verfall von Urlaub"). More leave than open is charged to its own year.
+ * Takes one day of leave off the pots in the order of years: the oldest first, as it expires first
+ * and the person keeps the most (docs/plan.md, "Verfall von Urlaub"); beyond its own year's leave it
+ * counts against the following years, as leave granted in advance (R-23, § 7 Abs. 3 BUrlG: only
+ * leave still open can expire). Leave beyond every year Soll knows stays in its own year, below
+ * zero, until the entitlement of the next year is known.
  */
 const entnehmen = (laeufe: readonly Lauf[], eintrag: GenommenerUrlaub) => {
   let offen = eintrag.halbtage;
   for (const lauf of laeufe) {
     const { topf } = lauf;
-    if (offen === 0 || topf.jahr > jahrVon(eintrag.tag) || topf.restHalbtage <= 0) continue;
+    if (offen === 0 || topf.restHalbtage <= 0) continue;
     const teil = Math.min(offen, topf.restHalbtage);
     topf.restHalbtage -= teil;
     topf.genommenHalbtage += teil;
@@ -145,6 +148,33 @@ const entnehmen = (laeufe: readonly Lauf[], eintrag: GenommenerUrlaub) => {
     eigener.topf.restHalbtage -= offen;
     eigener.topf.genommenHalbtage += offen;
     eigener.entnommen.push({ tag: eintrag.tag, halbtage: offen });
+  }
+};
+
+/** Before every day: an offset of a year's leave below zero is no leave taken on a day */
+const VOR_ALLEM: Tag = "0000-01-01";
+
+/**
+ * A year whose leave a correction put below zero (an advance the old tool granted, `urlaub_korrektur`
+ * below zero) counts against the leave of the other years like leave taken in advance, the oldest
+ * first: so the account and a notice name only leave that is open (§ 7 Abs. 3 BUrlG; EuGH C-684/16).
+ * What no other year covers stays below zero in its own year. The year keeps its own entitlement
+ * raised by what was offset, the others count it as taken before every day.
+ */
+const ausgleichen = (laeufe: readonly Lauf[]) => {
+  for (const lauf of laeufe) {
+    let fehlt = -lauf.topf.restHalbtage;
+    for (const andere of laeufe) {
+      if (fehlt <= 0) break;
+      if (andere === lauf || andere.topf.restHalbtage <= 0) continue;
+      const teil = Math.min(fehlt, andere.topf.restHalbtage);
+      andere.topf.restHalbtage -= teil;
+      andere.topf.genommenHalbtage += teil;
+      andere.entnommen.push({ tag: VOR_ALLEM, halbtage: teil });
+      lauf.topf.anspruchHalbtage += teil;
+      lauf.topf.restHalbtage += teil;
+      fehlt -= teil;
+    }
   }
 };
 
@@ -168,6 +198,7 @@ export const ablaufen = (
       zuletzt: null,
     };
   });
+  ausgleichen(laeufe);
   const genommen = e.genommen
     .filter((g) => g.tag <= e.heute)
     .sort((a, b) => a.tag.localeCompare(b.tag));

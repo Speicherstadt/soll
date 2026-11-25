@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e9bf20d2-f01c-401c-b303-ee97f5f99376",
+  "id": "97d88359-f804-403b-b1bb-db11f7a6f7e8",
   "prevId": "99e9eee8-c9f2-48d5-bda4-eb287aa36f1c",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1971,6 +1971,125 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "haben_uebergaben": {
+      "name": "haben_uebergaben",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "buchung_id": {
+          "name": "buchung_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "inhalt": {
+          "name": "inhalt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "leistung_id": {
+          "name": "leistung_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "gesendet_am": {
+          "name": "gesendet_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "fehler": {
+          "name": "fehler",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "meldung": {
+          "name": "meldung",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "versucht_am": {
+          "name": "versucht_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "angelegt_am": {
+          "name": "angelegt_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "haben_uebergaben_betrieb_id_buchung_id_pk": {
+          "columns": [
+            "betrieb_id",
+            "buchung_id"
+          ],
+          "name": "haben_uebergaben_betrieb_id_buchung_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "haben_zugaenge": {
+      "name": "haben_zugaenge",
+      "columns": {
+        "betrieb_id": {
+          "name": "betrieb_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adresse": {
+          "name": "adresse",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "geaendert_am": {
+          "name": "geaendert_am",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "personenangaben": {
       "name": "personenangaben",
       "columns": {
@@ -2863,14 +2982,13 @@
         }
       },
       "indexes": {
-        "karten_uid_aktiv": {
-          "name": "karten_uid_aktiv",
+        "karten_uid": {
+          "name": "karten_uid",
           "columns": [
             "betrieb_id",
             "uid_kennung"
           ],
-          "isUnique": true,
-          "where": "\"karten\".\"widerrufen_am\" is null"
+          "isUnique": true
         }
       },
       "foreignKeys": {},

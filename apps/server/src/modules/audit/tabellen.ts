@@ -2,6 +2,7 @@ import {
   abwesenheiten,
   apiZugaenge,
   arbeitszeitmodelle,
+  aussonderungen,
   ausweise,
   bedarfe,
   betriebe,
@@ -12,6 +13,8 @@ import {
   erinnerungseinstellungen,
   erinnerungsregeln,
   geraete,
+  habenUebergaben,
+  habenZugaenge,
   instanzschluessel,
   karten,
   korrekturen,
@@ -74,6 +77,9 @@ export const kettenTabellen = {
   datevEinstellungen: { tabelle: datevEinstellungen, schluessel: ["betriebId"] },
   datevPersonalnummern: { tabelle: datevPersonalnummern, schluessel: ["nutzerId"] },
   apiZugaenge: { tabelle: apiZugaenge, schluessel: ["zugangId"] },
+  aussonderungen: { tabelle: aussonderungen, schluessel: ["aussonderungId"] },
+  habenZugaenge: { tabelle: habenZugaenge, schluessel: ["betriebId"] },
+  habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

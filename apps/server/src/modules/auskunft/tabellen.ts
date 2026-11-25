@@ -12,6 +12,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   stempelungen: "stempelungen",
   korrekturen: "gegeneintraege",
   monatsabschluesse: "monatsabschluesse",
+  aussonderungen:
+    "aussonderungen (welcher Monat nach Ablauf der Frist entfernt wurde, ohne Inhalt)",
   modellzuordnungen: "arbeitszeitmodelle",
   arbeitszeitmodelle: "arbeitszeitmodelle",
   schichten: "schichten",
@@ -42,6 +44,9 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   api_zugaenge: "zugaenge (ohne Hash und Anfang des Tokens)",
   terminals: "ausgenommen: Tablets des Betriebs am Eingang, keine Daten der Person",
   ausweise: "ausweis (wann und von wem ausgestellt, ohne den Hash des QR-Codes)",
+  haben_zugaenge: "ausgenommen: Adresse und Token des Betriebs für Haben, keine Daten der Person",
+  haben_uebergaben:
+    "ausgenommen: Leistung des Betriebs an seinen Kunden ohne Namen der Person; die Buchung selbst steht unter projektzeiten",
   karten: "karten (Art, wann und von wem eingetragen, widerrufen; ohne UID, Schlüssel und Zähler)",
   abwesenheiten:
     "abwesenheiten (Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer; keine Diagnose)",
@@ -83,6 +88,9 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   monatsabschluesse: frei(
     "Schritte des Abschlusses mit Inhalt und Prüfwert, wie der Monat sie zeigt",
   ),
+  aussonderungen: frei(
+    "welcher Monat nach Ablauf der Frist entfernt wurde, wie der Monat es zeigt",
+  ),
   modellzuordnungen: frei("Modelle, die der Inhaber der Person zuordnet"),
   arbeitszeitmodelle: frei("Soll und Lohn, die der Inhaber festlegt"),
   schichten: frei("Schichten im Dienstplan, den der Betrieb plant, auch im Entwurf"),
@@ -116,6 +124,8 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   ausweise: frei(
     "ob und wann der Inhaber den QR-Code ausgestellt hat, wie die Einstellungen es zeigen",
   ),
+  haben_zugaenge: aus("keine Daten der Person (Zugang des Betriebs zu Haben)"),
+  haben_uebergaben: aus("keine eigenen Daten: die Buchungen stehen unter projektzeiten"),
   karten: frei(
     "welche Karten der Inhaber der Person eingetragen hat, wie die Einstellungen es zeigen",
   ),

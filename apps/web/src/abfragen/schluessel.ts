@@ -46,6 +46,10 @@ export const PFAD = {
   auslastung: `${PZ}/auslastung`,
   auslastungPersonen: `${PZ}/auslastung/personen`,
   auslastungIch: `${PZ}/auslastung/ich`,
+  habenZugang: `${PZ}/haben/zugang`,
+  habenKontakte: `${PZ}/haben/kontakte`,
+  habenBuchungen: `${PZ}/haben/buchungen`,
+  habenUebergabe: `${PZ}/haben/uebergabe`,
 } as const;
 
 type Parameter = Record<string, string | undefined>;
@@ -106,6 +110,10 @@ export const ressourcen = {
   auslastung: (monat: string) => mitParametern(PFAD.auslastung, { monat }),
   auslastungPersonen: (monat: string) => mitParametern(PFAD.auslastungPersonen, { monat }),
   auslastungIch: (monat: string) => mitParametern(PFAD.auslastungIch, { monat }),
+  habenZugang: () => einfach(PFAD.habenZugang),
+  habenKontakte: () => einfach(PFAD.habenKontakte),
+  habenBuchungen: (parameter: { projektId: string; von: string; bis: string }) =>
+    mitParametern(PFAD.habenBuchungen, parameter),
 };
 
 /** The key of every variant of a resource, for invalidating after a write */

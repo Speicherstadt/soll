@@ -92,9 +92,16 @@ export const abschliessen = (wer: Person, nutzerId: string, mehr: Json = {}) =>
     body: { monat: "2026-10", nutzerId, ...mehr },
   });
 
-/** Sandra confirms October, Jonas closes it; the Prüfwert of her time sheet */
-export const abgeschlossen = async (optionen: Parameters<typeof testServer>[0] = {}) => {
+/**
+ * Sandra confirms October, Jonas closes it; the Prüfwert of her time sheet. `vorher` changes the
+ * month before she confirms it.
+ */
+export const abgeschlossen = async (
+  optionen: Parameters<typeof testServer>[0] = {},
+  vorher: (w: Awaited<ReturnType<typeof weber>>) => Promise<void> = async () => {},
+) => {
   const w = await weber(optionen);
+  await vorher(w);
   expect((await bestaetigen(w.sandra)).status).toBe(201);
   const antwort = await abschliessen(w.jonas, w.sandra.nutzerId);
   expect(antwort.status).toBe(201);

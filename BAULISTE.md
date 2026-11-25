@@ -555,7 +555,7 @@ Alle Punkte: nach S-306.
   unterschreibt; Playwright zeichnet die Unterschrift mit Pointer Events, unterschreibt und lädt das
   PDF (desktop und `@phone`); axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
   `docs/projektzeit.md`.
-- [ ] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
+- [x] **S-606 Haben** – Kunden lesen, Projektzeit an `POST /api/v1/leistungen` mit `source` und
   `externalId` (wiederholbar), Stundennachweis als Anlage.
   Fertig, wenn: Tests gegen einen Ersatz nach `docs/api.md` von Haben bestehen, auch für Wiederholung
   und Fehler.
@@ -666,7 +666,7 @@ Alle Punkte: nach S-305.
 
 ## Phase 9 – Härtung und Betrieb
 
-- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
+- [x] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
   Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
@@ -675,7 +675,13 @@ Alle Punkte: nach S-305.
   nennen).
 - [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
-- [ ] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
+- [x] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
+  Fertig, wenn: `bun run lasttest` den Server auf einer leeren Datenbank in einem temporären
+  Verzeichnis auf Port 28300 startet, 50 Betriebe mit je 50 Personen über die HTTP-API anlegt (echte
+  Konten und Sitzungen), alle 2.500 gleichzeitig „Kommen“ stempeln lässt, p50, p95, p99, Maximum und
+  Fehler ausgibt, danach genau eine Stempelung je Person und jede Kette ohne Befund prüft und nur bei
+  bestandener Schwelle mit 0 endet (Schwelle, Dauerhaftigkeit und CI in `docs/plan.md`); eine kleine
+  Fassung läuft in `bun run test`, der volle Lauf im Workflow `Lasttest`.
 - [x] **S-905 Installation** – Docker-Image (amd64, arm64), Compose, Quadlet, Backups mit
   Wiederherstellung (`VACUUM INTO`), Release-Workflow aus firsttris/workflows.
   Fertig, wenn: die CI das Image baut und ein Container mit leerem Datenverzeichnis startet und
@@ -743,10 +749,6 @@ Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streich
 neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
 requests“).
 
-- [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
-- [ ] S-606 Haben – #48; offen: Doku in `docs/projektzeit.md`, Entscheidungen, Haken
-- [ ] S-904 Lasttest – #49; offen: Zeitüberschreitungen in den Tests klären, Schwelle festlegen
-  und als Entscheidung eintragen, Doku, Haken
 - [ ] S-803 Terminal offline – noch nicht begonnen
 
 **Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604

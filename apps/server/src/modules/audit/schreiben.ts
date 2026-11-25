@@ -23,12 +23,16 @@ export type Schreiber = {
   ) => Zeile<N>;
   loeschen: <N extends TabellenName>(name: N, schluessel: Schluessel<N>) => Zeile<N>;
   /**
-   * Removes the stored contents of every link a row has so far and keeps the links: the chain holds
-   * only each content's hash, so it still verifies (a removed content is allowed, pruefen.ts). For
-   * what must not outlive its purpose, such as a revoked card's keys; the write that ends the
-   * purpose stands in the chain beside it. Returns how many contents were removed.
+   * Changes a row and removes the stored contents of every link it had before, keeping the links:
+   * the chain holds only each content's hash, so it still verifies (a removed content is allowed,
+   * pruefen.ts). For what must not outlive its purpose, such as a revoked card's keys. Never without
+   * the change: the change is the link that records why the contents went. `inhalte` counts them.
    */
-  inhalteEntfernen: <N extends TabellenName>(name: N, schluessel: Schluessel<N>) => number;
+  inhalteEntfernen: <N extends TabellenName>(
+    name: N,
+    schluessel: Schluessel<N>,
+    werte: Partial<Neu<N>>,
+  ) => { zeile: Zeile<N>; inhalte: number };
   /**
    * Deletes a row after its retention period (S-901) and the stored contents of every link that
    * wrote it; the links stay, as they hold only the contents' hashes, and the removal is a link of
@@ -185,14 +189,12 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
     });
     return zeile as never;
   },
-  inhalteEntfernen: (name, schluessel) => {
+  inhalteEntfernen: (name, schluessel, werte) => {
     wo(name, kontext.betriebId, schluessel as Record<string, unknown>); // refuses a partial key
-    return inhalteEntfernen(
-      tx,
-      kontext.betriebId,
-      name,
-      zeilenId(name, schluessel as Record<string, unknown>),
-    );
+    const id = zeilenId(name, schluessel as Record<string, unknown>);
+    const inhalte = inhalteEntfernen(tx, kontext.betriebId, name, id);
+    const zeile = schreiberFuer(tx, kontext).aendern(name, schluessel, werte);
+    return { zeile, inhalte };
   },
   aussondern: (name, schluessel) => {
     const zeile = zeileLoeschen(tx, kontext, name, schluessel);
@@ -214,8 +216,8 @@ const einzeln = (tx: Tx, kontext: Kontext): Schreiber => ({
     tx.transaction((sp) => schreiberFuer(sp, kontext).aendern(name, schluessel, werte)),
   loeschen: (name, schluessel) =>
     tx.transaction((sp) => schreiberFuer(sp, kontext).loeschen(name, schluessel)),
-  inhalteEntfernen: (name, schluessel) =>
-    tx.transaction((sp) => schreiberFuer(sp, kontext).inhalteEntfernen(name, schluessel)),
+  inhalteEntfernen: (name, schluessel, werte) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).inhalteEntfernen(name, schluessel, werte)),
   aussondern: (name, schluessel) =>
     tx.transaction((sp) => schreiberFuer(sp, kontext).aussondern(name, schluessel)),
 });
@@ -241,9 +243,9 @@ const nurWaehrend = (schreiber: Schreiber, offen: () => boolean): Schreiber => {
       pruefen();
       return schreiber.loeschen(name, schluessel);
     },
-    inhalteEntfernen: (name, schluessel) => {
+    inhalteEntfernen: (name, schluessel, werte) => {
       pruefen();
-      return schreiber.inhalteEntfernen(name, schluessel);
+      return schreiber.inhalteEntfernen(name, schluessel, werte);
     },
     aussondern: (name, schluessel) => {
       pruefen();

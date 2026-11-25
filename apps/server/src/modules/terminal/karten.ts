@@ -84,8 +84,9 @@ export const karteEntziehen = (
   const karte = karteLesen(db, kontext.betriebId, karteId);
   if (!karte || karte.widerrufenAm !== null) return false;
   schreiben(schreibDb, kontext, (s) => {
-    if (karte.schluessel !== null) s.inhalteEntfernen("karten", { karteId });
-    s.aendern("karten", { karteId }, { widerrufenAm: kontext.jetzt, schluessel: null });
+    const werte = { widerrufenAm: kontext.jetzt, schluessel: null };
+    if (karte.schluessel !== null) s.inhalteEntfernen("karten", { karteId }, werte);
+    else s.aendern("karten", { karteId }, werte);
   });
   return true;
 };

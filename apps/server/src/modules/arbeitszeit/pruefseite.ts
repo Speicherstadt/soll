@@ -1,5 +1,5 @@
 import { type Monat, type Tag, tagInBerlin } from "@soll/arbeitszeit";
-import { and, desc, eq, gt, lt } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import { auditGlieder, aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch, sha256 } from "../audit/hash.ts";
@@ -51,27 +51,6 @@ const zeileVon = (db: Db, betriebId: string, abschlussId: string) =>
 type Glied = typeof auditGlieder.$inferSelect;
 
 /**
- * Whether a link's time can be true: not after the time of the check, and not after the time of any
- * link that follows it. A clock set forward for one run of the removal and back would else let a
- * month pass as removed after its period long before that period ended.
- */
-const nichtVorgestellt = (db: Db, betriebId: string, glied: Glied, jetzt: number): boolean => {
-  if (glied.zeitpunkt > jetzt) return false;
-  const frueher = db
-    .select({ seq: auditGlieder.seq })
-    .from(auditGlieder)
-    .where(
-      and(
-        eq(auditGlieder.betriebId, betriebId),
-        gt(auditGlieder.seq, glied.seq),
-        lt(auditGlieder.zeitpunkt, glied.zeitpunkt),
-      ),
-    )
-    .get();
-  return frueher === undefined;
-};
-
-/**
  * The removal of a closing (S-901), if it went through the chain: its row matches its link, the
  * chain up to that link is intact, it names the closing's link and came no sooner than the
  * retention period the person's models give. Else a removal written past the chain could hide a
@@ -114,7 +93,9 @@ const aussonderungVon = (
     pruefwertPruefen(db, betriebId, formatPruefwert(glied)) === "gueltig" &&
     zeile.abgeschlossenAm === abschluss.zeitpunkt &&
     aussonderbarAb(abschluss.zeitpunkt, jahre) <= tagInBerlin(glied.zeitpunkt) &&
-    nichtVorgestellt(db, betriebId, glied, jetzt);
+    // a link dated after the check came from a clock set forward: no removal yet. Later links may
+    // carry earlier times (a writer takes its time before it awaits), so only now is compared.
+    glied.zeitpunkt <= jetzt;
   return echt ? zeile : null;
 };
 

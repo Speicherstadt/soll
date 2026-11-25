@@ -26,6 +26,7 @@ export * from "./schema/rufbereitschaft.ts";
 export * from "./schema/schichttausch.ts";
 export * from "./schema/stundennachweise.ts";
 export * from "./schema/terminal.ts";
+export * from "./schema/verfahrensdoku.ts";
 export * from "./schema/zugaenge.ts";
 
 /** One row per business; `betrieb_id` is the id of its Better Auth organization (S-106) */

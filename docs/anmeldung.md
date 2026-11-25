@@ -18,7 +18,7 @@ ist, kann ihn nicht wählen und sieht keine seiner Daten.
 
 | Rolle | Darf |
 | --- | --- |
-| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln, QR-Codes ausstellen und NFC-Karten eintragen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, Urlaub freigeben, Krankheit sehen, die Frist der Bescheinigung einstellen, den Dienstplan planen |
+| Inhaber | alles: den Betrieb einrichten, Module schalten, einladen, Rollen ändern, PINs setzen, Terminals koppeln, QR-Codes ausstellen und NFC-Karten eintragen, Arbeitszeitmodelle zuordnen, Zeiten aller mit Grund korrigieren, Urlaub freigeben, Krankheit sehen, die Frist der Bescheinigung einstellen, den Dienstplan planen, die [Verfahrensdokumentation](verfahrensdokumentation.md) pflegen |
 | Planer | lesen, die Mitgliederliste, Mitarbeiter und Externe einladen, stempeln, Zeiten aller sehen und mit Grund korrigieren, Urlaub freigeben und ablehnen, selbst freigegebenen Urlaub stornieren, den Dienstplan planen; Abwesenheiten anderer außer offenen Anträgen nur als „abwesend“ |
 | Mitarbeiter | die eigenen Daten: stempeln, die eigenen Zeiten sehen und mit Grund korrigieren, Urlaub beantragen, sich krank melden, den veröffentlichten Dienstplan sehen |
 | Lohnbüro | lesen, die Mitgliederliste, die Arbeitszeitmodelle mit ihren Löhnen, stempeln, Zeiten aller sehen, Krankheit sehen und die Bescheinigung markieren, den veröffentlichten Dienstplan sehen |

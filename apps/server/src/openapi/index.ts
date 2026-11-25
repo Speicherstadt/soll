@@ -7,6 +7,7 @@ import { IMPORTE } from "./importe.ts";
 import { DIENSTPLAN, PROJEKTZEIT } from "./module.ts";
 import { RUFBEREITSCHAFT } from "./rufbereitschaft.ts";
 import { KIOSK, TERMINAL } from "./terminal.ts";
+import { VERFAHRENSDOKU } from "./verfahrensdoku.ts";
 
 export { type Operation, openapiDokument, openapiPfad } from "./dokument.ts";
 
@@ -26,4 +27,5 @@ export const OPERATIONEN = [
   ...HABEN,
   ...TERMINAL,
   ...KIOSK,
+  ...VERFAHRENSDOKU,
 ];

@@ -57,6 +57,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
     "personenangaben (Geburtsdatum, Wechselschicht, Arbeit auf Abruf, Zeiträume des Mutterschutzes)",
   konto_anpassungen: "kontoAnpassungen (Startsaldo, Auszahlung, Korrekturen mit Grund)",
   urlaubshinweise: "urlaubshinweise (Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub)",
+  verfahrensdoku_angaben:
+    "ausgenommen: Angaben des Betriebs zu seiner Verfahrensdokumentation; die Person steht darin nur, wenn der Inhaber sie selbst als Verantwortliche einträgt, und die Glieder ihres Schreibens stehen unter auditKette",
   schichttausche:
     "schichttausche (angeboten, an dich gerichtet oder übernommen; Status, Zeiten, Grund einer Ablehnung, ohne die andere Person)",
   tauschregeln: "ausgenommen: ob ein Tausch eine Freigabe braucht, Einstellung des Betriebs",
@@ -154,6 +156,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
     "Anpassungen der Konten, die der Inhaber selbst einträgt (konten:pflegen)",
   ),
   urlaubshinweise: frei("Hinweise auf den Verfall, die der Inhaber selbst gibt (konten:pflegen)"),
+  verfahrensdoku_angaben: aus("keine Daten der Person (Angaben des Betriebs, S-902)"),
   schichttausche: frei("Tausche von Schichten, die Inhaber und Planer sehen und entscheiden"),
   tauschregeln: aus("keine Daten der Person (Einstellung des Betriebs zum Tausch)"),
   importe: aus(

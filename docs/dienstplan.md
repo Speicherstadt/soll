@@ -14,6 +14,9 @@ schaltet der Inhaber in der Einrichtung („Schichten oder Plan“) oder später
 Ist es aus, lehnt der Server jede Anfrage an den Dienstplan ab, nicht nur die App blendet ihn aus;
 die geplanten Schichten bleiben erhalten.
 
+![Der Dienstplan einer Woche im Café am Desktop](assets/screenshots/dienstplan-light-desktop.png#only-light)
+![Der Dienstplan einer Woche im Café am Desktop](assets/screenshots/dienstplan-dark-desktop.png#only-dark)
+
 ## Wer was sieht
 
 | Rolle | Dienstplan |

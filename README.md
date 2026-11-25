@@ -21,6 +21,27 @@ Open Source, auf deinem eigenen Server.
 > [!WARNING]
 > **In Entwicklung:** Soll ist noch nicht veröffentlicht.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/heute-dark-desktop.png">
+    <img src="docs/assets/screenshots/heute-light-desktop.png" width="640" alt="Heute am Desktop: eingestempelt seit 07:03, Soll, Ist und der Hinweis auf die fällige Pause nach § 4 ArbZG">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/heute-dark-phone.png">
+    <img src="docs/assets/screenshots/heute-light-phone.png" width="180" alt="Heute am Handy">
+  </picture>
+</p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dienstplan-dark-desktop.png">
+    <img src="docs/assets/screenshots/dienstplan-light-desktop.png" width="410" alt="Der Dienstplan einer Woche im Café">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/terminal-dark-terminal.png">
+    <img src="docs/assets/screenshots/terminal-light-terminal.png" width="410" alt="Das Terminal am Tablet mit Uhr und PIN-Feld">
+  </picture>
+</p>
+
 ## Warum Soll?
 
 Seit dem Beschluss des Bundesarbeitsgerichts von 2022 muss jeder Betrieb die Arbeitszeit erfassen.
@@ -107,6 +128,7 @@ bun install
 bun run check        # Typen, Lint, Tests, Build
 bun run e2e          # Playwright: desktop, phone, terminal
 bun run demo         # Demo-Daten in ./demo-daten
+bun run screenshots  # die Bilder dieser Seite und der Doku neu
 ```
 
 `bun run demo` legt die Testbetriebe „Weber Haustechnik“ und „Café Elbblick“ mit drei Monaten

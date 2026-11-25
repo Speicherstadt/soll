@@ -1038,7 +1038,7 @@ Alle Punkte: nach S-305.
   gegen Fixtures, ohne Netz. Doku `docs/gesetzeswaechter.md` und `docs/entwicklung.md`.
 - [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
   README aktuell.
-- [ ] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
+- [x] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
   Terminal.
   Fertig, wenn: `bun run screenshots [--heute <JJJJ-MM-TT>] [--ziel <verzeichnis>] [--nur <name>]`
   die Demo-Daten (S-909) in ein frisches temporäres Verzeichnis schreibt, nie in eines mit

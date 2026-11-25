@@ -11,6 +11,9 @@ Inhaber und Planer geben Anträge frei, Inhaber und Lohnbüro sehen, wann eine B
 ist. Abwesenheiten gehören zum Modul Arbeitszeit; jede Änderung steht in der
 [Audit-Kette](audit-kette.md).
 
+![„Abwesenheiten“ am Desktop: Resturlaub, Überstunden und Anträge](assets/screenshots/abwesenheiten-light-desktop.png#only-light)
+![„Abwesenheiten“ am Desktop: Resturlaub, Überstunden und Anträge](assets/screenshots/abwesenheiten-dark-desktop.png#only-dark)
+
 | Art | Wie sie entsteht | Gutschrift im Ist |
 | --- | --- | --- |
 | Urlaub | Antrag, Freigabe durch den Betrieb | das Soll des Tags; zählt als Urlaubstag nur an einem Tag mit Soll |

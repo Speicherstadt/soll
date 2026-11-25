@@ -44,7 +44,7 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
   const geschlossen = aenderung.geschlossen ?? (() => new Set<string>());
   return {
     jetzt: um("2026-11-25T12:00:00+01:00"),
-    module: { arbeitszeit: true, projektzeit: true },
+    module: { arbeitszeit: true, projektzeit: true, dienstplan: true },
     mitglieder: new Set(["sandra", "max"]),
     vorhanden: {
       stempelungen: new Map(),
@@ -53,7 +53,10 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
       projekte: new Set(),
       taetigkeiten: new Map(),
       buchungen: new Set(),
+      salden: new Map(),
+      schichten: new Map(),
     },
+    saldoPruefen: () => null,
     buchungUeberschneidet: () => false,
     kunden: new Set(["elbhof"]),
     projekte: new Set(["bad"]),
@@ -62,6 +65,7 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
     stempelVon: () => [],
     stempelGesperrt: (nutzerId, neue) =>
       neue.some((s) => geschlossen(nutzerId).has(monatVon(tagInBerlin(s.zeitpunkt)))),
+    schichtenVon: () => [],
     abwesenheitenVon: () => [],
     abwesenheitGesperrt: () => false,
     neueId: () => `id-${++n}`,

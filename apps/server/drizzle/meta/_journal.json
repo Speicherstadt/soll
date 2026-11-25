@@ -211,6 +211,20 @@
       "when": 1795626256691,
       "tag": "0029_import_taetigkeiten",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "6",
+      "when": 1795635191818,
+      "tag": "0030_salden",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "6",
+      "when": 1795643816216,
+      "tag": "0031_import_schichten",
+      "breakpoints": true
     }
   ]
 }

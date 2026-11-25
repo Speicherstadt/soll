@@ -10,7 +10,7 @@ import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import type { Person } from "../zeiten/typen.ts";
 import { AnpassungDialog, HinweisDialog } from "./dialoge.tsx";
-import { anpassungText, hinweisText, lueckeText, topfZeile } from "./text.ts";
+import { anpassungText, befundZeilen, hinweisText, lueckeText } from "./text.ts";
 import type { Konten as KontenDaten } from "./typen.ts";
 
 export const Wert = (props: { name: string; children: JSX.Element }) => (
@@ -26,7 +26,7 @@ const Stand = (props: { k: KontenDaten }) => {
   const zeilen = () => {
     const u = urlaub();
     if (!u.ok) return [];
-    return (u.toepfe ?? []).flatMap((topf) => topfZeile(topf, props.k.heute) ?? []);
+    return befundZeilen(u.befunde ?? []);
   };
   return (
     <>

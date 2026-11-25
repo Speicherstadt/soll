@@ -3,7 +3,15 @@ import type { LeseFehler, Ziel } from "@soll/import";
 
 /* What the API of imports answers (apps/server, routes/importe.ts; S-701) */
 
-export type Art = "zeiten" | "abwesenheiten" | "kunden" | "projekte" | "taetigkeiten" | "buchungen";
+export type Art =
+  | "zeiten"
+  | "abwesenheiten"
+  | "kunden"
+  | "projekte"
+  | "taetigkeiten"
+  | "buchungen"
+  | "salden"
+  | "schichten";
 export const ARTEN: readonly Art[] = [
   "zeiten",
   "abwesenheiten",
@@ -11,7 +19,18 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "salden",
+  "schichten",
 ];
+
+/** The balances of a person on a cut-off date in the file (S-708) */
+export type Saldo = {
+  zeile: number;
+  person: string;
+  stichtag: string;
+  ueberstundenMinuten: number | null;
+  urlaubHalbtage: number | null;
+};
 
 /**
  * What a dry run and a takeover count: the records; bookings are those a tool kept (S-705) and
@@ -49,8 +68,11 @@ export type Vorschau = {
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
   taetigkeiten: { externalId: string; name: string }[];
   vorhandeneTaetigkeiten: { taetigkeitId: string; name: string }[];
-  module: { arbeitszeit: boolean; projektzeit: boolean };
+  module: { arbeitszeit: boolean; projektzeit: boolean; dienstplan: boolean };
+  /** the sites the shifts of a shift planner may go to (S-706) */
+  standorte: { standortId: string; name: string }[];
   befunde: Liste<Vorschaubefund>;
+  salden: Liste<Saldo>;
   buchung: {
     projekte: Wertvorschlag[];
     taetigkeiten: Wertvorschlag[];
@@ -96,13 +118,18 @@ export type Datei = { name: string; inhalt: string };
 
 /**
  * What POST /importe/abruf takes: the access for this one fetch and the period; Clockodo's access
- * (S-703), a Kimai instance with its token (S-705) or a Personio integration (S-704)
+ * (S-703), a Kimai instance with its token (S-705), a Personio integration (S-704) or the
+ * access of a shift planner (S-706)
  */
 export type Abruf = {
   zugang:
     | { nutzer: string; schluessel: string }
     | { instanz: string; token: string; benutzer: string | null }
-    | { clientId: string; clientSecret: string };
+    | { clientId: string; clientSecret: string }
+    // the shift planners (S-706): Papershift's token, Planday's app, a Crewmeister account
+    | { token: string }
+    | { appId: string; token: string }
+    | { email: string; passwort: string };
   von: string;
   bis: string;
 };

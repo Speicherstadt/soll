@@ -28,6 +28,7 @@ describe("the move page", () => {
           { wert: "Fahrt", datensaetze: 1, vorschlag: "fahrt" },
         ],
       },
+      standorte: [{ standortId: "elbe", name: "Elbe" }],
     } as Vorschau;
     expect(zuordnungAus(vorschau)).toEqual({
       personen: { Sandra: "s", Leon: null },
@@ -36,7 +37,14 @@ describe("the move page", () => {
       projekte: { "p-1": "neu" },
       taetigkeiten: { "401": "neu" },
       buchung: { projekte: { "Bad Elbhof": "p-9" }, taetigkeiten: { "": null, Fahrt: "fahrt" } },
+      standort: "elbe",
     });
+    // with two sites the owner chooses where the shifts go (S-706)
+    const zwei = {
+      ...vorschau,
+      standorte: [...vorschau.standorte, { standortId: "hafen", name: "Hafen" }],
+    };
+    expect(zuordnungAus(zwei).standort).toBeNull();
   });
 
   it('sends the column of each field, and "" for a field the owner gives none (S-702)', () => {

@@ -1,0 +1,11 @@
+import { type Arbeitstag } from "./arbeitstag.ts";
+import type { Stempelung } from "./stempelungen.ts";
+export declare const um: (text: string) => number;
+export declare const kommen: (text: string) => Stempelung;
+export declare const gehen: (text: string) => Stempelung;
+export declare const pause: (text: string) => Stempelung;
+export declare const weiter: (text: string) => Stempelung;
+export declare const SPAETER: number;
+export declare const tage: (stempelungen: Stempelung[], jetzt?: number) => Arbeitstag[];
+export declare const einTag: (stempelungen: Stempelung[], jetzt?: number) => Arbeitstag;
+export declare const arten: (tag: Arbeitstag) => import("./arbeitstag.ts").StempelbefundArt[];

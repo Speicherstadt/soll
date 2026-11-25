@@ -1,6 +1,7 @@
 import { Badge } from "@soll/ui";
 import { For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
+import { SaldenVorschau } from "./salden.tsx";
 import { tagKurz } from "./texte.ts";
 import type { Vorschau } from "./typen.ts";
 
@@ -10,6 +11,7 @@ import type { Vorschau } from "./typen.ts";
  */
 export const VorschauSchritt = (props: { vorschau: Vorschau }) => (
   <div class="flex flex-col gap-3">
+    <SaldenVorschau salden={props.vorschau.salden} />
     <p class="text-muted-foreground">{m.umzug_befunde_text()}</p>
     <Show
       when={props.vorschau.befunde.anzahl > 0}

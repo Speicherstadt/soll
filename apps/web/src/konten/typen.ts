@@ -1,4 +1,4 @@
-import type { HinweisPosten, Monat, Tag, Urlaubstopf } from "@soll/arbeitszeit";
+import type { HinweisPosten, Monat, Tag, Urlaubstopf, VerfallBefund } from "@soll/arbeitszeit";
 
 /** Why the server shows no balance: a value is missing, or months were removed (S-901) */
 export type Luecke = { ok: false; grund: "nicht_hinterlegt" | "ausgesondert"; monate: Monat[] };
@@ -11,6 +11,8 @@ export type Urlaub =
       geplantHalbtage: number;
       startJahr?: number;
       toepfe?: Urlaubstopf[];
+      /** only for whoever sees everything of the person: where the leave of each year stands */
+      befunde?: VerfallBefund[];
     }
   | Luecke;
 
@@ -29,7 +31,8 @@ export type Anpassungsart =
   | "auszahlung"
   | "korrektur"
   | "urlaub_start"
-  | "urlaub_korrektur";
+  | "urlaub_korrektur"
+  | "urlaub_stichtag";
 
 export type Anpassung = {
   anpassungId: string;

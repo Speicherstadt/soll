@@ -142,7 +142,59 @@ den Hinweis drei Monate vor dem Verfall:
 | kein Hinweis | ab 1.1.2027 Hinweis „Hinweis auf Verfall fehlt“; der Urlaub verfällt nicht und verjährt nicht (BAG, 20.12.2022, 9 AZR 266/20) |
 
 Ein Hinweis nennt allen Urlaub, der an seinem Tag offen ist; er gilt für jedes Jahr ab seinem
-eigenen. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
+eigenen. Verfallen kann nur, was der letzte Hinweis mit diesem Tag des Verfalls genannt hat und
+noch offen ist: Urlaub, der danach genommen wurde, zählt ab; kommt danach Urlaub eines Jahres
+dazu, etwa durch eine Korrektur, bleibt dieser Teil, bis ein neuer Hinweis ihn nennt. Kommt der
+neue Hinweis nach der Frist, nennt er den 31. März nach seinem eigenen Jahr, nie einen Tag, der
+schon vorbei ist. Vor dem Verfall nennt Soll beides getrennt: „Verfall droht“ für jeden Teil, den ein Hinweis
+nennt, mit seinem eigenen Tag (ein später Hinweis hat einen späteren), und „Hinweis auf Verfall
+fällig“ für den Rest, solange die Frist für den Hinweis läuft. Das Datum, bis zu dem der Hinweis fällig ist, zeigt die App bei den Konten (S-402).
+
+## Salden zum Stichtag
+
+Wer von einem anderen Tool oder von Papier zu Soll wechselt, bringt je Person einen **Stichtag**
+mit, den Ersten eines Monats, und die Salden an diesem Tag (Regel
+[R-34](regeln.md#r-34-salden-zum-stichtag)). Der Inhaber trägt sie unter **Abwesenheiten › Konten ›
+Anpassen** ein (Art „Startsaldo“ und „Resturlaub zum Stichtag“), oder sie kommen aus einem
+[Import](umzug.md#salden-zum-stichtag). Beides gilt gleich und steht in der
+[Audit-Kette](audit-kette.md).
+
+- **Überstunden** zum Stichtag sind der Startsaldo des Überstundenkontos, in ganzen Minuten, auch
+  negativ. Ein Monat davor zählt nicht, auch wenn er erst später abgeschlossen wird.
+- **Resturlaub** zum Stichtag ist aller Urlaub, der an diesem Tag offen ist, der des laufenden
+  Jahres eingeschlossen, in halben Tagen und nie negativ (zu viel gewährter Urlaub wird nicht
+  zurückgefordert, § 5 Abs. 3 BUrlG). Er ersetzt den Jahresurlaub des Stichtagsjahres; Urlaub vor
+  dem Stichtag zählt nicht mehr, das alte Tool hat ihn schon abgezogen. Die Jahre danach rechnet
+  Soll wie oben.
+- Der Resturlaub gilt ganz als Urlaub des Stichtagsjahres, auch ein Rest aus dem Vorjahr: Er
+  verfällt frühestens mit dem 31. März des Folgejahres und nur nach einem Hinweis in Soll. Soll
+  weiß nicht, welcher Teil aus dem Vorjahr stammt und ob dafür ein Hinweis kam; die längere Frist
+  ist die für die Person günstigere Lesart. Nichts verfällt still.
+
+| Beispiel (25 Urlaubstage im Jahr) | Ergebnis |
+| --- | --- |
+| Stichtag 1.10.2026, Resturlaub 8,5 Tage, Urlaub am 10.9.2026 schon in Soll | Rest 8,5 Tage |
+| dazu 2 Urlaubstage im November | Rest 6,5 Tage |
+| Stand 1.2.2027 | 33,5 Tage (8,5 aus 2026, 25 aus 2027) |
+| kein Hinweis bis 1.4.2027 | die 8,5 Tage verfallen nicht |
+
+Regeln für beide Salden:
+
+- **Einmal je Person**: ein zweiter Startsaldo wird abgelehnt (`409 vorhanden`); ebenso Resturlaub
+  zum Stichtag neben dem früheren „Resturlaub vor Soll“ (`urlaub_start`, je Jahr, das die API für
+  vorhandene Einträge weiter kennt).
+- **Nie überschrieben**: was falsch ist, korrigiert eine Korrektur mit Grund; der Verlauf bleibt
+  sichtbar.
+- **Nur in einem offenen Monat**: ein Stichtag in einem abgeschlossenen Monat oder nach einem
+  abgeschlossenen Monat der Person wird abgelehnt (`409 widerspruch`), ebenso ein Resturlaub zum
+  Stichtag, sobald es einen Hinweis auf Verfall gibt, gleich für welchen Tag (der Hinweis nannte
+  anderen Urlaub).
+- **Im Prüfwert**: der Monat des Stichtags trägt die Salden in seinem Inhalt (Ansicht des Monats,
+  Stundenzettel „Startsaldo zum …“). Die Person bestätigt sie mit dem Monat, eine Bestätigung vor
+  dem Eintrag gilt nicht mehr, und mit dem Abschluss deckt ihr Prüfwert die Salden. Ältere Monate
+  ohne Saldo behalten Inhalt und Prüfwert.
+- **DATEV** bleibt unberührt: der Export trägt die Stunden eines Monats; ein Startsaldo ist kein
+  Lohn eines Monats, ausgezahlt wird wie bisher über die Auszahlung.
 
 ## Kinderkrankentage
 
@@ -164,6 +216,7 @@ Alle Funktionen sind rein und liegen in `packages/arbeitszeit`:
 | `ueberstundenkonto(abschluesse, anpassungen, bis)` | Saldo, Verlauf je Monat und Lücken |
 | `urlaubsanspruch(eingaben)` | Jahresurlaub mit Art (voll, Teilurlaub a, b, c), Zwölfteln, Zusatzurlaub, Kürzung und Befunden |
 | `urlaubskonto(eingaben)` | Urlaub je Jahr mit genommen, verfallen, Rest, Verfallstag und Befunden zum Verfall |
+| `urlaubAbStichtag(eingaben, stichtag)` | die Eingaben des Urlaubskontos ab einem Stichtag mit dem Resturlaub an diesem Tag (R-34) |
 | `kinderkrankZaehlen(jahr, tage, alleinerziehend)` | Tage je Kind und zusammen mit Befunden |
 | `urlaubGenommen(tage)`, `kindKrankTage(tage)` | die Eingaben der Konten aus den Tagen eines Monats |
 

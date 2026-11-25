@@ -1,7 +1,15 @@
 import { PDFDocument } from "pdf-lib";
 import { befundText } from "../befunde.ts";
 import { druckbar, metadaten, type Schreiber, schreiber, schriften } from "../pdf/schreiber.ts";
-import { datumText, dauerText, monatText, tagText, uhrzeitText, zeitpunktText } from "./format.ts";
+import {
+  datumText,
+  dauerText,
+  halbtageText,
+  monatText,
+  tagText,
+  uhrzeitText,
+  zeitpunktText,
+} from "./format.ts";
 
 /** A day of the time sheet: first and last stamp, break and work in whole minutes, Soll, notes */
 export type ZettelTag = {
@@ -24,6 +32,11 @@ export type ZettelBefund = {
   tage: string[];
 };
 
+/** A start balance: overtime in minutes or leave in half days, with its reason (S-708) */
+export type ZettelStartsaldo =
+  | { art: "ueberstunden"; minuten: number; grund: string }
+  | { art: "urlaub"; halbtage: number; grund: string };
+
 /** What a time sheet shows (S-306); the server builds it from the month's content */
 export type Stundenzettel = {
   betrieb: string;
@@ -40,6 +53,8 @@ export type Stundenzettel = {
   nichtHinterlegt: string[];
   befunde: ZettelBefund[];
   gegeneintraege: { tag: string; minuten: number; grund: string }[];
+  /** the start balances on the first day of the month (S-708), as its content records them */
+  startsalden?: ZettelStartsaldo[];
   bestaetigt: { name: string; am: number } | null;
   abgeschlossen: { name: string; am: number; grund: string | null } | null;
   /** „Nr. 1234 · <SHA-256>“ of the closing, null while the month is open */
@@ -155,6 +170,21 @@ const gegeneintraege = (s: Schreiber, zettel: Stundenzettel) => {
   s.zeile(6);
 };
 
+const startsalden = (s: Schreiber, zettel: Stundenzettel) => {
+  const liste = zettel.startsalden ?? [];
+  if (liste.length === 0) return;
+  s.platz(2);
+  s.text(`Startsaldo zum ${datumText(`${zettel.monat}-01`)}`, 0, { fett: true });
+  s.zeile();
+  for (const saldo of liste)
+    s.absatz(
+      saldo.art === "ueberstunden"
+        ? `Überstunden: ${dauerText(saldo.minuten, true)} · Grund: ${saldo.grund}`
+        : `Resturlaub: ${halbtageText(saldo.halbtage)} · Grund: ${saldo.grund}`,
+    );
+  s.zeile(6);
+};
+
 const pruefwert = (s: Schreiber, zettel: Stundenzettel) => {
   s.platz(4);
   s.text("Prüfwert", 0, { fett: true });
@@ -187,6 +217,7 @@ export const stundenzettelPdf = async (zettel: Stundenzettel): Promise<Uint8Arra
   summen(s, zettel);
   befunde(s, zettel);
   gegeneintraege(s, zettel);
+  startsalden(s, zettel);
   pruefwert(s, zettel);
   return doc.save();
 };

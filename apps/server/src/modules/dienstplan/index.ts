@@ -38,6 +38,13 @@ export {
   tauschbuch,
   tauschregelSetzen,
 } from "./tauschliste.ts";
+export {
+  type GespeicherteSchicht,
+  schichtenDerPerson,
+  schichtenUebernehmen,
+  type UebernommeneSchicht,
+  uebernommeneSchichten,
+} from "./uebernahme.ts";
 export { planMelden, wocheVeroeffentlichen } from "./veroeffentlichen.ts";
 export { standortVorhanden, verweisFehler } from "./verweise.ts";
 export {

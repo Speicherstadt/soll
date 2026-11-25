@@ -1,0 +1,146 @@
+{
+  "quelle": "Planday Open API as github.com/borgels/mcp-server-planday (src/planday/resources.ts, after openapi.planday.com/{hr,scheduling,punchclock,absence}/swagger/v1.0/swagger.json) describes it; Café Elbblick, September and October 2026",
+  "employees": [
+    {
+      "id": 1101,
+      "firstName": "Tom",
+      "lastName": "Becker",
+      "email": "tom@elbblick.test",
+      "cellPhone": "040 1",
+      "salaryIdentifier": "L-1",
+      "ssn": "x"
+    },
+    { "id": 1102, "firstName": "Lea", "lastName": "Wolf", "email": "lea@elbblick.test" },
+    { "id": 1103, "firstName": "Yusuf", "lastName": "Demir", "email": "yusuf@elbblick.test" }
+  ],
+  "positions": [
+    { "id": 21, "name": "Küche", "isActive": true, "departmentId": 1 },
+    { "id": 22, "name": "Service", "isActive": true, "departmentId": 1 }
+  ],
+  "shifts": [
+    {
+      "id": 3001,
+      "departmentId": 1,
+      "employeeId": 1101,
+      "positionId": 21,
+      "date": "2026-09-01",
+      "startDateTime": "2026-09-01T07:00",
+      "endDateTime": "2026-09-01T15:00",
+      "status": "Assigned",
+      "comment": "Lieferung annehmen",
+      "manualBreaks": [
+        {
+          "id": 1,
+          "startDateTime": "2026-09-01T11:00",
+          "endDateTime": "2026-09-01T11:30",
+          "isPaidBreak": false
+        }
+      ]
+    },
+    {
+      "id": 3002,
+      "departmentId": 1,
+      "employeeId": 1102,
+      "positionId": 22,
+      "date": "2026-10-24",
+      "startDateTime": "2026-10-24T22:00:00",
+      "endDateTime": "2026-10-25T06:00:00",
+      "status": "Approved"
+    },
+    {
+      "id": 3003,
+      "departmentId": 1,
+      "employeeId": null,
+      "positionId": 22,
+      "date": "2026-09-06",
+      "startDateTime": "2026-09-06T10:00",
+      "endDateTime": "2026-09-06T18:00",
+      "status": "Open"
+    },
+    {
+      "id": 3004,
+      "departmentId": 1,
+      "employeeId": 1103,
+      "positionId": 22,
+      "date": "2026-09-07",
+      "startDateTime": "2026-09-07T10:00",
+      "endDateTime": "2026-09-07T18:00",
+      "status": "Draft",
+      "isDraft": true
+    }
+  ],
+  "punchClock": [
+    {
+      "id": 5001,
+      "shiftId": 3001,
+      "departmentId": 1,
+      "employeeId": 1101,
+      "startDateTime": "2026-09-01T06:58:30",
+      "endDateTime": "2026-09-01T15:01:10",
+      "description": "Inventur",
+      "isApproved": true
+    },
+    {
+      "id": 5002,
+      "shiftId": null,
+      "departmentId": 1,
+      "employeeId": 1102,
+      "startDateTime": "2026-09-08T12:00",
+      "endDateTime": null,
+      "isApproved": false
+    },
+    {
+      "id": 5003,
+      "shiftId": null,
+      "departmentId": 1,
+      "employeeId": 1103,
+      "startDateTime": "2026-10-25T02:30",
+      "endDateTime": "2026-10-25T07:00",
+      "isApproved": true
+    }
+  ],
+  "breaks": {
+    "5001": [
+      { "id": 1, "startDateTime": "2026-09-01T10:30:20", "endDateTime": "2026-09-01T11:00:40" }
+    ]
+  },
+  "absenceRequests": [
+    {
+      "id": 4001,
+      "employeeId": 1101,
+      "absenceType": "Vacation",
+      "absencePeriod": { "start": "2026-09-14", "end": "2026-09-18" },
+      "status": "Approved",
+      "note": "Ostsee"
+    },
+    {
+      "id": 4002,
+      "employeeId": 1102,
+      "absenceType": "Absence",
+      "absencePeriod": { "start": "2026-09-21T00:00", "end": "2026-09-22T23:59" },
+      "status": "Approved",
+      "note": "Grippe"
+    },
+    {
+      "id": 4003,
+      "employeeId": 1103,
+      "absenceType": "Vacation",
+      "absencePeriod": { "start": "2026-09-28", "end": "2026-09-30" },
+      "status": "Submitted"
+    },
+    {
+      "id": 4004,
+      "employeeId": 1103,
+      "absenceType": "Vacation",
+      "absencePeriod": { "start": "2026-09-10", "end": "2026-09-11" },
+      "status": "Declined"
+    },
+    {
+      "id": 4005,
+      "employeeId": 1102,
+      "absenceType": "Flextime",
+      "absencePeriod": { "start": "2026-09-29T08:00", "end": "2026-09-29T12:00" },
+      "status": "Approved"
+    }
+  ]
+}

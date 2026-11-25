@@ -1,7 +1,7 @@
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import { druckbar } from "../pdf/schreiber.ts";
-import { dauerText, monatText, tagText, uhrzeitText } from "./format.ts";
+import { dauerText, halbtageText, monatText, tagText, uhrzeitText } from "./format.ts";
 import { type Stundenzettel, stundenzettelPdf } from "./pdf.ts";
 import { pdfText } from "./text.ts";
 
@@ -113,6 +113,25 @@ describe("stundenzettelPdf", () => {
     );
     expect(text).toContain("Abgeschlossen ohne Bestätigung, Grund: ausgeschieden");
     expect(text).toContain("30.09.2026: -0:15 · Grund: Pause nachgetragen");
+  });
+
+  it("names the start balances on the first day of the month (S-708)", async () => {
+    const text = pdfText(
+      await stundenzettelPdf(
+        zettel({
+          startsalden: [
+            { art: "ueberstunden", minuten: -195, grund: "übernommen aus Soll-CSV" },
+            { art: "urlaub", halbtage: 17, grund: "übernommen aus Soll-CSV" },
+          ],
+        }),
+      ),
+    );
+    expect(text).toContain("Startsaldo zum 01.10.2026");
+    expect(text).toContain("Überstunden: -3:15 · Grund: übernommen aus Soll-CSV");
+    expect(text).toContain("Resturlaub: 8,5 Tage · Grund: übernommen aus Soll-CSV");
+    expect(pdfText(await stundenzettelPdf(zettel()))).not.toContain("Startsaldo");
+    expect(halbtageText(2)).toBe("1 Tag");
+    expect(halbtageText(0)).toBe("0 Tage");
   });
 
   it("goes on over several pages and gives the same file for the same sheet", async () => {

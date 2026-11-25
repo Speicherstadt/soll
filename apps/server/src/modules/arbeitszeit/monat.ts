@@ -22,6 +22,7 @@ import type { Db } from "../../db/oeffnen.ts";
 import { korrekturen } from "../../db/schema.ts";
 import { abwesenheitstage } from "./abwesenheiten/lesen.ts";
 import { beschaeftigungVon, standortVon } from "./grundlagen.ts";
+import { startsaldenIm } from "./konten/stichtag.ts";
 import {
   type Aufzeichnung,
   aufzeichnungen,
@@ -246,6 +247,7 @@ export const monatJetzt = (
         ...stand.befunde,
       ],
       gegeneintraege,
+      startsalden: startsaldenIm(db, betriebId, nutzerId, monat),
     }),
     // a day with a shift still open; a stamp without Kommen opens none (it is an R-01 finding)
     offeneTage: imMonat

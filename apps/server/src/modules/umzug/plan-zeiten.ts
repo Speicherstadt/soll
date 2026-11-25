@@ -181,19 +181,31 @@ export const zeitenEinerPerson = (
   }
   const genommeneSpannen = [...bisher];
   const genommeneStempel: Stempelung[] = [];
-  // in the order of the days, each checked against the database and what the run took before it
-  const tage = [...arbeitstageVon(bleiben, stand.stempelVon(nutzerId))].sort(([a], [b]) =>
-    a < b ? -1 : a > b ? 1 : 0,
-  );
-  for (const [tag, teile] of tage) {
-    const ergebnisse = tagPlanen(tag, teile, nutzerId, stand, genommeneStempel);
-    teile.forEach((teil, i) => {
-      const plan = ergebnisse[i] as Zeitplan;
-      plaene.set(teil.zeit, plan);
-      if (typeof plan === "string") return;
-      genommeneSpannen.push(teil.spanne);
-      genommeneStempel.push(...teil.stempel);
-    });
+  const vorhanden = stand.stempelVon(nutzerId);
+  // in the order of the days, each checked against the database and what the run took before it;
+  // a refused day takes its spans out of the cut, so the rest is cut again without them
+  let rest = bleiben;
+  while (rest.length > 0) {
+    const tage = [...arbeitstageVon(rest, [...vorhanden, ...genommeneStempel])].sort(([a], [b]) =>
+      a < b ? -1 : a > b ? 1 : 0,
+    );
+    const entschieden = new Set<Teil>();
+    for (const [tag, teile] of tage) {
+      const ergebnisse = tagPlanen(tag, teile, nutzerId, stand, genommeneStempel);
+      let abgelehnt = false;
+      teile.forEach((teil, i) => {
+        const plan = ergebnisse[i] as Zeitplan;
+        plaene.set(teil.zeit, plan);
+        entschieden.add(teil);
+        if (typeof plan === "string") abgelehnt = true;
+        else {
+          genommeneSpannen.push(teil.spanne);
+          genommeneStempel.push(...teil.stempel);
+        }
+      });
+      if (abgelehnt) break;
+    }
+    rest = rest.filter((teil) => !entschieden.has(teil));
   }
   genommen.set(nutzerId, genommeneSpannen);
   return plaene;

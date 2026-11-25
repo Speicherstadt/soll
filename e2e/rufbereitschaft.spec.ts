@@ -21,15 +21,41 @@ const mitTom = async (jonas: Page, browser: Browser) => {
   return { tom, tomId };
 };
 
-/** The owner plans Tom's duty for today, 0:00 to 23:59, in the dialog of the plan, and publishes */
-const rufPlanen = async (jonas: Page) => {
-  await jonas.goto(`/dienstplan?tag=${heute()}`);
+const MINUTE = 60_000;
+
+/** The Berlin day and clock time of an instant, as the fields of the app take them */
+const berlin = (ms: number) => ({
+  tag: new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Berlin" }).format(ms),
+  uhr: new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(ms),
+});
+
+/**
+ * The instants of the flow, relative to now so it runs at any time of day: the duty from three
+ * hours ago to three hours ahead, the call-out added afterwards two and a half hours ago
+ */
+const zeiten = () => {
+  const jetzt = Math.floor(Date.now() / MINUTE) * MINUTE;
+  return {
+    dienst: { beginn: berlin(jetzt - 180 * MINUTE), ende: berlin(jetzt + 180 * MINUTE) },
+    nachtrag: { beginn: berlin(jetzt - 150 * MINUTE), ende: berlin(jetzt - 140 * MINUTE) },
+  };
+};
+type Zeiten = ReturnType<typeof zeiten>;
+
+/** The owner plans Tom's duty around now in the dialog of the plan, and publishes its week */
+const rufPlanen = async (jonas: Page, z: Zeiten) => {
+  await jonas.goto(`/dienstplan?tag=${z.dienst.beginn.tag}`);
   await jonas.getByRole("button", { name: t("oncall_add") }).click();
   const dialog = jonas.getByRole("dialog", { name: t("oncall_add") });
-  await dialog.getByLabel(t("plan_tag")).fill(heute());
+  await dialog.getByLabel(t("plan_tag")).fill(z.dienst.beginn.tag);
   await dialog.getByLabel(t("plan_person")).selectOption({ label: "Tom Berger" });
-  await dialog.getByLabel(t("plan_beginn")).fill("00:00");
-  await dialog.getByLabel(t("plan_ende")).fill("23:59");
+  await dialog.getByLabel(t("plan_beginn")).fill(z.dienst.beginn.uhr);
+  await dialog.getByLabel(t("plan_ende")).fill(z.dienst.ende.uhr);
   await dialog.getByLabel(t("oncall_response")).fill("45");
   await dialog.getByRole("button", { name: t("plan_speichern") }).click();
   await expect(dialog).toHaveCount(0);
@@ -43,9 +69,9 @@ const rufPlanen = async (jonas: Page) => {
 const karte = (page: Page) => page.getByRole("region", { name: t("oncall_title") });
 
 /** Tom begins and ends a call-out on Heute and adds one afterwards */
-const einsaetze = async (tom: Page) => {
+const einsaetze = async (tom: Page, z: Zeiten) => {
   await tom.goto("/");
-  await expect(karte(tom)).toContainText("Du hast Rufbereitschaft bis 23:59.");
+  await expect(karte(tom)).toContainText(`Du hast Rufbereitschaft bis ${z.dienst.ende.uhr}.`);
   await karte(tom)
     .getByRole("button", { name: t("callout_start") })
     .click();
@@ -58,31 +84,41 @@ const einsaetze = async (tom: Page) => {
     .getByRole("button", { name: t("callout_add") })
     .click();
   const dialog = tom.getByRole("dialog", { name: t("callout_add") });
-  await dialog.getByLabel(t("callout_from")).fill("00:01");
-  await dialog.getByLabel(t("callout_until")).fill("00:02");
+  await dialog.getByLabel(t("callout_day")).fill(z.nachtrag.beginn.tag);
+  await dialog.getByLabel(t("callout_from")).fill(z.nachtrag.beginn.uhr);
+  await dialog.getByLabel(t("callout_until")).fill(z.nachtrag.ende.uhr);
   await dialog.getByLabel(t("callout_reason")).fill("Heizung bei Kunde");
   await dialog.getByRole("button", { name: t("callout_save") }).click();
   await expect(dialog).toHaveCount(0);
 };
 
-/** The month shows the call-outs as working time of the day */
-const imMonat = async (tom: Page) => {
+/** The table of a month: the page opens on the month before the running one */
+const monatstabelle = async (tom: Page, tag: string) => {
   await tom.goto("/monat");
-  await tom.getByRole("button", { name: t("monat_folgemonat") }).click();
-  const tabelle = tom.getByRole("table", { name: t("monat_tage") });
-  await expect(tabelle).toContainText(/Einsatz 00:01–00:02 \(0:01\)/);
-  await expect(tabelle).toContainText(/Einsatz \d\d:\d\d–\d\d:\d\d \(0:0\d\)/);
+  if (tag.slice(0, 7) === heute().slice(0, 7))
+    await tom.getByRole("button", { name: t("monat_folgemonat") }).click();
+  return tom.getByRole("table", { name: t("monat_tage") });
+};
+
+/** The month shows the call-outs as working time of their days */
+const imMonat = async (tom: Page, z: Zeiten) => {
+  const nachgetragen = `Einsatz ${z.nachtrag.beginn.uhr}–${z.nachtrag.ende.uhr} (0:10)`;
+  await expect(await monatstabelle(tom, z.nachtrag.beginn.tag)).toContainText(nachgetragen);
+  await expect(await monatstabelle(tom, heute())).toContainText(
+    /Einsatz \d\d:\d\d–\d\d:\d\d \(0:0\d\)/,
+  );
 };
 
 const ablauf = async (jonas: Page, browser: Browser) => {
+  const z = zeiten();
   const { tom } = await mitTom(jonas, browser);
-  await rufPlanen(jonas);
-  await tom.goto(`/dienstplan?tag=${heute()}`);
+  await rufPlanen(jonas, z);
+  await tom.goto(`/dienstplan?tag=${z.dienst.beginn.tag}`);
   await expect(
     tom.getByText(t("oncall_title"), { exact: true }).filter({ visible: true }).first(),
   ).toBeVisible();
-  await einsaetze(tom);
-  await imMonat(tom);
+  await einsaetze(tom, z);
+  await imMonat(tom, z);
   return { tom };
 };
 
@@ -90,12 +126,10 @@ test("plans Rufbereitschaft, Tom begins, ends and adds call-outs, the month coun
   page,
   browser,
 }) => {
-  test.skip(new Date().getHours() === 0, "the call-out added afterwards lies at 0:01");
   await ablauf(page, browser);
 });
 
 test("Rufbereitschaft and call-outs on a phone @phone", async ({ page, browser }) => {
-  test.skip(new Date().getHours() === 0, "the call-out added afterwards lies at 0:01");
   await ablauf(page, browser);
 });
 
@@ -153,7 +187,7 @@ for (const farben of ["light", "dark"] as const) {
     browser,
   }) => {
     const { tom } = await mitTom(page, browser);
-    await rufPlanen(page);
+    await rufPlanen(page, zeiten());
     await thema(page, farben);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
     await page.getByRole("button", { name: t("oncall_add") }).click();

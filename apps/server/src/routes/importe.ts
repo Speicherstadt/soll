@@ -66,6 +66,8 @@ export const uebernahmeSchema = vorschauSchema
         // S-703: activities (Clockodo's services); none in a file without them
         taetigkeiten: z.record(schluessel, zielSchema).default({}),
         buchung: buchungSchema.optional(),
+        // S-706: the site the planned shifts of a shift planner go to; none: not taken over
+        standort: z.string().min(1).max(100).nullable().optional(),
       })
       .strict(),
     abgeschlossenBis: z.string().refine(istMonat).nullable(),

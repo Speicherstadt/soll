@@ -11,6 +11,7 @@ import {
   uebernommeneKennungen,
 } from "../arbeitszeit/index.ts";
 import { modulAktiv } from "../betrieb/index.ts";
+import { schichtenDerPerson, uebernommeneSchichten } from "../dienstplan/index.ts";
 import { type MitgliedMitName, mitgliederMitNamen } from "../mitglieder/index.ts";
 import {
   buchungUeberschneidet,
@@ -93,6 +94,7 @@ export const standLesen = (db: Db, betriebId: string, quelle: string, jetzt: num
     module: {
       arbeitszeit: modulAktiv(db, betriebId, "arbeitszeit"),
       projektzeit: modulAktiv(db, betriebId, "projektzeit"),
+      dienstplan: modulAktiv(db, betriebId, "dienstplan"),
     },
     mitglieder: new Set(erfassteMitglieder(db, betriebId).map((m) => m.nutzerId)),
     vorhanden: {
@@ -102,6 +104,7 @@ export const standLesen = (db: Db, betriebId: string, quelle: string, jetzt: num
       projekte: projektzeit.uebernommeneProjekte,
       taetigkeiten: projektzeit.uebernommeneTaetigkeiten,
       buchungen: uebernommeneBuchungen(db, betriebId, quelle),
+      schichten: uebernommeneSchichten(db, betriebId, quelle),
     },
     buchungUeberschneidet: (nutzerId, spanne) =>
       buchungUeberschneidet(db, betriebId, nutzerId, spanne),
@@ -113,6 +116,7 @@ export const standLesen = (db: Db, betriebId: string, quelle: string, jetzt: num
       stempelungenIn(db, betriebId, nutzerId, 0, Number.MAX_SAFE_INTEGER),
     ),
     stempelGesperrt: (nutzerId, neue) => neueGesperrt(db, betriebId, nutzerId, neue),
+    schichtenVon: jePerson((nutzerId) => schichtenDerPerson(db, betriebId, nutzerId)),
     abwesenheitenVon: jePerson((nutzerId) =>
       vorhandeneAbwesenheiten(db, betriebId, nutzerId, heute),
     ),

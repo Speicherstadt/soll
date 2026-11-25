@@ -15,6 +15,7 @@ export const ARTEN: readonly Art[] = [
   "projekte",
   "taetigkeiten",
   "buchungen",
+  "schichten",
 ];
 
 /**
@@ -77,6 +78,18 @@ export type NeueBuchung = {
   externId: string;
 };
 
+/** A planned shift of a shift planner, a draft at the site the owner chose (S-706) */
+export type NeueSchicht = {
+  standortId: string;
+  tag: Tag;
+  beginn: number;
+  ende: number;
+  pauseMinuten: number;
+  rolle: string;
+  nutzerId: string | null;
+  externId: string;
+};
+
 /** A month of a person the old tool had closed, to be closed as taken over */
 export type Monatssperre = { nutzerId: string; monat: Monat };
 
@@ -87,6 +100,7 @@ export type Plan = {
   projekte: NeuesProjekt[];
   taetigkeiten: NeueTaetigkeit[];
   buchungen: NeueBuchung[];
+  schichten: NeueSchicht[];
   monate: Monatssperre[];
   zahlen: Zahlen;
   abgelehnt: Abgelehnt[];
@@ -102,13 +116,22 @@ export type GespeicherteAbwesenheit = {
   bis: Tag | null;
 };
 
+/** A shift an earlier import wrote, by its id in the old tool (S-706) */
+export type GespeicherteSchicht = {
+  nutzerId: string | null;
+  beginn: number;
+  ende: number;
+  pauseMinuten: number;
+  rolle: string;
+};
+
 /** An absence there already, as far as an overlap needs it */
 export type VorhandeneAbwesenheit = { art: Abwesenheitsart; von: Tag; bis: Tag | null };
 
 /** What the plan reads of the business now; functions load per person when asked */
 export type Stand = {
   jetzt: number;
-  module: { arbeitszeit: boolean; projektzeit: boolean };
+  module: { arbeitszeit: boolean; projektzeit: boolean; dienstplan: boolean };
   /** members of the business who may have times and absences */
   mitglieder: ReadonlySet<string>;
   /** the ids in the old tool that rows of this tool already carry, stamps and absences with the
@@ -123,6 +146,8 @@ export type Stand = {
     taetigkeiten: ReadonlyMap<string, string>;
     /** the bookings made from times of this tool, by their id (S-702) */
     buchungen: ReadonlySet<string>;
+    /** the shifts of this tool, by their id, with what the row says (S-706) */
+    schichten: ReadonlyMap<string, GespeicherteSchicht>;
   };
   /** whether a span would overlap a booking of the person there already (S-702) */
   buchungUeberschneidet: (nutzerId: string, spanne: { beginn: number; ende: number }) => boolean;
@@ -136,6 +161,8 @@ export type Stand = {
   stempelVon: (nutzerId: string) => readonly Stempelung[];
   /** whether new stamps would change the records of a closed month (S-306) */
   stempelGesperrt: (nutzerId: string, neue: readonly Stempelung[]) => boolean;
+  /** a person's shifts in the plan (S-706) */
+  schichtenVon: (nutzerId: string) => readonly { beginn: number; ende: number }[];
   /** a person's absences requested or approved */
   abwesenheitenVon: (nutzerId: string) => readonly VorhandeneAbwesenheit[];
   /** whether an approved absence would change a day of a closed month */
@@ -150,6 +177,7 @@ export const keineZahlen = (): Zahlen => ({
   projekte: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   taetigkeiten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
   buchungen: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
+  schichten: { neu: 0, vorhanden: 0, ausgelassen: 0, abgelehnt: 0 },
 });
 
 export const STEMPELARTEN: readonly Stempelart[] = [

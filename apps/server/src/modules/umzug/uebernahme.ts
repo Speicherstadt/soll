@@ -8,6 +8,7 @@ import {
 } from "../arbeitszeit/index.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
+import { schichtenUebernehmen } from "../dienstplan/index.ts";
 import {
   buchungenUebernehmen,
   kundenUebernehmen,
@@ -113,6 +114,7 @@ const schreibenAlles = (
     stempelUebernehmen(s, kontext, herkunft, zeile.plan.stempelungen);
     abwesenheitenUebernehmen(s, kontext, herkunft, zeile.plan.abwesenheiten);
     buchungenUebernehmen(s, kontext, herkunft, zeile.plan.buchungen);
+    schichtenUebernehmen(s, kontext, herkunft, zeile.plan.schichten);
   });
 };
 

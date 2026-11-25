@@ -85,6 +85,7 @@ describe("the import from Kimai (S-705)", () => {
       projekte: 2,
       taetigkeiten: 2,
       buchungen: 5,
+      schichten: 0,
     });
     expect(vorschau.taetigkeiten).toEqual([
       { externalId: "1", name: "Montage" },

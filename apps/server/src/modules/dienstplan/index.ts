@@ -1,6 +1,6 @@
 /**
  * The module Dienstplan: templates, shifts and the need per role and site (S-501), publishing with
- * its messages and the calendar feed (S-503)
+ * its messages and the calendar feed (S-503), the shift swap (S-504)
  */
 export { schichtquelle } from "./abwesenheit.ts";
 export { type BedarfAngaben, bedarfAnlegen, bedarfEntfernen, bedarfeLesen } from "./bedarf.ts";
@@ -23,6 +23,21 @@ export {
   schichtEntfernen,
 } from "./schichten.ts";
 export { standortVerplant } from "./standort.ts";
+export {
+  type TauschErgebnis,
+  type TauschFehler,
+  tauschAblehnen,
+  tauschAnbieten,
+  tauschFreigeben,
+  tauschUebernehmen,
+  tauschZurueckziehen,
+} from "./tauschen.ts";
+export {
+  type TauschAnsicht,
+  type Tauschbuch,
+  tauschbuch,
+  tauschregelSetzen,
+} from "./tauschliste.ts";
 export { planMelden, wocheVeroeffentlichen } from "./veroeffentlichen.ts";
 export { standortVorhanden, verweisFehler } from "./verweise.ts";
 export {

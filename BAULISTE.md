@@ -509,7 +509,33 @@ Alle Punkte: nach S-306.
   Zeitumstellung mit 7 und 9 Stunden (Test); ein Test je neuem Endpunkt, dass kein Betrieb Daten
   eines anderen sieht oder ändert; Playwright in `desktop` und `@phone`, axe grün in hell und
   dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
-- [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+- [x] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+  Fertig, wenn: ein Mitarbeiter eine eigene veröffentlichte Schicht zum Tausch anbietet, eine
+  Kollegin sie übernimmt und der Planer den Tausch mit den Befunden der Prüfung für die Übernehmende
+  freigibt, wonach die Schicht ihr gehört (Playwright). Dazu: angeboten wird nur eine eigene
+  veröffentlichte Schicht, die noch nicht begonnen hat, an alle, die sie übernehmen können
+  (Mitglieder mit `plan:lesen` und `stempeln`), oder an eine genannte Kollegin; je Schicht ein
+  offenes Angebot; übernehmen kann nur, an wen es gerichtet ist, nie der Anbietende und nicht, wer
+  zur selben Zeit schon eine veröffentlichte Schicht hat; Inhaber und Planer (`plan:planen`) geben
+  frei oder lehnen mit Grund ab (Test je Rolle); hat der Inhaber „Tausch ohne Freigabe“
+  eingestellt, gilt die Übernahme sofort, solange die Prüfung keinen Verstoß findet, sonst wartet
+  sie auf die Freigabe; die Schicht wechselt die Person erst mit der Freigabe, in einer Transaktion
+  mit dem Tausch über die Audit-Kette (Test); vor der Freigabe laufen die Regeln aus S-502 für die
+  Übernehmende, als hätte sie die Schicht (Tests für § 5 ArbZG, JArbSchG beim Auszubildenden Leon,
+  MuSchG), ihre Befunde mit Norm sieht nur, wer freigibt, nie Anbietender und Übernehmende
+  (Art. 9 DSGVO); die Freigabe ist eine neue Mitteilung nach § 12 TzBfG (`veroeffentlicht_am` neu,
+  Entscheidung aus S-503), vor ihr gilt für die Prüfung heute; jeder Schritt benachrichtigt über
+  die Zustellung aus S-503 (Web Push, sonst Mail; Test mit Push- und SMTP-Ersatz) mit dem Tag der
+  Schicht (`plan-<schichtId>`): das Angebot die, an die es geht, die Übernahme den Anbietenden und
+  wer freigibt, Freigabe und Ablehnung beide Seiten, das Zurückziehen die Übernehmende, nie den, der
+  handelt; der ICS-Feed beider Personen folgt der Freigabe (Test); der Anbietende zieht ein Angebot
+  zurück, solange es nicht entschieden ist; ein Angebot läuft ab, wenn die Schicht beginnt, und
+  eine Änderung oder das Entfernen der Schicht durch den Planer macht es hinfällig (Test); ein
+  Entwurf lässt sich nicht anbieten; ein Angebot hat keinen Grund des Anbietenden (keine
+  Gesundheitsdaten, Art. 9 DSGVO); der Tausch steht in der Auskunft (Art. 15 DSGVO) ohne Daten der
+  anderen Person; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
+  ändert, und dass das abgeschaltete Modul abgelehnt wird; Playwright in `desktop` und `@phone`,
+  axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
 - [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
 
@@ -850,8 +876,28 @@ Alle Punkte: nach S-305.
 - [ ] **S-902 Verfahrensdokumentation** – aus dem Stand erzeugt; Gliederung und Texte aus
   `verfahrensdoku/` von gobd-kern in `firsttris/haben` kopiert und auf Soll angepasst (Quelle
   nennen).
-- [ ] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
+- [x] **S-903 Datenschutz** – Infoblatt für Beschäftigte, Vorlage für eine Betriebsvereinbarung,
   Löschkonzept als Doku-Seite.
+  Fertig, wenn: drei Seiten auf Deutsch unter `docs/` stehen, in `mkdocs.yml` verlinkt und jede als
+  Vorlage gekennzeichnet, die juristisch zu prüfen ist (Schritte für Menschen). Das **Infoblatt**
+  enthält die Angaben nach Art. 13 Abs. 1 und 2 DSGVO mit Platzhaltern für das, was nur der Betrieb
+  weiß (Name, Anschrift, Datenschutzbeauftragter, Lohnbüro, Aufsichtsbehörde): was Soll aufzeichnet
+  und wozu (§ 3 Abs. 2 Nr. 1 ArbSchG nach BAG 1 ABR 22/21, § 16 Abs. 2 ArbZG, § 17 MiLoG, Lohn),
+  die Rechtsgrundlagen (Art. 6 Abs. 1 lit. b und c, Art. 9 Abs. 2 lit. b, Art. 88 DSGVO, § 26 BDSG),
+  Empfänger (Lohnbüro und DATEV, Haben, Kunden bei Stundennachweisen), die Fristen aus S-901 (2 und
+  8 Jahre), die Rechte nach Art. 15 bis 21 und 77 DSGVO mit der Auskunft als Download (S-309) und
+  was Soll nie tut (Standort, Fotos, Fingerabdrücke, Diagnose, Auswertung je Person ohne Schalter,
+  automatisches Ausstempeln, Entscheidungen nach Art. 22). Die **Betriebsvereinbarung** nach § 87
+  Abs. 1 Nr. 6 BetrVG regelt genau die Funktionen und Schalter, die Soll auf `main` hat: Module,
+  Rollen, Auswertung je Person (S-604), Terminal mit PIN, QR-Code und NFC-Karte (S-801, S-802),
+  Erinnerungen per Web Push und Mail (S-307), Zugänge zur API und MCP (S-607), Kalender-Feed
+  (S-503), Haben (S-606), DATEV (S-308), Auskunft und Prüfexport (S-309); Importe (S-701) erst, wenn
+  es sie gibt. Das **Löschkonzept** folgt DIN 66398 (Datenarten, Löschklassen mit Frist und
+  Startereignis, Umsetzung, Verantwortung, Sicherungen, Löschsperren) und nennt **jede Tabelle** der
+  Datenbank mit Löschklasse und dem, was der Code heute tut; wo Soll nichts löscht, steht das als
+  offener Punkt da. Ein Test vergleicht die Tabellen des Löschkonzepts mit allen Tabellen von
+  `db/schema.ts` und `db/auth-schema.ts`, so dass keine neue Tabelle ohne Löschregel bleibt. Ob das
+  Infoblatt als PDF aus der App kommt, entscheidet `docs/plan.md`.
 - [x] **S-904 Lasttest** – 50 Betriebe mit je 50 Personen stempeln zur selben Minute.
   Fertig, wenn: `bun run lasttest` den Server auf einer leeren Datenbank in einem temporären
   Verzeichnis auf Port 28300 startet, 50 Betriebe mit je 50 Personen über die HTTP-API anlegt (echte
@@ -934,6 +980,16 @@ requests“).
 - [ ] Dienstplan zeigt „nicht hinterlegt“, wenn ein Jahreswert fehlt
 - [ ] Doppeltes Antippen beim Stempeln: kurze Sperre (Vorschlag 1,5 s), Entscheidung fehlt
 - [ ] Abgeschlossener Monat sperrt die Projektzeit nicht; entscheiden und eintragen
+- [ ] Löschen nach dem Austritt (Löschkonzept, Klasse P): Angaben für die Prüfung, Zuordnungen,
+  Konten, Hinweise, Einstellungen der Erinnerungen, PIN, Geräte, Konto, wenn der letzte Monat der
+  Person ausgesondert ist
+- [ ] Fristen für Schichten und gesendete Erinnerungen (Klasse V) und für abgerechnete
+  Projektzeit, Stundennachweise und Übergaben an Haben (Klasse L)
+- [ ] Inhalte gelöschter Zeilen bleiben in `audit_inhalte`; abgelaufene Einladungen, Zugänge zur
+  API und Sitzungen bleiben als Zeile (`docs/loeschkonzept.md`, „Offene Punkte“)
+- [ ] Importe: Originaldateien unter `dateien/` und Zeilen in `importe` entfernen, wenn der letzte
+  Monat ausgesondert ist, in den ihre Zeiten fallen (der Dateispeicher kann heute nichts entfernen);
+  ebenso Fristen für `schichttausche`
 - [ ] Solo-Betrieb: Oberfläche für „später einladen“ fehlt
 - [ ] Projektzeit über MCP buchen
 - [ ] Inhaber kann API-Zugänge anderer nicht widerrufen
@@ -967,6 +1023,8 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 - [ ] DATEV-Export bei einer Steuerberatung testweise importieren
 - [ ] Echte, anonymisierte Exporte aus Clockodo, Personio, Kimai, Papershift, Planday, Crewmeister,
   Toggl und Clockify als Fixtures beisteuern
-- [ ] Vorlage der Betriebsvereinbarung juristisch prüfen lassen
+- [ ] Vorlagen zum Datenschutz juristisch prüfen lassen: Betriebsvereinbarung, Infoblatt für
+  Beschäftigte und Löschkonzept (`docs/betriebsvereinbarung.md`, `docs/infoblatt.md`,
+  `docs/loeschkonzept.md`)
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

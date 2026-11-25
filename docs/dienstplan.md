@@ -3,7 +3,8 @@ title: Dienstplan
 description: >-
   Die Woche je Standort planen: Schichtvorlagen, Ziehen und Ablegen mit Maus und Tastatur, Bedarf je
   Rolle und wo er nicht gedeckt ist, Entwürfe bis zur Veröffentlichung mit Benachrichtigung, die
-  eigenen Schichten als Kalender und was die Zeitumstellung mit einer Nachtschicht macht.
+  eigenen Schichten als Kalender, Schichten tauschen und was die Zeitumstellung mit einer
+  Nachtschicht macht.
 ---
 
 # Dienstplan
@@ -17,8 +18,8 @@ die geplanten Schichten bleiben erhalten.
 
 | Rolle | Dienstplan |
 | --- | --- |
-| Inhaber, Planer | planen: Vorlagen, Schichten, Bedarf; sehen den Entwurf |
-| Mitarbeiter, Lohnbüro, Betriebsrat | sehen nur veröffentlichte Schichten |
+| Inhaber, Planer | planen: Vorlagen, Schichten, Bedarf; sehen den Entwurf; geben einen Tausch frei |
+| Mitarbeiter, Lohnbüro, Betriebsrat | sehen nur veröffentlichte Schichten; bieten eigene zum Tausch an und übernehmen angebotene |
 | Externe, Geräte | nichts |
 
 Alles, was geplant wird, ist zunächst ein **Entwurf**. Den sehen nur Inhaber und Planer; im Kopf
@@ -144,6 +145,49 @@ man kopiert ihn und fügt ihn in der Kalender-App als Kalender-Abo per URL ein.
   kommen aus der [Audit-Kette](audit-kette.md) (erster und letzter Eintrag der Schicht, Zahl der
   Änderungen). Kalender-Apps fragen etwa stündlich nach (`REFRESH-INTERVAL`).
 
+## Schichten tauschen
+
+Wer eine veröffentlichte Schicht hat und nicht kann, bietet sie unter **Schichttausch** unter dem
+Plan an; eine Kollegin übernimmt sie, und Inhaber oder Planer geben den Tausch frei.
+
+- **Anbieten**: „Schicht anbieten“ zeigt die eigenen veröffentlichten Schichten, die noch nicht
+  begonnen haben. Angeboten wird an alle, die sie übernehmen können (wer im Betrieb stempelt und den
+  Plan liest), oder an eine Kollegin mit Namen; dann sehen das Angebot nur die beiden und wer plant.
+  Je Schicht gibt es ein offenes Angebot. Einen Grund fragt Soll nicht ab: Niemand muss sagen,
+  warum er nicht kann, und ein Grund lüde dazu ein, von Krankheit zu schreiben (Art. 9 DSGVO).
+- **Übernehmen**: Wem das Angebot gilt, tippt „Übernehmen“. Wer zur selben Zeit schon eine
+  Schicht hat, kann nicht übernehmen. Bis zur Freigabe bleibt die Schicht bei der bisherigen Person,
+  in der App und in ihrem Kalender.
+- **Freigeben oder ablehnen**: Inhaber und Planer sehen jede übernommene Schicht mit der
+  [Prüfung](#prufung-beim-einplanen) für die Person, die sie übernimmt, als hätte sie die Schicht
+  schon: Ruhezeit und Höchstarbeitszeit nach dem Arbeitszeitgesetz, Jugendarbeitsschutz,
+  Mutterschutz und die übrigen Regeln des Plans, mit Norm. Ein Befund warnt, er sperrt nicht. Die
+  Befunde sehen nur, wer freigibt, nie die beiden Kollegen. „Freigeben“ gibt die Schicht der neuen
+  Person, in einem Schritt mit dem Tausch in der [Audit-Kette](audit-kette.md); „Ablehnen“ verlangt
+  einen Grund, den beide lesen.
+- **Ohne Freigabe**: Der Inhaber kann einstellen, dass eine Übernahme sofort gilt. Das gilt nur,
+  solange die Prüfung für die übernehmende Person keinen Verstoß findet und sie zur selben Zeit
+  keinen Entwurf hat; sonst wartet auch dann der Tausch auf die Freigabe, und wer plant, sieht den
+  Grund.
+- **Zurückziehen, Ablauf, Änderung**: Wer anbietet, zieht das Angebot zurück, solange es nicht
+  entschieden ist. Ein Angebot läuft ab, wenn die Schicht beginnt, und verschwindet aus der Liste.
+  Ändert oder entfernt der Planer die Schicht, ist ein offenes Angebot hinfällig: Wer übernommen
+  hat, hat der Schicht zugestimmt, wie sie war.
+- **Mitteilung nach § 12 TzBfG**: Die Freigabe ist eine Änderung der veröffentlichten Schicht und
+  damit eine neue Mitteilung (wie unter [Veröffentlichen](#veroffentlichen)); vor der Freigabe prüft
+  Soll mit dem heutigen Tag.
+- **Benachrichtigung**: Über dieselben Wege wie beim Veröffentlichen (Web Push, ohne Gerät Mail):
+  ein Angebot an alle, denen es gilt, eine Übernahme an die anbietende Person und an alle, die
+  freigeben, Freigabe und Ablehnung an beide, ein Zurückziehen an die Person, die übernommen hatte;
+  nie an den, der den Schritt tut. Die Nachricht nennt nur Tag und Uhrzeit der Schicht, keinen
+  Namen und keinen Grund, und ersetzt auf dem Gerät die vorige Nachricht zu derselben Schicht.
+- **Kalender**: Nach der Freigabe verschwindet die Schicht aus dem Kalender der bisherigen Person
+  und steht im Kalender der neuen, mit höherer `SEQUENCE`.
+- **Auskunft**: Die [Auskunft](pruefexport.md#auskunft-nach-art-15-dsgvo) nennt jeden Tausch, den jemand angeboten, an ihn
+  gerichtet bekommen oder übernommen hat, ohne die andere Person und ohne den, der entschied; auch
+  in der Audit-Kette steht bei einem Tausch, was jemand anderes schrieb, nur als „eine andere
+  Person“, auch der Wechsel der Person an der Schicht selbst.
+
 ## Prüfung beim Einplanen
 
 Soll prüft jede geplante Schicht mit denselben Regeln wie gestempelte Zeiten
@@ -211,10 +255,20 @@ der Sitzung, eine `betriebId` im Inhalt lehnt der Server ab.
 | `POST /schichten`, `PATCH`, `DELETE /schichten/:id` | Inhaber, Planer | Schichten: `standortId`, `tag`, `beginnMinute`, `endeMinute`, `pauseMinuten`, `rolle`, `nutzerId` (oder `null` für offen), beim Anlegen `vorlageId`; eine Änderung einer veröffentlichten Schicht benachrichtigt die betroffenen Personen |
 | `POST /veroeffentlichen` | Inhaber, Planer | `standortId`, `tag`: veröffentlicht die Entwürfe der Woche um den Tag; Antwort `anzahl` (Schichten) und `benachrichtigt` (Personen) |
 | `GET`, `POST`, `DELETE /kalender` | alle, die den Plan lesen; `POST` und `DELETE` nur mit Sitzung | der eigene Kalender-Link: `GET` sagt, ob es ihn gibt (`abo` mit `angelegtAm`, `sprache`), `POST` mit `sprache` stellt ihn (neu) aus und antwortet einmal mit `url`, `DELETE` widerruft ihn |
+| `GET /tausch` | alle, die den Plan lesen | die Tausche der Schichten, die noch nicht begonnen haben (`tausche`: Status, Schicht, `anbieter`, `an`, `uebernehmer`, `grund`; `befunde` für die übernehmende Person nur für Inhaber und Planer, sonst `null`), die eigenen Schichten, die sich anbieten lassen (`anbietbar`), die Kollegen, die übernehmen können, nur mit Namen (`kollegen`), und `ohneFreigabe`; wer nicht plant, sieht nur eigene Tausche und Angebote, die ihm gelten |
+| `POST /tausch` | alle, die den Plan lesen | `schichtId`, `anNutzerId` (oder `null` für alle): bietet eine eigene veröffentlichte Schicht an |
+| `POST /tausch/:id/uebernehmen` | wem das Angebot gilt | übernimmt; ohne Freigabe und ohne Verstoß gleich `freigegeben`, sonst `uebernommen` |
+| `POST /tausch/:id/freigeben`, `POST /tausch/:id/ablehnen` | Inhaber, Planer | gibt einen übernommenen Tausch frei; lehnt einen offenen mit `grund` ab |
+| `DELETE /tausch/:id` | wer angeboten hat | zieht ein Angebot zurück, solange es nicht entschieden ist |
+| `PUT /tausch/regel` | Inhaber | `ohneFreigabe`: ob eine Übernahme ohne Freigabe gilt |
 
 Ein Standort, eine Person oder eine Vorlage eines anderen Betriebs ergibt 404
 (`standort_unbekannt`, `person_unbekannt`, `vorlage_unbekannt`), eine Uhrzeit, die es nicht gibt,
-422 `zeit_gibt_es_nicht`.
+422 `zeit_gibt_es_nicht`. Beim Tausch ergibt eine Schicht, die nicht veröffentlicht ist oder einem
+anderen Betrieb gehört, und ein Angebot an jemand anderen 404 (`unbekannt`), eine fremde Schicht
+403 (`nicht_deine`), das eigene Angebot 403 (`nicht_fuer_dich`), eine begonnene Schicht 409
+(`abgelaufen`), ein zweites Angebot 409 (`schon_angeboten`), ein entschiedener oder hinfälliger
+Tausch 409 (`nicht_offen`, `hinfaellig`) und eine Schicht zur selben Zeit 409 (`ueberschneidung`).
 
 Der Kalender selbst liegt außerhalb der Anmeldung, denn eine Kalender-App hat keine Sitzung:
 `GET /api/v1/ics/<token>.ics` antwortet mit `text/calendar`; das Token ist der einzige Schlüssel.

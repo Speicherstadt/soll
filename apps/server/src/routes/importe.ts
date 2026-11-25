@@ -11,6 +11,7 @@ import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import {
+  type ClockodoDeps,
   type Dateispeicher,
   type Eingabe,
   importDatei,
@@ -21,6 +22,7 @@ import {
   vorschau,
   zuordnungPruefen,
 } from "../modules/umzug/index.ts";
+import { abrufRouten } from "./importe-abruf.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 import { koerper, kontextVon, ungueltig } from "./projektzeit-gemeinsam.ts";
 
@@ -62,6 +64,8 @@ export const uebernahmeSchema = vorschauSchema
         arten: z.record(schluessel, z.enum(ABWESENHEITSARTEN).nullable()),
         kunden: z.record(schluessel, zielSchema),
         projekte: z.record(schluessel, zielSchema),
+        // S-703: activities (Clockodo's services); none in a file without them
+        taetigkeiten: z.record(schluessel, zielSchema).default({}),
         buchung: buchungSchema.optional(),
       })
       .strict(),
@@ -140,10 +144,12 @@ export const importRouten = (
   schreibDb: SchreibDb,
   jetzt: () => number,
   speicher: Dateispeicher,
+  clockodo: ClockodoDeps,
 ) =>
   new Hono<Anfrage>()
     .use(recht("umzug:importieren"))
     .use(bodyLimit({ maxSize: MAX_KOERPER, onError: (c) => c.json({ fehler: "zu_gross" }, 413) }))
+    .route("/abruf", abrufRouten(clockodo, jetzt))
     .get("/", (c) => c.json({ importe: importeLesen(db, c.get("betriebId")) }))
     .post("/vorschau", async (c) => {
       const gelesen = await eingabeLesen(c, vorschauSchema);

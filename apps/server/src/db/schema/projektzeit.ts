@@ -84,6 +84,8 @@ export const taetigkeiten = sqliteTable(
     externId: text("extern_id"),
     archiviertAm: integer("archiviert_am"),
     angelegtAm: integer("angelegt_am").notNull(),
+    // S-703: the import that created it (a service of Clockodo)
+    importId: text("import_id"),
   },
   (t) => [
     primaryKey({ columns: [t.betriebId, t.taetigkeitId] }),

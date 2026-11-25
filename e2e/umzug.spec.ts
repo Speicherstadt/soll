@@ -44,7 +44,13 @@ const bisZurUebernahme = async (page: Page, pruefen = false) => {
   });
   await expect(
     page.getByText(
-      t("umzug_gelesen", { zeiten: "2", abwesenheiten: "1", kunden: "1", projekte: "1" }),
+      t("umzug_gelesen", {
+        zeiten: "2",
+        abwesenheiten: "1",
+        kunden: "1",
+        projekte: "1",
+        taetigkeiten: "0",
+      }),
     ),
   ).toBeVisible();
   await expect(page.getByText(/^Zeile 4: kein gültiges Datum/)).toBeVisible();

@@ -28,8 +28,8 @@ export const datei = (text: string, name = "altes-tool.csv") => ({
 });
 
 /** Weber Haustechnik on 25.11.2026 with Projektzeit, Sandra and Max as fitters, Anna as planner */
-export const weberZumUmzug = async () => {
-  const server = testServer();
+export const weberZumUmzug = async (optionen: Parameters<typeof testServer>[0] = {}) => {
+  const server = testServer(optionen);
   server.stelleUhr(JETZT);
   const weber = await mitProjektzeit(server, "Weber Haustechnik", "weber");
   const sandra = await server.eingeladen(weber, "mitarbeiter", "sandra");
@@ -46,6 +46,7 @@ export const zuordnungFuer = (sandra: string, max: string) => ({
   arten: { Urlaub: "urlaub" },
   kunden: {},
   projekte: {},
+  taetigkeiten: {},
 });
 
 export const koerper = (

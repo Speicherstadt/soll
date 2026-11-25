@@ -46,6 +46,10 @@ export default defineConfig({
       },
     },
   ],
+  // Playwright starts these one after another, each once the one before answers. The build comes
+  // before the dev server: both let Paraglide write apps/web/src/paraglide (runtime.js differs in
+  // `isDevelopment`), and a build under a running dev server reloads it and stamps every module anew
+  // (e2e/dev-server.spec.ts; docs/plan.md, "Entscheidungen").
   webServer: [
     {
       // the API on a fresh database in a temporary directory (scripts/e2e-server.ts)
@@ -54,15 +58,15 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: `bun run --cwd apps/web dev --port ${WEB_PORT}`,
-      env: { SOLL_API_PORT: String(API_PORT) },
-      url: `http://localhost:${WEB_PORT}`,
-      reuseExistingServer: !process.env.CI,
-    },
-    {
       command: `bun run --cwd apps/web build && bun run --cwd apps/web preview --port ${PREVIEW_PORT}`,
       env: { SOLL_API_PORT: String(API_PORT) },
       url: `http://localhost:${PREVIEW_PORT}`,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: `bun run --cwd apps/web dev --port ${WEB_PORT}`,
+      env: { SOLL_API_PORT: String(API_PORT) },
+      url: `http://localhost:${WEB_PORT}`,
       reuseExistingServer: !process.env.CI,
     },
   ],

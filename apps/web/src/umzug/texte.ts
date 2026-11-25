@@ -17,6 +17,7 @@ export const SCHRITT_NAMEN: Record<Schritt, () => string> = {
 /** How to export the data of each tool, by its id in packages/import */
 export const ANLEITUNG: Record<string, () => string> = {
   "soll-csv": () => m.umzug_anleitung_soll_csv(),
+  clockodo: () => m.umzug_anleitung_clockodo(),
   tabelle: () => m.umzug_anleitung_tabelle(),
 };
 
@@ -35,6 +36,10 @@ const LESEGRUND: Record<LeseGrund, () => string> = {
   pause_ungueltig: () => m.umzug_lese_pause_ungueltig(),
   art_fehlt: () => m.umzug_lese_art_fehlt(),
   kunde_unbekannt: () => m.umzug_lese_kunde_unbekannt(),
+  laeuft_noch: () => m.umzug_lese_laeuft_noch(),
+  korrektur: () => m.umzug_lese_korrektur(),
+  teil_tag: () => m.umzug_lese_teil_tag(),
+  nicht_genehmigt: () => m.umzug_lese_nicht_genehmigt(),
   spalte_fehlt: () => m.umzug_lese_spalte_fehlt(),
   zeile_doppelt: () => m.umzug_lese_zeile_doppelt(),
   dauer_ungueltig: () => m.umzug_lese_dauer_ungueltig(),
@@ -68,6 +73,7 @@ const PLANGRUND: Record<string, () => string> = {
   kunde_unbekannt: () => m.umzug_grund_kunde_unbekannt(),
   projekt_unbekannt: () => m.umzug_grund_projekt_unbekannt(),
   kunde_ausgelassen: () => m.umzug_grund_kunde_ausgelassen(),
+  taetigkeit_unbekannt: () => m.umzug_grund_taetigkeit_unbekannt(),
   zuordnung_abweichend: () => m.umzug_grund_zuordnung_abweichend(),
   geaendert_im_alten_tool: () => m.umzug_grund_geaendert_im_alten_tool(),
 };
@@ -80,6 +86,7 @@ export const ART_NAMEN: Record<PlanArt, () => string> = {
   abwesenheiten: () => m.umzug_art_abwesenheiten(),
   kunden: () => m.umzug_art_kunden(),
   projekte: () => m.umzug_art_projekte(),
+  taetigkeiten: () => m.umzug_art_taetigkeiten(),
   buchungen: () => m.umzug_art_buchungen(),
 };
 

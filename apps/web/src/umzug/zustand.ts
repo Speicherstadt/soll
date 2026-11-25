@@ -19,14 +19,17 @@ export const base64Von = (bytes: Uint8Array): string => {
 };
 
 /**
- * Soll's proposal: members by name, kinds by word, every customer and order created anew, the
- * projects and activities of a spreadsheet's times to the order and activity known by their name
+ * Soll's proposal: members by name, kinds by word, every customer, order and activity created anew,
+ * the projects and activities of a spreadsheet's times to the order and activity known by their name
  */
 export const zuordnungAus = (vorschau: Vorschau): Zuordnung => ({
   personen: Object.fromEntries(vorschau.personen.map((p) => [p.person, p.vorschlag])),
   arten: Object.fromEntries(vorschau.arten.map((a) => [a.art, a.vorschlag])),
   kunden: Object.fromEntries(vorschau.kunden.map((k) => [k.externalId, "neu" as const])),
   projekte: Object.fromEntries(vorschau.projekte.map((p) => [p.externalId, "neu" as const])),
+  taetigkeiten: Object.fromEntries(
+    vorschau.taetigkeiten.map((t) => [t.externalId, "neu" as const]),
+  ),
   buchung: {
     projekte: Object.fromEntries(vorschau.buchung.projekte.map((p) => [p.wert, p.vorschlag])),
     taetigkeiten: Object.fromEntries(

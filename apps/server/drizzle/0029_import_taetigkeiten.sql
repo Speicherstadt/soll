@@ -1,0 +1,1 @@
+ALTER TABLE `taetigkeiten` ADD `import_id` text;

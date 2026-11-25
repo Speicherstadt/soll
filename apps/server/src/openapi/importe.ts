@@ -1,4 +1,5 @@
 import * as importe from "../routes/importe.ts";
+import { abrufSchema } from "../routes/importe-abruf.ts";
 import type { Operation } from "./dokument.ts";
 
 const PFAD = "/api/v1/importe";
@@ -18,6 +19,14 @@ export const IMPORTE: readonly Operation[] = [
       "Eine Datei lesen: Datensätze, Fehler mit Zeile, Vorschläge zur Zuordnung, Befunde (Inhaber)",
     bereich: "Umzug",
     koerper: importe.vorschauSchema,
+  },
+  {
+    methode: "post",
+    pfad: `${PFAD}/abruf`,
+    zusammenfassung:
+      "Daten über die API eines Werkzeugs abrufen (Clockodo); der Zugang gilt nur für diesen Abruf, die Antwort ist eine Datei für Vorschau und Übernahme (Inhaber)",
+    bereich: "Umzug",
+    koerper: abrufSchema,
   },
   {
     methode: "post",

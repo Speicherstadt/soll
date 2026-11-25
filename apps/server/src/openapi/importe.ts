@@ -3,7 +3,7 @@ import type { Operation } from "./dokument.ts";
 
 const PFAD = "/api/v1/importe";
 
-/** Imports from other tools (S-701): for the owner, in no module */
+/** Imports from other tools (S-701, S-702): for the owner, in no module */
 export const IMPORTE: readonly Operation[] = [
   {
     methode: "get",
@@ -32,6 +32,14 @@ export const IMPORTE: readonly Operation[] = [
     zusammenfassung: "Eine Datei übernehmen; ein zweiter Lauf legt nichts doppelt an (Inhaber)",
     bereich: "Umzug",
     koerper: importe.uebernahmeSchema,
+  },
+  {
+    methode: "get",
+    pfad: `${PFAD}/vorlagen/:datei`,
+    zusammenfassung:
+      "Die Vorlage einer Tabelle von Zeiten, soll-zeiten.csv oder soll-zeiten.xlsx (Inhaber)",
+    bereich: "Umzug",
+    antwort: "datei",
   },
   {
     methode: "get",

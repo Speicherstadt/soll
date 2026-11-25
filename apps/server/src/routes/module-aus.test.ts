@@ -37,6 +37,7 @@ const OHNE_MODUL: readonly string[] = [
   "POST /api/v1/importe/vorschau",
   "POST /api/v1/importe/probelauf",
   "GET /api/v1/importe/:importId/datei",
+  "GET /api/v1/importe/vorlagen/:datei",
   // the right of access holds whatever the business switched (docs/plan.md, "Auskunft nach Art. 15")
   "GET /api/v1/auskunft",
   // public: an invitation and the check page of a Prüfwert (docs/plan.md, "Prüfseite")

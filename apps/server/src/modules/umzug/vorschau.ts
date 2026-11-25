@@ -2,15 +2,25 @@ import {
   type ArtZuordnung,
   artenAus,
   artVorschlag,
+  type ImportDaten,
+  kandidatVorschlag,
   type LeseFehler,
   personenAus,
   personVorschlag,
   type Quelle,
   type Spaltenwahl,
+  zeitProjekteAus,
+  zeitTaetigkeitenAus,
 } from "@soll/import";
 import type { Db } from "../../db/oeffnen.ts";
 import { modulAktiv } from "../betrieb/index.ts";
-import { kundenLesen, projekteLesen } from "../projektzeit/index.ts";
+import {
+  type BuchbaresProjekt,
+  type BuchbareTaetigkeit,
+  buchbar,
+  kundenLesen,
+  projekteLesen,
+} from "../projektzeit/index.ts";
 import { type Vorschaubefund, vorschauBefunde } from "./befunde.ts";
 import { dateiLesen } from "./datei.ts";
 import { sha256Von } from "./dateispeicher.ts";
@@ -40,6 +50,40 @@ export type Vorschau = {
   vorhandeneProjekte: { projektId: string; name: string; kundeId: string }[];
   module: { arbeitszeit: boolean; projektzeit: boolean };
   befunde: { anzahl: number; liste: Vorschaubefund[] };
+  /** the projects and activities the times name, with Soll's proposal, and what may be booked */
+  buchung: {
+    projekte: Wertvorschlag[];
+    taetigkeiten: Wertvorschlag[];
+    buchbareProjekte: BuchbaresProjekt[];
+    buchbareTaetigkeiten: BuchbareTaetigkeit[];
+  };
+};
+
+type Wertvorschlag = { wert: string; datensaetze: number; vorschlag: string | null };
+
+/** The projects and activities of a spreadsheet's times, proposed by name or number (S-702) */
+const buchungVon = (db: Db, betriebId: string, daten: ImportDaten): Vorschau["buchung"] => {
+  const moeglich = buchbar(db, betriebId);
+  const projekte = moeglich.projekte.map((p) => ({ id: p.projektId, woerter: [p.name, p.nummer] }));
+  // a fixed activity has no name of its own; its id is its German name ("fahrt")
+  const taetigkeiten = moeglich.taetigkeiten.map((t) => ({
+    id: t.taetigkeitId,
+    woerter: [t.fest ? t.taetigkeitId : t.name],
+  }));
+  return {
+    projekte: zeitProjekteAus(daten).map(({ wert, datensaetze }) => ({
+      wert,
+      datensaetze,
+      vorschlag: kandidatVorschlag(wert, projekte),
+    })),
+    taetigkeiten: zeitTaetigkeitenAus(daten).map(({ wert, datensaetze }) => ({
+      wert,
+      datensaetze,
+      vorschlag: kandidatVorschlag(wert, taetigkeiten),
+    })),
+    buchbareProjekte: moeglich.projekte,
+    buchbareTaetigkeiten: moeglich.taetigkeiten,
+  };
 };
 
 export const vorschau = (
@@ -90,5 +134,6 @@ export const vorschau = (
       projektzeit: modulAktiv(db, betriebId, "projektzeit"),
     },
     befunde: { anzahl: befunde.length, liste: befunde.slice(0, MAX_LISTE) },
+    buchung: buchungVon(db, betriebId, daten),
   };
 };

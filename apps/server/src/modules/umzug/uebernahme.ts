@@ -8,7 +8,11 @@ import {
 } from "../arbeitszeit/index.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
-import { kundenUebernehmen, projekteUebernehmen } from "../projektzeit/index.ts";
+import {
+  buchungenUebernehmen,
+  kundenUebernehmen,
+  projekteUebernehmen,
+} from "../projektzeit/index.ts";
 import { dateiLesen } from "./datei.ts";
 import type { Dateispeicher } from "./dateispeicher.ts";
 import { planen } from "./plan.ts";
@@ -106,6 +110,7 @@ const schreibenAlles = (
     projekteUebernehmen(s, kontext, herkunft, zeile.plan.projekte);
     stempelUebernehmen(s, kontext, herkunft, zeile.plan.stempelungen);
     abwesenheitenUebernehmen(s, kontext, herkunft, zeile.plan.abwesenheiten);
+    buchungenUebernehmen(s, kontext, herkunft, zeile.plan.buchungen);
   });
 };
 

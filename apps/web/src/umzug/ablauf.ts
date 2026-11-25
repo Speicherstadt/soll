@@ -45,6 +45,7 @@ const zustand = () => {
     arten: {},
     kunden: {},
     projekte: {},
+    buchung: { projekte: {}, taetigkeiten: {} },
   });
   const [bis, setBis] = createSignal<string | null>(null);
   const [probelauf, setProbelauf] = createSignal<Probelauf | null>(null);
@@ -135,6 +136,14 @@ const aenderungen = (z: Zustand, a: Aufrufe): Aendern => {
       geaendert((e) => {
         e.projekte[id] = ziel;
       }),
+    buchungProjekt: (wert, projektId) =>
+      geaendert((e) => {
+        if (e.buchung) e.buchung.projekte[wert] = projektId;
+      }),
+    buchungTaetigkeit: (wert, taetigkeitId) =>
+      geaendert((e) => {
+        if (e.buchung) e.buchung.taetigkeiten[wert] = taetigkeitId;
+      }),
   };
 };
 
@@ -155,6 +164,16 @@ const uebernehmen = async (z: Zustand, a: Aufrufe) => {
   else z.setProbelauf(null);
 };
 
+/** Another tool reads the file otherwise: what was read with the one before is dropped */
+const werkzeugWaehlen = (z: Zustand, quelle: string) => {
+  if (quelle === z.quelle()) return;
+  z.setQuelle(quelle);
+  z.setDatei(null);
+  z.setVorschau(null);
+  z.setSpalten({});
+  z.setProbelauf(null);
+};
+
 const vonVorn = (z: Zustand) => {
   z.setDatei(null);
   z.setVorschau(null);
@@ -170,6 +189,7 @@ export const umzugAblauf = () => {
   return {
     ...z,
     aendern: aenderungen(z, a),
+    setQuelle: (quelle: string) => werkzeugWaehlen(z, quelle),
     setBis: (wert: string | null) => {
       z.setBis(wert);
       z.setProbelauf(null);

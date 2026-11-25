@@ -103,5 +103,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0025_import",
     "sql": "CREATE TABLE `importe` (\n\t`betrieb_id` text NOT NULL,\n\t`import_id` text NOT NULL,\n\t`quelle` text NOT NULL,\n\t`datei_sha256` text NOT NULL,\n\t`datei_name` text NOT NULL,\n\t`datei_bytes` integer NOT NULL,\n\t`zuordnung` text NOT NULL,\n\t`abgeschlossen_bis` text,\n\t`zahlen` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `import_id`)\n);\n--> statement-breakpoint\nALTER TABLE `monatsabschluesse` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `stempelungen` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `stempelungen_extern` ON `stempelungen` (`betrieb_id`,`extern_quelle`,`extern_id`);--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `abwesenheiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `abwesenheiten_extern` ON `abwesenheiten` (`betrieb_id`,`extern_quelle`,`extern_id`);--> statement-breakpoint\nALTER TABLE `kunden` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projekte` ADD `import_id` text;"
+  },
+  {
+    "tag": "0026_import_buchungen",
+    "sql": "ALTER TABLE `projektzeiten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `projektzeiten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `projektzeiten_extern` ON `projektzeiten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
   }
 ];

@@ -1,5 +1,11 @@
 import { ABWESENHEITSARTEN, istMonat, monatVon, tagInBerlin } from "@soll/arbeitszeit";
-import { MAX_TEXT, type Quelle, quelleVon } from "@soll/import";
+import {
+  MAX_TEXT,
+  type Quelle,
+  quelleVon,
+  TABELLE_VORLAGE_CSV,
+  tabelleVorlageXlsx,
+} from "@soll/import";
 import { type Context, Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
@@ -37,6 +43,13 @@ const zielSchema = z.union([
   z.object({ id: z.string().min(1).max(100) }).strict(),
 ]);
 
+const zielId = z.string().min(1).max(100).nullable();
+
+/** The order and activity of each project and activity of a spreadsheet's times (S-702) */
+const buchungSchema = z
+  .object({ projekte: z.record(schluessel, zielId), taetigkeiten: z.record(schluessel, zielId) })
+  .strict();
+
 export const vorschauSchema = z
   .object({ quelle: z.string().min(1).max(40), datei: dateiSchema, spalten: spaltenSchema })
   .strict();
@@ -49,11 +62,24 @@ export const uebernahmeSchema = vorschauSchema
         arten: z.record(schluessel, z.enum(ABWESENHEITSARTEN).nullable()),
         kunden: z.record(schluessel, zielSchema),
         projekte: z.record(schluessel, zielSchema),
+        buchung: buchungSchema.optional(),
       })
       .strict(),
     abgeschlossenBis: z.string().refine(istMonat).nullable(),
   })
   .strict();
+
+/** The templates of a spreadsheet of times (S-702), by file name: the same bytes on every call */
+const VORLAGEN: Record<string, { typ: string; bytes: () => Uint8Array }> = {
+  "soll-zeiten.csv": {
+    typ: "text/csv; charset=utf-8",
+    bytes: () => new TextEncoder().encode(TABELLE_VORLAGE_CSV),
+  },
+  "soll-zeiten.xlsx": {
+    typ: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    bytes: tabelleVorlageXlsx,
+  },
+};
 
 /** base64 of 5 MiB with the JSON around it */
 const MAX_KOERPER = Math.ceil((MAX_BYTES * 4) / 3) + 64 * 1024;
@@ -69,6 +95,9 @@ const eingabeLesen = async <S extends typeof vorschauSchema | typeof uebernahmeS
   if (!eingabe.success) return { ok: false, antwort: ungueltig(c) };
   const tool = quelleVon(eingabe.data.quelle);
   if (!tool) return { ok: false, antwort: c.json({ fehler: "quelle_unbekannt" }, 422) };
+  // a column is chosen only for a field the tool reads (S-702)
+  if (Object.keys(eingabe.data.spalten).some((feld) => !tool.felder.includes(feld)))
+    return { ok: false, antwort: c.json({ fehler: "spalte_unbekannt" }, 422) };
   const bytes = new Uint8Array(Buffer.from(eingabe.data.datei.inhalt, "base64"));
   if (bytes.length > MAX_BYTES) return { ok: false, antwort: c.json({ fehler: "zu_gross" }, 413) };
   return {
@@ -138,6 +167,14 @@ export const importRouten = (
       if (!gelesen.ok) return gelesen.antwort;
       const ergebnis = await uebernehmen({ db, schreibDb, speicher }, kontext, gelesen.wert);
       return ergebnis.ok ? c.json(ergebnis.wert, 201) : c.json({ fehler: ergebnis.grund }, 409);
+    })
+    .get("/vorlagen/:datei", (c) => {
+      const name = c.req.param("datei");
+      const vorlage = VORLAGEN[name];
+      if (!vorlage) return c.json({ fehler: "unbekannt" }, 404);
+      c.header("content-type", vorlage.typ);
+      c.header("content-disposition", `attachment; filename="${name}"`);
+      return c.body(vorlage.bytes() as Uint8Array<ArrayBuffer>);
     })
     .get("/:importId/datei", async (c) => {
       const datei = await importDatei(db, speicher, c.get("betriebId"), c.req.param("importId"));

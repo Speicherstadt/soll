@@ -183,6 +183,13 @@
       "when": 1795615942024,
       "tag": "0025_import",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "6",
+      "when": 1795618902582,
+      "tag": "0026_import_buchungen",
+      "breakpoints": true
     }
   ]
 }

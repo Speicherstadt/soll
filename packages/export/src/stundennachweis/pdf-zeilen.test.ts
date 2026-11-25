@@ -57,6 +57,23 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(text).not.toContain("…");
   });
 
+  it("prints each line of a note with line breaks, not a question mark for the break", async () => {
+    // the API takes line breaks in a note (apps/server/src/routes/stoppuhr.ts)
+    const notiz = "Zeile eins\nZeile zwei\r\nZeile drei";
+    const text = pdfText(await stundennachweisPdf(nachweis([buchung(notiz)]), HASH));
+    for (const teil of ["Zeile eins", "Zeile zwei", "Zeile drei"]) expect(text).toContain(teil);
+    expect(text).not.toContain("?");
+  });
+
+  it("keeps a note of many lines out of the bottom margin", async () => {
+    const notiz = Array.from({ length: 8 }, (_, index) => `Schritt ${index}`).join("\n");
+    for (let anzahl = 1; anzahl <= 70; anzahl++) {
+      const zeilen = Array.from({ length: anzahl }, () => buchung(notiz));
+      const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
+      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+    }
+  });
+
   it("prints the whole name of the activity", async () => {
     const taetigkeit = "Heizungswartung mit Abgasmessung";
     const text = await ohneUmbruch(

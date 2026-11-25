@@ -15,15 +15,21 @@ import type { Spanne } from "./typen.ts";
 /** A call-out from the call to the end of work; `ende` null while it runs */
 export type Einsatzspanne = { beginn: number; ende: number | null };
 
-/** The working day a call-out counts on and its minutes not already counted elsewhere */
-export type EinsatzAnteil = { tag: Tag; minuten: number };
+/**
+ * The working day a call-out counts on, its minutes not already counted elsewhere and the stretches
+ * they lie in (for the surcharges of § 3b EStG)
+ */
+export type EinsatzAnteil = { tag: Tag; minuten: number; teile: Spanne[] };
 
-/** The stamped stretches of the days; an open shift holds everything from its start */
+/**
+ * The stamped stretches of the days; an open shift holds everything from its start up to 24 hours,
+ * the longest a shift can be (Grundbegriff „Schicht“), so a forgotten Gehen hides no later call-out
+ */
 const gestempelt = (tage: readonly PruefTag[]): Spanne[] =>
   tage.flatMap((tag) =>
     tag.schichten.flatMap((schicht): Spanne[] =>
       schicht.ende === null
-        ? [{ beginn: schicht.beginn, ende: Number.MAX_SAFE_INTEGER }]
+        ? [{ beginn: schicht.beginn, ende: schicht.beginn + LAENGSTE_SCHICHT }]
         : schicht.bloecke.map(({ beginn, ende }) => ({ beginn, ende })),
     ),
   );
@@ -60,11 +66,11 @@ export const einsatzAnteile = (
   const gezaehlt: Spanne[] = gestempelt(tage);
   return einsaetze.map(({ beginn, ende }) => {
     const tag = schichtVor(tage, beginn)?.tag ?? tagInBerlin(beginn);
-    if (ende === null) return { tag, minuten: 0 };
+    if (ende === null) return { tag, minuten: 0, teile: [] };
     const spanne = aufMinuten({ beginn, ende });
-    const minuten = minutenVon(ohne([spanne], gezaehlt));
+    const teile = ohne([spanne], gezaehlt);
     gezaehlt.push(spanne);
-    return { tag, minuten };
+    return { tag, minuten: minutenVon(teile), teile };
   });
 };
 

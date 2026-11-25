@@ -2,20 +2,19 @@ import {
   type Abwesenheitsart,
   alsLohnzuschlaege,
   arbeitstage,
-  bereitschaftstage,
   feiertage,
   type Grundlohn,
   type Modellabschnitt,
   type Monat,
   modellAm,
   monatVon,
-  type PruefTag,
   type Standort,
   type Stempelart,
   type Tag,
   type Zuschlagssaetze,
   zuschlaege,
 } from "@soll/arbeitszeit";
+import { type Lohntag, mitEinsaetzen } from "./einsaetze.ts";
 import {
   istStundenposten,
   type Lohnmonat,
@@ -50,8 +49,7 @@ export type LohnAufzeichnung = {
   einsaetze?: readonly (readonly [number, number | null])[];
 };
 
-/** A working day as payroll reads it: its shifts and the minutes worked */
-type Arbeitstag = PruefTag & { arbeitsMinuten: number };
+type Arbeitstag = Lohntag;
 
 /** An absence credited with hours (docs/konten.md); taking off overtime is paid by the account */
 export type Lohnabwesenheit = {
@@ -96,24 +94,20 @@ const stundenpostenVon = (modell: Lohnmodell): Postenart | null =>
   modell.lohnArt === "monat" ? null : modell.minijob ? "minijob" : "stunden";
 
 /**
- * The working days of the month, rebuilt from the stamps it was closed with and its call-outs that
- * ended (R-12): their minutes are hours and get surcharges like stamped work (S-505)
+ * The working days of the month, rebuilt from the stamps it was closed with, and its call-outs that
+ * ended (R-12) beside them as shifts of their own: a call-out never moves stamped work to its day or
+ * model, and what is stamped at the same time counts once (S-505, review)
  */
 const arbeitstageAus = (eingabe: LohnmonatEingabe): Arbeitstag[] => {
   const stempel = eingabe.tage.flatMap((tag) =>
     tag.stempel.map(([art, zeitpunkt]) => ({ art, zeitpunkt })),
   );
-  const einsaetze = eingabe.tage.flatMap((tag) =>
-    (tag.einsaetze ?? []).flatMap(([beginn, ende]) => (ende === null ? [] : [{ beginn, ende }])),
-  );
   const jetzt = Math.max(0, ...stempel.map((s) => s.zeitpunkt));
   const ergebnis = arbeitstage(stempel, jetzt);
   if (!ergebnis.ok) throw new Error("lohnmonat: stamps of a closed month are invalid");
-  const mit = einsaetze.length > 0 ? bereitschaftstage(ergebnis.wert, { einsaetze }) : null;
-  if (mit !== null && !mit.ok)
-    throw new Error("lohnmonat: call-outs of a closed month are invalid");
-  const tage: Arbeitstag[] = mit?.ok ? mit.wert : ergebnis.wert;
-  return tage.filter((tag) => monatVon(tag.tag) === eingabe.monat);
+  return mitEinsaetzen(ergebnis.wert, eingabe.tage).filter(
+    (tag) => monatVon(tag.tag) === eingabe.monat,
+  );
 };
 
 /** Worked hours and counter-entries per hours item, by the model of each day */

@@ -12,6 +12,7 @@ import {
   hoechstarbeitszeit,
   letzterTag,
   type Monat,
+  mitStempeltagen,
   monatsstand,
   monatVon,
   type PruefTag,
@@ -147,7 +148,9 @@ const mitBereitschaft = (
   if ((eingabe.einsaetze ?? []).length === 0 && (eingabe.rufdienste ?? []).length === 0)
     return null;
   const ergebnis = bereitschaftstage(tage, eingabe);
-  return ergebnis.ok ? bereitschaftBefunde(ergebnis.wert, optionen).befunde : null;
+  if (!ergebnis.ok) return null;
+  // a finding of a joined shift also names the days its stamped work lies on, so it never vanishes
+  return mitStempeltagen(bereitschaftBefunde(ergebnis.wert, optionen).befunde, tage, ergebnis.wert);
 };
 
 /**

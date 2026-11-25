@@ -33,4 +33,4 @@ export type {
   Rufdienst,
   Spanne,
 } from "./typen.ts";
-export { arbeitstagMit } from "./zuordnung.ts";
+export { arbeitstagMit, mitStempeltagen } from "./zuordnung.ts";

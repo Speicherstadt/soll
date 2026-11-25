@@ -839,6 +839,71 @@ S-701 und unabhängig voneinander.
     zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
     `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
+  Fertig, wenn: Fixtures nach Personios API bestehen (Quelle im Test) und ein Playwright-Test den
+  ganzen Ablauf zeigt. Genauer:
+  - **Quellen**: developer.personio.de und api.personio.de sind über den Proxy nicht erreichbar;
+    gebaut wird nach Personios eigenem Repository github.com/personio/api-docs (v1-Spezifikation
+    `personio-personnel-data-api-oa3.yaml`: `GET /company/attendances` ist veraltet, Nachfolger
+    `/v2/attendance-periods`, Abschaltung 2027-01-31), nach den v2-Spezifikationen für Zugang und
+    Personen, wie sie github.com/Hochfrequenz/personio_client.py aus developer.personio.de/openapi
+    spiegelt (`credentials-service-api-v2`, `persons-service-api-v2`, Stand 2026-09-30), und für
+    Anwesenheiten, Abwesenheiten und Abwesenheitsarten nach veröffentlichten Clients der v2
+    (github.com/PK-Consulting/n8n-nodes-personio-hr, github.com/ninjaneers-team/pysonio); die Quelle
+    steht in Code und Tests, die Fixtures folgen diesen Beschreibungen.
+  - **API v2, Adresse fest**: Werkzeug `personio` mit dem Weg „API-Zugang“: Client-ID und
+    Client-Secret einer eigenen Integration (Passwortfeld) und Zeitraum (höchstens ein Jahr, nicht in
+    der Zukunft). `POST /api/v1/importe/abruf` (nur Inhaber) holt mit
+    `POST https://api.personio.de/v2/auth/token` (`application/x-www-form-urlencoded`,
+    `grant_type=client_credentials`) ein Token und damit nacheinander `GET /v2/persons` (`limit` 50),
+    `/v2/absence-types` (50), `/v2/attendance-periods` (`start.date_time.gte`/`.lte`, 100) und
+    `/v2/absence-periods` (`starts_from.date_time.lte`, `ends_at.date_time.gte`, 100), Seite für Seite
+    nach `_meta.links.next.href`; danach widerruft er das Token (`POST /v2/auth/revoke`). Die
+    Adresse ist fest (für die Tests ein Ersatz, den nur der Betreiber setzt), der Inhaber gibt keine
+    ein; ein `next`-Link auf einen anderen Ursprung oder Pfad und einer, der auf seine eigene Seite
+    zeigt, sind eine ungültige Antwort (das Token geht nie woandershin, kein Abruf hängt); keine
+    Weiterleitung, 30 s und 10 MiB je Antwort, 20.000 Datensätze. Die Antwort ist eine Datei: JSON
+    Lines mit genau den Feldern, die Soll liest, flach (keine E-Mail, kein Geschlecht, kein Bild,
+    keine eigenen Attribute, kein Kommentar, kein Projekt), sortiert, sodass derselbe Stand dieselbe
+    Datei und denselben SHA-256 ergibt; danach Vorschau, Probelauf und Übernahme wie bei einer Datei.
+  - **Zugang**: Client-ID, Secret und Token werden nicht gespeichert, nicht geloggt und stehen in
+    keiner Antwort und keiner Datei (Test). Fehler als Werte mit eigenem Grund: Zugang abgelehnt
+    (Token-Endpunkt 400/401, Liste 401), Rechte fehlen (403: die Integration braucht Lesen von
+    Personen, Anwesenheiten und Abwesenheiten), zu viele Anfragen (429 mit `Retry-After`), nicht
+    erreichbar, Antwort ungültig oder zu groß, zu viele Datensätze; kein automatischer Neuversuch.
+  - **Mitarbeiter**: Personen der Zuordnung mit Vor- und Nachnamen aus Personio (zwei gleiche Namen
+    mit Kennung); der Import legt weiter keine Personen an.
+  - **Anwesenheiten**: Zeiträume `WORK` sind Arbeit, `BREAK` Pause; Personio schreibt Ortszeit ohne
+    Versatz, gelesen in Europe/Berlin. Arbeit wird auf die Minute nach außen, Pause nach innen
+    gerundet, die Pausen werden aus der Arbeit herausgenommen, die Stücke einer Person, die sich
+    berühren oder überschneiden, werden ein Block mit Kommen und Gehen, die Lücke zwischen zwei
+    Blöcken ist die Pause (wie S-703, S-705); nie zum Nachteil der Person. Nur bestätigte
+    (`approval.status` `CONFIRMED` oder ohne Freigabe); `PENDING` mit Zeile als `nicht_genehmigt`,
+    `REJECTED` gar nicht. Abgelehnt mit Zeile: ein offener Zeitraum (`laeuft_noch`), eine Uhrzeit,
+    die es wegen der Zeitumstellung nicht oder zweimal gibt, ein Block ab 24 Stunden.
+  - **Abwesenheiten**: nur genehmigte (`APPROVED` oder ohne Freigabe); `PENDING`,
+    `SUBSTITUTE_REQUESTED` und `DELETION_PENDING` mit Zeile als `nicht_genehmigt`. Halbe Tage in
+    halben Tagen: beginnt eine Abwesenheit mit der zweiten Hälfte (`starts_from.type`
+    `SECOND_HALF`), ist der erste Tag halb, endet sie mit der ersten (`ends_at.type` `FIRST_HALF`),
+    der letzte (neue Spalten gibt es nicht: `erster_halb`, `letzter_halb` aus S-401). Abwesenheiten
+    nach Stunden (Art mit `unit` `HOUR` oder eine Uhrzeit außer Mitternacht) mit Zeile als
+    `teil_tag`, eine offene ohne Ende als `laeuft_noch`. Die Art heißt wie in Personio, vorgeschlagen
+    nach dem Wort; Krankheit wird nur „krank“, ohne Grund, ohne Kommentar, ohne Bescheinigung
+    (Art. 9 DSGVO).
+  - **Salden** (Resturlaub, Überstunden) übernimmt S-708 („aus dem Import“): Personios v2 hat keinen
+    Endpunkt dafür, und Soll hat noch keinen Startsaldo (Entscheidung im Projektplan).
+  - **Export**: Personios Berichte als CSV oder Excel haben Spalten, die der Betrieb wählt; sie gehen
+    über „Excel und CSV“ (S-702) mit freier Zuordnung, die Anleitung von Personio sagt das.
+  - **Wiederholbar**: Kennungen sind Personios ids (UUIDs der Zeiträume; ein Block nach seinem
+    ersten Stück); ein zweiter Abruf desselben Zeitraums legt nichts an, abgeschlossene Monate nehmen
+    nichts an (`monat_abgeschlossen`, Test über die API).
+  - **Robust**: Fuzzing mit fast-check über die Datei (beliebiger Text, Zeilen mit falschen Typen,
+    kaputte Zeitpunkte) und über den Abruf (zufällige Antworten des Ersatzes): nie ein Wurf, nie
+    länger als 1 s; jeder Fehler nennt Zeile und Grund.
+  - **Ersatz** der API nach den Quellen (Token, Widerruf, Seiten mit `cursor`, Fehler), in Vitest
+    und für Playwright als eigener Dienst. **Oberfläche und Doku**: Personio in der Liste der
+    Werkzeuge mit Anleitung; Playwright (desktop) geht den Abruf gegen den Ersatz bis zur Übernahme
+    und zeigt, dass der zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen
+    Sprachen der Umzugsseite; Doku `docs/umzug.md`, Entscheidungen im Projektplan.
 - [x] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
   Fertig, wenn: Fixtures nach Kimais API bestehen (Quelle im Test) und ein Playwright-Test den
   ganzen Ablauf zeigt. Genauer:

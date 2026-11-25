@@ -15,6 +15,7 @@ export {
   volleElternzeitmonate,
 } from "./elternzeit.ts";
 export { type Halbtage, halbtageAufgerundet, halbtageAufHalbeAufgerundet } from "./halbtage.ts";
+export { type HinweisErgebnis, type HinweisPosten, verfallHinweis } from "./hinweis.ts";
 export {
   gesetzlicherUrlaub,
   gesetzlicherZusatzurlaub,

@@ -60,6 +60,8 @@ describe("darf", () => {
     expect(mit("abwesenheiten:freigeben")).toEqual(["inhaber", "planer"]);
     expect(mit("abwesenheiten:gesundheit")).toEqual(["inhaber", "lohnbuero"]);
     expect(mit("abwesenheiten:einstellen")).toEqual(["inhaber"]);
+    // S-402: the accounts by hand and the notice on leave expiring are the employer's
+    expect(mit("konten:pflegen")).toEqual(["inhaber"]);
   });
 
   it("lets owner and planner keep customers, orders and rates, and everyone but a device read orders", () => {

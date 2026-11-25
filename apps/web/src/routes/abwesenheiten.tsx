@@ -1,23 +1,28 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { Loading, Show } from "solid-js";
-import { daten } from "../abfragen/abfrage.ts";
+import { abfrage, daten } from "../abfragen/abfrage.ts";
+import { ressourcen } from "../abfragen/schluessel.ts";
 import { Antrag } from "../abwesenheiten/antrag.tsx";
-import { Konten } from "../abwesenheiten/konten.tsx";
+import { Kinderkrank } from "../abwesenheiten/kinderkrank.tsx";
 import { Krank } from "../abwesenheiten/krank.tsx";
 import { MeineListe } from "../abwesenheiten/liste.tsx";
 import { Offen } from "../abwesenheiten/offen.tsx";
 import { abwesenheitQuelle } from "../abwesenheiten/quelle.ts";
 import { Team } from "../abwesenheiten/team.tsx";
+import { Konten } from "../konten/konten.tsx";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
+import type { Person } from "../zeiten/typen.ts";
 
 /**
- * Abwesenheiten (S-401): leave left, a request, a sickness report, one's own absences, the requests
- * waiting for a decision and the team (design/mockup/Abwesenheit.dc.html)
+ * Abwesenheiten (S-401, S-402): the accounts, a request, a sickness report, one's own absences, the
+ * requests waiting for a decision and the team calendar (design/mockup/Abwesenheit.dc.html)
  */
 const Abwesenheiten = () => {
   const q = abwesenheitQuelle();
+  // whoever sees all times picks whose accounts; for everyone else the answer is a refusal
+  const personen = abfrage<{ personen: Person[] }>(ressourcen.personen);
   /** one's own absences as loaded; the first load suspends to the Loading below */
   const liste = () => daten(q.liste.data);
   return (
@@ -31,7 +36,11 @@ const Abwesenheiten = () => {
         <Show when={liste()}>
           {(l) => (
             <>
-              <Konten liste={l()} />
+              <Konten
+                ich={l().nutzerId}
+                personen={daten(personen.data)?.personen ?? []}
+                zusatz={<Kinderkrank jahr={l().jahr} stand={l().kinderkrank} />}
+              />
               <Offen quelle={q} rechte={l().rechte} />
               <div class="grid gap-5 lg:grid-cols-2">
                 <div class="flex flex-col gap-5">

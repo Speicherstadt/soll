@@ -32,6 +32,8 @@ const FREIGEGEBEN = [
   "karten",
   "abwesenheiten",
   "personenangaben",
+  "kontoAnpassungen",
+  "urlaubshinweise",
   "auditKette",
 ];
 

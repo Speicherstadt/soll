@@ -93,7 +93,11 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
     "sql": "CREATE TABLE `kalender_abos` (\n\t`betrieb_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`token_hash` text NOT NULL,\n\t`sprache` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `nutzer_id`)\n);\n--> statement-breakpoint\nCREATE UNIQUE INDEX `kalender_abos_token_hash_unique` ON `kalender_abos` (`token_hash`);"
   },
   {
-    "tag": "0023_terminal_offline",
+    "tag": "0023_konten",
+    "sql": "CREATE TABLE `konto_anpassungen` (\n\t`betrieb_id` text NOT NULL,\n\t`anpassung_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`art` text NOT NULL,\n\t`monat` text,\n\t`jahr` integer,\n\t`minuten` integer,\n\t`halbtage` integer,\n\t`grund` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `anpassung_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `konto_anpassungen_person` ON `konto_anpassungen` (`betrieb_id`,`nutzer_id`);--> statement-breakpoint\nCREATE TABLE `urlaubshinweise` (\n\t`betrieb_id` text NOT NULL,\n\t`hinweis_id` text NOT NULL,\n\t`nutzer_id` text NOT NULL,\n\t`tag` text NOT NULL,\n\t`inhalt` text NOT NULL,\n\t`erstellt_von` text NOT NULL,\n\t`erstellt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `hinweis_id`)\n);\n--> statement-breakpoint\nCREATE INDEX `urlaubshinweise_person` ON `urlaubshinweise` (`betrieb_id`,`nutzer_id`,`tag`);"
+  },
+  {
+    "tag": "0024_terminal_offline",
     "sql": "CREATE TABLE `terminal_eintraege` (\n\t`betrieb_id` text NOT NULL,\n\t`terminal_id` text NOT NULL,\n\t`nummer` integer NOT NULL,\n\t`inhalt_hash` text NOT NULL,\n\t`art` text NOT NULL,\n\t`geraet_zeitpunkt` integer NOT NULL,\n\t`stempel_id` text,\n\t`grund` text,\n\t`empfangen_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `terminal_id`, `nummer`)\n);\n--> statement-breakpoint\nALTER TABLE `terminals` ADD `schluessel` text;"
   }
 ];

@@ -22,6 +22,7 @@ import { erinnerungRouten } from "./routes/erinnerungen.ts";
 import { habenRouten } from "./routes/haben.ts";
 import { kartenRouten } from "./routes/karten.ts";
 import { kioskRouten } from "./routes/kiosk.ts";
+import { kontenRouten } from "./routes/konten.ts";
 import { type Anfrage, angemeldet } from "./routes/kontext.ts";
 import { kundenRouten } from "./routes/kunden.ts";
 import { mcpRouten } from "./routes/mcp.ts";
@@ -144,6 +145,7 @@ export const createApp = ({
             mail,
             schichten: schichten ?? schichtquelle(db),
           }),
+          "/konten": kontenRouten(db, schreibDb, now),
           "/pruefexport": pruefexportRouten(db, now, { url }),
           "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
             geheimerSchluessel,

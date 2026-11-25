@@ -41,6 +41,9 @@ export const kopieFuerInhaber = (eigen: Auskunft) => ({
   abwesenheiten: eigen.abwesenheiten,
   // the owner reads and writes what the rules need of a person (personen:angaben, S-502)
   personenangaben: eigen.personenangaben,
+  // the owner keeps the accounts by hand and gives the notices on leave expiring (konten:pflegen)
+  kontoAnpassungen: eigen.kontoAnpassungen,
+  urlaubshinweise: eigen.urlaubshinweise,
   auditKette: {
     zuDeinenDaten: eigen.auditKette.zuDeinenDaten.filter(freigegeben),
     vonDir: eigen.auditKette.vonDir.filter(freigegeben),

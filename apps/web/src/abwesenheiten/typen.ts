@@ -73,6 +73,16 @@ export type TeamEintrag = {
   stornierbar?: boolean;
 };
 
+/** GET /api/v1/arbeitszeit/abwesenheiten/team: the calendar of a site (S-402) */
+export type Team = {
+  von: Tag;
+  bis: Tag;
+  standortId: string | null;
+  /** the holidays of the site in the span, by name (S-105) */
+  feiertage: { tag: Tag; name: string }[];
+  abwesenheiten: TeamEintrag[];
+};
+
 export type GeplanteSchicht = { schichtId: string; tag: Tag; bezeichnung: string };
 
 export const ANTRAGSARTEN = [

@@ -30,6 +30,7 @@ export {
   type Erinnerung,
   erinnerungenVon,
   kinderkrankstand,
+  tageMitSoll,
   type Urlaubsstand,
   urlaubsstand,
   urlaubstageVon,

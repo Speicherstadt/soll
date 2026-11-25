@@ -18,6 +18,7 @@ import {
   instanzschluessel,
   kalenderAbos,
   karten,
+  kontoAnpassungen,
   korrekturen,
   kunden,
   mitgliedschaften,
@@ -38,6 +39,7 @@ import {
   taetigkeiten,
   terminalEintraege,
   terminals,
+  urlaubshinweise,
 } from "../../db/schema.ts";
 
 /**
@@ -84,6 +86,8 @@ export const kettenTabellen = {
   aussonderungen: { tabelle: aussonderungen, schluessel: ["aussonderungId"] },
   habenZugaenge: { tabelle: habenZugaenge, schluessel: ["betriebId"] },
   habenUebergaben: { tabelle: habenUebergaben, schluessel: ["buchungId"] },
+  kontoAnpassungen: { tabelle: kontoAnpassungen, schluessel: ["anpassungId"] },
+  urlaubshinweise: { tabelle: urlaubshinweise, schluessel: ["hinweisId"] },
 } as const;
 
 export type TabellenName = keyof typeof kettenTabellen;

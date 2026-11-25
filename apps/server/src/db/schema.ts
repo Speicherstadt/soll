@@ -18,6 +18,7 @@ export * from "./schema/datev.ts";
 export * from "./schema/dienstplan.ts";
 export * from "./schema/erinnerungen.ts";
 export * from "./schema/haben.ts";
+export * from "./schema/konten.ts";
 export * from "./schema/personenangaben.ts";
 export * from "./schema/projektzeit.ts";
 export * from "./schema/stundennachweise.ts";

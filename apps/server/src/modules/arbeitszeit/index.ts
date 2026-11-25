@@ -23,8 +23,9 @@ export {
   signaturGueltig,
   signaturPruefen,
 } from "./geraete.ts";
-export { arbeitstagVon, sollGrundlagen } from "./grundlagen.ts";
+export { arbeitstagVon, sollGrundlagen, standortVon } from "./grundlagen.ts";
 export { istTage } from "./isttage.ts";
+export * from "./konten/index.ts";
 export { hatAbschluss, lohndaten, mitAbschluss } from "./lohndaten.ts";
 export {
   type EntfernenErgebnis,

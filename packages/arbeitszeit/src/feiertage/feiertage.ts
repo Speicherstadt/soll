@@ -1,4 +1,4 @@
-import { istTag, plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
+import { istTag, jahrVon, plusTage, type Tag, tagAus, wochentag } from "../kalender/tag.ts";
 import { FEIERTAGSGESETZ, REGIONEN, type Standort } from "./laender.ts";
 import { ostersonntag } from "./ostern.ts";
 import {
@@ -54,6 +54,20 @@ export const feiertage = (jahr: number, standort: Standort): FeiertageErgebnis =
       norm: FEIERTAGSGESETZ[standort.land],
     }))
     .sort((a, b) => a.tag.localeCompare(b.tag));
+  return { ok: true, feiertage: liste };
+};
+
+/**
+ * The holidays at a place from `von` to `bis`, both included (the team calendar of a site, S-402);
+ * "nicht hinterlegt" when a year of the span is
+ */
+export const feiertageZwischen = (standort: Standort, von: Tag, bis: Tag): FeiertageErgebnis => {
+  const liste: Feiertag[] = [];
+  for (let jahr = jahrVon(von); jahr <= jahrVon(bis); jahr += 1) {
+    const ergebnis = feiertage(jahr, standort);
+    if (!ergebnis.ok) return ergebnis;
+    liste.push(...ergebnis.feiertage.filter((f) => f.tag >= von && f.tag <= bis));
+  }
   return { ok: true, feiertage: liste };
 };
 

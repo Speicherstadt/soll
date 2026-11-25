@@ -166,8 +166,15 @@
     {
       "idx": 23,
       "version": "6",
-      "when": 1795611908766,
-      "tag": "0023_terminal_offline",
+      "when": 1795611948144,
+      "tag": "0023_konten",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "6",
+      "when": 1795614938600,
+      "tag": "0024_terminal_offline",
       "breakpoints": true
     }
   ]

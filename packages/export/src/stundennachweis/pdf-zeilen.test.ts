@@ -5,6 +5,8 @@ import { type NachweisZeile, type Stundennachweis, stundennachweisPdf } from "./
 
 const ms = (text: string) => Date.parse(text);
 const HASH = "cd".repeat(32);
+/** The tests that build 70 PDFs each get time for a busy machine */
+const SIEBZIG_PDFS = 60_000;
 
 const buchung = (
   notiz: string,
@@ -65,14 +67,18 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(text).not.toContain("?");
   });
 
-  it("keeps a note of many lines out of the bottom margin", async () => {
-    const notiz = Array.from({ length: 8 }, (_, index) => `Schritt ${index}`).join("\n");
-    for (let anzahl = 1; anzahl <= 70; anzahl++) {
-      const zeilen = Array.from({ length: anzahl }, () => buchung(notiz));
-      const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
-      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
-    }
-  });
+  it(
+    "keeps a note of many lines out of the bottom margin",
+    async () => {
+      const notiz = Array.from({ length: 8 }, (_, index) => `Schritt ${index}`).join("\n");
+      for (let anzahl = 1; anzahl <= 70; anzahl++) {
+        const zeilen = Array.from({ length: anzahl }, () => buchung(notiz));
+        const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
+        expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+      }
+    },
+    SIEBZIG_PDFS,
+  );
 
   it("prints the whole name of the activity", async () => {
     const taetigkeit = "Heizungswartung mit Abgasmessung";
@@ -116,21 +122,29 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(text.match(/^Tätigkeit$/gm)).toHaveLength(2);
   });
 
-  it("writes nothing into the bottom margin, whatever the number of rows", async () => {
-    for (let anzahl = 1; anzahl <= 70; anzahl++) {
-      const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
-      const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
-      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
-    }
-  });
+  it(
+    "writes nothing into the bottom margin, whatever the number of rows",
+    async () => {
+      for (let anzahl = 1; anzahl <= 70; anzahl++) {
+        const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
+        const y = hoehen(await stundennachweisPdf(nachweis(zeilen), HASH));
+        expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+      }
+    },
+    SIEBZIG_PDFS,
+  );
 
-  it("writes nothing into the bottom margin with a signer's name over several lines", async () => {
-    for (let anzahl = 1; anzahl <= 70; anzahl++) {
-      const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
-      const lang = nachweis(zeilen);
-      lang.unterschrift.name = "W".repeat(100);
-      const y = hoehen(await stundennachweisPdf(lang, HASH));
-      expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
-    }
-  });
+  it(
+    "writes nothing into the bottom margin with a signer's name over several lines",
+    async () => {
+      for (let anzahl = 1; anzahl <= 70; anzahl++) {
+        const zeilen = Array.from({ length: anzahl }, () => buchung("Montage"));
+        const lang = nachweis(zeilen);
+        lang.unterschrift.name = "W".repeat(100);
+        const y = hoehen(await stundennachweisPdf(lang, HASH));
+        expect(Math.min(...y), `${anzahl} rows`).toBeGreaterThanOrEqual(40);
+      }
+    },
+    SIEBZIG_PDFS,
+  );
 });

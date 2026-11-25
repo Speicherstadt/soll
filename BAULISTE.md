@@ -536,7 +536,7 @@ Alle Punkte: nach S-306.
   anderen Person; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
   ändert, und dass das abgeschaltete Modul abgelehnt wird; Playwright in `desktop` und `@phone`,
   axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
-- [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
+- [x] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
   Arbeitszeit, Soll aus dem Plan gegen Ist.
   Fertig, wenn: ein Planer eine Rufbereitschaft in die Woche plant und veröffentlicht, die Person
   sie in App und Kalender sieht, in ihr einen Einsatz beginnt und beendet, der Einsatz im Monat als

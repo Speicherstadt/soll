@@ -53,6 +53,8 @@ describe("zeilenDesMonats", () => {
       befunde: [],
       geaendert: true,
       abwesenheiten: [],
+      einsaetze: [],
+      ausPlan: false,
     });
     expect(zeilen[1]).toMatchObject({
       beginn: null,
@@ -76,5 +78,30 @@ describe("vormonat and saldoText", () => {
     expect(saldoText(208)).toBe("+3:28");
     expect(saldoText(-15)).toBe("-0:15");
     expect(saldoText(0)).toBe("+0:00");
+  });
+});
+
+describe("zeilenDesMonats with call-outs and the Soll from the plan (S-505)", () => {
+  it("adds the minutes of ended call-outs to the day and takes the planned Soll", () => {
+    const [tag] = zeilenDesMonats(
+      [
+        {
+          tag: "2026-10-25",
+          stempel: [],
+          modellMinuten: 480,
+          planMinuten: 360,
+          // the night the clocks go back: 1:30 (+02:00) to 2:30 (+01:00) are two real hours
+          einsaetze: [
+            [ms("2026-10-25T01:30:00+02:00"), ms("2026-10-25T02:30:00+01:00")],
+            [ms("2026-10-25T05:00:00+01:00"), null],
+          ],
+        },
+      ],
+      [],
+      [],
+      ms("2026-10-26T12:00:00+01:00"),
+    );
+    expect(tag).toMatchObject({ arbeitsMinuten: 120, sollMinuten: 360, ausPlan: true });
+    expect(tag?.einsaetze).toHaveLength(2);
   });
 });

@@ -90,6 +90,18 @@ ist. Wer häufig gerufen wird, kann den Dienst als Bereitschaftsdienst eintragen
 Rufbereitschaft zählt dann für jeden Grenzwert, öffnet aber nicht die tarifliche Ausnahme über
 10 Stunden nach § 7 Abs. 1 Nr. 1 Buchst. a ArbZG (siehe oben).
 
+## Im Plan und in der Zeiterfassung
+
+Seit S-505 kommt die Rufbereitschaft aus dem [Dienstplan](dienstplan.md#rufbereitschaft-im-plan)
+(mit der Reaktionszeit am einzelnen Dienst), und die Einsätze erfasst die Person selbst
+([Einsätze](stempeln.md#einsatze-aus-der-rufbereitschaft)). Der Plan prüft ab heute die geplante
+Rufbereitschaft, vor heute die erfassten Einsätze; der Monat prüft seine Tage mit den Einsätzen und
+der veröffentlichten Rufbereitschaft und zählt die Einsätze ins Ist. Die Rufbereitschaft selbst
+zählt nie ins Ist, auch nicht, wenn sie für die Grenzwerte ganz zählt: Wie sie bezahlt wird, regelt
+der Vertrag; die Richtlinie 2003/88/EG regelt keine Vergütung (EuGH C-518/15, C-344/19, C-580/19).
+Bereitschaftsdienst und der Tarif nach § 7 lassen sich noch nicht eintragen; der Monat prüft wie die
+Tage nach §§ 3 bis 5 ohne Branche, also streng.
+
 ## Einstellungen und Vorgaben
 
 | Einstellung | Werte | Vorgabe |

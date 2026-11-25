@@ -59,6 +59,7 @@ export const RufKarte = () => {
                 fallback={
                   <Show when={aktuell().jetzt}>
                     <Button
+                      variant="outline"
                       class="h-[52px] rounded-xl text-[16px]"
                       disabled={aktionen.beginnen.isPending}
                       onClick={() => void nach(aktionen.beginnen.mutate(undefined))}
@@ -70,6 +71,7 @@ export const RufKarte = () => {
                 }
               >
                 <Button
+                  variant="outline"
                   class="h-[52px] rounded-xl text-[16px]"
                   disabled={aktionen.beenden.isPending}
                   onClick={() => void nach(aktionen.beenden.mutate(undefined))}

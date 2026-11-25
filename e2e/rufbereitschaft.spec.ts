@@ -101,7 +101,6 @@ test("Rufbereitschaft and call-outs on a phone @phone", async ({ page, browser }
 
 test("a call-out outside a published duty is refused with a reason", async ({ page, browser }) => {
   const { tom } = await mitTom(page, browser);
-  await senden(page, "PATCH", "/api/v1/betrieb/module", { dienstplan: true });
   await tom.goto("/");
   await expect(karte(tom)).toHaveCount(0);
   const minute = Math.floor(Date.now() / 60_000) * 60_000;

@@ -31,6 +31,25 @@ const abwesenheitText = (
         )
         .join(", ");
 
+const uhrzeit = new Intl.DateTimeFormat("de-DE", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+  timeZone: "Europe/Berlin",
+});
+
+/** The call-outs of a day as the sheet writes them and their minutes once ended (S-505, R-12) */
+const einsaetzeVon = (einsaetze: readonly [number, number | null][] = []) => ({
+  minuten: einsaetze.reduce(
+    (summe, [beginn, ende]) => summe + (ende === null ? 0 : Math.round((ende - beginn) / 60_000)),
+    0,
+  ),
+  texte: einsaetze.map(
+    ([beginn, ende]) =>
+      `Einsatz ${uhrzeit.format(beginn)}–${ende === null ? "offen" : uhrzeit.format(ende)}`,
+  ),
+});
+
 /**
  * The time sheet of a month (S-306) from its content: the closed content once closed, so the sheet
  * shows what the Prüfwert covers. `name` gives the names of the people who confirmed and closed.
@@ -61,19 +80,24 @@ export const stundenzettelAus = (
     monat: inhalt.monat,
     tage: inhalt.tage.map((aufzeichnung) => {
       const tag = tage.get(aufzeichnung.tag);
+      const einsatz = einsaetzeVon(aufzeichnung.einsaetze);
       return {
         tag: aufzeichnung.tag,
         beginn: tag?.beginn ?? null,
         ende: tag?.ende ?? null,
         pauseMinuten: tag?.pausenMinuten ?? 0,
-        arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
-        sollMinuten: aufzeichnung.modellMinuten,
+        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) + einsatz.minuten,
+        // on a day of the plan its Soll is the plan's (S-505)
+        sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
         abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),
-        hinweise: befunde
-          .filter((befund) => befund.tage.includes(aufzeichnung.tag))
-          .map(
-            (befund) => `${befund.schwere === "verstoss" ? "Verstoß" : "Hinweis"} ${befund.norm}`,
-          ),
+        hinweise: [
+          ...einsatz.texte,
+          ...befunde
+            .filter((befund) => befund.tage.includes(aufzeichnung.tag))
+            .map(
+              (befund) => `${befund.schwere === "verstoss" ? "Verstoß" : "Hinweis"} ${befund.norm}`,
+            ),
+        ],
       };
     }),
     summen: inhalt.summen,

@@ -193,9 +193,9 @@ Plan an; eine Kollegin übernimmt sie, und Inhaber oder Planer geben den Tausch 
 Soll prüft jede geplante Schicht mit denselben Regeln wie gestempelte Zeiten
 ([Regelwerk](regeln.md)), sobald sie im Plan steht: nach dem Arbeitszeitgesetz (R-02 bis R-09), dem
 Mindestlohn (R-14), dem Jugendarbeitsschutz (R-15 bis R-20), dem Mutterschutz (R-21), § 12 TzBfG für
-Arbeit auf Abruf (R-22) und der Minijob-Grenze (R-32). Nicht im Plan geprüft werden die Regeln, die
-nur Stempelungen betreffen (R-01, R-10, R-13), und Bereitschaft (R-11, R-12), die mit S-505 in den
-Plan kommt.
+Arbeit auf Abruf (R-22), der Minijob-Grenze (R-32) und seit S-505 mit Bereitschaftsdienst und
+Rufbereitschaft (R-11, R-12, siehe [Rufbereitschaft im Plan](#rufbereitschaft-im-plan)). Nicht im
+Plan geprüft werden die Regeln, die nur Stempelungen betreffen (R-01, R-10, R-13).
 
 - **Plan und Ist**: Tage vor heute kommen aus den Stempelungen, heute und später aus dem Plan.
   Geprüft wird, als wäre der Plan bis zum Ende seines letzten Tages gearbeitet; so zählt die
@@ -242,6 +242,55 @@ Eintrag gilt die strenge Vorgabe des Gesetzes.
 
 Ein Link kann eine Woche öffnen: `/dienstplan?tag=JJJJ-MM-TT`.
 
+## Rufbereitschaft im Plan
+
+Inhaber und Planer planen Rufbereitschaft im Kopf des Plans über **Rufbereitschaft planen**: Person,
+Tag, Beginn und Ende auf der Berliner Uhr (ein Ende vor dem Beginn liegt am nächsten Tag) und die
+**Reaktionszeit** in ganzen Minuten, wenn eine vereinbart ist. Im Raster steht sie in der Zeile der
+Person am Tag ihres Beginns, mit Telefon und einem Strich an der Seite statt eines gefüllten Blocks,
+denn sie ist keine Arbeitszeit ([Rufbereitschaft](bereitschaft.md#rufbereitschaft-r-12)). Sie ist
+ein Entwurf wie eine Schicht: Nur wer plant, sieht sie, bis **Veröffentlichen** die Woche am
+Standort mitnimmt; dann sieht die Person sie im Plan, auf **Heute** und im Kalender („Rufbereitschaft“,
+die Reaktionszeit als Beschreibung). Eine Änderung oder das Entfernen einer veröffentlichten
+Rufbereitschaft benachrichtigt die Person wie bei einer Schicht („Rufbereitschaft geändert“,
+„Rufbereitschaft entfällt“). Eine Uhrzeit, die es wegen der Zeitumstellung nicht gibt, lehnt der
+Server ab.
+
+- **Prüfung**: Ab heute prüft Soll die geplante Rufbereitschaft, vor heute die erfassten Einsätze,
+  mit denselben Funktionen wie die Zeiterfassung (R-11, R-12). Eine Rufbereitschaft mit einer
+  Reaktionszeit unter 30 Minuten oder ohne eingetragene zählt für die Grenzwerte ganz als Arbeitszeit
+  (EuGH C-518/15, Matzak); dann steht ein Befund wie „über 10 h“ auch an ihr. Eine mit 30 Minuten
+  oder mehr ergibt im Plan keinen Befund: Einsätze kennt der Plan noch nicht. Ein Einsatz von gestern
+  Nacht, nach dem die heutige Schicht keine 11 Stunden Ruhe lässt, steht als „Ruhezeit durch Einsatz
+  unterbrochen“ an der Schicht.
+- **Einsätze**: Die Person beginnt und beendet einen Einsatz auf **Heute**, solange ihre
+  veröffentlichte Rufbereitschaft läuft, oder trägt ihn danach mit Grund nach; siehe
+  [Einsätze](stempeln.md#einsatze-aus-der-rufbereitschaft).
+- **Zuschläge**: Eine Pauschale für Rufbereitschaft ist kein Zuschlag für Sonntags-, Feiertags- oder
+  Nachtarbeit nach § 3b EStG und damit nicht steuerfrei; die Einsätze selbst sind Arbeitszeit und
+  bekommen die [Zuschläge](zuschlaege.md) ihrer Stunden. Soll berechnet keine Pauschale.
+
+## Soll aus dem Plan
+
+Unter **Einstellungen → Soll aus dem Plan** stellt der Inhaber ein, dass das Soll ab einem Tag aus
+dem veröffentlichten Plan kommt statt aus dem Arbeitszeitmodell. Das passt zu Betrieben, deren Leute
+keine festen Tage haben, etwa Minijobs „nach Plan“.
+
+- Das Soll eines Tages ist dann die Summe der veröffentlichten Schichten der Person, die an ihm
+  beginnen: echte Minuten von Beginn bis Ende ohne Pause, in ganzen Minuten. Eine Nachtschicht von
+  22:00 bis 6:00 hat in den Nächten der Zeitumstellung 7 oder 9 Stunden. Entwürfe zählen nicht.
+- Ein Tag ohne veröffentlichte Schicht hat kein Soll, auch wenn das Modell dort 8 Stunden hätte;
+  eine Schicht an einem Feiertag ist Soll. Abwesenheiten bekommen das Soll gutgeschrieben, das der
+  Plan an dem Tag hielt (§ 4 Abs. 1 EntgFG). Urlaubstage zählt Soll weiter nach dem Modell.
+- Der Monat zeigt dann neben der Dauer je Tag die Spalte **Soll**, oben Soll, Ist und Saldo in ganzen
+  Minuten.
+- Die Einstellung ist ein Verlauf: Ein Eintrag gilt ab seinem Tag bis zum nächsten. Ein neuer
+  Eintrag beginnt frühestens am Tag nach dem letzten abgeschlossenen Monat des Betriebs, so bleiben
+  Inhalt und Prüfwert abgeschlossener Monate unverändert. „Aus dem Plan“ geht nur mit
+  eingeschaltetem Modul Dienstplan; zurück zum Modell geht immer.
+- Keine Summe je Person im Plan: Soll gegen Ist steht im Monat der Person, den sie selbst und der
+  Betrieb ohnehin sehen (BetrVG § 87, [Auswertung je Person](projektzeit.md)).
+
 ## Schnittstelle
 
 Alle Pfade unter `/api/v1/dienstplan`, nur bei eingeschaltetem Modul; jeder Aufruf gilt dem Betrieb
@@ -253,7 +302,8 @@ der Sitzung, eine `betriebId` im Inhalt lehnt der Server ab.
 | `GET`, `POST /vorlagen`; `PUT`, `DELETE /vorlagen/:id` | Inhaber, Planer | Schichtvorlagen |
 | `GET /bedarf?standortId=…`, `POST /bedarf`, `DELETE /bedarf/:id` | Inhaber, Planer | Bedarf je Rolle und Wochentag (1 Montag bis 7 Sonntag) |
 | `POST /schichten`, `PATCH`, `DELETE /schichten/:id` | Inhaber, Planer | Schichten: `standortId`, `tag`, `beginnMinute`, `endeMinute`, `pauseMinuten`, `rolle`, `nutzerId` (oder `null` für offen), beim Anlegen `vorlageId`; eine Änderung einer veröffentlichten Schicht benachrichtigt die betroffenen Personen |
-| `POST /veroeffentlichen` | Inhaber, Planer | `standortId`, `tag`: veröffentlicht die Entwürfe der Woche um den Tag; Antwort `anzahl` (Schichten) und `benachrichtigt` (Personen) |
+| `POST /veroeffentlichen` | Inhaber, Planer | `standortId`, `tag`: veröffentlicht die Entwürfe der Woche um den Tag, Schichten und Rufbereitschaft; Antwort `anzahl` (Schichten und Rufbereitschaften) und `benachrichtigt` (Personen) |
+| `POST /rufdienste`, `PATCH`, `DELETE /rufdienste/:id` | Inhaber, Planer | Rufbereitschaft: `standortId`, `nutzerId`, `tag`, `beginnMinute`, `endeMinute`, `reaktionMinuten` (oder `null`); die Woche nennt sie unter `rufdienste`, ihre Befunde mit `schichtIds` |
 | `GET`, `POST`, `DELETE /kalender` | alle, die den Plan lesen; `POST` und `DELETE` nur mit Sitzung | der eigene Kalender-Link: `GET` sagt, ob es ihn gibt (`abo` mit `angelegtAm`, `sprache`), `POST` mit `sprache` stellt ihn (neu) aus und antwortet einmal mit `url`, `DELETE` widerruft ihn |
 | `GET /tausch` | alle, die den Plan lesen | die Tausche der Schichten, die noch nicht begonnen haben (`tausche`: Status, Schicht, `anbieter`, `an`, `uebernehmer`, `grund`; `befunde` für die übernehmende Person nur für Inhaber und Planer, sonst `null`), die eigenen Schichten, die sich anbieten lassen (`anbietbar`), die Kollegen, die übernehmen können, nur mit Namen (`kollegen`), und `ohneFreigabe`; wer nicht plant, sieht nur eigene Tausche und Angebote, die ihm gelten |
 | `POST /tausch` | alle, die den Plan lesen | `schichtId`, `anNutzerId` (oder `null` für alle): bietet eine eigene veröffentlichte Schicht an |
@@ -279,5 +329,6 @@ Außerhalb des Moduls, weil auch die Zeiterfassung sie braucht:
 | --- | --- | --- |
 | `GET`, `PUT /api/v1/betrieb/pruefung` | lesen alle Beschäftigten, ändern der Inhaber | `branche`, `sonntagsausnahme` (1 bis 16), `ausgleichszeitraum` (`sechs_monate`, `24_wochen`), `ausgleichBeginn`; `null` ist die Vorgabe des Gesetzes |
 | `GET`, `PUT /api/v1/personen/:id/angaben` | Inhaber | `geburtsdatum`, `wechselschicht`, `abruf`, `mutterschutz` (Liste von `{ von, bis }`, `bis` leer, solange er läuft); eine Person eines anderen Betriebs ergibt 404 |
+| `GET`, `PUT /api/v1/arbeitszeit/sollquellen` | lesen alle, die den Betrieb lesen; ändern der Inhaber | `ab` (Tag), `quelle` (`modell` oder `plan`); `GET` nennt dazu `fruehestens`; vor ihm 409 `monat_gesperrt`, „plan“ ohne Modul Dienstplan 403 `dienstplan_aus` |
  Ein Standort mit Schichten oder Bedarf lässt sich nicht entfernen (409
 `verplant`). Jede Änderung steht in der [Audit-Kette](audit-kette.md).

@@ -47,6 +47,7 @@ Datenschutzbeauftragten benennen (§ 38 BDSG); Ihre Ansprechperson für den Date
 | Urlaub, Krankheit (nur dass Sie krank sind, und ob eine Bescheinigung vorliegt, nie die Diagnose), Kind krank (Ihr Kind nur als Nummer) | Urlaubsanspruch, Entgeltfortzahlung, Kinderkrankengeld |
 | [falls zutreffend] Geburtsdatum bei Jugendlichen, Zeiten des Mutterschutzes, die Sie uns mitgeteilt haben | Prüfung nach Jugendarbeitsschutzgesetz und Mutterschutzgesetz |
 | [falls Dienstplan] Ihre Schichten im Dienstplan | Planung, Information an Sie |
+| [falls Rufbereitschaft] Ihre Rufbereitschaft im Dienstplan und Beginn, Ende und Grund jedes Einsatzes daraus, nie ein Ort | Einsätze sind Arbeitszeit und unterbrechen die Ruhezeit (§ 5 ArbZG); Ihr Lohn |
 | [falls Projektzeit] Zeit, die Sie auf Aufträge buchen, mit Notiz | Abrechnung beim Kunden |
 | Name, E-Mail-Adresse oder Benutzername, Passwort (nur als Hash), Passkeys, Sitzungen mit IP-Adresse und Browser | Anmeldung und Sicherheit |
 | [falls Terminal] PIN (nur als Hash), QR-Code oder NFC-Karte (nur als Hash) | Stempeln am Terminal |

@@ -146,6 +146,29 @@ Eine Änderung steht an dem Arbeitstag, zu dem die Stempelung gehört: Wird das 
 Nachtschicht nach Mitternacht entfernt, steht das am Tag, an dem die Schicht begann. Eine korrigierte
 Stempelung trägt in der Liste die Marke „korrigiert“.
 
+## Einsätze aus der Rufbereitschaft
+
+Hat die Person eine veröffentlichte [Rufbereitschaft](dienstplan.md#rufbereitschaft-im-plan) von
+gestern bis morgen, steht auf **Heute** unter dem Knopf die Karte **Rufbereitschaft**. Rufbereitschaft
+selbst ist keine Arbeitszeit, ein **Einsatz** schon: vom Anruf bis zum Ende der Arbeit, mit dem Weg
+hin und zurück (§ 5 ArbZG, [Rufbereitschaft](bereitschaft.md#rufbereitschaft-r-12)).
+
+- **Einsatz beginnen** und **Einsatz beenden** gehen, solange die Rufbereitschaft läuft, mit der Uhr
+  des Servers; der Beginn zählt ab der vollen Minute, das Ende bis zur nächsten vollen Minute, nie
+  zum Nachteil der Person. Soll beendet einen Einsatz nie selbst: Ein offener Einsatz hält den
+  Monatsabschluss auf wie eine offene Schicht.
+- **Einsatz nachtragen** nimmt Tag, Beginn, Ende und einen **Grund**, wie ein Nachtrag einer
+  Stempelung. Der Einsatz muss in einer eigenen veröffentlichten Rufbereitschaft beginnen, vorbei
+  sein, unter 24 Stunden dauern und darf keinen anderen überschneiden. Inhaber und Planer tragen für
+  alle nach, das Lohnbüro liest nur. Entfernt wird ein Einsatz nur mit Grund; er bleibt als entfernt
+  in der [Audit-Kette](audit-kette.md).
+- Ein Einsatz zählt zum Arbeitstag der Schicht, die höchstens 9 Stunden vorher endet, sonst zum Tag
+  seines Beginns (R-12). Im **Monat** steht er beim Tag („Einsatz 22:00–23:30 (1:30)“), seine Minuten
+  zählen in Dauer und Ist; was zugleich gestempelt ist, zählt nicht doppelt. Ein Einsatz, der einen
+  abgeschlossenen Monat ändern würde, wird abgelehnt.
+- Ohne das Modul Dienstplan gibt es keine Rufbereitschaft und damit keinen neuen Einsatz;
+  vorhandene Einsätze bleiben im Monat.
+
 ## Arbeitszeitmodell zuordnen
 
 Der Inhaber ordnet unter **Zeiten** jeder Person ein Arbeitszeitmodell zu; es gilt ab dem Tag der
@@ -167,6 +190,17 @@ aus ist:
 | `POST /stempelungen/:id/entfernen` | `{ grund }`, hängt eine Entfernung an | selbst; andere: Inhaber, Planer |
 | `GET /personen` | wer stempelt, mit dem Modell von heute | Inhaber, Planer, Lohnbüro |
 | `PUT /personen/:nutzerId/modell` | `{ modellId, gueltigAb? }` | Inhaber |
+| `GET /einsaetze?monat=&nutzerId=` | die Einsätze eines Monats, `laufend`, die Rufbereitschaft, die jetzt gilt (`jetzt`), und die von gestern bis morgen (`naechste`) | selbst; andere: Inhaber, Planer, Lohnbüro |
+| `POST /einsaetze/beginnen`, `POST /einsaetze/beenden` | beginnt oder beendet den eigenen Einsatz mit der Uhr des Servers; 409 `keine_rufbereitschaft`, `laeuft_schon`, `laeuft_nicht` | selbst |
+| `POST /einsaetze` | `{ nutzerId?, beginn, ende, grund }` in ganzen Minuten; 409 `keine_rufbereitschaft`, `ueberschneidung`, `monat_gesperrt`, 422 `zukunft`, `zu_lang` | selbst; andere: Inhaber, Planer |
+| `POST /einsaetze/:id/entfernen` | `{ grund }` | selbst; andere: Inhaber, Planer |
+
+Die Einsätze brauchen das Modul Dienstplan, sonst antworten sie mit 403 `dienstplan_aus`; lesen
+geht immer. Die Tabelle `einsaetze` hält Person, Rufbereitschaft, Beginn, Ende, Grund und ob und warum
+er entfernt wurde, mit `betrieb_id` in der Audit-Kette. Im Inhalt des Monats nennt ein Tag seine
+Einsätze unter `einsaetze` und, wenn das Soll aus dem Plan kommt, seine Minuten unter `planMinuten`,
+beides nur, wo es welche gibt: So bleibt der Inhalt eines Monats, der vorher abgeschlossen wurde,
+Zeichen für Zeichen gleich.
 
 Die Tabelle `stempelungen` hat `betrieb_id`, die Person, Art, Zeitpunkt (Server) und Zeitpunkt des
 Geräts, Quelle (`app`, `terminal` oder `api` für einen [Zugang zur API](api.md)), `ersetzt` (die Zeile, die diese ersetzt), `entfernt`, Grund, wer und wann. In Kraft

@@ -532,6 +532,13 @@ ohne sie gilt der Fall „Pause“.
   Nr. 1 ArbZG als Einstellung mit Fundstelle.
 - **Schwere**: Verstoß, wenn nach einem Einsatz keine 11 h bis zur nächsten Schicht bleiben (mit
   Branchenausnahme nach § 5 Abs. 2 wie R-05); Hinweis „Einsatz ausgleichen“ nach § 5 Abs. 3.
+- **Im Plan** (S-505): Der Plan prüft ab heute die geplante Rufbereitschaft mit ihrer Reaktionszeit,
+  vor heute die erfassten Einsätze; eine Rufbereitschaft, die ganz zählt, trägt die Befunde ihres
+  Arbeitstags (etwa R-02), eine, die nicht ganz zählt, keinen, denn ihre Einsätze kennt der Plan
+  noch nicht. Ein Befund, der nur vergangene Tage nennt (etwa „Einsatz ausgleichen“ für gestern),
+  gehört zur Zeiterfassung, nicht zum Plan. Die Fälle „Matzak“, „Matzak, Grenze“, „ohne
+  Reaktionszeit“, „Verstoß“, „Grenze“, „Krankenhaus“, „Herbst“ und „Frühjahr“ gelten im Plan
+  ebenso.
 
 | Fall | Lage | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1096,6 +1103,10 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   sich nicht in den Folgetag (Abs. 3 Nr. 2: „des auf den Sonntag oder Feiertag folgenden Tages“).
 - **Schwere**: kein Befund; eine Berechnung. Die Beispiele aus R 3b LStR und H 3b LStH sind die Tests
   (S-207).
+- **Rufbereitschaft**: Eine Pauschale für Rufbereitschaft ist kein Zuschlag „für tatsächlich
+  geleistete Sonntags-, Feiertags- oder Nachtarbeit“ (§ 3b Abs. 1 EStG) und nicht steuerfrei; Soll
+  rechnet sie nicht. Ein Einsatz ist geleistete Arbeit, seine Minuten bekommen die Zuschläge dieser
+  Regel (S-505).
 
 | Fall | Lage (Grundlohn 20 €, gezahlt 25 % Nacht) | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1220,6 +1231,11 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   Kind krank und Sonderurlaub bekommen das Soll des Tages gutgeschrieben, ein halber Tag die Hälfte,
   aufgerundet; Überstundenabbau bekommt nichts. Das Überstundenkonto ist die Summe aus Ist minus Soll
   der abgeschlossenen Monate und den Anpassungen von Hand (Startsaldo, Auszahlung, Korrektur).
+- **Soll aus dem Plan** (S-505): Hat der Betrieb ab einem Tag „Soll aus dem Plan“ eingestellt, ist
+  das Soll eines Tages die Summe der veröffentlichten Schichten der Person, die an ihm beginnen (Arbeit
+  ohne Pause, ganze Minuten); ein Feiertag setzt es nicht auf 0, ein Tag ohne Schicht hat 0, und eine
+  Abwesenheit bekommt dieses Soll gutgeschrieben. Ein Tag aus dem Plan braucht kein Modell. Einsätze
+  aus der Rufbereitschaft zählen ins Ist, die Rufbereitschaft selbst nicht.
 - **Schwere**: kein Befund; eine Berechnung. Ein Tag der Beschäftigung ohne Arbeitszeitmodell oder
   ohne Feiertage macht den Monat „nicht hinterlegt“.
 
@@ -1238,6 +1254,12 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
 | Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | docs/plan.md, „Abwesenheiten im Soll“ |
 | Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | docs/plan.md, „Konten“ |
+| Soll aus dem Plan | ab 1.11.2026 aus dem Plan, 21 veröffentlichte Schichten 6:00 – 14:30 mit 30 min Pause, je 7:30 gearbeitet | Soll 168:00, Ist 157:30, Saldo −10:30 | § 611a Abs. 1 BGB (die Weisung des Plans, § 106 GewO); docs/plan.md, „Soll aus dem Plan“ |
+| Plan, Grenze | dasselbe, ein Werktag ohne veröffentlichte Schicht, je 8:00 gearbeitet | Soll 160:00, Saldo 0:00 (das Modell zählt nicht) | docs/plan.md, „Soll aus dem Plan“ |
+| Plan am Feiertag | Schicht am 25.12.2026 (1. Weihnachtstag) mit 6:00 | Soll 6:00, keine Minderung; am 24.12. ohne Schicht 0:00 | docs/plan.md, „Soll aus dem Plan“ |
+| Plan und Krankheit | krank am Mo 2.11.2026, geplant 10:00 – 16:00 | 6:00 gutgeschrieben | § 4 Abs. 1 EntgFG (Ausfallprinzip) |
+| Plan in der Zeitumstellung | Nachtschicht 24.10.2026 22:00 – 6:00 / 27.03.2027 22:00 – 6:00 | Soll 9:00 / 7:00 | SoZV |
+| Plan ab Monatsmitte | ab 16.11.2026 aus dem Plan, eine Schicht 6:00 – 14:30 mit 30 min Pause am 16.11. | Soll 88:00 (10 × 8:00 aus dem Modell + 8:00 aus dem Plan) | docs/plan.md, „Soll aus dem Plan“ |
 
 ## Was Soll nicht prüft
 

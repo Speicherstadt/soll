@@ -92,7 +92,12 @@ erreicht. „Veröffentlichen“ ist die Hauptaktion im Kopf, nur für Inhaber u
 bekommt nur den Rand in `--danger` oder `--warning`; die Minijob-Grenze erscheint erst, wenn sie
 überschritten ist (R-32), nicht als Stand „551 € von 603 €“ (keine Summen je Person, BetrVG § 87);
 der Inhaber trägt im Kopf des Plans unter „Angaben zur Prüfung“ ein, was die Regeln von einer
-Person brauchen (S-502).
+Person brauchen (S-502). Eine Rufbereitschaft (S-505) ist keine Arbeitszeit und sieht darum nicht
+wie eine Schicht aus: ohne Füllung, mit Telefon-Icon, „Rufbereitschaft“, der Reaktionszeit und einem
+Strich in `--foreground` an der Startseite (mit Befund in `--danger` oder `--warning`); geplant wird sie
+im Kopf über „Rufbereitschaft planen“. Auf „Heute“ steht, solange die Person von gestern bis morgen
+Rufbereitschaft hat, unter dem Stempelknopf die Karte „Rufbereitschaft“ mit „Einsatz beginnen“ oder
+„Einsatz beenden“ (umrandet, der Stempelknopf bleibt die Hauptaktion) und „Einsatz nachtragen“.
 
 **Monatsabschluss**: Kopf mit dem Stand (bestätigt, abgeschlossen), „Stundenzettel (PDF)“ und der
 Hauptaktion, für die Person „Monat bestätigen“, für den Inhaber „Monat abschließen“; darunter die

@@ -42,6 +42,7 @@ Datenschutzbeauftragten benennen (§ 38 BDSG); Ihre Ansprechperson für den Date
 | Beginn, Ende und Pausen Ihrer Arbeit, mit jeder Änderung, ihrem Grund und wer sie gemacht hat | Pflicht zur Erfassung der Arbeitszeit (§ 3 Abs. 2 Nr. 1 ArbSchG, BAG, Beschluss vom 13.09.2022, 1 ABR 22/21); Aufzeichnung der Arbeit über acht Stunden (§ 16 Abs. 2 ArbZG); Aufzeichnung bei Minijob und in den Branchen des § 2a SchwarzArbG (§ 17 Abs. 1 MiLoG); Ihr Lohn und Ihre Konten |
 | Prüfung jedes Tages nach dem Arbeitszeitgesetz (Höchstarbeitszeit, Pausen, Ruhezeit, Nacht, Sonntag) | Schutz Ihrer Gesundheit; wir sehen einen Verstoß und können handeln |
 | Monatsabschluss mit Ihrer Bestätigung und einem Prüfwert | Sie können später nachprüfen, dass niemand Ihren Monat geändert hat |
+| [falls übernommen] Zeiten und Abwesenheiten aus unserem bisherigen Programm [Name] (Import), mit der Originaldatei des Exports und der Kennung jeder Zeile dort | Übernahme Ihrer bisherigen Aufzeichnungen nach Soll; die Originaldatei zeigt, woher eine übernommene Zeit stammt |
 | Arbeitszeitmodell (Soll je Wochentag) und Lohn je Monat oder Stunde | Soll, Ist, Überstunden, Mindestlohn, Zuschläge |
 | Urlaub, Krankheit (nur dass Sie krank sind, und ob eine Bescheinigung vorliegt, nie die Diagnose), Kind krank (Ihr Kind nur als Nummer) | Urlaubsanspruch, Entgeltfortzahlung, Kinderkrankengeld |
 | [falls zutreffend] Geburtsdatum bei Jugendlichen, Zeiten des Mutterschutzes, die Sie uns mitgeteilt haben | Prüfung nach Jugendarbeitsschutzgesetz und Mutterschutzgesetz |
@@ -102,6 +103,9 @@ Push-Dienst eines Browsers kann außerhalb stehen; er bekommt nur den verschlüs
   beginnt mit Ende des Jahres, in dem der Monat abgeschlossen wurde. Danach löscht Soll den Monat
   von selbst.
 - Abwesenheiten werden mit den Monaten gelöscht, die sie berühren.
+- [falls übernommen] Übernommene Zeiten gelten wie in Soll erfasste. Die Originaldatei aus dem
+  bisherigen Programm bewahren wir auf, bis der letzte Monat gelöscht ist, aus dem sie Zeiten
+  enthält; Soll löscht sie nicht selbst, wir löschen sie dann von Hand.
 - Zugangsmittel (PIN, QR-Code, Karte, Zugang zur API, Benachrichtigungen) löschen wir, wenn sie
   widerrufen werden; nach Ihrem Austritt gelten sie nicht mehr.
 - Alles weitere steht im Löschkonzept: [Link oder Ort des Löschkonzepts des Betriebs].

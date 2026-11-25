@@ -42,6 +42,7 @@ bis sie hier mit ihrer Löschklasse steht.
 | Projektzeit | Buchungen auf Aufträge, Stundensätze, Stundennachweise mit Unterschrift des Kunden | Abrechnung beim Kunden |
 | Zugangsmittel | Konto, Passwort als Hash, Passkeys, Sitzungen, PIN als Hash, QR-Code und NFC-Karte als Hash, Zugänge zur API als Hash, Push-Abos | Anmeldung und Stempeln |
 | Protokoll | Glieder der Audit-Kette mit Akteur, Zeit, Tabelle, Zeile und Hash des Inhalts | Unveränderbarkeit nach GoBD Rz. 107 ff., Prüfwert der Beschäftigten |
+| Import | Originaldatei aus dem alten Tool mit Namen und Zeiten aller Personen darin, Zuordnung der Personen, was übernommen wurde | Umzug zu Soll ohne Abtippen; Nachweis, woher eine übernommene Zeit stammt ([Umzug](umzug.md)) |
 | Daten des Betriebs | Standorte, Vorlagen, Bedarf, Kunden, Aufträge, Tätigkeiten, Einstellungen | Betrieb der Software; keine Daten der Beschäftigten (ein Kunde kann eine Person sein) |
 
 ## Löschklassen
@@ -73,6 +74,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Tabelle | Klasse | Inhalt | Was Soll heute tut |
 | --- | --- | --- | --- |
 | `stempelungen` | M | Kommen, Pause, Gehen mit Zeit, Quelle, jeder Fassung und ihrem Grund | sondert jede Fassung mit dem Monat ihres Arbeitstags aus; vorher nie gelöscht, nur ersetzt oder als entfernt markiert |
+| `importe` | M | Werkzeug, SHA-256, Name und Größe der Originaldatei, Zuordnung der Personen, was dabei herauskam, wer und wann | bleibt; die Aussonderung entfernt die übernommenen Monate, nicht den Import (offener Punkt) |
 | `korrekturen` | M | Gegeneinträge nach dem Abschluss mit Grund | sondert sie mit dem Monat aus, in dem sie gebucht sind |
 | `monatsabschluesse` | M | Bestätigung und Abschluss mit Inhalt und Prüfwert | sondert beide Schritte mit dem Monat aus |
 | `abwesenheiten` | M | Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer | sondert sie aus, wenn alle Monate entfernt sind, die sie berührt; eine offene Krankheit nie |
@@ -103,6 +105,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `urlaubshinweise` | P | Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub | bleibt nach dem Austritt (offener Punkt) |
 | `erinnerungseinstellungen` | P | abgeschaltete Erinnerungen, Mail der Person | bleibt nach dem Austritt (offener Punkt) |
 | `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
+| `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | bleibt (offener Punkt) |
 | `erinnerungen` | V | welche Erinnerung wann an wen ging | bleibt (offener Punkt) |
 | `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |
 | `stundensaetze` | L | Stundensätze in Cent, auch je Person | Inhaber löscht von Hand |
@@ -120,6 +123,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `taetigkeiten` | B | eigene Tätigkeiten und Einstellung der festen | archiviert; löscht, wenn nichts sie nennt |
 | `datev_einstellungen` | B | Berater, Mandant, Lohnarten | bleibt, wird geändert |
 | `haben_zugaenge` | B | Adresse und Token für Haben, verschlüsselt | löscht beim Trennen |
+| `tauschregeln` | B | ob ein Tausch eine Freigabe braucht | bleibt, wird geändert |
 | `erinnerungsregeln` | B | Zeiten des Betriebs für Erinnerungen | bleibt, wird geändert |
 | `terminals` | B | Tablet mit Name, Hash des Tokens, Schlüssel, Sperren | Entkoppeln sperrt es, die Zeile bleibt |
 | `terminal_eintraege` | B | Nummer und Ergebnis jedes Eintrags eines Tablets ohne Netz, nie der Ausweis | bleibt (offener Punkt) |
@@ -130,6 +134,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Wo | Was | Frist |
 | --- | --- | --- |
 | Sicherungen (`soll backup`) | eine Kopie der ganzen Datenbank, auch was danach ausgesondert wurde | der Betreiber räumt sie weg ([Installation](installation.md#sicherung)); eine Sicherung sollte nicht länger liegen als die längste Frist der Daten in ihr, höchstens 8 Jahre und ein Kalenderjahr; wer aus einer alten Sicherung wiederherstellt, lässt danach die Aussonderung laufen, sie holt Fälliges von selbst nach |
+| Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256, mit Namen und Zeiten aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: bis der letzte Monat ausgesondert ist, in den übernommene Zeiten fallen; Soll entfernt keine Datei (offener Punkt), der Betreiber löscht sie bis dahin von Hand; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
 | Log des Servers | je Anfrage Zeit, Methode, Pfad ohne Query, Status und Dauer; keine Header, keine Inhalte; ein Pfad kann die Kennung einer Person enthalten | der Betreiber legt sie im Log-System fest (Vorschlag: 14 Tage) |
 | Gerät der Person | die Warteschlange ohne Netz und der zuletzt geladene Tag (IndexedDB) | bis die Warteschlange gesendet ist; der Tag bis zum nächsten Laden |
 | Tablet am Eingang | die Warteschlange des Terminals ohne Netz, ohne Ausweis | bis sie gesendet ist |
@@ -138,7 +143,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 ## Löschsperren
 
 Eine Frist kann länger laufen als oben: Solange die Festsetzungsfrist für Steuern noch läuft
-(Ablaufhemmung, § 147 Abs. 3 Satz 5 AO), etwa während einer Außenprüfung, oder solange ein
+(Ablaufhemmung nach § 147 Abs. 3 AO; welcher Satz, ist bei der juristischen Prüfung nachzusehen), etwa während einer Außenprüfung, oder solange ein
 Rechtsstreit die Unterlagen braucht. Soll kennt solche Sperren nicht. Wer eine hat, sichert die
 Datenbank vorher (`soll backup`) und bewahrt die Sicherung bis zum Ende der Sperre auf.
 
@@ -146,9 +151,12 @@ Datenbank vorher (`soll backup`) und bewahrt die Sicherung bis zum Ende der Sper
 
 Eine Person kann verlangen, dass ihre Daten gelöscht werden (Art. 17 Abs. 1 DSGVO). Was eine
 gesetzliche Pflicht aufzubewahren verlangt (Klasse M, L nach der Abrechnung), bleibt bis zum Ende der
-Frist (Art. 17 Abs. 3 lit. b DSGVO). Anderes löscht der Inhaber von Hand, wo Soll einen Weg hat
-(Zugangsmittel, Personalnummer, Schichten, nicht abgerechnete Buchungen); wo nicht, ist es ein
-offener Punkt unten. Was über eine Person gespeichert ist, zeigt die
+Frist (Art. 17 Abs. 3 lit. b DSGVO). Anderes löscht der Inhaber von Hand, wo Soll einen Weg hat:
+QR-Code, NFC-Karte (der Schlüssel), Zugänge zur API, Kalender-Abo, Push-Abos, Personalnummer,
+Schichten, nicht abgerechnete Buchungen. Keinen Weg zum Löschen gibt es für die PIN (der Inhaber
+kann sie nur durch eine neue ersetzen), die Geräte der Warteschlange, Passkeys, das Konto und die
+Angaben für die Prüfung; das sind offene Punkte unten, bis dahin bleibt nur der Betreiber mit
+Zugriff auf die Datenbank. Was über eine Person gespeichert ist, zeigt die
 [Auskunft](pruefexport.md#auskunft-nach-art-15-dsgvo).
 
 ## Offene Punkte
@@ -159,7 +167,11 @@ Was Soll heute nicht von selbst löscht und ein Betrieb bis dahin anders regeln 
   der Modelle, Konten, Hinweise, Einstellungen der Erinnerungen, PIN, Geräte und das Konto selbst
   bleiben, bis die Datenbank gelöscht wird. Gebraucht werden sie, bis der letzte Monat der Person
   ausgesondert ist.
-- **Planung und Hinweise** (Klasse V): Schichten und gesendete Erinnerungen haben keine Frist.
+- **Planung und Hinweise** (Klasse V): Schichten, Tausche und gesendete Erinnerungen haben keine
+  Frist.
+- **Importe**: die Zeile in `importe` und die Originaldatei unter `/data/dateien/` bleiben, auch
+  wenn alle Monate ausgesondert sind, in die ihre Zeiten fallen; der Dateispeicher kann heute nichts
+  entfernen.
 - **Leistungsnachweise** (Klasse L): abgerechnete Buchungen, Stundennachweise und Übergaben an Haben
   bleiben ohne Frist.
 - **Inhalte gelöschter Zeilen**: Löscht Soll eine Zeile außerhalb der Aussonderung, bleiben die

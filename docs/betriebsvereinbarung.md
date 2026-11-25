@@ -103,15 +103,17 @@ Monat unverändert ist.
 
 ### § 5 Rollen und Zugriff
 
-(1) Zugriff hat nur, wer im Betrieb eine Rolle hat. Die Rollen und ihre Rechte:
+(1) Zugriff hat nur, wer im Betrieb eine Rolle hat. Die Rollen und ihre Rechte (im Einzelnen in
+Anlage 3):
 
 | Rolle | Personen | Sieht und darf |
 | --- | --- | --- |
 | Inhaber | [Namen] | alles, auch Krankheit und Löhne |
-| Planer | [Namen oder Funktion] | Zeiten aller, Korrektur mit Grund, Urlaub freigeben, Dienstplan; Krankheit anderer nur als „abwesend“ |
-| Lohnbüro | [Namen oder Funktion] | Zeiten aller, Löhne, Krankheit und Bescheinigung |
-| Betriebsrat | die Mitglieder des Betriebsrats | die Mitgliederliste, den veröffentlichten Dienstplan, die eigenen Zeiten |
-| Mitarbeiter | alle anderen | die eigenen Daten |
+| Planer | [Namen oder Funktion] | Zeiten aller, Korrektur mit Grund, Urlaub freigeben, Dienstplan, Mitarbeiter und Externe einladen, Kunden, Aufträge und Stundensätze pflegen; Krankheit anderer nur als „abwesend“ |
+| Lohnbüro | [Namen oder Funktion] | Zeiten aller, Löhne, Krankheit und Bescheinigung, DATEV-Export, Aufträge lesen |
+| Betriebsrat | die Mitglieder des Betriebsrats | die Mitgliederliste, den veröffentlichten Dienstplan, Kunden, Aufträge und Tätigkeiten (ohne Sätze), die eigenen Zeiten |
+| Mitarbeiter | alle anderen Beschäftigten | die eigenen Daten, Aufträge und Tätigkeiten zum Buchen, den veröffentlichten Dienstplan |
+| Extern | [freie Mitarbeiter, Subunternehmer] | die eigenen Daten ohne Pflicht zur Erfassung, Aufträge und Tätigkeiten |
 
 (2) Die Rolle Betriebsrat erhält [ein / jedes] Mitglied des Betriebsrats. [Weitere Einsicht, etwa in
 Prüfexporte nach § 9, erhält der Betriebsrat auf Verlangen nach § 80 Abs. 2 BetrVG.]
@@ -128,6 +130,7 @@ festgelegt; eine Änderung braucht die Zustimmung des Betriebsrats.
 | Schalter | Was er tut | Vereinbart |
 | --- | --- | --- |
 | Modul Dienstplan | Schichten planen, veröffentlichen, Prüfung beim Einplanen | [ ] an [ ] aus |
+| Schichttausch ohne Freigabe | eine übernommene Schicht gilt sofort, wenn die Regeln für die übernehmende Person keinen Verstoß finden; sonst geben Inhaber oder Planer jeden Tausch frei | [ ] mit Freigabe [ ] ohne Freigabe |
 | Modul Projektzeit | Zeit auf Aufträge buchen, Stoppuhr, Stundennachweis mit Unterschrift des Kunden | [ ] an [ ] aus |
 | Auslastung des Teams | anwesend gegen gebucht als Summe über den ganzen Betrieb, nur für abgelaufene Monate, erst ab drei Personen | [ ] genutzt [ ] nicht genutzt |
 | Auswertung je Person | Auslastung jeder Person für Inhaber und Planer; jede Person sieht ihre eigene; ein Hinweis mit Datum steht auf jeder Seite für alle | [ ] aus [ ] an ab [Datum], nur für [Zweck], nur Monate ab [Datum] |
@@ -137,8 +140,7 @@ festgelegt; eine Änderung braucht die Zustimmung des Betriebsrats.
 | Kalender-Feed | jede Person abonniert ihre eigenen Schichten in ihrem Kalender | freiwillig für jede Person |
 | Übergabe an Haben | gebuchte Leistungen ohne Namen der Person an die Buchhaltung | [ ] an [ ] aus |
 | DATEV-Export | Personalnummer, Stunden und Beträge je Lohnart an das Lohnbüro | [ ] an [Lohnbüro] |
-
-Importe aus anderen Programmen hat Soll in dieser Version nicht. Kommen sie dazu, gilt § 12.
+| Import aus anderen Programmen | nur der Inhaber übernimmt Zeiten, Abwesenheiten, Kunden und Aufträge aus dem bisherigen Programm; die Originaldatei bleibt unverändert gespeichert; Monate, die dort abgeschlossen waren, schließt Soll ohne Bestätigung der Person ab | [ ] einmalig aus [Programm] bis [Datum] [ ] nicht genutzt; die Originaldatei wird gelöscht, wenn [Ereignis] |
 
 ### § 7 Auswertungen
 
@@ -172,7 +174,9 @@ löscht der Arbeitgeber [jährlich zum Stichtag] von Hand und teilt es dem Betri
 § 5 gezeigt zu bekommen. Das Protokoll (Audit-Kette) zeigt jedes Ein- und Ausschalten der
 Auswertung je Person mit Person und Zeitpunkt.
 
-(3) [Er kann eine sachkundige Person nach § 80 Abs. 3 BetrVG hinzuziehen.]
+(3) [Er kann nach näherer Vereinbarung mit dem Arbeitgeber Sachverständige hinzuziehen (§ 80 Abs. 3
+BetrVG). Fundstelle bei der juristischen Prüfung nachsehen, auch § 80 Abs. 2 Satz 4 BetrVG für
+sachkundige Beschäftigte.]
 
 ### § 10 Rechte der Beschäftigten
 
@@ -208,8 +212,57 @@ Monatsende gekündigt werden; bis zu einer neuen Vereinbarung gilt sie weiter.
 
 [Arbeitgeber] · [Betriebsrat]
 
-**Anlagen**: 1. Löschkonzept mit der Liste der Daten · 2. Infoblatt für Beschäftigte · 3. Liste der
-Rollen
+**Anlagen**: 1. Löschkonzept mit der Liste der Daten · 2. Infoblatt für Beschäftigte · 3. Rollen und
+Rechte (unten)
+
+### Anlage 3: Rollen und Rechte
+
+Die Rechte, die der Server von Soll je Rolle prüft (`apps/server/src/auth/rollen.ts`); ein Test hält
+die Liste gleich mit dem Code. Wer mehrere Rollen hat, darf, was jede davon darf. Das Gerät am
+Terminal prüft nur PINs (`pin:pruefen`) und ist keine Person.
+
+| Rolle | Rechte in Soll |
+| --- | --- |
+| Inhaber | `betrieb:lesen`, `betrieb:module`, `betrieb:einrichten`, `modelle:lesen`, `mitglieder:lesen`, `mitglieder:einladen`, `mitglieder:rolle`, `pin:setzen`, `stempeln`, `zeiten:alle`, `zeiten:korrigieren`, `modelle:zuordnen`, `monat:abschliessen`, `abwesenheiten:freigeben`, `abwesenheiten:gesundheit`, `abwesenheiten:einstellen`, `konten:pflegen`, `projekte:lesen`, `projekte:verwalten`, `erinnerungen:regeln`, `plan:lesen`, `plan:planen`, `personen:angaben`, `terminal:verwalten`, `lohn:datev`, `auskunft:erteilen`, `umzug:importieren`, `api:zugang` |
+| Planer | `betrieb:lesen`, `mitglieder:lesen`, `mitglieder:einladen`, `stempeln`, `zeiten:alle`, `zeiten:korrigieren`, `abwesenheiten:freigeben`, `projekte:lesen`, `projekte:verwalten`, `plan:lesen`, `plan:planen`, `api:zugang` |
+| Mitarbeiter | `betrieb:lesen`, `stempeln`, `projekte:lesen`, `plan:lesen`, `api:zugang` |
+| Lohnbüro | `betrieb:lesen`, `modelle:lesen`, `mitglieder:lesen`, `stempeln`, `zeiten:alle`, `abwesenheiten:gesundheit`, `projekte:lesen`, `plan:lesen`, `lohn:datev`, `api:zugang` |
+| Betriebsrat | `betrieb:lesen`, `mitglieder:lesen`, `stempeln`, `projekte:lesen`, `plan:lesen`, `api:zugang` |
+| Extern | `betrieb:lesen`, `projekte:lesen`, `api:zugang` |
+
+Was die Rechte bedeuten:
+
+| Recht | Bedeutung |
+| --- | --- |
+| `betrieb:lesen` | den Betrieb, seine Module und Standorte sehen |
+| `betrieb:module` | Module ein- und ausschalten |
+| `betrieb:einrichten` | den Betrieb einrichten, Standorte und Arbeitszeitmodelle anlegen, Haben verbinden |
+| `modelle:lesen` | Arbeitszeitmodelle mit Lohn sehen |
+| `mitglieder:lesen` | die Mitgliederliste mit Namen, E-Mail-Adressen und Rollen sehen |
+| `mitglieder:einladen` | einladen (der Planer nur Mitarbeiter und Externe) |
+| `mitglieder:rolle` | Rollen ändern, Mitglieder entfernen |
+| `pin:setzen` | PINs für das Terminal setzen |
+| `pin:pruefen` | eine PIN am Terminal prüfen (nur das Gerät) |
+| `stempeln` | selbst stempeln |
+| `zeiten:alle` | die Zeiten aller sehen |
+| `zeiten:korrigieren` | Zeiten anderer mit Grund ändern |
+| `modelle:zuordnen` | einer Person ein Arbeitszeitmodell zuordnen |
+| `monat:abschliessen` | den Monat für den Betrieb bestätigen und abschließen, Gegeneinträge buchen |
+| `abwesenheiten:freigeben` | Urlaub freigeben, ablehnen und stornieren |
+| `abwesenheiten:gesundheit` | Krankheit anderer sehen, die Bescheinigung markieren |
+| `abwesenheiten:einstellen` | einstellen, ab welchem Tag eine Bescheinigung fällig ist |
+| `konten:pflegen` | Konten von Hand anpassen, auf den Verfall von Urlaub hinweisen |
+| `projekte:lesen` | Kunden, Aufträge und Tätigkeiten sehen (Stundensätze nur mit `projekte:verwalten`) |
+| `projekte:verwalten` | Kunden, Aufträge, Tätigkeiten und Stundensätze pflegen, Buchungen aller sehen und abrechnen, die Auslastung des Teams und, wenn eingeschaltet, je Person sehen |
+| `erinnerungen:regeln` | die Zeiten der Erinnerungen für den Betrieb einstellen |
+| `plan:lesen` | den veröffentlichten Dienstplan sehen |
+| `plan:planen` | den Dienstplan planen, auch im Entwurf, Tausche freigeben |
+| `personen:angaben` | Angaben für die Prüfung pflegen (Geburtsdatum, Mutterschutz) |
+| `terminal:verwalten` | Terminals koppeln, QR-Codes ausstellen, NFC-Karten eintragen |
+| `lohn:datev` | den DATEV-Export einstellen und laden |
+| `auskunft:erteilen` | die Auskunft nach Art. 15 DSGVO für eine andere Person erteilen |
+| `umzug:importieren` | Daten aus einem anderen Programm übernehmen |
+| `api:zugang` | eigene Zugänge zur API anlegen, mit den Rechten der eigenen Rolle |
 
 ---
 

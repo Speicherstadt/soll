@@ -45,7 +45,7 @@ describe("templates on data protection (S-903)", () => {
   });
 
   it("BV Anlage 3 lists every right of every role a person can hold, as the server checks them", () => {
-    const zeilen = zeilenIn(abschnitt(bv, "### Anlage 3", "\n---"));
+    const zeilen = zeilenIn(abschnitt(bv, "### Anlage 3", "Was die Rechte bedeuten"));
     expect(zeilen.map(([rolle]) => rolle).sort()).toEqual(personenrollen.map(rollenname).sort());
     const rechte = new Map(zeilen.map(([rolle, liste]) => [rolle, liste ?? ""]));
     for (const rolle of personenrollen) {
@@ -53,6 +53,13 @@ describe("templates on data protection (S-903)", () => {
       const erwartet = RECHTE.filter((recht) => darf(rolle, recht)).map((recht) => `\`${recht}\``);
       expect([...genannt].sort(), rolle).toEqual([...erwartet].sort());
     }
+  });
+
+  it("BV Anlage 3 explains every right the server knows", () => {
+    const erklaert = zeilenIn(abschnitt(bv, "Was die Rechte bedeuten", "\n---")).map(([recht]) =>
+      recht?.replaceAll("`", ""),
+    );
+    expect([...erklaert].sort()).toEqual([...RECHTE].sort());
   });
 
   it("BV regulates the import, which Soll has (S-701)", () => {

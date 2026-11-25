@@ -56,12 +56,20 @@ export type MonatAnsicht = {
     grund: string | null;
     pruefwert: string | null;
   } | null;
+  /** closed, and its content removed after the retention period (S-901); it stays locked */
+  ausgesondert: Ausgesondert | null;
 };
+
+export type Ausgesondert = { am: number; abgeschlossenAm: number; jahre: number };
 
 /** What POST /api/v1/pruefen answers (apps/server, routes/pruefen.ts) */
 export type Pruefung =
   | { ergebnis: "unlesbar" | "unbekannt" }
   | { ergebnis: "abweichung"; grund: "kette" | "abschluss"; betrieb: string }
+  | ({ ergebnis: "ausgesondert"; monat: Monat; betrieb: string; ausgesondertAm: number } & Omit<
+      Ausgesondert,
+      "am"
+    >)
   | {
       ergebnis: "uebereinstimmend" | "abweichung";
       grund: "tage" | null;

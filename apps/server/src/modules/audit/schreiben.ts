@@ -29,6 +29,15 @@ export type Schreiber = {
    * purpose stands in the chain beside it. Returns how many contents were removed.
    */
   inhalteEntfernen: <N extends TabellenName>(name: N, schluessel: Schluessel<N>) => number;
+  /**
+   * Deletes a row after its retention period (S-901) and the stored contents of every link that
+   * wrote it; the links stay, as they hold only the contents' hashes, and the removal is a link of
+   * its own. `inhalte` counts the contents removed.
+   */
+  aussondern: <N extends TabellenName>(
+    name: N,
+    schluessel: Schluessel<N>,
+  ) => { zeile: Zeile<N>; inhalte: number };
 };
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
@@ -91,6 +100,40 @@ const eineZeile = <T>(zeilen: T[], name: string): T => {
   return zeilen[0] as T;
 };
 
+const zeileLoeschen = (
+  tx: Tx,
+  kontext: Kontext,
+  name: TabellenName,
+  schluessel: Record<string, unknown>,
+): Record<string, unknown> =>
+  eineZeile(
+    tx
+      .delete(kettenTabellen[name].tabelle)
+      .where(wo(name, kontext.betriebId, schluessel))
+      .returning()
+      .all() as Record<string, unknown>[],
+    name,
+  );
+
+/** Removes the stored contents of a row's links; the check allows a missing content (pruefen.ts) */
+const inhalteEntfernen = (tx: Tx, betriebId: string, tabelle: TabellenName, zeile: string) => {
+  const glieder = tx
+    .select({ seq: auditGlieder.seq })
+    .from(auditGlieder)
+    .where(
+      and(
+        eq(auditGlieder.betriebId, betriebId),
+        eq(auditGlieder.tabelle, tabelle),
+        eq(auditGlieder.zeile, zeile),
+      ),
+    );
+  return tx
+    .delete(auditInhalte)
+    .where(and(eq(auditInhalte.betriebId, betriebId), inArray(auditInhalte.seq, glieder)))
+    .returning({ seq: auditInhalte.seq })
+    .all().length;
+};
+
 const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
   einfuegen: (name, werte) => {
     if ((werte as { betriebId?: string }).betriebId !== kontext.betriebId) {
@@ -133,14 +176,7 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
     return zeile as never;
   },
   loeschen: (name, schluessel) => {
-    const zeile = eineZeile(
-      tx
-        .delete(kettenTabellen[name].tabelle)
-        .where(wo(name, kontext.betriebId, schluessel))
-        .returning()
-        .all(),
-      name,
-    );
+    const zeile = zeileLoeschen(tx, kontext, name, schluessel);
     anhaengen(tx, kontext, {
       tabelle: name,
       zeile: zeilenId(name, zeile),
@@ -151,31 +187,19 @@ const schreiberFuer = (tx: Tx, kontext: Kontext): Schreiber => ({
   },
   inhalteEntfernen: (name, schluessel) => {
     wo(name, kontext.betriebId, schluessel as Record<string, unknown>); // refuses a partial key
-    const zeile = zeilenId(name, schluessel as Record<string, unknown>);
-    const glieder = tx
-      .select({ seq: auditGlieder.seq })
-      .from(auditGlieder)
-      .where(
-        and(
-          eq(auditGlieder.betriebId, kontext.betriebId),
-          eq(auditGlieder.tabelle, name),
-          eq(auditGlieder.zeile, zeile),
-        ),
-      )
-      .all();
-    return tx
-      .delete(auditInhalte)
-      .where(
-        and(
-          eq(auditInhalte.betriebId, kontext.betriebId),
-          inArray(
-            auditInhalte.seq,
-            glieder.map((glied) => glied.seq),
-          ),
-        ),
-      )
-      .returning({ seq: auditInhalte.seq })
-      .all().length;
+    return inhalteEntfernen(
+      tx,
+      kontext.betriebId,
+      name,
+      zeilenId(name, schluessel as Record<string, unknown>),
+    );
+  },
+  aussondern: (name, schluessel) => {
+    const zeile = zeileLoeschen(tx, kontext, name, schluessel);
+    const id = zeilenId(name, zeile);
+    const inhalte = inhalteEntfernen(tx, kontext.betriebId, name, id);
+    anhaengen(tx, kontext, { tabelle: name, zeile: id, aktion: "loeschen", inhalt: null });
+    return { zeile: zeile as never, inhalte };
   },
 });
 
@@ -192,6 +216,8 @@ const einzeln = (tx: Tx, kontext: Kontext): Schreiber => ({
     tx.transaction((sp) => schreiberFuer(sp, kontext).loeschen(name, schluessel)),
   inhalteEntfernen: (name, schluessel) =>
     tx.transaction((sp) => schreiberFuer(sp, kontext).inhalteEntfernen(name, schluessel)),
+  aussondern: (name, schluessel) =>
+    tx.transaction((sp) => schreiberFuer(sp, kontext).aussondern(name, schluessel)),
 });
 
 const istVersprechen = (wert: unknown): wert is PromiseLike<unknown> =>
@@ -218,6 +244,10 @@ const nurWaehrend = (schreiber: Schreiber, offen: () => boolean): Schreiber => {
     inhalteEntfernen: (name, schluessel) => {
       pruefen();
       return schreiber.inhalteEntfernen(name, schluessel);
+    },
+    aussondern: (name, schluessel) => {
+      pruefen();
+      return schreiber.aussondern(name, schluessel);
     },
   };
 };

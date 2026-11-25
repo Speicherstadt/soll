@@ -22,6 +22,7 @@ const FREIGEGEBEN = [
   "stempelungen",
   "gegeneintraege",
   "monatsabschluesse",
+  "aussonderungen",
   "arbeitszeitmodelle",
   "schichten",
   "stundensaetze",

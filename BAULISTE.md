@@ -666,7 +666,7 @@ Alle Punkte: nach S-305.
 
 ## Phase 9 – Härtung und Betrieb
 
-- [ ] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
+- [x] **S-901 Aussonderung** – Frist je Monatsabschluss (2 Jahre, 6 oder 8 Jahre bei Lohnbezug),
   Inhalte nach Ablauf entfernen, die Kettenglieder bleiben, die Aussonderung steht selbst in der
   Kette.
   Fertig, wenn: ein Test mit gestellter Uhr aussondert und die Kette danach fehlerfrei prüft.
@@ -749,7 +749,6 @@ Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streich
 neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
 requests“).
 
-- [ ] S-901 Aussonderung – #47; offen: Teil `aussonderungen` der Auskunft, Doku, Entscheidung, Haken
 - [ ] S-803 Terminal offline – noch nicht begonnen
 
 **Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604

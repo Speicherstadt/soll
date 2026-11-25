@@ -138,7 +138,15 @@ const unterschrift = (s: Schreiber, nachweis: Stundennachweis, hash: string) => 
   });
   s.zeile(4);
   const { name, am } = nachweis.unterschrift;
-  s.text(`Unterschrieben von ${name} am ${zeitpunktText(am)}`, 0);
+  const zeit = `am ${zeitpunktText(am)}`;
+  const satz = `Unterschrieben von ${name} ${zeit}`;
+  // A long name wraps and the time gets a line of its own, so neither is cut off
+  if (s.umbrechen(satz).length === 1) s.text(satz, 0);
+  else {
+    s.absatz(`Unterschrieben von ${name}`);
+    s.platz(1);
+    s.text(zeit, 0);
+  }
   s.zeile(16);
   s.text(`SHA-256 des Inhalts: ${hash}`, 0, { groesse: 7.5, grau: true });
   s.zeile();

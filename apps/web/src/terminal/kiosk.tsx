@@ -1,9 +1,10 @@
 import { createSignal, Match, onSettled, Show, Switch } from "solid-js";
 import { m } from "../paraglide/messages.js";
-import { kioskAblauf } from "./ablauf.ts";
+import { kioskAblauf, type Nfc } from "./ablauf.ts";
 import { Bereit } from "./bereit.tsx";
 import { Koppeln } from "./koppeln.tsx";
 import { neuladenBeiFehler } from "./neuladen.ts";
+import { type NdefLeserKlasse, type NfcKarte, nfcLesen, nfcLeser } from "./nfc.ts";
 import { ErkanntAnsicht, GestempeltAnsicht } from "./person.tsx";
 import { type DetectorKlasse, qrDetector } from "./qr.ts";
 import { Scannen } from "./scannen.tsx";
@@ -27,15 +28,44 @@ const wachUndHeil = (melden: () => void) =>
   });
 
 /**
+ * Listens for NFC cards while the kiosk is open (S-802). Chrome asks for permission on the first
+ * scan and wants a tap for it: a refused start leaves the kiosk waiting for the button that calls
+ * the returned function again.
+ */
+const nfcBereit = (
+  Leser: NdefLeserKlasse,
+  onKarte: (karte: NfcKarte) => void,
+  setNfc: (stand: Nfc) => void,
+) => {
+  let abbruch: AbortController | undefined;
+  const starten = () => {
+    abbruch?.abort();
+    abbruch = new AbortController();
+    nfcLesen(Leser, abbruch.signal, onKarte).then(
+      () => setNfc("an"),
+      () => setNfc("erlauben"),
+    );
+  };
+  onSettled(() => {
+    starten();
+    return () => abbruch?.abort();
+  });
+  return starten;
+};
+
+/**
  * The terminal in kiosk mode on a tablet in landscape, 1280 × 800 (S-801, DESIGN.md "Terminal"):
  * the clock on the left, on the right the number pad, the camera for a QR code, the person
- * recognised or the stamp confirmed. No navigation and no other data.
+ * recognised or the stamp confirmed; NFC cards where the browser reads them (S-802). No navigation
+ * and no other data.
  */
 export const Kiosk = () => {
   const kiosk = kioskAblauf();
   const [neustart, setNeustart] = createSignal(false);
   wachUndHeil(() => setNeustart(true));
   const Detector = qrDetector();
+  const Leser = nfcLeser();
+  const nfcErlauben = Leser ? nfcBereit(Leser, kiosk.karteGelesen, kiosk.setNfc) : () => undefined;
   const erkannt = () => {
     const a = kiosk.ansicht();
     return a.art === "erkannt" ? a : null;
@@ -54,6 +84,7 @@ export const Kiosk = () => {
             terminal={kiosk.stand()?.name ?? kopplung().name}
             jetzt={kiosk.jetzt()}
             mitQr={Detector !== undefined}
+            mitNfc={kiosk.nfc() === "an"}
           />
           <Show when={neustart()}>
             <p role="alert" class="fixed inset-x-0 top-0 bg-danger p-4 text-center text-background">
@@ -89,8 +120,11 @@ export const Kiosk = () => {
                 jetzt={kiosk.jetzt()}
                 mitQr={Detector !== undefined}
                 beschaeftigt={kiosk.beschaeftigt()}
-                onPin={(pin) => kiosk.erkennen({ pin })}
+                karte={kiosk.karte() !== null}
+                nfc={kiosk.nfc()}
+                onPin={kiosk.pin}
                 onScannen={kiosk.scannen}
+                onNfc={nfcErlauben}
               />
             </Match>
           </Switch>

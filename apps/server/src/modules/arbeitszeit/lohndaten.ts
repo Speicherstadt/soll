@@ -9,7 +9,7 @@ import {
   monatsabschluesse,
   stempelungen,
 } from "../../db/schema.ts";
-import { standortVon } from "./monat.ts";
+import { standortVon } from "./grundlagen.ts";
 import type { Monatsinhalt } from "./monatsinhalt.ts";
 import { lohnmodelle } from "./zuordnungen.ts";
 

@@ -74,7 +74,7 @@ Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die
 der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
 Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
 Modelle mit Lohn und Zuschlägen, Schichten, Stundensätze, Buchungen der Projektzeit,
-Personalnummer und QR-Code der Person (wann ausgestellt) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+Abwesenheiten mit Art (Krankheit ohne Diagnose), Angaben für die Prüfung, Personalnummer, QR-Code und NFC-Karten der Person (wann eingetragen) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
 draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
 Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
 verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie
@@ -91,6 +91,7 @@ lit. b und c DSGVO).
 | `aussonderungen` | die Monate, deren Inhalt nach Ablauf der Aufbewahrungsfrist entfernt wurde (S-901): Monat, Frist, abgeschlossen und entfernt am, ohne Inhalt |
 | `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll, Lohn und Sätzen der Zuschläge; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
 | `ausweis` | wann und von wem der QR-Code für das Terminal ausgestellt wurde (S-801), ohne seinen Wert und Hash, sonst `null` |
+| `karten` | die NFC-Karten der Person (S-802) mit Art, wann und von wem eingetragen und wann entzogen, ohne UID, Schlüssel und Lesezähler |
 | `personalnummer` | die Personalnummer im Lohnprogramm für den DATEV-Export (S-308), sonst `null` |
 | `stundensaetze` | Stundensätze, die der Betrieb für die Person festgelegt hat (Projektzeit, S-601), nicht die Sätze für alle |
 | `projektzeiten` | die Buchungen der Stoppuhr und von Hand mit Auftrag, Tätigkeit, Beginn, Ende, Arbeitstag und Notiz, abgerechnete mit dem Satz der Abrechnung (S-602) |
@@ -99,6 +100,8 @@ lit. b und c DSGVO).
 Zeitpunkte stehen als ISO 8601 in UTC. Nicht enthalten sind Kennwort, Tokens, der Hash der PIN und
 der Einladung (sie schützen das Konto) und Daten anderer Personen: Von den Gliedern, die die Person
 für andere geschrieben hat, nennt die Auskunft weder Zeile noch Inhalt (Art. 15 Abs. 4 DSGVO).
+Stundennachweise (S-605) stehen nicht darin: Die Buchungen der Person darin stehen unter
+`projektzeiten`, Name und Unterschrift des Kunden sind Daten eines Dritten.
 Dazu kommen die Wünsche zu Erinnerungen, die gesendeten Erinnerungen und die Geräte für Push-Nachrichten (ohne Endpunkt und Schlüssel, S-307); Abwesenheiten kommen dazu, sobald es sie gibt (S-401). Ein Test hält
 fest, dass jede Tabelle der Datenbank in der eigenen Auskunft steht oder mit Grund ausgenommen ist,
 und für die Auskunft durch den Inhaber freigegeben oder mit Grund ausgelassen ist.

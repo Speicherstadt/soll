@@ -10,17 +10,21 @@ import type { Standort, Woche } from "./typen.ts";
 /**
  * The head of the plan (design/mockup/Dienstplan.dc.html): the week with its calendar week and
  * "Entwurf" while drafts show, the arrows to the week before and after, the site, and for whoever
- * plans the templates and the need. Publishing comes with S-503.
+ * plans the templates and the need, for the owner the data of a person the rules need. Publishing
+ * comes with S-503.
  */
 export const PlanKopf = (props: {
   woche: Woche | null;
   standorte: readonly Standort[];
   standortId: string;
   planer: boolean;
+  /** the owner keeps the data of a person the rules need (S-502) */
+  inhaber: boolean;
   onWoche: (schritt: -1 | 1) => void;
   onStandort: (standortId: string) => void;
   onVorlagen: () => void;
   onBedarf: () => void;
+  onAngaben: () => void;
 }) => (
   <header class="flex flex-wrap items-end justify-between gap-3">
     <Show when={props.woche}>
@@ -77,6 +81,11 @@ export const PlanKopf = (props: {
         </Button>
         <Button variant="outline" onClick={() => props.onBedarf()}>
           {m.plan_bedarf()}
+        </Button>
+      </Show>
+      <Show when={props.inhaber}>
+        <Button variant="outline" onClick={() => props.onAngaben()}>
+          {m.plan_angaben()}
         </Button>
       </Show>
     </div>

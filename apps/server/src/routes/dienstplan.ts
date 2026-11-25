@@ -215,7 +215,7 @@ export const dienstplanRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => numb
         return c.json({ fehler: "standort_unbekannt" }, 404);
       return c.json(
         darf(c.get("rolle"), "plan:planen")
-          ? planerWoche(db, betriebId, standortId, tag)
+          ? planerWoche(db, betriebId, standortId, tag, jetzt())
           : veroeffentlichteWoche(db, betriebId, standortId, tag),
       );
     })

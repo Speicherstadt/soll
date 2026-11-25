@@ -1,3 +1,4 @@
+import { istTag } from "@soll/arbeitszeit";
 import { createFileRoute } from "@tanstack/solid-router";
 import { Loading, Show } from "solid-js";
 import { abfrage, daten } from "../abfragen/abfrage.ts";
@@ -15,15 +16,21 @@ import { Leer, Seite } from "../rahmen/seite.tsx";
 const Dienstplan = () => {
   const standorte = abfrage<{ standorte: Standort[] }>(ressourcen.standorte);
   const liste = () => daten(standorte.data)?.standorte ?? [];
+  const suche = Route.useSearch();
   return (
     <Seite titel={m.nav_dienstplan()}>
       <Loading>
         <Show when={liste().length > 0} fallback={<Leer text={m.plan_kein_standort()} />}>
-          <Plan standorte={liste()} />
+          <Plan standorte={liste()} tag={suche().tag} />
         </Show>
       </Loading>
     </Seite>
   );
 };
 
-export const Route = createFileRoute("/dienstplan")({ component: Dienstplan });
+export const Route = createFileRoute("/dienstplan")({
+  component: Dienstplan,
+  // a link may name the week to open (?tag=2026-11-23); without one the plan opens this week
+  validateSearch: (suche: Record<string, unknown>): { tag?: string } =>
+    typeof suche.tag === "string" && istTag(suche.tag) ? { tag: suche.tag } : {},
+});

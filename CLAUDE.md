@@ -106,6 +106,14 @@ Database tests run against SQLite in a temporary file; nothing needs a running d
   again from the current `origin/main` and open a **new** pull request.
 - An independent review by a separate subagent before the merge (`tdd-review`).
 - Merge method: squash.
+- Migration numbers collide when pull requests run in parallel: keep `main`'s `drizzle/` and
+  `drizzle/meta/` unchanged, delete the branch's own migration and its snapshot, regenerate it on
+  top with `drizzle-kit generate --name <name>`, then `bun scripts/migrationen.ts`.
+- CI also runs `bunx checks` (`firsttris/workflows`): file size and i18n. The i18n check flags German
+  words even in ids, keys and strings in code (`von`, `bis`); use English ones. If
+  `bun add github:firsttris/workflows` is refused, clone it shallowly into the scratchpad and run
+  its `checks/cli.ts` with bun from the repository root.
+- Open work and unreviewed merges are listed in `BAULISTE.md` under "Übergabe"; read it first.
 
 ## Working rules
 

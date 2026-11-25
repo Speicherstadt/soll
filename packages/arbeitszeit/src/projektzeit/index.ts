@@ -23,3 +23,10 @@ export {
   stundensatz,
 } from "./stundensatz.ts";
 export { FESTE_TAETIGKEITEN, type FesteTaetigkeit, istFesteTaetigkeit } from "./taetigkeiten.ts";
+export {
+  aufFlaeche,
+  FLAECHE,
+  type Punkt,
+  type Striche,
+  unterschriftPruefen,
+} from "./unterschrift.ts";

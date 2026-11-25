@@ -1,10 +1,11 @@
+import * as karten from "../routes/karten.ts";
 import * as kiosk from "../routes/kiosk.ts";
 import * as pins from "../routes/pins.ts";
 import * as terminals from "../routes/terminals.ts";
 import type { Operation } from "./dokument.ts";
 import { STATUS, unter } from "./module.ts";
 
-/** The terminal (S-801): the owner's tablets, PINs and QR codes */
+/** The terminal (S-801, S-802): the owner's tablets, PINs, QR codes and NFC cards */
 export const TERMINAL: readonly Operation[] = unter("/api/v1/terminal", "Terminal", [
   STATUS,
   {
@@ -51,6 +52,24 @@ export const TERMINAL: readonly Operation[] = unter("/api/v1/terminal", "Termina
     pfad: "/ausweise/:nutzerId",
     zusammenfassung: "Den QR-Code einer Person entziehen (Inhaber)",
   },
+  {
+    methode: "get",
+    pfad: "/karten",
+    zusammenfassung:
+      "Die NFC-Karten des Betriebs mit Person, Art und Datum, ohne UID und Schlüssel (Inhaber)",
+  },
+  {
+    methode: "post",
+    pfad: "/karten",
+    zusammenfassung:
+      "Eine NFC-Karte eintragen: einfache Karte mit UID oder NTAG 424 DNA mit UID und Schlüsseln (Inhaber)",
+    koerper: karten.karteSchema,
+  },
+  {
+    methode: "delete",
+    pfad: "/karten/:karteId",
+    zusammenfassung: "Eine NFC-Karte sofort entziehen, ihre Schlüssel werden gelöscht (Inhaber)",
+  },
 ]);
 
 /** The tablet's own API (S-801): with the device token from pairing, not a person's token */
@@ -70,7 +89,8 @@ export const KIOSK: readonly Operation[] = unter("/api/v1/kiosk", "Terminal", [
   {
     methode: "post",
     pfad: "/erkennen",
-    zusammenfassung: "Eine Person per PIN oder QR-Code erkennen, mit ihrem Tag (Geräte-Token)",
+    zusammenfassung:
+      "Eine Person per PIN, QR-Code, Karte mit PIN, SUN-Nachricht oder Beleg erkennen, mit ihrem Tag (Geräte-Token)",
     koerper: kiosk.ausweisSchema,
   },
   {

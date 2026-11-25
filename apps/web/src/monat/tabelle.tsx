@@ -1,5 +1,6 @@
 import { Badge, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
 import { createUniqueId, For, Show } from "solid-js";
+import { ART } from "../abwesenheiten/text.ts";
 import { dauerText } from "../einrichtung/werte.ts";
 import { m } from "../paraglide/messages.js";
 import { uhrzeitText } from "../zeiten/text.ts";
@@ -42,13 +43,17 @@ const zeit = (ms: number | null) => (ms === null ? "" : uhrzeitText(ms));
 
 /**
  * The days of the month with begin, end, break, duration and findings; changes by hand are marked
- * (DESIGN.md, "Monatsabschluss"). Days without work and finding are left out, so a phone shows
- * what counts.
+ * (DESIGN.md, "Monatsabschluss"). Days without work, absence and finding are left out, so a phone
+ * shows what counts.
  */
 export const TageTabelle = (props: { zeilen: Zeile[] }) => {
   const gezeigt = () =>
     props.zeilen.filter(
-      (zeile) => zeile.beginn !== null || zeile.befunde.length > 0 || zeile.geaendert,
+      (zeile) =>
+        zeile.beginn !== null ||
+        zeile.befunde.length > 0 ||
+        zeile.geaendert ||
+        zeile.abwesenheiten.length > 0,
     );
   return (
     <Show
@@ -90,6 +95,11 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                     <Show when={zeile.geaendert}>
                       <Badge>{m.monat_geaendert()}</Badge>
                     </Show>
+                    <For each={zeile.abwesenheiten}>
+                      {(a) => (
+                        <span>{a.halb ? m.abw_halb({ art: ART[a.art]() }) : ART[a.art]()}</span>
+                      )}
+                    </For>
                     <For each={zeile.befunde}>
                       {(befund) => (
                         <span class={befund.schwere === "verstoss" ? "text-danger" : ""}>

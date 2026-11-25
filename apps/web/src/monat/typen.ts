@@ -1,10 +1,14 @@
-import type { Monat, Schwere, Stempelart, Tag } from "@soll/arbeitszeit";
+import type { Monat, Schwere, SichtbareArt, Stempelart, Tag } from "@soll/arbeitszeit";
 
-/** A day of a month: its stamps in force and the minutes of the model (apps/server, monatsinhalt.ts) */
+/**
+ * A day of a month: its stamps in force, the minutes of the model and its approved absences, sickness
+ * only as „abwesend“ for whoever may not see it (apps/server, monatsinhalt.ts)
+ */
 export type Aufzeichnung = {
   tag: Tag;
   stempel: [Stempelart, number][];
   modellMinuten: number | null;
+  abwesenheiten?: { art: SichtbareArt; halb?: boolean }[];
 };
 
 export type Blattbefund = {

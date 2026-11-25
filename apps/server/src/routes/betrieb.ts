@@ -1,3 +1,4 @@
+import { BRANCHEN, istTag } from "@soll/arbeitszeit";
 import { Hono } from "hono";
 import { z } from "zod";
 import { darf } from "../auth/rollen.ts";
@@ -9,6 +10,8 @@ import {
   hinweisVon,
   moduleSetzen,
   moduleVon,
+  pruefeinstellungenSetzen,
+  pruefeinstellungenVon,
 } from "../modules/betrieb/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
@@ -22,7 +25,18 @@ export const moduleSchema = z
   .partial()
   .strict();
 
-/** The caller's business and its modules */
+/** The settings the rules read (S-502); null keeps the default of the law */
+export const pruefungSchema = z
+  .object({
+    branche: z.enum(BRANCHEN).nullable(),
+    // § 10 Abs. 1 Nr. 1 to 16 ArbZG
+    sonntagsausnahme: z.number().int().min(1).max(16).nullable(),
+    ausgleichszeitraum: z.enum(["sechs_monate", "24_wochen"]).nullable(),
+    ausgleichBeginn: z.string().refine(istTag).nullable(),
+  })
+  .strict();
+
+/** The caller's business, its modules and the settings of the rules */
 export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number) =>
   new Hono<Anfrage>()
     .get("/", recht("betrieb:lesen"), (c) => {
@@ -52,6 +66,18 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
       if (!ergebnis.ok)
         return c.json({ fehler: ergebnis.grund }, ergebnis.grund === "kein_betrieb" ? 404 : 409);
       return c.json({ module: ergebnis.module });
+    })
+    .get("/pruefung", recht("betrieb:lesen"), (c) => {
+      const betrieb = betriebLesen(db, c.get("betriebId"));
+      if (!betrieb) return c.json({ fehler: "kein_betrieb" }, 404);
+      return c.json(pruefeinstellungenVon(betrieb));
+    })
+    .put("/pruefung", recht("betrieb:einrichten"), async (c) => {
+      const eingabe = pruefungSchema.safeParse(await c.req.json().catch(() => null));
+      if (!eingabe.success) return c.json({ fehler: "ungueltig" }, 400);
+      if (!betriebLesen(db, c.get("betriebId"))) return c.json({ fehler: "kein_betrieb" }, 404);
+      const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };
+      return c.json(pruefeinstellungenSetzen(schreibDb, kontext, eingabe.data));
     })
     .delete("/hinweis", recht("betrieb:module"), (c) => {
       const kontext = { betriebId: c.get("betriebId"), akteur: c.get("nutzerId"), jetzt: jetzt() };

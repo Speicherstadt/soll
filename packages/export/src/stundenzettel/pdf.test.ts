@@ -130,6 +130,23 @@ describe("stundenzettelPdf", () => {
     expect(Buffer.from(await stundenzettelPdf(zettel({ tage })))).toEqual(Buffer.from(pdf));
   });
 
+  it("writes a day's absence before its notes (S-401)", async () => {
+    const tage = [
+      {
+        tag: "2026-10-08",
+        beginn: null,
+        ende: null,
+        pauseMinuten: 0,
+        arbeitsMinuten: 0,
+        sollMinuten: 480,
+        abwesenheit: "Urlaub (halber Tag)",
+        hinweise: ["Hinweis § 9 BUrlG"],
+      },
+    ];
+    const text = pdfText(await stundenzettelPdf(zettel({ tage })));
+    expect(text).toContain("Urlaub (halber Tag) · Hinweis § 9 BUrlG");
+  });
+
   it("writes letters outside WinAnsi without accent or as ?", async () => {
     const font = await (await PDFDocument.create()).embedFont(StandardFonts.Helvetica);
     expect(druckbar(font, "Łukasz Ćwik")).toBe("?ukasz Cwik");

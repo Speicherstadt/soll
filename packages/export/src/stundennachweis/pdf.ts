@@ -1,6 +1,14 @@
 import type { Striche } from "@soll/arbeitszeit";
 import { PDFDocument, rgb } from "pdf-lib";
-import { druckbar, metadaten, type Schreiber, schreiber, schriften } from "../pdf/schreiber.ts";
+import {
+  druckbar,
+  metadaten,
+  type Schreiber,
+  schreiber,
+  schriften,
+  type TextOptionen,
+  ZEILE,
+} from "../pdf/schreiber.ts";
 import {
   datumText,
   dauerText,
@@ -71,27 +79,66 @@ const kopf = (s: Schreiber, nachweis: Stundennachweis) => {
   s.zeile(8);
 };
 
-const tabelle = (s: Schreiber, nachweis: Stundennachweis) => {
+const spaltenKopf = (s: Schreiber) => {
   for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
   s.zeile();
-  for (const zeile of nachweis.zeilen) {
-    s.platz(1);
-    const werte = [
-      tagText(zeile.tag),
-      zeile.person,
-      `${uhrzeitText(zeile.beginn)}–${uhrzeitText(zeile.ende)}`,
-      dauerText(zeile.minuten),
-      zeile.taetigkeit,
-      zeile.notiz,
-    ];
-    werte.forEach((wert, index) => {
-      const spalte = SPALTEN[index];
-      const naechste = SPALTEN[index + 1];
-      if (spalte) s.text(wert, spalte.x, naechste ? { breite: naechste.x - spalte.x - 4 } : {});
+};
+
+/** A new page for the table, which starts with the head of the table again */
+const tabellenSeite = (s: Schreiber) => {
+  s.neueSeite();
+  spaltenKopf(s);
+};
+
+type Zelle = { x: number; optionen: TextOptionen; teile: string[] };
+
+/** The lines `ab` to `ab + anzahl` of each cell, the first of them on the current line */
+const zeilenZeichnen = (s: Schreiber, zellen: Zelle[], ab: number, anzahl: number) => {
+  for (const zelle of zellen)
+    zelle.teile.slice(ab, ab + anzahl).forEach((teil, nummer) => {
+      s.text(teil, zelle.x, { ...zelle.optionen, unten: nummer * ZEILE });
     });
-    s.zeile();
+  s.zeile(anzahl * ZEILE);
+};
+
+/**
+ * A booking as a row of the table: each cell wraps over as many lines as it needs, so the customer
+ * signs every word of activity and note (S-605). The row grows with its tallest cell and stays on
+ * one page when it fits on one; a taller row goes on on the next pages, so nothing signed is drawn
+ * below the bottom
+ */
+const reihe = (s: Schreiber, zeile: NachweisZeile) => {
+  const werte = [
+    tagText(zeile.tag),
+    zeile.person,
+    `${uhrzeitText(zeile.beginn)}–${uhrzeitText(zeile.ende)}`,
+    dauerText(zeile.minuten),
+    zeile.taetigkeit,
+    zeile.notiz,
+  ];
+  const zellen: Zelle[] = SPALTEN.map((spalte, index) => {
+    const naechste = SPALTEN[index + 1];
+    const optionen = naechste ? { breite: naechste.x - spalte.x - 4 } : {};
+    return { x: spalte.x, optionen, teile: s.umbrechen(werte[index] ?? "", spalte.x, optionen) };
+  });
+  const hoehe = Math.max(...zellen.map((zelle) => zelle.teile.length));
+  // a new page below the head of the table holds jeSeite - 1 lines
+  const ganz = hoehe <= s.jeSeite - 1;
+  if ((ganz && hoehe > s.frei()) || s.frei() === 0) tabellenSeite(s);
+  let ab = 0;
+  while (ab < hoehe) {
+    const anzahl = Math.min(hoehe - ab, s.frei());
+    zeilenZeichnen(s, zellen, ab, anzahl);
+    ab += anzahl;
+    if (ab < hoehe) tabellenSeite(s);
   }
+};
+
+const tabelle = (s: Schreiber, nachweis: Stundennachweis) => {
+  spaltenKopf(s);
+  for (const zeile of nachweis.zeilen) reihe(s, zeile);
   s.zeile(4);
+  s.platz(1);
   s.text(`Summe ${dauerText(nachweis.summeMinuten)}`, 0, { fett: true });
   s.zeile(18);
 };
@@ -116,8 +163,14 @@ const svgPfad = (striche: Striche): string =>
     })
     .join(" ");
 
+/**
+ * The lines the signature block needs: its title, the drawing and the two lines under it, kept on
+ * one page so none of them lands in the bottom margin
+ */
+const UNTERSCHRIFT_ZEILEN = Math.ceil((6 + UNTERSCHRIFT_HOEHE + 4 + 16) / ZEILE) + 1;
+
 const unterschrift = (s: Schreiber, nachweis: Stundennachweis, hash: string) => {
-  s.platz(3);
+  s.platz(UNTERSCHRIFT_ZEILEN);
   s.text("Unterschrift des Kunden", 0, { fett: true });
   s.zeile(6);
   s.bereich(UNTERSCHRIFT_HOEHE, (seite, x, oben) => {
@@ -148,6 +201,7 @@ const unterschrift = (s: Schreiber, nachweis: Stundennachweis, hash: string) => 
     s.text(zeit, 0);
   }
   s.zeile(16);
+  s.platz(1);
   s.text(`SHA-256 des Inhalts: ${hash}`, 0, { groesse: 7.5, grau: true });
   s.zeile();
 };

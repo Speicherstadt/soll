@@ -751,11 +751,6 @@ requests“).
 
 - [ ] S-803 Terminal offline – noch nicht begonnen
 
-**Ohne unabhängiges Review gemergt** (auf Wunsch des Nutzers für eine Weile ausgesetzt): S-604
-(#43), S-605 (#42), S-802 (#45), S-906 (#44). Das Review (`tdd-review`) wird für jeden nachgeholt,
-Befunde gehen als eigene Pull Requests mit fehlschlagendem Test zuerst. Ab sofort gilt wieder das
-Review vor jedem Merge.
-
 **Offene Nacharbeiten** (beim Bauen aufgefallen, noch ohne Pull Request):
 
 - [ ] SvEV § 1: Aufteilung bei 25 €/h auf drei Teile (nur ein Test liegt vor)

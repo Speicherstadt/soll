@@ -180,6 +180,33 @@ describe("auslastungJePerson", () => {
     });
   });
 
+  it("leaves a booking still running out of a month that has ended, whatever the time", () => {
+    const angaben = (jetzt: number) => ({
+      monat,
+      jetzt,
+      anwesenheit: [{ nutzerId: "max", tag: "2026-11-30", minuten: 480 }],
+      buchungen: [
+        {
+          nutzerId: "max",
+          tag: "2026-11-30",
+          beginn: um("07:00", "2026-11-30"),
+          ende: um("09:00", "2026-11-30"),
+          abrechenbar: true,
+        },
+        {
+          nutzerId: "max",
+          tag: "2026-11-30",
+          beginn: um("14:00", "2026-11-30"),
+          ende: null,
+          abrechenbar: true,
+        },
+      ],
+    });
+    const erst = auslastungJePerson(angaben(um("09:00", "2026-12-02")));
+    expect(erst).toEqual([expect.objectContaining({ abrechenbarMinuten: 120 })]);
+    expect(auslastungJePerson(angaben(um("09:00", "2027-01-15")))).toEqual(erst);
+  });
+
   it("lists each person once, in a stable order, and nobody without time", () => {
     const personen = auslastungJePerson({
       monat,

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "969ed45d-cb61-4532-a46e-70dec4639e1d",
+  "id": "97d88359-f804-403b-b1bb-db11f7a6f7e8",
   "prevId": "99e9eee8-c9f2-48d5-bda4-eb287aa36f1c",
   "tables": {
     "arbeitszeitmodelle": {
@@ -1992,7 +1992,7 @@
           "name": "inhalt",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "leistung_id": {

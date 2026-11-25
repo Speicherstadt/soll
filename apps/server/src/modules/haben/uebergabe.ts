@@ -9,8 +9,8 @@ import {
   kundenLesen,
   projekteLesen,
 } from "../projektzeit/index.ts";
-import { type HabenAnschluss, type Leistung, leistungSenden } from "./haben-api.ts";
-import { leistungAus } from "./leistung.ts";
+import { type HabenAnschluss, leistungSenden } from "./haben-api.ts";
+import { type Abgerechnet, leistungAus } from "./leistung.ts";
 import { staendeVon, type UebergabeStand, uebergabenVon } from "./stand.ts";
 import { anschlussVon } from "./zugang.ts";
 
@@ -25,7 +25,15 @@ export type HabenDeps = {
 /** The source a linked customer names at its contact in Haben (`kunden.extern_quelle`) */
 export const HABEN = "haben";
 
-export type UebergabeGrund = Grund | "haben_fehlt" | "schluessel_falsch" | "kunde_ohne_haben";
+export type UebergabeGrund =
+  | Grund
+  | "haben_fehlt"
+  | "schluessel_falsch"
+  | "kunde_ohne_haben"
+  | "zu_lang";
+
+/** Haben takes 1 to 1,440 minutes per Leistung (docs/api.md, serviceEntryCreateSchema) */
+export const LAENGSTE_LEISTUNG = 1_440;
 
 type Antwort<T> = { ok: true; wert: T } | { ok: false; grund: UebergabeGrund };
 
@@ -34,8 +42,9 @@ export const HOECHSTENS = 100;
 
 /**
  * Which of the named bookings can go to Haben: each on an order of a customer linked to a contact in
- * Haben (`kunde_ohne_haben`), and none billed by hand before (`abgerechnet`): that one was billed
- * outside Haben, sending it would bill it twice
+ * Haben (`kunde_ohne_haben`), none billed by hand before (`abgerechnet`): that one was billed
+ * outside Haben, sending it would bill it twice; and none longer than Haben takes (`zu_lang`, a
+ * stopwatch left running): billed, it would be locked and never delivered
  */
 const pruefen = (
   db: Db,
@@ -50,29 +59,29 @@ const pruefen = (
   for (const b of buchungen) {
     if (b.zeile.abgerechnetAm !== null && !uebergaben.has(b.zeile.buchungId)) return "abgerechnet";
     if (b.kunde.externQuelle !== HABEN || !b.kunde.externId) return "kunde_ohne_haben";
+    if (b.minuten > LAENGSTE_LEISTUNG) return "zu_lang";
   }
   return null;
 };
 
-/** The Leistung of a booking as it is billed, with the rate it was billed with */
-const leistungVon = (b: BuchungMitBezug, centProStunde: number | null): Leistung =>
-  leistungAus({
-    buchungId: b.zeile.buchungId,
-    tag: b.zeile.tag,
-    minuten: b.minuten,
-    taetigkeit: b.taetigkeit,
-    notiz: b.zeile.notiz,
-    abrechenbar: b.abrechenbar,
-    centProStunde,
-    projekt: { name: b.projekt.name, nummer: b.projekt.nummer },
-    kontaktId: b.kunde.externId ?? "",
-    nachweisNummer: b.nachweisNummer,
-  });
+/** What is frozen of a booking when it is billed for Haben: all but the contact and the Nachweis */
+type Eingefroren = Omit<Abgerechnet, "kontaktId" | "nachweisNummer">;
+
+const einfrieren = (b: BuchungMitBezug, centProStunde: number | null): Eingefroren => ({
+  buchungId: b.zeile.buchungId,
+  tag: b.zeile.tag,
+  minuten: b.minuten,
+  taetigkeit: b.taetigkeit,
+  notiz: b.zeile.notiz,
+  abrechenbar: b.abrechenbar,
+  centProStunde,
+  projekt: { name: b.projekt.name, nummer: b.projekt.nummer },
+});
 
 /**
- * Bills the bookings not billed yet and notes each for Haben with its Leistung as billed, in one
- * transaction: every try sends that content, so a later change of an activity, an order or a rate
- * changes nothing already billed (docs/plan.md, "Keine Leistung doppelt")
+ * Bills the bookings not billed yet and notes each for Haben as it is billed, in one transaction:
+ * every try sends that, so a later change of an activity, an order or a rate changes nothing
+ * already billed (docs/plan.md, "Keine Leistung doppelt")
  */
 const abrechnenFuerHaben = (
   deps: HabenDeps,
@@ -93,7 +102,7 @@ const abrechnenFuerHaben = (
         s.einfuegen("habenUebergaben", {
           betriebId: kontext.betriebId,
           buchungId,
-          inhalt: kanonisch(leistungVon(neue.get(buchungId) as BuchungMitBezug, centProStunde)),
+          inhalt: kanonisch(einfrieren(neue.get(buchungId) as BuchungMitBezug, centProStunde)),
           angelegtAm: kontext.jetzt,
         });
     },
@@ -106,20 +115,22 @@ const anHabenGescheitert = (fehler: string) => fehler !== "abgelehnt";
 
 /**
  * Sends one billed booking and keeps Haben's answer; false when Haben cannot take any now. It sends
- * the Leistung as billed; only the contact is the one the customer is linked to now, so a booking
- * Haben refused for a wrong contact goes once the customer is linked right.
+ * the booking as billed; the contact and the Stundennachweis are the ones it has now, so a booking
+ * Haben refused for a wrong contact goes once the customer is linked right, and a Nachweis signed
+ * after the billing is named
  */
 const senden = async (
   deps: HabenDeps,
   kontext: Kontext,
   anschluss: HabenAnschluss,
   b: BuchungMitBezug,
-  inhalt: string | null,
+  inhalt: string,
 ): Promise<boolean> => {
-  const leistung: Leistung = {
-    ...(inhalt === null ? leistungVon(b, b.zeile.centProStunde) : (JSON.parse(inhalt) as Leistung)),
-    contactId: b.kunde.externId ?? "",
-  };
+  const leistung = leistungAus({
+    ...(JSON.parse(inhalt) as Eingefroren),
+    kontaktId: b.kunde.externId ?? "",
+    nachweisNummer: b.nachweisNummer,
+  });
   const antwort = await leistungSenden(anschluss, leistung);
   const werte = antwort.ok
     ? { leistungId: antwort.wert.id, gesendetAm: kontext.jetzt, fehler: null, meldung: null }
@@ -128,7 +139,7 @@ const senden = async (
     s.aendern(
       "habenUebergaben",
       { buchungId: b.zeile.buchungId },
-      { ...werte, inhalt: kanonisch(leistung), versuchtAm: kontext.jetzt },
+      { ...werte, versuchtAm: kontext.jetzt },
     ),
   );
   return antwort.ok || !anHabenGescheitert(antwort.fehler);
@@ -166,7 +177,7 @@ export const uebergeben = async (
     offen.map((b) => b.zeile.buchungId),
   );
   for (const b of offen) {
-    const inhalt = notizen.get(b.zeile.buchungId)?.inhalt ?? null;
+    const inhalt = notizen.get(b.zeile.buchungId)?.inhalt ?? "";
     if (!(await senden(deps, kontext, anschluss.wert, b, inhalt))) break;
   }
   return { ok: true, wert: staendeVon(deps.db, kontext.betriebId, frisch.wert) };

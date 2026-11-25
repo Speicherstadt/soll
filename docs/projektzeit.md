@@ -230,7 +230,9 @@ Wiederholung nichts neu an, sondern antwortet mit dem vorhandenen Eintrag: nach 
 Antwort, einem zweiten Klick oder einem neuen Versuch nach einem Fehler. Was Haben schon bestätigt
 hat, schickt Soll nicht noch einmal. Eine Wiederholung schickt die Leistung so, wie sie abgerechnet
 wurde: Wird danach eine Tätigkeit abrechenbar oder ein Auftrag umbenannt, ändert das nichts mehr;
-nur den Kontakt nimmt Soll vom Kunden, wie er jetzt verbunden ist.
+nur den Kontakt nimmt Soll vom Kunden, wie er jetzt verbunden ist, und den Stundennachweis, wenn er
+inzwischen unterschrieben ist. Eine Buchung über 24 Stunden (eine vergessene Stoppuhr) nimmt Haben
+nicht an; Soll lehnt sie vor dem Abrechnen ab (`422 zu_lang`), man korrigiert sie zuerst.
 
 **Fehler.** Antwortet Haben nicht, lehnt es das Token ab (abgelaufen, widerrufen, ohne Recht), kommen
 zu viele Aufrufe oder meldet Haben einen eigenen Fehler, hört Soll mit dem Senden auf; die übrigen
@@ -355,6 +357,6 @@ dazu), `409` mit `verwendet`, `archiviert`, `fest` (feste Tätigkeit), `doppelt`
 
 Haben antwortet unter `/haben` mit `409 haben_fehlt` (kein Zugang) oder `schluessel_falsch` (das Token
 lässt sich mit dem jetzigen `SOLL_SECRET_KEY` nicht entschlüsseln), `422 kunde_ohne_haben`,
-`kontakt_unbekannt` oder `ohne_auftrag` (interne Zeit hat keinen Kunden), und `502` mit `fehler`
+`kontakt_unbekannt`, `ohne_auftrag` (interne Zeit hat keinen Kunden) oder `zu_lang` (über 1.440 Minuten), und `502` mit `fehler`
 (`nicht_erreichbar`, `zugang_abgelehnt`, `recht_fehlt`, `abgelehnt`, `zu_viele`, `haben_fehler`) und
 `meldung`, dem Text von Haben, wenn Haben die Kontakte nicht liefert.

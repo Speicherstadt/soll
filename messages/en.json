@@ -945,6 +945,7 @@
   "haben_fehler_token": "Enter the API token from Haben.",
   "haben_fehler_adresse": "Enter the address of Haben, e.g. https://haben.example.de.",
   "haben_fehler_kunde": "The customer of this order is not linked with a contact in Haben.",
+  "haben_fehler_zu_lang": "A booking is longer than 24 hours; Haben does not take it like that. Correct it first.",
   "haben_fehler_kontakt": "Haben does not know this contact.",
   "haben_fehler_abgerechnet": "A booking was already billed without Haben and does not go into an invoice again.",
   "haben_fehler_doppelt": "This contact is already linked with another customer.",

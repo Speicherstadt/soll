@@ -945,6 +945,7 @@
   "haben_fehler_token": "أدخل رمز API من Haben.",
   "haben_fehler_adresse": "أدخل عنوان Haben، مثل https://haben.example.de.",
   "haben_fehler_kunde": "عميل هذا الطلب غير مرتبط بأي جهة اتصال في Haben.",
+  "haben_fehler_zu_lang": "أحد الحجوزات أطول من 24 ساعة؛ لا يقبله Haben بهذا الشكل. صحّحه أولًا.",
   "haben_fehler_kontakt": "لا يعرف Haben جهة الاتصال هذه.",
   "haben_fehler_abgerechnet": "فُوتر حجز بالفعل دون Haben ولن يدخل في فاتورة مرة أخرى.",
   "haben_fehler_doppelt": "جهة الاتصال هذه مرتبطة بالفعل بعميل آخر.",

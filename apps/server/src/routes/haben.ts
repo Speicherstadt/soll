@@ -56,7 +56,7 @@ const fehlerAntwort = (
   if (f.grund === "haben") return c.json({ fehler: f.fehler, meldung: f.meldung ?? "" }, 502);
   if (f.grund === "haben_fehlt" || f.grund === "schluessel_falsch")
     return c.json({ fehler: f.grund }, 409);
-  if (f.grund === "kunde_ohne_haben" || f.grund === "kontakt_unbekannt")
+  if (f.grund === "kunde_ohne_haben" || f.grund === "kontakt_unbekannt" || f.grund === "zu_lang")
     return c.json({ fehler: f.grund }, 422);
   return antwort(c, { ok: false, grund: f.grund as "unbekannt" });
 };

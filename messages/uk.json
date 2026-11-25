@@ -945,6 +945,7 @@
   "haben_fehler_token": "Введіть API-токен з Haben.",
   "haben_fehler_adresse": "Вкажіть адресу Haben, наприклад https://haben.example.de.",
   "haben_fehler_kunde": "Клієнт цього замовлення не пов’язаний із жодним контактом у Haben.",
+  "haben_fehler_zu_lang": "Один запис довший за 24 години; Haben не прийме його таким. Спершу виправте його.",
   "haben_fehler_kontakt": "Haben не знає цього контакту.",
   "haben_fehler_abgerechnet": "Запис уже розраховано без Haben, і він не потрапить до рахунку вдруге.",
   "haben_fehler_doppelt": "Цей контакт уже пов’язаний з іншим клієнтом.",

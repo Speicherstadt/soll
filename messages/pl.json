@@ -945,6 +945,7 @@
   "haben_fehler_token": "Wprowadź token API z Haben.",
   "haben_fehler_adresse": "Podaj adres Haben, np. https://haben.example.de.",
   "haben_fehler_kunde": "Klient tego zlecenia nie jest połączony z żadnym kontaktem w Haben.",
+  "haben_fehler_zu_lang": "Jeden wpis trwa dłużej niż 24 godziny; Haben go tak nie przyjmie. Najpierw go popraw.",
   "haben_fehler_kontakt": "Haben nie zna tego kontaktu.",
   "haben_fehler_abgerechnet": "Wpis został już rozliczony bez Haben i nie trafi ponownie na fakturę.",
   "haben_fehler_doppelt": "Ten kontakt jest już połączony z innym klientem.",

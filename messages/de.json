@@ -945,6 +945,7 @@
   "haben_fehler_token": "Trage das API-Token aus Haben ein.",
   "haben_fehler_adresse": "Gib die Adresse von Haben an, etwa https://haben.example.de.",
   "haben_fehler_kunde": "Der Kunde dieses Auftrags ist mit keinem Kontakt in Haben verbunden.",
+  "haben_fehler_zu_lang": "Eine Buchung ist länger als 24 Stunden; Haben nimmt sie so nicht an. Korrigiere sie zuerst.",
   "haben_fehler_kontakt": "Diesen Kontakt kennt Haben nicht.",
   "haben_fehler_abgerechnet": "Eine Buchung wurde schon ohne Haben abgerechnet und geht nicht noch einmal in eine Rechnung.",
   "haben_fehler_doppelt": "Dieser Kontakt ist schon mit einem anderen Kunden verbunden.",

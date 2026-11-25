@@ -6,6 +6,7 @@ const FEHLER: Record<string, () => string> = {
   schluessel_falsch: m.haben_fehler_schluessel,
   token_fehlt: m.haben_fehler_token,
   kunde_ohne_haben: m.haben_fehler_kunde,
+  zu_lang: m.haben_fehler_zu_lang,
   kontakt_unbekannt: m.haben_fehler_kontakt,
   abgerechnet: m.haben_fehler_abgerechnet,
   doppelt: m.haben_fehler_doppelt,

@@ -1,7 +1,7 @@
 CREATE TABLE `haben_uebergaben` (
 	`betrieb_id` text NOT NULL,
 	`buchung_id` text NOT NULL,
-	`inhalt` text,
+	`inhalt` text NOT NULL,
 	`leistung_id` text,
 	`gesendet_am` integer,
 	`fehler` text,

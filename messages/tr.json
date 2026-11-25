@@ -945,6 +945,7 @@
   "haben_fehler_token": "Haben'deki API token'ını girin.",
   "haben_fehler_adresse": "Haben adresini girin, örneğin https://haben.example.de.",
   "haben_fehler_kunde": "Bu siparişin müşterisi Haben'deki bir kişiyle bağlı değil.",
+  "haben_fehler_zu_lang": "Bir kayıt 24 saatten uzun; Haben bunu bu haliyle kabul etmez. Önce düzeltin.",
   "haben_fehler_kontakt": "Haben bu kişiyi tanımıyor.",
   "haben_fehler_abgerechnet": "Bir kayıt zaten Haben olmadan faturalandı ve tekrar faturaya girmez.",
   "haben_fehler_doppelt": "Bu kişi zaten başka bir müşteriyle bağlı.",

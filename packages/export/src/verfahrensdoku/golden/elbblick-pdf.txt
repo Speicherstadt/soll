@@ -45,6 +45,11 @@ Monat gesperrt, eine Korrektur ist ein Gegeneintrag mit Grund im laufenden Monat
 PDF mit dem Prüfwert des Abschlusses.
 Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem
 Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft. Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung.
+Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können,
+oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; danach geben Inhaber oder
+Planer den Tausch frei oder lehnen ihn mit Grund ab. Bis zur Freigabe bleibt die Schicht bei der bisherigen Person; die Freigabe
+ändert die veröffentlichte Schicht in einem Schritt mit dem Tausch in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG.
+Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert.
 3. Anwenderdokumentation: Terminal
 Ein Tablet im Kiosk-Modus wird mit einem einmaligen Kopplungscode an den Betrieb gekoppelt und meldet sich danach mit
 einem eigenen Geräte-Token an; Kopplungscode und Token stehen nur als SHA-256 in der Datenbank. Der Inhaber kann ein
@@ -128,11 +133,11 @@ ab, statt es nur auszublenden. Jede Änderung der Mitgliedschaft und der Rolle s
 Gültige API-Zugänge für Programme gibt es nicht.
 Die Rollen und was jede darf, mit der Zahl ihrer Mitglieder beim Erzeugen; ein Mitglied mit mehreren Rollen zählt bei jeder:
 
-Inhaber (1 Mitglied): den Betrieb und seine Module sehen; Terminals koppeln und widerrufen, QR-Codes und Karten
-ausgeben
+Inhaber (1 Mitglied): den Betrieb und seine Module sehen; den Dienstplan planen und veröffentlichen, Tausche freigeben und
+ablehnen; Terminals koppeln und widerrufen, QR-Codes und Karten ausgeben
 
-Mitarbeiter (5 Mitglieder): den Betrieb und seine Module sehen; selbst stempeln und die eigenen Zeiten sehen; den Dienstplan
-lesen
+Mitarbeiter (5 Mitglieder): den Betrieb und seine Module sehen; selbst stempeln und die eigenen Zeiten sehen; den
+veröffentlichten Dienstplan lesen; wer auch stempelt, kann Schichten zum Tausch anbieten und übernehmen
 
 Gerät (0 Mitglieder): PINs am Terminal prüfen
 8. Betriebsdokumentation: Aufbewahrung und Aussonderung
@@ -177,6 +182,9 @@ im Monatsabschluss. Fehlt ein Jahreswert oder ein Arbeitszeitmodell, rechnet Sol
 hinterlegt.
 Dienstplan: Die Beschäftigten sehen nur veröffentlichte Schichten; vor dem Veröffentlichen prüft Soll jede Schicht gegen die
 Regeln und nennt die Norm.
+Tausch: Jeden Tausch gibt Inhaber oder Planer frei. Vorher prüft Soll die Schicht für die übernehmende Person, als hätte sie sie
+schon (Ruhezeit, Höchstarbeitszeit, Jugend- und Mutterschutz und die übrigen Regeln, mit Norm); ein Befund warnt, die Befunde
+sehen nur, wer freigibt. Eine Ablehnung trägt einen Grund; jeder Tausch steht in der Audit-Kette.
 Kontrolle der Kette: Die Prüfung der Audit-Kette läuft bei jedem Erzeugen dieses Dokuments, bei jeder Wiederherstellung einer
 Sicherung und auf der Prüfseite für jeden Prüfwert; beim Erzeugen dieses Dokuments mit Befund (Abschnitt 5).
 11. Fassungen dieser Dokumentation

@@ -38,8 +38,9 @@ export const RECHTE_TEXTE: Record<string, string> = {
   "projekte:lesen": "Kunden, Aufträge und Tätigkeiten lesen",
   "projekte:verwalten": "Kunden, Aufträge, Tätigkeiten und Stundensätze pflegen",
   "erinnerungen:regeln": "die Zeiten der Erinnerungen festlegen",
-  "plan:lesen": "den Dienstplan lesen",
-  "plan:planen": "den Dienstplan planen und veröffentlichen",
+  "plan:lesen":
+    "den veröffentlichten Dienstplan lesen; wer auch stempelt, kann Schichten zum Tausch anbieten und übernehmen",
+  "plan:planen": "den Dienstplan planen und veröffentlichen, Tausche freigeben und ablehnen",
   "personen:angaben":
     "Angaben zu Personen für die Prüfung pflegen (etwa Geburtsdatum, Mutterschutz)",
   "terminal:verwalten": "Terminals koppeln und widerrufen, QR-Codes und Karten ausgeben",
@@ -54,9 +55,10 @@ export const RECHTE_TEXTE: Record<string, string> = {
  * The module a right belongs to; a right without one holds whatever the business switched on.
  * The document names a right only while its module is on.
  */
-const RECHT_MODUL: Record<string, keyof Module> = {
+const RECHT_MODUL: Record<string, keyof Module | (keyof Module)[]> = {
   "pin:setzen": "terminal",
-  "pin:pruefen": "terminal",
+  // the kiosk recognises nobody without working time (routes/kiosk.ts)
+  "pin:pruefen": ["terminal", "arbeitszeit"],
   "terminal:verwalten": "terminal",
   "modelle:lesen": "arbeitszeit",
   "modelle:zuordnen": "arbeitszeit",
@@ -78,9 +80,22 @@ const RECHT_MODUL: Record<string, keyof Module> = {
 
 export const rechtAktiv = (recht: string, module: Module): boolean => {
   const modul = RECHT_MODUL[recht];
-  return modul === undefined || module[modul];
+  if (modul === undefined) return true;
+  return (Array.isArray(modul) ? modul : [modul]).every((name) => module[name]);
 };
 
 export const rolleName = (rolle: string): string => ROLLEN_NAMEN[rolle] ?? rolle;
 
-export const rechtText = (recht: string): string => RECHTE_TEXTE[recht] ?? recht;
+/** What a right holds besides, while a module is on: the owner's setting of the swap (S-504) */
+const ZUSATZ: Record<string, { modul: keyof Module; text: string }> = {
+  "betrieb:einrichten": {
+    modul: "dienstplan",
+    text: "festlegen, ob ein Schichttausch ohne Freigabe gilt",
+  },
+};
+
+export const rechtText = (recht: string, module: Module): string => {
+  const text = RECHTE_TEXTE[recht] ?? recht;
+  const zusatz = ZUSATZ[recht];
+  return zusatz && module[zusatz.modul] ? `${text}; ${zusatz.text}` : text;
+};

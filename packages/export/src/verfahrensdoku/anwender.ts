@@ -87,6 +87,9 @@ const weitere = (module: Module): string[] => [
   module.dienstplan
     ? `Dienstplan: Planer legen Schichten an und veröffentlichen sie; erst dann sehen die Beschäftigten sie. Der Plan wird vor dem Veröffentlichen gegen die Regeln des Arbeitszeitgesetzes geprüft.${module.arbeitszeit ? " Der Plan ist Soll-Zeit, die Aufzeichnung bleibt die Stempelung." : ""}`
     : "",
+  module.dienstplan
+    ? "Schichttausch: Wer eine veröffentlichte Schicht hat, die noch nicht begonnen hat, bietet sie allen an, die sie übernehmen können, oder einer Kollegin mit Namen, ohne Grund. Wer zur selben Zeit keine Schicht hat, übernimmt sie; danach geben Inhaber oder Planer den Tausch frei oder lehnen ihn mit Grund ab. Bis zur Freigabe bleibt die Schicht bei der bisherigen Person; die Freigabe ändert die veröffentlichte Schicht in einem Schritt mit dem Tausch in der Audit-Kette und gilt als neue Mitteilung nach § 12 TzBfG. Ein Angebot läuft ab, wenn die Schicht beginnt, und wird hinfällig, wenn der Planer die Schicht ändert."
+    : "",
   module.projektzeit
     ? "Projektzeit: Buchungen auf Kunden, Aufträge und Tätigkeiten stehen getrennt von der Arbeitszeit; sie bleiben änderbar, bis sie abgerechnet oder in einem unterschriebenen Stundennachweis sind, danach sind sie gesperrt."
     : "",

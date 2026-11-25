@@ -25,6 +25,14 @@ describe("shift swap", () => {
     expect(text).toContain("keinen Verstoß");
   });
 
+  it("names the owner's setting of the swap among the rights only while the plan is on", () => {
+    const rollen = [{ rolle: "inhaber", mitglieder: 1, rechte: ["betrieb:einrichten"] }];
+    const setzen = "festlegen, ob ein Schichttausch ohne Freigabe gilt";
+    expect(md({ ...elbblick, rollen })).toContain(setzen);
+    const ohnePlan = { ...elbblick.module, dienstplan: false };
+    expect(md({ ...elbblick, rollen, module: ohnePlan })).not.toContain(setzen);
+  });
+
   it("says nothing of a swap while the plan is off", () => {
     expect(md(weber)).not.toMatch(/[Tt]ausch/);
   });

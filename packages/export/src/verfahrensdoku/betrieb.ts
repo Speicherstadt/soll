@@ -1,7 +1,7 @@
 import { angabenAbsaetze } from "./angaben.ts";
 import { abschnitt, type VerfahrensdokuAbschnitt } from "./modell.ts";
 import { rechtAktiv, rechtText, rolleName } from "./rechte.ts";
-import type { DokuStandDaten } from "./typen.ts";
+import type { DokuStandDaten, Module } from "./typen.ts";
 
 /*
  * The technical system documentation and the operations documentation (GoBD Rz. 153), after the
@@ -21,8 +21,8 @@ export const programm = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
     ],
   });
 
-const rolleZeile = (r: DokuStandDaten["rollen"][number]): string =>
-  `${rolleName(r.rolle)} (${r.mitglieder} ${r.mitglieder === 1 ? "Mitglied" : "Mitglieder"}): ${r.rechte.length ? r.rechte.map(rechtText).join("; ") : "keine Rechte in den eingeschalteten Modulen"}`;
+const rolleZeile = (r: DokuStandDaten["rollen"][number], module: Module): string =>
+  `${rolleName(r.rolle)} (${r.mitglieder} ${r.mitglieder === 1 ? "Mitglied" : "Mitglieder"}): ${r.rechte.length ? r.rechte.map((recht) => rechtText(recht, module)).join("; ") : "keine Rechte in den eingeschalteten Modulen"}`;
 
 /**
  * Each role with the rights of the modules that are on; a role left without rights and without
@@ -32,7 +32,7 @@ const rollenListe = (s: DokuStandDaten): string[] =>
   s.rollen
     .map((r) => ({ ...r, rechte: r.rechte.filter((recht) => rechtAktiv(recht, s.module)) }))
     .filter((r) => r.rechte.length > 0 || r.mitglieder > 0)
-    .map(rolleZeile);
+    .map((r) => rolleZeile(r, s.module));
 
 export const zugaenge = (s: DokuStandDaten): VerfahrensdokuAbschnitt =>
   abschnitt("7. Betriebsdokumentation: Zugänge und Rechte", {

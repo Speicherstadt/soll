@@ -16,6 +16,7 @@ import {
   monatsabschluesse,
   pins,
   standorte,
+  tauschregeln,
   terminals,
 } from "../../db/schema.ts";
 import { aktuellerPruefwert, kettePruefen } from "../audit/index.ts";
@@ -188,6 +189,11 @@ export const standLesen = (
     terminal: terminalStand(db, betriebId),
     datev: datev(db, betriebId),
     haben: haben ? { adresse: haben.adresse } : null,
+    tausch: {
+      ohneFreigabe:
+        db.select().from(tauschregeln).where(eq(tauschregeln.betriebId, betriebId)).get()
+          ?.ohneFreigabe ?? false,
+    },
     importe: importeVon(db, betriebId),
     angaben: angabenLesen(db, betriebId),
     angabenAenderungen: angabenAenderungen(db, betriebId),

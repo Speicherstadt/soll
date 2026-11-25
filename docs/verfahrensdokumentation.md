@@ -25,7 +25,7 @@ Systemdokumentation, Betriebsdokumentation) und Rz. 100 ff. (internes Kontrollsy
 | Abschnitt | Aus dem Stand des Betriebs |
 | --- | --- |
 | 1. Allgemeine Beschreibung | Name und Bundesland, eingeschaltete und ausgeschaltete Module, Standorte mit regionalen Feiertagen, dazu Rechtsform, Anschrift, Verantwortliche und Ort der Aufbewahrung aus den Angaben |
-| 2. Erfassung und Verarbeitung | Stempeln in App, PWA, API und Terminal, ohne Netz, Änderungen mit Grund, Prüfung mit Norm, Monatsabschluss; Dienstplan und Projektzeit nur, wenn eingeschaltet |
+| 2. Erfassung und Verarbeitung | Stempeln in App, PWA, API und Terminal, ohne Netz, Änderungen mit Grund, Prüfung mit Norm, Monatsabschluss; Dienstplan mit [Schichttausch](dienstplan.md#schichten-tauschen) und Projektzeit nur, wenn eingeschaltet |
 | 3. Terminal | Kopplung; mit eingeschalteter Arbeitszeit PIN, QR-Code, NFC-Karten und Warteschlange ohne Netz, mit jedem Terminal (gekoppelt, widerrufen, mit Schlüssel ohne Netz) und der Zahl der PINs, QR-Codes und Karten; ohne Arbeitszeit steht dort, dass das Terminal nichts aufzeichnet; ist das Modul aus, steht nur das da |
 | 4. Weitergabe und Übernahme | DATEV (eingerichtet oder nicht, Zahl der Lohnarten und Personalnummern), Prüfexport, Haben (nur die Adresse, nie das Token), [Umzug](umzug.md) mit Zahl und Werkzeugen der Importe und dem Ort der Originaldateien, Auskunft |
 | 5. Audit-Kette und Prüfwert | wie die [Audit-Kette](audit-kette.md) und der Prüfwert schützen, mit dem Prüfwert und der Zahl der Glieder beim Erzeugen und dem Ergebnis der Kettenprüfung, die dabei läuft |
@@ -33,7 +33,7 @@ Systemdokumentation, Betriebsdokumentation) und Rz. 100 ff. (internes Kontrollsy
 | 7. Zugänge und Rechte | Anmeldung und Einladung, jede Rolle mit der Zahl ihrer Mitglieder und allem, was sie in den eingeschalteten Modulen darf, Zahl der API-Zugänge, mit denen man sich jetzt anmelden könnte (einer Person, die Mitglied ist, angelegt seit ihrer Mitgliedschaft, nicht abgelaufen); keine Namen und keine E-Mail-Adressen |
 | 8. Aufbewahrung und Aussonderung | Fristen je Monatsabschluss (2 oder 8 Jahre), Aussonderung, Zahl der aufbewahrten und der ausgesonderten Monate |
 | 9. Betrieb und Datensicherung | `soll backup` und `soll restore` ([Installation](installation.md#sicherung)), dazu Betrieb des Servers, Datensicherung und Ablage der Schlüssel aus den Angaben |
-| 10. Internes Kontrollsystem | Rechte auf dem Server, Bestätigen und Abschließen, Prüfwert bei den Beschäftigten, Lücken in Nummern, Plausibilität, Kontrolle der Kette |
+| 10. Internes Kontrollsystem | Rechte auf dem Server, Bestätigen und Abschließen, Prüfwert bei den Beschäftigten, Lücken in Nummern, Plausibilität, mit Dienstplan die Freigabe eines Tauschs mit Prüfung für die übernehmende Person oder die Einstellung „Tausch ohne Freigabe“, Kontrolle der Kette |
 | 11. Fassungen | jede gespeicherte Änderung der Angaben mit Zeitpunkt und Kettenglied |
 | 12 ff. | die eigenen Abschnitte des Betriebs |
 

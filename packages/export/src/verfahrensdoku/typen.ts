@@ -61,6 +61,8 @@ export type DokuStandDaten = {
   datev: { eingerichtet: boolean; nummern: boolean; lohnarten: number; personalnummern: number };
   /** The address of the business's Haben (S-606), never its token; null without one */
   haben: { adresse: string } | null;
+  /** The shift swap (S-504): whether a takeover holds at once when the check finds nothing */
+  tausch: { ohneFreigabe: boolean };
   /** Imports from other tools taken over (S-701): how many and the ids of their tools */
   importe: { anzahl: number; werkzeuge: string[] };
   angaben: Angaben;

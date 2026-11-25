@@ -4,6 +4,7 @@ export {
   type FeiertageErgebnis,
   feiertagAm,
   feiertage,
+  feiertageZwischen,
 } from "./feiertage.ts";
 export {
   FEIERTAGSGESETZ,

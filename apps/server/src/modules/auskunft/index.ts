@@ -5,6 +5,7 @@ import { type Abwesenheitsteil, abwesenheitsteil } from "./abwesenheiten.ts";
 import { type Arbeitsteil, arbeitsteil } from "./arbeit.ts";
 import { type Erinnerungsteil, erinnerungsteil } from "./erinnerungen.ts";
 import { type EigeneZeilen, kettenteil, pruefwerteJeAbschluss } from "./kette.ts";
+import { type Kontenteil, kontenteil } from "./konten.ts";
 import { type Lohnteil, lohnteil } from "./lohn.ts";
 import { type Personenangabenteil, personenangabenteil } from "./personenangaben.ts";
 import { type Projektteil, projektteil } from "./projektzeit.ts";
@@ -50,6 +51,7 @@ const zeilenVon = (
   terminal: Terminalteil,
   abwesenheit: Abwesenheitsteil,
   angaben: Personenangabenteil,
+  konten: Kontenteil,
   einladungen: { einladungId: string }[],
   zugaenge: { zugangId: string }[],
   kalender: unknown,
@@ -77,6 +79,8 @@ const zeilenVon = (
     karten: terminal.karten.map(({ karteId }) => ({ karteId })),
     abwesenheiten: abwesenheit.abwesenheiten.map(({ abwesenheitId }) => ({ abwesenheitId })),
     personenangaben: angaben.personenangaben === null ? [] : [{ nutzerId }],
+    kontoAnpassungen: konten.kontoAnpassungen.map(({ anpassungId }) => ({ anpassungId })),
+    urlaubshinweise: konten.urlaubshinweise.map(({ hinweisId }) => ({ hinweisId })),
   }) satisfies EigeneZeilen;
 
 /** The names of who made an entry; the sign-in itself and a deleted account by what they are */
@@ -100,6 +104,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
   const terminal = terminalteil(db, betriebId, nutzerId, name);
   const abwesenheit = abwesenheitsteil(db, betriebId, nutzerId, name);
   const angaben = personenangabenteil(db, betriebId, nutzerId);
+  const konten = kontenteil(db, betriebId, nutzerId, name);
   const kette = kettenteil(
     db,
     betriebId,
@@ -113,6 +118,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
       terminal,
       abwesenheit,
       angaben,
+      konten,
       konto.einladungen,
       konto.zugaenge,
       konto.kalender,
@@ -136,6 +142,7 @@ const eigeneAuskunft = (db: Db, betriebId: string, nutzerId: string, jetzt: numb
     ...terminal,
     ...abwesenheit,
     ...angaben,
+    ...konten,
     monatsabschluesse: arbeit.monatsabschluesse.map((abschluss) => ({
       ...abschluss,
       pruefwert:

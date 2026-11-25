@@ -1,5 +1,6 @@
 import * as abwesenheiten from "../routes/abwesenheiten.ts";
 import * as lesen from "../routes/abwesenheiten-lesen.ts";
+import * as konten from "../routes/konten.ts";
 import type { Operation } from "./dokument.ts";
 
 const ABW = "/api/v1/arbeitszeit/abwesenheiten";
@@ -27,7 +28,7 @@ export const ABWESENHEITEN: readonly Operation[] = (
     {
       methode: "get",
       pfad: "/team",
-      zusammenfassung: "Wer im Zeitraum abwesend ist, ohne Art",
+      zusammenfassung: "Wer im Zeitraum abwesend ist, ohne Art, mit den Feiertagen eines Standorts",
       abfrage: lesen.teamSchema,
     },
     {
@@ -86,3 +87,32 @@ export const ABWESENHEITEN: readonly Operation[] = (
     },
   ] satisfies Kurz[]
 ).map((op) => ({ ...op, pfad: `${ABW}${op.pfad}`, bereich }));
+
+const KONTEN = "/api/v1/arbeitszeit/konten";
+
+/**
+ * The accounts of a person (S-402): leave with carry-over and expiry, overtime, the changes by hand
+ * and the notices on leave expiring
+ */
+export const KONTEN_OPERATIONEN: readonly Operation[] = (
+  [
+    {
+      methode: "get",
+      pfad: "",
+      zusammenfassung: "Resturlaub mit Verfall und Überstundenkonto einer Person",
+      abfrage: konten.kontoSchema,
+    },
+    {
+      methode: "post",
+      pfad: "/:nutzerId/anpassungen",
+      zusammenfassung: "Startsaldo, Auszahlung oder Korrektur eines Kontos eintragen (Inhaber)",
+      koerper: konten.anpassungSchema,
+    },
+    {
+      methode: "post",
+      pfad: "/:nutzerId/hinweise",
+      zusammenfassung: "Den Tag des Hinweises auf den Verfall von Urlaub festhalten (Inhaber)",
+      koerper: konten.hinweisSchema,
+    },
+  ] satisfies Kurz[]
+).map((op) => ({ ...op, pfad: `${KONTEN}${op.pfad}`, bereich: "Konten" }));

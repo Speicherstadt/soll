@@ -11,8 +11,8 @@ import { vormonat } from "./zeilen.ts";
 
 type Schritt = { pfad: string; body: unknown };
 
-/** What a step changes: the month, and the days it closes or counters */
-export const MONAT_AENDERT = [alle(PFAD.monat), alle(PFAD.tag)];
+/** What a step changes: the month, the days it closes or counters, and the overtime (S-402) */
+export const MONAT_AENDERT = [alle(PFAD.monat), alle(PFAD.tag), alle(PFAD.konten)];
 
 /**
  * The state of the month page: which person and month, the month as the server answers (a query per

@@ -63,6 +63,9 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
   const platz = (zeilen: number) => {
     if (y - zeilen * ZEILE < RAND) neueSeite();
   };
+  /** How many lines still fit on this page; `jeSeite` is how many fit on a new one */
+  const frei = () => Math.max(0, Math.floor((y - RAND) / ZEILE));
+  const jeSeite = Math.floor((format.hoehe - 2 * RAND) / ZEILE);
   const text = (inhalt: string, x: number, optionen: TextOptionen = {}) => {
     const font = optionen.fett ? schrift.fett : schrift.normal;
     const groesse = optionen.groesse ?? 9;
@@ -127,7 +130,7 @@ export const schreiber = (doc: PDFDocument, schrift: Schrift, format: Format = A
     zeichnen(seite, RAND, y);
     y -= hoehe;
   };
-  return { text, zeile, umbrechen, absatz, platz, neueSeite, bereich };
+  return { text, zeile, umbrechen, absatz, platz, frei, jeSeite, neueSeite, bereich };
 };
 
 export type Schreiber = ReturnType<typeof schreiber>;

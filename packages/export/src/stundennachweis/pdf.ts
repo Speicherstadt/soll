@@ -6,6 +6,7 @@ import {
   type Schreiber,
   schreiber,
   schriften,
+  type TextOptionen,
   ZEILE,
 } from "../pdf/schreiber.ts";
 import {
@@ -78,10 +79,33 @@ const kopf = (s: Schreiber, nachweis: Stundennachweis) => {
   s.zeile(8);
 };
 
+const spaltenKopf = (s: Schreiber) => {
+  for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
+  s.zeile();
+};
+
+/** A new page for the table, which starts with the head of the table again */
+const tabellenSeite = (s: Schreiber) => {
+  s.neueSeite();
+  spaltenKopf(s);
+};
+
+type Zelle = { x: number; optionen: TextOptionen; teile: string[] };
+
+/** The lines `ab` to `ab + anzahl` of each cell, the first of them on the current line */
+const zeilenZeichnen = (s: Schreiber, zellen: Zelle[], ab: number, anzahl: number) => {
+  for (const zelle of zellen)
+    zelle.teile.slice(ab, ab + anzahl).forEach((teil, nummer) => {
+      s.text(teil, zelle.x, { ...zelle.optionen, unten: nummer * ZEILE });
+    });
+  s.zeile(anzahl * ZEILE);
+};
+
 /**
  * A booking as a row of the table: each cell wraps over as many lines as it needs, so the customer
- * signs every word of activity and note (S-605); the row stays on one page and grows with its
- * tallest cell
+ * signs every word of activity and note (S-605). The row grows with its tallest cell and stays on
+ * one page when it fits on one; a taller row goes on on the next pages, so nothing signed is drawn
+ * below the bottom
  */
 const reihe = (s: Schreiber, zeile: NachweisZeile) => {
   const werte = [
@@ -92,23 +116,26 @@ const reihe = (s: Schreiber, zeile: NachweisZeile) => {
     zeile.taetigkeit,
     zeile.notiz,
   ];
-  const zellen = SPALTEN.map((spalte, index) => {
+  const zellen: Zelle[] = SPALTEN.map((spalte, index) => {
     const naechste = SPALTEN[index + 1];
     const optionen = naechste ? { breite: naechste.x - spalte.x - 4 } : {};
     return { x: spalte.x, optionen, teile: s.umbrechen(werte[index] ?? "", spalte.x, optionen) };
   });
   const hoehe = Math.max(...zellen.map((zelle) => zelle.teile.length));
-  s.platz(hoehe);
-  for (const zelle of zellen)
-    zelle.teile.forEach((teil, nummer) => {
-      s.text(teil, zelle.x, { ...zelle.optionen, unten: nummer * ZEILE });
-    });
-  s.zeile(hoehe * ZEILE);
+  // a new page below the head of the table holds jeSeite - 1 lines
+  const ganz = hoehe <= s.jeSeite - 1;
+  if ((ganz && hoehe > s.frei()) || s.frei() === 0) tabellenSeite(s);
+  let ab = 0;
+  while (ab < hoehe) {
+    const anzahl = Math.min(hoehe - ab, s.frei());
+    zeilenZeichnen(s, zellen, ab, anzahl);
+    ab += anzahl;
+    if (ab < hoehe) tabellenSeite(s);
+  }
 };
 
 const tabelle = (s: Schreiber, nachweis: Stundennachweis) => {
-  for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
-  s.zeile();
+  spaltenKopf(s);
   for (const zeile of nachweis.zeilen) reihe(s, zeile);
   s.zeile(4);
   s.text(`Summe ${dauerText(nachweis.summeMinuten)}`, 0, { fett: true });

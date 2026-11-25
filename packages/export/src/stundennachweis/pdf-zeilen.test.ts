@@ -85,8 +85,11 @@ describe("Stundennachweis PDF: each row in full (BAULISTE S-605: je Zeile Tätig
     expect(y.length).toBeGreaterThan(0);
     // RAND of the writer: no line in the bottom margin, let alone below the page
     expect(Math.min(...y)).toBeGreaterThanOrEqual(40);
-    expect(await ohneUmbruch(pdf)).toContain(person);
-    expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThan(2);
+    // every word of the name is drawn; the head of the table on each new page comes in between
+    const text = await ohneUmbruch(pdf);
+    expect(text.match(/Sandra/g)).toHaveLength(120);
+    expect(text.match(/Brandt/g)).toHaveLength(120);
+    expect((await PDFDocument.load(pdf)).getPageCount()).toBeGreaterThanOrEqual(2);
   });
 
   it("repeats the head of the table on each page it goes on to", async () => {

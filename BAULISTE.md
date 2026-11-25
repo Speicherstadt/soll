@@ -509,7 +509,7 @@ Alle Punkte: nach S-306.
   Zeitumstellung mit 7 und 9 Stunden (Test); ein Test je neuem Endpunkt, dass kein Betrieb Daten
   eines anderen sieht oder ändert; Playwright in `desktop` und `@phone`, axe grün in hell und
   dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
-- [ ] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
+- [x] **S-504 Schichttausch** – anbieten, übernehmen, freigeben.
   Fertig, wenn: ein Mitarbeiter eine eigene veröffentlichte Schicht zum Tausch anbietet, eine
   Kollegin sie übernimmt und der Planer den Tausch mit den Befunden der Prüfung für die Übernehmende
   freigibt, wonach die Schicht ihr gehört (Playwright). Dazu: angeboten wird nur eine eigene

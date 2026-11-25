@@ -203,6 +203,9 @@ export const tauschFreigeben = (
   const { tausch, schicht } = offen;
   if (tausch.status !== "uebernommen" || tausch.uebernehmerId === null)
     return fehler("nicht_offen");
+  // whoever took it may have left the business since
+  if (!kannUebernehmen(db, kontext.betriebId, tausch.uebernehmerId))
+    return fehler("person_unbekannt");
   if (belegt(db, kontext, tausch.uebernehmerId, schicht, true)) return fehler("ueberschneidung");
   const getauscht = umschreiben(schreibDb, kontext, tausch, tausch.uebernehmerId, kontext.akteur);
   return {

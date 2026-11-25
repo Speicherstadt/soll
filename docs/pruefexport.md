@@ -74,7 +74,7 @@ Betrieb verlassen hat und sich nicht mehr anmelden kann, erteilt der Inhaber die
 der Inhaber in Soll ohnehin sieht: Name und E-Mail des Kontos, Mitgliedschaft und Einladung,
 Stempelungen mit allen Fassungen und Gründen, Gegeneinträge, Abschlüsse mit Inhalt und Prüfwert,
 Modelle mit Lohn und Zuschlägen, Schichten, Stundensätze, Buchungen der Projektzeit,
-Abwesenheiten mit Art (Krankheit ohne Diagnose), Angaben für die Prüfung, Personalnummer, QR-Code und NFC-Karten der Person (wann eingetragen) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
+Abwesenheiten mit Art (Krankheit ohne Diagnose), Angaben für die Prüfung, Schichttausche, Personalnummer, QR-Code und NFC-Karten der Person (wann eingetragen) und die Glieder der Audit-Kette zu diesen Tabellen. Alles andere bleibt
 draußen, auch jeder Teil, der später dazukommt, bis jemand ihn freigibt: Anmeldewege und Sitzungen,
 Benutzername, PIN-Zustand, Geräte und Erinnerungen. Der Inhaber sieht sie sonst nirgends, und sie
 verrieten dem Arbeitgeber, wo, wann und womit sich die Person anmeldet, welche Erinnerungen sie
@@ -90,6 +90,7 @@ lit. b und c DSGVO).
 | `gegeneintraege`, `monatsabschluesse` | Korrekturen; Bestätigungen und Abschlüsse mit dem Inhalt des Monats und dem Prüfwert |
 | `aussonderungen` | die Monate, deren Inhalt nach Ablauf der Aufbewahrungsfrist entfernt wurde (S-901): Monat, Frist, abgeschlossen und entfernt am, ohne Inhalt |
 | `arbeitszeitmodelle`, `schichten`, `geraete` | zugeordnete Modelle mit Soll, Lohn und Sätzen der Zuschläge; Schichten, auch im Entwurf; Geräte mit öffentlichem Schlüssel |
+| `schichttausche` | jeder Tausch einer Schicht (S-504), den die Person angeboten, an sich gerichtet bekommen oder übernommen hat: ihre Rolle darin, Status, Zeitpunkte und der Grund einer Ablehnung, ohne die andere Person und ohne den, der entschied |
 | `ausweis` | wann und von wem der QR-Code für das Terminal ausgestellt wurde (S-801), ohne seinen Wert und Hash, sonst `null` |
 | `karten` | die NFC-Karten der Person (S-802) mit Art, wann und von wem eingetragen und wann entzogen, ohne UID, Schlüssel und Lesezähler |
 | `personalnummer` | die Personalnummer im Lohnprogramm für den DATEV-Export (S-308), sonst `null` |

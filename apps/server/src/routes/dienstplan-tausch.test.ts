@@ -164,6 +164,27 @@ describe("deciding a swap", () => {
     expect((await schritt(c.lea, tausch.tauschId, "freigeben")).status).toBe(409);
   });
 
+  it("gives no shift to someone who left the business before the approval", async () => {
+    const c = await elbblickZumTausch();
+    const tausch = await angeboten(c.tom, c.schichtId);
+    await schritt(c.yusuf, tausch.tauschId, "uebernehmen");
+    const organisation = await json(
+      await c.mia.anfrage(
+        `/api/auth/organization/get-full-organization?organizationId=${c.mia.betriebId}`,
+      ),
+    );
+    const memberId = (organisation.members as { id: string; userId: string }[]).find(
+      (m) => m.userId === c.yusuf.nutzerId,
+    )?.id;
+    const weg = await c.mia.anfrage("/api/auth/organization/remove-member", {
+      body: { memberIdOrEmail: memberId, organizationId: c.mia.betriebId },
+    });
+    expect(weg.status).toBe(200);
+    const frei = await schritt(c.lea, tausch.tauschId, "freigeben");
+    expect([frei.status, (await json(frei)).fehler]).toEqual([404, "person_unbekannt"]);
+    expect((await personDer(c.lea, c.standortId, c.schichtId))?.nutzerId).toBe(c.tom.nutzerId);
+  });
+
   it("approves only a swap someone took over", async () => {
     const c = await elbblickZumTausch();
     const tausch = await angeboten(c.tom, c.schichtId);

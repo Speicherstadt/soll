@@ -22,6 +22,14 @@ export type AuthDeps = {
   geheimerSchluessel: Uint8Array;
   url: string;
   jetzt: () => number;
+  /**
+   * How passwords are hashed and checked; Better Auth's scrypt when left out. Only the test server
+   * passes a fast stand-in: scrypt for every account made in a test kept the suite near its timeouts.
+   */
+  kennwort?: {
+    hash: (kennwort: string) => Promise<string>;
+    verify: (daten: { hash: string; password: string }) => Promise<boolean>;
+  };
 };
 
 /**
@@ -72,7 +80,7 @@ const akteure = new AsyncLocalStorage<string>();
  * (BAULISTE.md S-106). Its tables stay outside the audit chain; its hooks mirror every business,
  * membership and role into Soll's tables, so these changes stand in the chain (CLAUDE.md).
  */
-const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthDeps) => {
+const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt, kennwort }: AuthDeps) => {
   const kontext = (betriebId: string) => ({
     betriebId,
     akteur: akteure.getStore() ?? AKTEUR,
@@ -98,7 +106,11 @@ const betterAuthFuer = ({ db, schreibDb, geheimerSchluessel, url, jetzt }: AuthD
       transaction: false,
     }),
     // at least 10 characters, as for an account from an invitation (routes/einladungen.ts)
-    emailAndPassword: { enabled: true, minPasswordLength: 10 },
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 10,
+      ...(kennwort ? { password: kennwort } : {}),
+    },
     telemetry: { enabled: false },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {

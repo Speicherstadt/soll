@@ -45,6 +45,15 @@ export {
   MAX_DATENSAETZE,
   MAX_TEXT,
 } from "./modell.ts";
+export {
+  PERSONIO_ARTEN,
+  PERSONIO_FELDER,
+  PERSONIO_FORMAT,
+  type PersonioAbzug,
+  type PersonioArt,
+  personioAbzugText,
+  personioLesen,
+} from "./personio/index.ts";
 export { QUELLEN, type Quelle, quelleVon, SOLL_CSV_VORLAGE } from "./quellen.ts";
 export { SOLL_CSV_FELDER, type SollCsvFeld, type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 export { tabelleLesen } from "./tabelle.ts";

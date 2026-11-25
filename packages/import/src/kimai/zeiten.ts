@@ -1,5 +1,5 @@
-import { plusTage } from "@soll/arbeitszeit";
 import type { ImportBuchung, ImportZeit, LeseFehler } from "../modell.ts";
+import { spanneAlsZeit } from "../spanne.ts";
 import { type BerlinerUhr, berlinerUhr } from "../uhr.ts";
 import type { Zeitbuchung } from "./bestand.ts";
 import { type Block, MINUTE, type Stueck, stueckeVon, zusammenfassen } from "./stuecke.ts";
@@ -11,32 +11,7 @@ import { type Block, MINUTE, type Stueck, stueckeVon, zusammenfassen } from "./s
  * S-703). Each piece with a project and an activity is also a booking on them.
  */
 
-const TAG = 24 * 60 * MINUTE;
-
-/**
- * A block as a span on Berlin's clock, or why a day and two times cannot name it: 24 hours or more,
- * an instant in the hour that comes twice in October, an end on another day than the planner would
- * rebuild (as in S-703, review: across the change to summer time a span would shrink)
- */
-const alsZeit = (block: Block, person: string, uhr: BerlinerUhr): ImportZeit | LeseFehler => {
-  const { zeile } = block;
-  if (block.ende - block.beginn >= TAG) return { zeile, grund: "zeit_ungueltig", feld: "end" };
-  if (uhr.doppelt(block.beginn)) return { zeile, grund: "zeit_ungueltig", feld: "begin" };
-  if (uhr.doppelt(block.ende)) return { zeile, grund: "zeit_ungueltig", feld: "end" };
-  const beginn = uhr.uhr(block.beginn);
-  const ende = uhr.uhr(block.ende);
-  const endeTag = ende.minute > beginn.minute ? beginn.tag : plusTage(beginn.tag, 1);
-  if (ende.tag !== endeTag) return { zeile, grund: "zeit_ungueltig", feld: "end" };
-  return {
-    externalId: block.id,
-    zeile,
-    person,
-    tag: beginn.tag,
-    beginn: beginn.minute,
-    ende: ende.minute,
-    pauseMinuten: 0,
-  };
-};
+const FELDER = { beginn: "begin", ende: "end" };
 
 /** What a booking may name: the projects and activities of the file */
 export type Bezuege = { projekte: ReadonlySet<string>; taetigkeiten: ReadonlySet<string> };
@@ -95,7 +70,7 @@ const blockAufnehmen = (
   block: Block,
   kontext: { person: string; uhr: BerlinerUhr; bezuege: Bezuege },
 ): ImportBuchung[] => {
-  const zeit = alsZeit(block, kontext.person, kontext.uhr);
+  const zeit = spanneAlsZeit(block, kontext.person, kontext.uhr, FELDER);
   // only a span taken over is booked: a refused one gives no project time either (S-705 "Zeiten")
   if ("grund" in zeit) {
     ergebnis.fehler.push(zeit);

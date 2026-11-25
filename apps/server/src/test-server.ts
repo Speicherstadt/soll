@@ -24,6 +24,8 @@ type Optionen = {
   push?: PushSenden;
   /** The stand-in for a Kimai instance an import fetches from (S-705) */
   kimaiFetch?: (anfrage: Request) => Promise<Response> | Response;
+  /** The stand-in for Personio's API an import fetches from (S-704) */
+  personioFetch?: (anfrage: Request) => Promise<Response> | Response;
 };
 
 /**
@@ -84,6 +86,13 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
         optionen.kimaiFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
       ),
       erlaubt: new Set(),
+    },
+    // never the network: without a stand-in, Personio does not answer
+    personio: {
+      holen: ersatzHolen(
+        optionen.personioFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
+      ),
+      basis: "https://personio.test",
     },
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };

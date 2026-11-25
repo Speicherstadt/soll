@@ -23,11 +23,15 @@ export type VerbindungsFehler =
   | "zu_gross";
 export type Abgerufen = { ok: true; wert: Antwort } | { ok: false; grund: VerbindungsFehler };
 
-/** A GET: the URL, its headers, and whether the addresses it reaches must be public */
+/**
+ * A GET: the URL, its headers, and whether the addresses it reaches must be public; with a body a
+ * POST of it (Personio's token, S-704)
+ */
 export type Holen = (
   url: URL,
   kopf: Record<string, string>,
   nurOeffentlich: boolean,
+  koerper?: string,
 ) => Promise<Abgerufen>;
 
 export type Adresse = { address: string; family: number };
@@ -98,7 +102,7 @@ const lesen = (antwort: IncomingMessage, fertig: (ergebnis: Abgerufen) => void) 
  */
 export const sicherHolen =
   (aufloesen: Aufloesen = dnsAufloesen, ca?: string): Holen =>
-  (url, kopf, nurOeffentlich) =>
+  (url, kopf, nurOeffentlich, koerper) =>
     new Promise((aufloesenMit) => {
       let uhr: ReturnType<typeof setTimeout> | undefined;
       let erledigt = false;
@@ -122,8 +126,11 @@ export const sicherHolen =
             hostname: host,
             port: url.port || undefined,
             path: `${url.pathname}${url.search}`,
-            method: "GET",
-            headers: kopf,
+            method: koerper === undefined ? "GET" : "POST",
+            headers:
+              koerper === undefined
+                ? kopf
+                : { ...kopf, "Content-Length": String(Buffer.byteLength(koerper)) },
             lookup: gepruefteSuche(aufloesen, nurOeffentlich),
             agent: false,
             ...(ca ? { ca } : {}),
@@ -144,5 +151,5 @@ export const sicherHolen =
             err.code === INTERN || err.message === INTERN ? "adresse_intern" : "nicht_erreichbar",
         }),
       );
-      anfrage.end();
+      anfrage.end(koerper);
     });

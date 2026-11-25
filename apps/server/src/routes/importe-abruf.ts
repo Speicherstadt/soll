@@ -1,5 +1,5 @@
 import { istTag, plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { abzugText, kimaiAbzugText } from "@soll/import";
+import { abzugText, kimaiAbzugText, personioAbzugText } from "@soll/import";
 import { Hono } from "hono";
 import { z } from "zod";
 import {
@@ -8,12 +8,14 @@ import {
   type KimaiDeps,
   kimaiAbrufen,
   MAX_BYTES,
+  type PersonioDeps,
+  personioAbrufen,
 } from "../modules/umzug/index.ts";
 import type { Anfrage } from "./kontext.ts";
 import { koerper, ungueltig } from "./projektzeit-gemeinsam.ts";
 
 /*
- * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai):
+ * The fetch of a tool's data over its API (BAULISTE.md S-703 Clockodo, S-705 Kimai, S-704 Personio):
  * POST /api/v1/importe/abruf with the access and a period answers with the file the fetch became,
  * which the app then sends to preview, dry run and takeover like any file. The access is used for
  * this one request: it is not stored, not logged and in no answer (docs/plan.md, "API-Zugang eines
@@ -52,9 +54,22 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
       ...zeitraum,
     })
     .strict(),
+  z
+    .object({
+      quelle: z.literal("personio"),
+      zugang: z
+        .object({
+          // the credentials of a custom integration; they go in a form, so any text can be sent
+          clientId: z.string().trim().min(1).max(200),
+          clientSecret: z.string().trim().min(1).max(500),
+        })
+        .strict(),
+      ...zeitraum,
+    })
+    .strict(),
 ]);
 
-export type AbrufDeps = { clockodo: ClockodoDeps; kimai: KimaiDeps };
+export type AbrufDeps = { clockodo: ClockodoDeps; kimai: KimaiDeps; personio: PersonioDeps };
 
 /** The longest period of one fetch: a year; a longer one is fetched in parts */
 const MAX_TAGE = 366;
@@ -81,6 +96,10 @@ const abrufen = async (deps: AbrufDeps, eingabe: Eingabe) => {
   if (eingabe.quelle === "clockodo") {
     const abruf = await clockodoAbrufen(deps.clockodo, eingabe.zugang, zeitraum);
     return abruf.ok ? { ok: true as const, text: abzugText(abruf.wert) } : abruf;
+  }
+  if (eingabe.quelle === "personio") {
+    const abruf = await personioAbrufen(deps.personio, eingabe.zugang, zeitraum);
+    return abruf.ok ? { ok: true as const, text: personioAbzugText(abruf.wert) } : abruf;
   }
   const zugang = { ...eingabe.zugang, benutzer: eingabe.zugang.benutzer || null };
   const abruf = await kimaiAbrufen(deps.kimai, zugang, zeitraum);

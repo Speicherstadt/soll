@@ -31,6 +31,9 @@ export type ImportAbwesenheit = {
   art: string;
   von: string;
   bis: string;
+  /** the first or the last day only half (Personio, S-704); missing: whole days */
+  ersterHalb?: boolean;
+  letzterHalb?: boolean;
 };
 
 export type ImportKunde = { externalId: string; zeile: number; name: string; nummer: string };

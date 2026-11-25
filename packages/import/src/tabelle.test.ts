@@ -226,6 +226,10 @@ describe("review of S-702, round 2: seconds", () => {
       expect(zeile("07:00:30", ende).fehler).toEqual([
         { zeile: 2, grund: "zeit_ungueltig", feld: "ende", spalte: "Ende", wert: ende },
       ]);
+    // also in the last minute of the day, where the end rounded up would be midnight (round 3)
+    expect(zeile("23:59:50", "23:59:40").fehler).toEqual([
+      { zeile: 2, grund: "zeit_ungueltig", feld: "ende", spalte: "Ende", wert: "23:59:40" },
+    ]);
     // an end before the begin on another minute lies on the next day, as without seconds
     expect(zeile("22:00:30", "06:00:15").daten.zeiten[0]).toMatchObject({
       beginn: 1320,

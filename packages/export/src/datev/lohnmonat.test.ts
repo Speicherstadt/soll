@@ -233,8 +233,8 @@ describe("lohnmonat: call-outs from a Rufbereitschaft (S-505)", () => {
   });
 });
 
-describe("lohnmonat: a call-out never moves stamped work (review S-505, round 2)", () => {
-  it("call-out 15.6. 23:30 – 23:50 hourly, stamps 16.6. 0:00 – 8:00 monthly: only the 20 min are hours", () => {
+describe("lohnmonat: a joined shift belongs to the day it begins (review S-505, round 4)", () => {
+  it("call-out 15.6. 23:30 – 23:50 hourly, stamps 16.6. 0:00 – 8:00 monthly: as the same times stamped", () => {
     const modelle = [stundenModell(2150), monatsModell(320_000, { ab: "2026-06-16" })];
     const eingabe = sandra("2026-06", [{ tag: "2026-06-16", von: "00:00", bis: "08:00" }], {
       modelle,
@@ -255,6 +255,11 @@ describe("lohnmonat: a call-out never moves stamped work (review S-505, round 2)
           : tag,
       ),
     } as LohnmonatEingabe;
-    expect(posten(mit)).toEqual([{ art: "stunden", minuten: 20 }]);
+    // stamped, 15.6. 23:30 to 16.6. 8:00 is one shift of 15.6. (hourly) with the 10 min gap
+    const gestempelt = sandra("2026-06", [{ tag: "2026-06-15", von: "23:30", bis: "08:00" }], {
+      modelle,
+    });
+    expect(posten(mit)).toEqual(posten(gestempelt));
+    expect(posten(mit)).toEqual([{ art: "stunden", minuten: 510 }]);
   });
 });

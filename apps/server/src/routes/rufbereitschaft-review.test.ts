@@ -59,50 +59,74 @@ describe("review S-505: call-out overlapping stamped work", () => {
   });
 });
 
-describe("review S-505: call-out at the end of a closed month", () => {
-  it("work stamped on 1 November within 15 min after a call-out on 31 October counts in November", async () => {
+describe("review S-505, round 4: work joining a call-out of a closed month", () => {
+  it("stamps on 1 November within 15 min after a call-out on a closed 31 October are refused", async () => {
     const w = await mitPlan();
     await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
     expect(
       (await nachtragen(w.jonas, einsatz("2026-10-31T23:30:00+01:00", "2026-10-31T23:50:00+01:00")))
         .status,
     ).toBe(201);
-    const ok = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/bestaetigen", {
-      body: { monat: "2026-10" },
-    });
-    expect(ok.status).toBe(201);
-    const zu = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
-      body: { monat: "2026-10", nutzerId: w.jonas.nutzerId },
-    });
-    expect(zu.status).toBe(201);
-    const oktober = await summen(w.jonas, "2026-10", w.jonas.nutzerId);
-    const vorher = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten as number;
-    for (const [art, zeit] of [
-      ["kommen", "2026-11-01T00:00:00+01:00"],
-      ["gehen", "2026-11-01T08:00:00+01:00"],
-    ] as const)
-      expect((await nachtrag(w.jonas, { art, zeitpunkt: um(zeit), grund: "Zettel" })).status).toBe(
-        201,
-      );
-    // October is closed and keeps its Ist
-    expect(await summen(w.jonas, "2026-10", w.jonas.nutzerId)).toEqual(oktober);
-    // so the 8 hours worked on 1 November must count in November
-    const november = (await summen(w.jonas, "2026-11", w.jonas.nutzerId))
-      .gearbeitetMinuten as number;
-    expect(november - vorher).toBeGreaterThanOrEqual(480);
-  });
-});
-
-describe("review S-505, round 2: a finding of a joined shift never vanishes", () => {
-  it("§ 3 of a call-out on 31.10. joined to work on 1.11. shows in November once October is closed", async () => {
-    const w = await mitPlan();
-    await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
-    await nachtragen(w.jonas, einsatz("2026-10-31T23:30:00+01:00", "2026-10-31T23:50:00+01:00"));
     await w.jonas.anfrage("/api/v1/arbeitszeit/monat/bestaetigen", { body: { monat: "2026-10" } });
     const zu = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
       body: { monat: "2026-10", nutzerId: w.jonas.nutzerId },
     });
     expect(zu.status).toBe(201);
+    const oktober = await summen(w.jonas, "2026-10", w.jonas.nutzerId);
+    // an open Kommen joins nothing yet (R-01); its Gehen would close a shift that begins on 31.10.
+    // with the call-out and so change the closed October: refused, as a stamp continuing a shift of
+    // a closed month always is
+    const kommen = await nachtrag(w.jonas, {
+      art: "kommen",
+      zeitpunkt: um("2026-11-01T00:00:00+01:00"),
+      grund: "Zettel",
+    });
+    expect(kommen.status).toBe(201);
+    const gehen = await nachtrag(w.jonas, {
+      art: "gehen",
+      zeitpunkt: um("2026-11-01T08:00:00+01:00"),
+      grund: "Zettel",
+    });
+    expect(gehen.status).toBe(409);
+    expect(await summen(w.jonas, "2026-10", w.jonas.nutzerId)).toEqual(oktober);
+    // from 15 min after the call-out on it is a shift of its own of 1.11. and counts in November
+    const vorher = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten as number;
+    const kommenId = (await json(kommen)).stempelId as string;
+    const verschoben = await w.jonas.anfrage(`/api/v1/arbeitszeit/stempelungen/${kommenId}`, {
+      method: "PATCH",
+      body: { art: "kommen", zeitpunkt: um("2026-11-01T00:05:00+01:00"), grund: "Zettel" },
+    });
+    expect(verschoben.status).toBe(201);
+    const gehenNeu = await nachtrag(w.jonas, {
+      art: "gehen",
+      zeitpunkt: um("2026-11-01T08:05:00+01:00"),
+      grund: "Zettel",
+    });
+    expect(gehenNeu.status).toBe(201);
+    const nachher = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten;
+    expect(nachher).toBe(vorher + 480);
+  });
+
+  it("closing October waits until 15 min after a call-out at its end", async () => {
+    const w = await mitPlan();
+    await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
+    await nachtragen(w.jonas, einsatz("2026-10-31T23:30:00+01:00", "2026-10-31T23:50:00+01:00"));
+    w.server.stelleUhr(um("2026-11-01T00:00:00+01:00"));
+    await w.jonas.anfrage("/api/v1/arbeitszeit/monat/bestaetigen", { body: { monat: "2026-10" } });
+    const zu = await w.jonas.anfrage("/api/v1/arbeitszeit/monat/abschliessen", {
+      body: { monat: "2026-10", nutzerId: w.jonas.nutzerId },
+    });
+    expect(zu.status).toBe(409);
+    expect(await json(zu)).toMatchObject({ fehler: "schicht_kann_weiterlaufen" });
+  });
+});
+
+describe("review S-505, round 4: a shift joined across the month's end belongs to its first day", () => {
+  it("with October open, stamps on 1.11. join the call-out on 31.10.: October counts them and shows § 3", async () => {
+    const w = await mitPlan();
+    await rufPlanen(w.anna, abends(w.standortId, w.jonas.nutzerId, "2026-10-31"));
+    await nachtragen(w.jonas, einsatz("2026-10-31T23:30:00+01:00", "2026-10-31T23:50:00+01:00"));
+    const november = (await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten;
     for (const [art, zeit] of [
       ["kommen", "2026-11-01T00:00:00+01:00"],
       ["pause_beginn", "2026-11-01T05:00:00+01:00"],
@@ -112,11 +136,19 @@ describe("review S-505, round 2: a finding of a joined shift never vanishes", ()
       expect((await nachtrag(w.jonas, { art, zeitpunkt: um(zeit), grund: "Zettel" })).status).toBe(
         201,
       );
-    const november = await json(
-      await w.jonas.anfrage(`/api/v1/arbeitszeit/monat?monat=2026-11&nutzerId=${w.jonas.nutzerId}`),
+    const oktober = await json(
+      await w.jonas.anfrage(`/api/v1/arbeitszeit/monat?monat=2026-10&nutzerId=${w.jonas.nutzerId}`),
     );
-    const befunde = (november.inhalt as Json).befunde as Json[];
-    expect(befunde.map((b) => [b.regel, b.norm])).toContainEqual(["R-02", "§ 3 Satz 2 ArbZG"]);
+    const inhalt = oktober.inhalt as Json;
+    expect((inhalt.befunde as Json[]).map((b) => [b.regel, b.tage])).toContainEqual([
+      "R-02",
+      ["2026-10-31"],
+    ]);
+    const tag = (inhalt.tage as Json[]).find((t) => t.tag === "2026-10-31");
+    expect((tag?.stempel as unknown[]).length).toBe(4);
+    // 20 min call-out, 10 min gap, 10:40 with 45 min break
+    expect((inhalt.summen as Json).gearbeitetMinuten).toBe(20 + 10 + 640 - 45);
+    expect((await summen(w.jonas, "2026-11", w.jonas.nutzerId)).gearbeitetMinuten).toBe(november);
   });
 });
 

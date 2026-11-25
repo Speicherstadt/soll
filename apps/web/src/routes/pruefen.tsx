@@ -42,6 +42,18 @@ const Ergebnis = (props: { pruefung: Pruefung }) => {
     return (ABWEICHUNG[grund ?? ""] ?? (() => ""))();
   };
   const gegeneintraege = () => mitMonat()?.gegeneintraege ?? [];
+  const ausgesondertText = () => {
+    const p = props.pruefung;
+    return p.ergebnis === "ausgesondert"
+      ? m.pruefen_ausgesondert_text({
+          monat: monatText(p.monat),
+          betrieb: p.betrieb,
+          abgeschlossen: datumText(p.abgeschlossenAm),
+          datum: datumText(p.ausgesondertAm),
+          jahre: p.jahre,
+        })
+      : "";
+  };
   return (
     <div role="status" class="flex flex-col gap-2">
       <Show when={art() === "unlesbar"}>
@@ -56,6 +68,13 @@ const Ergebnis = (props: { pruefung: Pruefung }) => {
           {m.pruefen_ok()}
         </p>
         <p>{okText()}</p>
+      </Show>
+      <Show when={art() === "ausgesondert"}>
+        <p class="flex items-center gap-2 font-semibold text-[17px] text-success">
+          <Icon icon={CircleCheck} size={20} />
+          {m.pruefen_ausgesondert()}
+        </p>
+        <p>{ausgesondertText()}</p>
       </Show>
       <Show when={art() === "abweichung"}>
         <p class="flex items-center gap-2 font-semibold text-[17px] text-danger">

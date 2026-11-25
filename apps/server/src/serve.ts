@@ -4,6 +4,7 @@ import { createApp } from "./app.ts";
 import { createAuth } from "./auth/auth.ts";
 import { oeffneDatenbank } from "./db/oeffnen.ts";
 import { parseEnv } from "./env.ts";
+import { aussonderungsSchleife } from "./modules/arbeitszeit/index.ts";
 import {
   erinnerungsSchleife,
   pushPerFetch,
@@ -75,6 +76,9 @@ export const serverStarten = () => {
     Date.now,
     (zeile) => console.log(zeile),
   );
+
+  // Removal after the retention period, at the start and every 6 hours (S-901)
+  aussonderungsSchleife(db, schreibDb, Date.now, (zeile) => console.log(zeile));
 
   const server = Bun.serve({ port: env.port, hostname: env.host, fetch: app.fetch });
   console.log(JSON.stringify({ msg: "listening", url: server.url.href }));

@@ -1,14 +1,28 @@
 import { type Monat, monatVon, type Stempelung, type Tag } from "@soll/arbeitszeit";
 import { and, eq } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
-import { monatsabschluesse } from "../../db/schema.ts";
+import { aussonderungen, monatsabschluesse } from "../../db/schema.ts";
 import { kanonisch } from "../audit/hash.ts";
 import { aufzeichnungen, lesefenster } from "./monatsinhalt.ts";
 
-/** The months the business closed for a person (S-306); a closed month locks its records */
-export const abgeschlosseneMonate = (db: Db, betriebId: string, nutzerId: string): Set<Monat> =>
+/** The months of a person whose content was removed after the retention period (S-901) */
+export const ausgesonderteMonate = (db: Db, betriebId: string, nutzerId: string): Set<Monat> =>
   new Set(
     db
+      .select({ monat: aussonderungen.monat })
+      .from(aussonderungen)
+      .where(and(eq(aussonderungen.betriebId, betriebId), eq(aussonderungen.nutzerId, nutzerId)))
+      .all()
+      .map(({ monat }) => monat),
+  );
+
+/**
+ * The months the business closed for a person (S-306); a closed month locks its records, also once
+ * its content was removed after the retention period (S-901)
+ */
+export const abgeschlosseneMonate = (db: Db, betriebId: string, nutzerId: string): Set<Monat> =>
+  new Set([
+    ...db
       .select({ monat: monatsabschluesse.monat })
       .from(monatsabschluesse)
       .where(
@@ -20,7 +34,8 @@ export const abgeschlosseneMonate = (db: Db, betriebId: string, nutzerId: string
       )
       .all()
       .map(({ monat }) => monat),
-  );
+    ...ausgesonderteMonate(db, betriebId, nutzerId),
+  ]);
 
 /** Whether the month of `tag` is closed for a person (docs/plan.md, "Monat gesperrt") */
 export const monatAbgeschlossen = (
@@ -46,7 +61,8 @@ const stempelDesMonats = (monat: Monat, stempelungen: readonly Stempelung[]) => 
  * closed month, and a counter-entry is only for closed days), while every stamp the closed month
  * records, and a shift its shifts would join or be cut by, is locked. `vorher` loads the stamps in
  * force from `von` to before `bis` (only when a month is closed), `nachher` gives them as the change
- * would leave them.
+ * would leave them. Months in `ausser` are not compared: the removal after the retention period
+ * (S-901) changes the records of the month it removes.
  */
 export const aenderungGesperrt = <S extends Stempelung>(
   db: Db,
@@ -56,9 +72,11 @@ export const aenderungGesperrt = <S extends Stempelung>(
     zeitpunkte: readonly number[];
     vorher: (von: number, bis: number) => S[];
     nachher: (vorher: S[]) => Stempelung[];
+    ausser?: ReadonlySet<Monat>;
   },
 ): boolean => {
   const betroffen = [...abgeschlosseneMonate(db, betriebId, nutzerId)].filter((monat) => {
+    if (aenderung.ausser?.has(monat)) return false;
     const { von, bis } = lesefenster(monat);
     return aenderung.zeitpunkte.some((zeitpunkt) => zeitpunkt >= von && zeitpunkt < bis);
   });

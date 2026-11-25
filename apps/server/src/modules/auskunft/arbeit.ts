@@ -2,6 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
 import {
   arbeitszeitmodelle,
+  aussonderungen,
   geraete,
   korrekturen,
   modellzuordnungen,
@@ -153,10 +154,27 @@ const geraeteVon = (db: Db, betriebId: string, nutzerId: string) =>
       angelegtAm: iso(z.angelegtAm),
     }));
 
+/** The closed months whose content was removed after the retention period (S-901), no content */
+const aussonderungenVon = (db: Db, betriebId: string, nutzerId: string) =>
+  db
+    .select()
+    .from(aussonderungen)
+    .where(and(eq(aussonderungen.betriebId, betriebId), eq(aussonderungen.nutzerId, nutzerId)))
+    .orderBy(aussonderungen.monat)
+    .all()
+    .map((z) => ({
+      aussonderungId: z.aussonderungId,
+      monat: z.monat,
+      jahre: z.jahre,
+      abgeschlossenAm: iso(z.abgeschlossenAm),
+      ausgesondertAm: iso(z.ausgesondertAm),
+    }));
+
 export const arbeitsteil = (db: Db, betriebId: string, nutzerId: string, name: Name) => ({
   stempelungen: stempelVon(db, betriebId, nutzerId, name),
   gegeneintraege: gegeneintraegeVon(db, betriebId, nutzerId, name),
   monatsabschluesse: abschluesseVon(db, betriebId, nutzerId, name),
+  aussonderungen: aussonderungenVon(db, betriebId, nutzerId),
   arbeitszeitmodelle: modelleVon(db, betriebId, nutzerId),
   schichten: schichtenVon(db, betriebId, nutzerId),
   geraete: geraeteVon(db, betriebId, nutzerId),

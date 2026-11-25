@@ -5,6 +5,12 @@
 export { monatAbgeschlossen } from "./abschluss.ts";
 export * from "./abwesenheiten/index.ts";
 export { type Aenderung, aenderungenIn } from "./aenderungen.ts";
+export {
+  type Aufgeschoben,
+  type Aussonderung,
+  aussondern,
+  aussonderungsSchleife,
+} from "./aussonderung.ts";
 export { type GegeneintragErgebnis, gegeneintragAnlegen } from "./gegeneintraege.ts";
 export {
   type AnmeldeErgebnis,

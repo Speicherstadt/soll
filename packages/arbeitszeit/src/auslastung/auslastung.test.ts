@@ -180,6 +180,33 @@ describe("auslastungJePerson", () => {
     });
   });
 
+  it("leaves a booking still running out of a month that has ended, whatever the time", () => {
+    const angaben = (jetzt: number) => ({
+      monat,
+      jetzt,
+      anwesenheit: [{ nutzerId: "max", tag: "2026-11-30", minuten: 480 }],
+      buchungen: [
+        {
+          nutzerId: "max",
+          tag: "2026-11-30",
+          beginn: um("07:00", "2026-11-30"),
+          ende: um("09:00", "2026-11-30"),
+          abrechenbar: true,
+        },
+        {
+          nutzerId: "max",
+          tag: "2026-11-30",
+          beginn: um("14:00", "2026-11-30"),
+          ende: null,
+          abrechenbar: true,
+        },
+      ],
+    });
+    const erst = auslastungJePerson(angaben(um("09:00", "2026-12-02")));
+    expect(erst).toEqual([expect.objectContaining({ abrechenbarMinuten: 120 })]);
+    expect(auslastungJePerson(angaben(um("09:00", "2027-01-15")))).toEqual(erst);
+  });
+
   it("lists each person once, in a stable order, and nobody without time", () => {
     const personen = auslastungJePerson({
       monat,
@@ -251,5 +278,66 @@ describe("monatVorbei", () => {
     expect(monatVorbei("2026-10", "2026-11-01")).toBe(true);
     expect(monatVorbei("2026-11", "2026-11-30")).toBe(false);
     expect(monatVorbei("2026-12", "2026-11-20")).toBe(false);
+  });
+});
+
+describe("an ended month with a shift still open (review S-604, round 2)", () => {
+  const offen = [s("kommen", um("22:00", "2026-11-30"))];
+  const buchungen = [
+    {
+      nutzerId: "max",
+      tag: "2026-11-30",
+      beginn: um("22:00", "2026-11-30"),
+      ende: null,
+      abrechenbar: true,
+    },
+  ];
+  const zu = (jetzt: number) =>
+    auslastungJePerson({
+      monat: "2026-11",
+      jetzt,
+      anwesenheit: anwesenheitImMonat(offen, jetzt, "2026-11").map((t) => ({
+        nutzerId: "max",
+        ...t,
+      })),
+      buchungen,
+    });
+
+  it("gives the same numbers for the ended month in two calls", () => {
+    expect(zu(um("02:00", "2026-12-01"))).toEqual(zu(um("01:00", "2026-12-01")));
+  });
+
+  it("counts the closed shifts of the day, the open one once it is closed", () => {
+    const tag = [
+      s("kommen", um("06:00", "2026-11-30")),
+      s("gehen", um("10:00", "2026-11-30")),
+      s("kommen", um("22:00", "2026-11-30")),
+    ];
+    expect(anwesenheitImMonat(tag, um("01:00", "2026-12-01"), "2026-11")).toEqual([
+      { tag: "2026-11-30", minuten: 240 },
+    ]);
+    const geschlossen = [...tag, s("gehen", um("02:00", "2026-12-01"))];
+    expect(anwesenheitImMonat(geschlossen, um("03:00", "2026-12-01"), "2026-11")).toEqual([
+      { tag: "2026-11-30", minuten: 480 },
+    ]);
+  });
+
+  it("keeps a closed stretch when a Kommen of the next month joins its shift (round 3)", () => {
+    // under 9 h between Gehen and Kommen: one shift (schichtgruppen), open again from 06:00
+    const spaet = [s("kommen", um("14:00", "2026-11-30")), s("gehen", um("22:00", "2026-11-30"))];
+    const vorher = anwesenheitImMonat(spaet, um("05:00", "2026-12-01"), "2026-11");
+    const nachher = anwesenheitImMonat(
+      [...spaet, s("kommen", um("06:00", "2026-12-01"))],
+      um("07:00", "2026-12-01"),
+      "2026-11",
+    );
+    expect(vorher).toEqual([{ tag: "2026-11-30", minuten: 480 }]);
+    expect(nachher).toEqual(vorher);
+  });
+
+  it("still counts a shift running in a running month up to now", () => {
+    expect(anwesenheitImMonat(offen, um("23:00", "2026-11-30"), "2026-11")).toEqual([
+      { tag: "2026-11-30", minuten: 60 },
+    ]);
   });
 });

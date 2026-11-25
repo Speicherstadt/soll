@@ -1,7 +1,9 @@
+import { arbeitstage } from "../arbeitstag/arbeitstag.ts";
 import type { Stempelung } from "../arbeitstag/stempelungen.ts";
 import { tagesstand } from "../heute/tagesstand.ts";
 import { letzterTag, type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
 import type { Tag } from "../kalender/tag.ts";
+import { tagInBerlin } from "../kalender/zeit.ts";
 import { buchungsMinuten } from "../projektzeit/buchung.ts";
 
 /**
@@ -56,20 +58,42 @@ export const anteilProzent = (teil: number, ganz: number): number | null =>
 export const monatVorbei = (monat: Monat, heute: Tag): boolean => letzterTag(monat) < heute;
 
 /**
- * The stamped working time of each working day of a month with any, as `tagesstand` counts it (a
- * shift running now up to now, a night shift on the day it starts). Pass the stamps from two days
- * before the month to two days after it.
+ * The working time of the closed stretches of each working day, without counting an open one up to
+ * now: the numbers change only when a stamp ends a stretch, and a Kommen joining a closed stretch
+ * into an open shift keeps it (docs/plan.md, "Laufende Buchung und Schicht in der Auslastung")
+ */
+const geschlosseneMinuten = (
+  stempelungen: readonly Stempelung[],
+  jetzt: number,
+): Map<Tag, number> => {
+  const ergebnis = arbeitstage(stempelungen, jetzt);
+  return new Map((ergebnis.ok ? ergebnis.wert : []).map((tag) => [tag.tag, tag.arbeitsMinuten]));
+};
+
+/**
+ * The stamped working time of each working day of a month with any, a night shift on the day it
+ * starts: while the month runs as `tagesstand` counts it (a shift running now up to now), once it
+ * has ended only its closed stretches. Pass the stamps from two days before the month to two days
+ * after it.
  */
 export const anwesenheitImMonat = (
   stempelungen: readonly Stempelung[],
   jetzt: number,
   monat: Monat,
-): { tag: Tag; minuten: number }[] =>
-  tageImMonat(monat).flatMap((tag) => {
+): { tag: Tag; minuten: number }[] => {
+  const geschlossen = monatVorbei(monat, tagInBerlin(jetzt))
+    ? geschlosseneMinuten(stempelungen, jetzt)
+    : null;
+  const minutenAm = (tag: Tag): number => {
+    if (geschlossen !== null) return geschlossen.get(tag) ?? 0;
     const stand = tagesstand(stempelungen, jetzt, tag);
-    const minuten = stand.ok ? stand.wert.istMinuten : 0;
+    return stand.ok ? stand.wert.istMinuten : 0;
+  };
+  return tageImMonat(monat).flatMap((tag) => {
+    const minuten = minutenAm(tag);
     return minuten > 0 ? [{ tag, minuten }] : [];
   });
+};
 
 type Summe = Pick<Auslastung, "anwesendMinuten" | "abrechenbarMinuten" | "internMinuten">;
 const LEER: Summe = { anwesendMinuten: 0, abrechenbarMinuten: 0, internMinuten: 0 };
@@ -84,8 +108,16 @@ const mitAnteilen = (summe: Summe): Auslastung => ({
 });
 
 /**
+ * The minutes a booking adds to its month: a running one up to now while the month runs, none once
+ * it has ended, so two calls about an ended month give the same numbers (docs/plan.md, "Laufende
+ * Buchung und Schicht in der Auslastung")
+ */
+const gezaehlteMinuten = (buchung: AuslastungBuchung, monatLaeuft: boolean, jetzt: number) =>
+  buchung.ende === null && !monatLaeuft ? 0 : buchungsMinuten(buchung.beginn, buchung.ende, jetzt);
+
+/**
  * The month of each person with stamped or booked time in it, ordered by id so the order tells
- * nothing: only working days of the month count, a running booking up to now
+ * nothing: only working days of the month count, a running booking up to now while the month runs
  */
 export const auslastungJePerson = (angaben: {
   monat: Monat;
@@ -101,9 +133,10 @@ export const auslastungJePerson = (angaben: {
   };
   for (const { nutzerId, tag, minuten } of angaben.anwesenheit)
     if (monatVon(tag) === angaben.monat) addieren(nutzerId, "anwesendMinuten", minuten);
+  const monatLaeuft = !monatVorbei(angaben.monat, tagInBerlin(angaben.jetzt));
   for (const buchung of angaben.buchungen) {
     if (monatVon(buchung.tag) !== angaben.monat) continue;
-    const minuten = buchungsMinuten(buchung.beginn, buchung.ende, angaben.jetzt);
+    const minuten = gezaehlteMinuten(buchung, monatLaeuft, angaben.jetzt);
     addieren(
       buchung.nutzerId,
       buchung.abrechenbar ? "abrechenbarMinuten" : "internMinuten",

@@ -107,7 +107,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
 | `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | bleibt (offener Punkt) |
 | `erinnerungen` | V | welche Erinnerung wann an wen ging | bleibt (offener Punkt) |
-| `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am; bei einer aus einer Tabelle übernommenen Buchung Import, Werkzeug und Kennung im alten Tool | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |
+| `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am; bei einer aus einer Tabelle oder aus Kimai übernommenen Buchung Import, Werkzeug und Kennung im alten Tool | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |
 | `stundensaetze` | L | Stundensätze in Cent, auch je Person | Inhaber löscht von Hand |
 | `stundennachweise` | L | unterschriebener Nachweis mit Name und Unterschrift des Kunden | unveränderlich; bleibt (offener Punkt) |
 | `stundennachweis_buchungen` | L | welche Buchungen ein Nachweis sperrt | bleibt mit dem Nachweis |
@@ -120,7 +120,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `bedarfe` | B | Bedarf an Personen je Rolle und Zeit | löscht von Hand |
 | `kunden` | B | Kunden mit Nummer (ein Kunde kann eine Person sein) | archiviert; löscht, wenn nichts ihn nennt |
 | `projekte` | B | Aufträge mit Budget | archiviert; löscht, wenn nichts ihn nennt |
-| `taetigkeiten` | B | eigene Tätigkeiten und Einstellung der festen | archiviert; löscht, wenn nichts sie nennt |
+| `taetigkeiten` | B | eigene Tätigkeiten und Einstellung der festen; bei einer aus Kimai übernommenen Import, Werkzeug und Kennung im alten Tool | archiviert; löscht, wenn nichts sie nennt |
 | `datev_einstellungen` | B | Berater, Mandant, Lohnarten | bleibt, wird geändert |
 | `haben_zugaenge` | B | Adresse und Token für Haben, verschlüsselt | löscht beim Trennen |
 | `tauschregeln` | B | ob ein Tausch eine Freigabe braucht | bleibt, wird geändert |
@@ -135,7 +135,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Wo | Was | Frist |
 | --- | --- | --- |
 | Sicherungen (`soll backup`) | eine Kopie der ganzen Datenbank, auch was danach ausgesondert wurde | der Betreiber räumt sie weg ([Installation](installation.md#sicherung)); eine Sicherung sollte nicht länger liegen als die längste Frist der Daten in ihr, höchstens 8 Jahre und ein Kalenderjahr; wer aus einer alten Sicherung wiederherstellt, lässt danach die Aussonderung laufen, sie holt Fälliges von selbst nach |
-| Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256 (CSV oder Excel-Mappe `.xlsx`, auch mit weiteren Blättern, die Soll nicht liest), mit Namen und Zeiten aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: bis der letzte Monat ausgesondert ist, in den übernommene Zeiten fallen; Soll entfernt keine Datei (offener Punkt), der Betreiber löscht sie bis dahin von Hand; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
+| Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256 (CSV oder Excel-Mappe `.xlsx`, auch mit weiteren Blättern, die Soll nicht liest; bei einem Abruf aus Kimai die Datei, die der Abruf wurde, ohne Token, Beschreibungen und Sätze), mit Namen und Zeiten aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: bis der letzte Monat ausgesondert ist, in den übernommene Zeiten fallen; Soll entfernt keine Datei (offener Punkt), der Betreiber löscht sie bis dahin von Hand; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
 | Log des Servers | je Anfrage Zeit, Methode, Pfad ohne Query, Status und Dauer; keine Header, keine Inhalte; ein Pfad kann die Kennung einer Person enthalten | der Betreiber legt sie im Log-System fest (Vorschlag: 14 Tage) |
 | Gerät der Person | die Warteschlange ohne Netz und der zuletzt geladene Tag (IndexedDB) | bis die Warteschlange gesendet ist; der Tag bis zum nächsten Laden |
 | Tablet am Eingang | die Warteschlange des Terminals ohne Netz, der Ausweis darin nur verschlüsselt für den Server | bis sie gesendet ist |

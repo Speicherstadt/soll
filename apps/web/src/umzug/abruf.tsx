@@ -12,9 +12,10 @@ import type { Abruf } from "./typen.ts";
 
 const FELD = "h-9 rounded-md border border-border bg-background px-2";
 
-const Feld = (props: {
+/** A field of a fetch form, with an optional hint under it (also Kimai's, S-705) */
+export const Feld = (props: {
   name: string;
-  typ: "email" | "password" | "date";
+  typ: "email" | "password" | "date" | "url" | "text";
   wert: string;
   setzen: (wert: string) => void;
   hinweis?: string;

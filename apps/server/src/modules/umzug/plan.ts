@@ -7,6 +7,12 @@ import {
 } from "./plan-abwesenheiten.ts";
 import { buchungenPlanen, buchungenWieder } from "./plan-buchungen.ts";
 import {
+  type Bezugsids,
+  type GenommeneBuchungen,
+  toolBuchungPlanen,
+  type VerworfeneZeiten,
+} from "./plan-buchungen-tool.ts";
+import {
   type Ergebnis,
   kundePlanen,
   projektPlanen,
@@ -100,27 +106,41 @@ const buchungenVon = (
   }
 };
 
-const zeitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
+const zeitenPlanen = (
+  bau: Bau,
+  daten: ImportDaten,
+  zuordnung: Zuordnung,
+  stand: Stand,
+): VerworfeneZeiten => {
   const genommen: Genommen = new Map();
+  // the ids of the times not taken over, whose bookings of the tool stay out with them (S-705)
+  const verworfen = new Set<string>();
   for (const zeit of daten.zeiten) {
     const nutzerId = personVon(bau, "zeiten", zeit, zuordnung, stand);
-    if (nutzerId === null) continue;
+    if (nutzerId === null) {
+      verworfen.add(zeit.externalId);
+      continue;
+    }
     const fund = zeitWieder(zeit, nutzerId, stand.vorhanden.stempelungen);
     if (fund !== null) {
       schonDa(bau, "zeiten", zeit, nutzerId, fund);
+      if ("grund" in fund) verworfen.add(zeit.externalId);
       const wieder = "grund" in fund ? "keine" : buchungenWieder(zeit, stand);
       if (wieder !== "keine") bau.zahlen.buchungen[wieder] += 1;
       continue;
     }
     const ergebnis = zeitPlanen(zeit, nutzerId, stand, genommen);
-    if (typeof ergebnis === "string") ablehnen(bau, "zeiten", zeit, ergebnis);
-    else {
+    if (typeof ergebnis === "string") {
+      ablehnen(bau, "zeiten", zeit, ergebnis);
+      verworfen.add(zeit.externalId);
+    } else {
       bau.zahlen.zeiten.neu += 1;
       bau.stempelungen.push(...ergebnis);
       beruehren(bau, nutzerId, [monatVon(zeit.tag)]);
       buchungenVon(bau, zeit, nutzerId, ergebnis, { zuordnung, stand });
     }
   }
+  return verworfen;
 };
 
 const abwesenheitenPlanen = (bau: Bau, daten: ImportDaten, zuordnung: Zuordnung, stand: Stand) => {
@@ -158,25 +178,46 @@ const uebernehmen = <T>(
   return ergebnis.art === "neu" || ergebnis.art === "vorhanden" ? ergebnis.id : null;
 };
 
+/** Customers, orders and activities (S-703); the ids in Soll of orders and activities (S-705) */
 const projekteUndKundenPlanen = (
   bau: Bau,
   daten: ImportDaten,
   zuordnung: Zuordnung,
   stand: Stand,
-) => {
+): Bezugsids => {
   const kundeVon = new Map<string, string | null>();
   for (const kunde of daten.kunden) {
     const ergebnis = kundePlanen(kunde, zuordnung.kunden[kunde.externalId] ?? "neu", stand);
     kundeVon.set(kunde.externalId, uebernehmen(bau, "kunden", kunde, ergebnis));
   }
+  const projekte = new Map<string, string | null>();
   for (const projekt of daten.projekte) {
     const ziel = zuordnung.projekte[projekt.externalId] ?? "neu";
     const kundeId = kundeVon.get(projekt.kunde) ?? null;
-    uebernehmen(bau, "projekte", projekt, projektPlanen(projekt, ziel, kundeId, stand));
+    const ergebnis = projektPlanen(projekt, ziel, kundeId, stand);
+    projekte.set(projekt.externalId, uebernehmen(bau, "projekte", projekt, ergebnis));
   }
+  const taetigkeiten = new Map<string, string | null>();
   for (const taetigkeit of daten.taetigkeiten) {
     const ziel = zuordnung.taetigkeiten[taetigkeit.externalId] ?? "neu";
-    uebernehmen(bau, "taetigkeiten", taetigkeit, taetigkeitPlanen(taetigkeit, ziel, stand));
+    const ergebnis = taetigkeitPlanen(taetigkeit, ziel, stand);
+    taetigkeiten.set(taetigkeit.externalId, uebernehmen(bau, "taetigkeiten", taetigkeit, ergebnis));
+  }
+  return { projekte, taetigkeiten };
+};
+
+/** The bookings the old tool kept itself (S-705), on the orders and activities planned before */
+const toolBuchungenPlanen = (
+  bau: Bau,
+  daten: ImportDaten,
+  kontext: { zuordnung: Zuordnung; stand: Stand; ids: Bezugsids; verworfen: VerworfeneZeiten },
+) => {
+  const genommen: GenommeneBuchungen = new Map();
+  for (const satz of daten.buchungen) {
+    const ergebnis = toolBuchungPlanen(satz, { ...kontext, genommen });
+    if (ergebnis.art === "abgelehnt") ablehnen(bau, "buchungen", satz, ergebnis.grund);
+    else bau.zahlen.buchungen[ergebnis.art] += 1;
+    if (ergebnis.art === "neu") bau.buchungen.push(ergebnis.buchung);
   }
 };
 
@@ -209,8 +250,9 @@ export const planen = (
     abgelehnt: [],
     beruehrt: new Map(),
   };
-  projekteUndKundenPlanen(bau, daten, zuordnung, stand);
-  zeitenPlanen(bau, daten, zuordnung, stand);
+  const ids = projekteUndKundenPlanen(bau, daten, zuordnung, stand);
+  const verworfen = zeitenPlanen(bau, daten, zuordnung, stand);
+  toolBuchungenPlanen(bau, daten, { zuordnung, stand, ids, verworfen });
   abwesenheitenPlanen(bau, daten, zuordnung, stand);
   const { beruehrt: _, ...plan } = bau;
   return {

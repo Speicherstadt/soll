@@ -2,6 +2,7 @@ import { type LeseFehler, WERKZEUGE } from "@soll/import";
 import { createUniqueId, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { AbrufFormular } from "./abruf.tsx";
+import { KimaiAbrufFormular } from "./abruf-kimai.tsx";
 import { lesefehlerText } from "./texte.ts";
 import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
 import { base64Von } from "./zustand.ts";
@@ -53,7 +54,7 @@ const Dateiwahl = (props: {
 
 type Weg = "datei" | "api";
 
-/** File or API, for a tool that offers both (S-703) */
+/** File or API, for a tool that offers both (S-703); Kimai has only the API (S-705) */
 const Wegwahl = (props: { weg: Weg; setWeg: (weg: Weg) => void }) => (
   <fieldset class="flex flex-wrap gap-2">
     <legend class="mb-2 font-medium">{m.umzug_weg_frage()}</legend>
@@ -88,7 +89,7 @@ export const DateiSchritt = (props: {
 }) => {
   return (
     <div class="flex flex-col gap-4">
-      <Show when={props.wege.includes("api")}>
+      <Show when={props.wege.length > 1}>
         <Wegwahl weg={props.weg} setWeg={props.setWeg} />
       </Show>
       <Show
@@ -97,7 +98,12 @@ export const DateiSchritt = (props: {
           <Dateiwahl quelle={props.quelle} gewaehlt={props.gewaehlt} zuGross={props.zuGross} />
         }
       >
-        <AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+        <Show
+          when={props.quelle === "kimai"}
+          fallback={<AbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />}
+        >
+          <KimaiAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+        </Show>
       </Show>
       <Show when={props.vorschau}>
         {(vorschau) => (

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { erlaubteUrspruenge } from "./modules/umzug/kimai-adresse.ts";
 
 /** 32 random bytes in base64: the key of the encrypted columns and the secret of Better Auth */
 const schluessel = z
@@ -39,6 +40,8 @@ const envSchema = betriebsSchema
       .url({ protocol: /^https?$/ })
       .optional()
       .transform((url) => url?.replace(/\/+$/, "")),
+    // origins an import may call although http or private (S-705): a Kimai in the own network
+    SOLL_IMPORT_ALLOWED_ORIGINS: z.string().optional(),
   })
   .refine((env) => (env.SOLL_SMTP_URL === undefined) === (env.SOLL_MAIL_VON === undefined), {
     message: "SOLL_SMTP_URL and SOLL_MAIL_VON go together: set both or neither",
@@ -59,6 +62,8 @@ export type Env = {
   smtp: { url: string; von: string } | null;
   /** Clockodo's API for imports, or null for its real address (S-703) */
   clockodoApi: string | null;
+  /** Origins an import may call although http or private (S-705) */
+  importErlaubt: ReadonlySet<string>;
 };
 
 /** Reads the settings or throws with the reason; the server refuses to start without a valid key */
@@ -77,6 +82,7 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
         ? { url: parsed.SOLL_SMTP_URL, von: parsed.SOLL_MAIL_VON }
         : null,
     clockodoApi: parsed.SOLL_CLOCKODO_API ?? null,
+    importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };
 };
 

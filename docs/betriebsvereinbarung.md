@@ -140,7 +140,7 @@ festgelegt; eine Änderung braucht die Zustimmung des Betriebsrats.
 | Kalender-Feed | jede Person abonniert ihre eigenen Schichten in ihrem Kalender | freiwillig für jede Person |
 | Übergabe an Haben | gebuchte Leistungen ohne Namen der Person an die Buchhaltung | [ ] an [ ] aus |
 | DATEV-Export | Personalnummer, Stunden und Beträge je Lohnart an das Lohnbüro | [ ] an [Lohnbüro] |
-| Import aus anderen Programmen | nur der Inhaber übernimmt Zeiten, Abwesenheiten, Kunden und Aufträge aus dem bisherigen Programm; die Originaldatei bleibt unverändert gespeichert; Monate, die dort abgeschlossen waren, schließt Soll ohne Bestätigung der Person ab | [ ] einmalig aus [Programm] bis [Datum] [ ] nicht genutzt; die Originaldatei wird gelöscht, wenn [Ereignis] |
+| Import aus anderen Programmen | nur der Inhaber übernimmt Zeiten, Abwesenheiten, Kunden, Aufträge, Tätigkeiten und Projektzeit aus dem bisherigen Programm, als Datei oder über dessen Schnittstelle (der Zugang wird nicht gespeichert); die Originaldatei bleibt unverändert gespeichert; Monate, die dort abgeschlossen waren, schließt Soll ohne Bestätigung der Person ab | [ ] einmalig aus [Programm] bis [Datum] [ ] nicht genutzt; die Originaldatei wird gelöscht, wenn [Ereignis] |
 
 ### § 7 Auswertungen
 

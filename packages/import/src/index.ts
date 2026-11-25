@@ -11,6 +11,15 @@ export {
 } from "./clockodo/index.ts";
 export { type CsvZeile, csvZeilen, trennzeichenVon } from "./csv.ts";
 export {
+  KIMAI_ARTEN,
+  KIMAI_FELDER,
+  KIMAI_FORMAT,
+  type KimaiAbzug,
+  type KimaiArt,
+  kimaiAbzugText,
+  kimaiLesen,
+} from "./kimai/index.ts";
+export {
   CSV_ROLLEN,
   type CsvErgebnis,
   type CsvFehler,
@@ -23,6 +32,7 @@ export {
   type ArtZuordnung,
   type Gelesen,
   type ImportAbwesenheit,
+  type ImportBuchung,
   type ImportDaten,
   type ImportKunde,
   type ImportProjekt,

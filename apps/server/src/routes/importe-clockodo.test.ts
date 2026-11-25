@@ -109,6 +109,7 @@ describe("the fetch from Clockodo's API (S-703)", () => {
       kunden: 2,
       projekte: 1,
       taetigkeiten: 2,
+      buchungen: 0,
     });
     expect(vorschau.lesefehler.liste).toEqual([
       { zeile: expect.any(Number), grund: "nicht_genehmigt", feld: "status" },

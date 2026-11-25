@@ -21,6 +21,7 @@ describe("an import from another tool (S-701)", () => {
       kunden: 1,
       projekte: 1,
       taetigkeiten: 0,
+      buchungen: 0,
     });
     expect(vorschau.lesefehler).toEqual({
       anzahl: 1,

@@ -76,6 +76,7 @@ export const projektPlanen = (
   };
 };
 
+/** An activity of another tool (S-705): like a customer, created, matched or left out */
 export const taetigkeitPlanen = (
   taetigkeit: ImportTaetigkeit,
   ziel: Ziel,

@@ -37,6 +37,7 @@ wurde; die Originaldatei lässt sich dort wieder herunterladen.
 | Kunde, Auftrag | Kunde und Auftrag des Moduls Projektzeit, mit Name und Nummer |
 | Projekt und Tätigkeit einer Zeit (Excel und CSV) | Buchungen der Projektzeit auf einem vorhandenen Auftrag und einer Tätigkeit, je Arbeitsstück vor und nach der Pause |
 | Tätigkeit (bei Clockodo: Leistung) | Tätigkeit des Moduls Projektzeit, nicht abrechenbar, bis der Inhaber es ändert |
+| Zeitbuchung (Kimai) | Stempelungen wie eine Zeit und eine Buchung der Projektzeit je Arbeitsstück auf das übernommene Projekt und die Tätigkeit (siehe [Kimai](#kimai)) |
 
 Personen legt der Import nicht an: Sie werden vorher eingeladen ([Einrichtung](einrichtung.md)) und
 in der Zuordnung gewählt. Eine Person, die auf „nicht übernehmen“ steht, und eine Abwesenheitsart
@@ -123,7 +124,8 @@ in einer Antwort oder in der Datei.
 | Soll-CSV | Datei | verfügbar |
 | Excel/CSV mit freien Spalten | Datei | verfügbar |
 | Clockodo | Datei und API | verfügbar |
-| Personio, Kimai | Datei und API | folgt |
+| Kimai | API | verfügbar |
+| Personio | Datei und API | folgt |
 | Papershift, Planday, Crewmeister | Datei | folgt |
 | Toggl, Clockify | Datei und API | folgt |
 
@@ -247,3 +249,51 @@ gebucht hatte: bitte in Soll eintragen).
 
 Welcher Eintrag zu welchem Kunden, Projekt und welcher Leistung gehörte, bucht Soll nicht als
 Projektzeit; übernommen wird die Arbeitszeit.
+
+### Kimai
+
+Soll holt die Daten selbst über die REST-API von [Kimai](https://www.kimai.org/) (gebaut nach dem
+Quelltext von Kimai 2.73, `src/API/`): Personen, Kunden, Projekte und Tätigkeiten (auch verborgene)
+und die Zeitbuchungen des gewählten Zeitraums (höchstens ein Jahr, nicht in der Zukunft).
+
+**Zugang**: In Kimai unter dem eigenen Profil → *API-Zugang* ein API-Token anlegen. Das Token muss
+alle Personen und ihre Zeiten sehen dürfen (etwa das eines Administrators); fehlt dieses Recht, sagt
+Soll das, statt nur die eigenen Zeiten zu holen. Für eine ältere Kimai ohne API-Token gibt es das
+Feld *Benutzername*: dann geht das API-Passwort als `X-AUTH-TOKEN` mit dem Benutzernamen als
+`X-AUTH-USER` mit (Kimai 2.73 lehnt das ab). Im Schritt **Datei** gibst du Adresse, Token und
+Zeitraum ein und rufst ab.
+
+**Nur sichere Adressen**: Soll ruft nur `https`-Adressen ohne Benutzer und Passwort ab, und nur, wenn
+jede Adresse, die der Name im DNS ergibt, öffentlich ist (keine Adresse im eigenen Netz, kein
+Loopback, kein Link-local wie `169.254.169.254`). Geprüft wird beim Verbinden selbst, eine
+Weiterleitung folgt Soll nie; jede Antwort darf höchstens 10 MB groß sein und 30 Sekunden dauern.
+Läuft Kimai im eigenen Netz, kann der Betreiber der Soll-Instanz die Adresse freigeben:
+`SOLL_IMPORT_ALLOWED_ORIGINS=https://kimai.intern` (mehrere mit Komma; siehe
+[Installation](installation.md)).
+
+**Was daraus wird**:
+
+| In Kimai | In Soll |
+| --- | --- |
+| Benutzer | Person der Zuordnung, mit Alias oder Benutzername; zwei gleiche Namen mit der Kennung in Klammern |
+| Kunde, Projekt | Kunde und Auftrag mit Name und Nummer (`number`) |
+| Tätigkeit | Tätigkeit, neu (nicht abrechenbar, das legst du fest), einer vorhandenen zugeordnet oder nicht übernommen |
+| Zeitbuchung | Arbeitsstücke: die Pause (`break`) liegt in der Mitte der Buchung; Stücke einer Person, die sich berühren oder überschneiden, werden eine Zeit mit Kommen und Gehen, die Lücke dazwischen ist die Pause, wie gebucht; dazu je Stück eine Buchung der Projektzeit |
+
+Gerechnet wird mit den gebuchten Zeitpunkten, nicht mit Kimais gerundeter Dauer: Beginn auf die
+Minute abgerundet, Ende aufgerundet, die Pause abgerundet, nie zum Nachteil der Person. Abgelehnt
+mit Zeile werden eine laufende Zeitbuchung, eine Zeit ab 24 Stunden und eine in der doppelten Stunde
+der Zeitumstellung im Oktober. Eine Zeit, die nicht übernommen wird (abgelehnt beim Einlesen oder
+im Probelauf, etwa in einem abgeschlossenen Monat), bringt auch keine Buchungen der Projektzeit
+mit. Sätze und Beträge aus Kimai übernimmt Soll nicht; Stundensätze legst
+du in der [Projektzeit](projektzeit.md) an. Die Beschreibung einer Zeitbuchung kommt nicht mit.
+
+**Wiederholbar**: Kennungen sind Kimais ids (eine Zeit trägt die ihrer ersten Zeitbuchung, eine
+Buchung die ihrer Zeitbuchung und ihres Stücks). Ein zweiter Abruf desselben Zeitraums legt nichts
+an.
+
+**Fehler** sagt Soll mit Grund: Adresse nicht erlaubt, Token oder Benutzername nicht sendbar
+(nur Buchstaben ohne Akzente, Ziffern und Zeichen der Tastatur; ein mitkopierter Zeilenumbruch am
+Ende wird entfernt), Token abgelehnt, Rechte fehlen, zu viele
+Anfragen, nicht erreichbar, Weiterleitung, keine Antwort einer Kimai-API, mehr als 20.000
+Datensätze (dann einen kürzeren Zeitraum wählen). Einen Abruf wiederholt Soll nicht von selbst.

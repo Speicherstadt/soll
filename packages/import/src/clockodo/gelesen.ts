@@ -1,40 +1,15 @@
+import { einmal, personen } from "../abzug-gemeinsam.ts";
 import { type Gelesen, type ImportDaten, type LeseFehler, leer } from "../modell.ts";
 import { abwesenheitenAus } from "./abwesenheiten.ts";
-import type { Bestand, Nutzer } from "./bestand.ts";
+import type { Bestand } from "./bestand.ts";
 import { zeitenAus } from "./zeiten.ts";
 
 /* What a reader found in Clockodo's data as the common model of every import (BAULISTE.md S-703) */
 
-/**
- * A user's name as the person of the mapping; two users of the same name keep their id, so the
- * owner can tell them apart. A user the data does not list is named by its id.
- */
-const personen = (nutzer: readonly Nutzer[]) => {
-  const zahl = new Map<string, number>();
-  for (const n of nutzer) zahl.set(n.name, (zahl.get(n.name) ?? 0) + 1);
-  const namen = new Map(
-    nutzer.map((n) => [n.id, (zahl.get(n.name) ?? 0) > 1 ? `${n.name} (${n.id})` : n.name]),
-  );
-  return (id: string): string => namen.get(id) ?? `#${id}`;
-};
-
-/** The first record of each id; a later one of the same kind is refused with its line */
-const einmal = <T extends { zeile: number; id: string }>(
-  saetze: readonly T[],
-  fehler: LeseFehler[],
-): T[] => {
-  const gesehen = new Set<string>();
-  return saetze.filter((satz) => {
-    if (!gesehen.has(satz.id)) return gesehen.add(satz.id);
-    fehler.push({ zeile: satz.zeile, grund: "kennung_doppelt", feld: "id", wert: satz.id });
-    return false;
-  });
-};
-
 const stammdaten = (
   bestand: Bestand,
   fehler: LeseFehler[],
-): Omit<ImportDaten, "zeiten" | "abwesenheiten"> => {
+): Omit<ImportDaten, "zeiten" | "abwesenheiten" | "buchungen"> => {
   const kunden = einmal(bestand.kunden, fehler);
   const kundenIds = new Set(kunden.map((k) => k.id));
   const projekte = einmal(bestand.projekte, fehler).filter((p) => {

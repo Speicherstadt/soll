@@ -1,4 +1,5 @@
 import { clockodoLesen } from "./clockodo/index.ts";
+import { kimaiLesen } from "./kimai/index.ts";
 import type { Gelesen } from "./modell.ts";
 import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 import { tabelleLesen } from "./tabelle.ts";
@@ -27,6 +28,7 @@ const LESER: Record<string, Quelle["lesen"]> = {
   "soll-csv": (bytes, spalten) => sollCsvLesen(ohneBom(textAusBytes(bytes)), spalten),
   tabelle: tabelleLesen,
   clockodo: (bytes) => clockodoLesen(textAusBytes(bytes)),
+  kimai: (bytes) => kimaiLesen(bytes),
 };
 
 export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({

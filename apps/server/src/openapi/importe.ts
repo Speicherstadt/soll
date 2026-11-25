@@ -4,7 +4,7 @@ import type { Operation } from "./dokument.ts";
 
 const PFAD = "/api/v1/importe";
 
-/** Imports from other tools (S-701, S-702): for the owner, in no module */
+/** Imports from other tools (S-701, S-702, S-705): for the owner, in no module */
 export const IMPORTE: readonly Operation[] = [
   {
     methode: "get",
@@ -24,7 +24,7 @@ export const IMPORTE: readonly Operation[] = [
     methode: "post",
     pfad: `${PFAD}/abruf`,
     zusammenfassung:
-      "Daten über die API eines Werkzeugs abrufen (Clockodo); der Zugang gilt nur für diesen Abruf, die Antwort ist eine Datei für Vorschau und Übernahme (Inhaber)",
+      "Daten über die API eines Werkzeugs abrufen (Clockodo, Kimai); der Zugang gilt nur für diesen Abruf, die Antwort ist eine Datei für Vorschau und Übernahme (Inhaber)",
     bereich: "Umzug",
     koerper: abrufSchema,
   },

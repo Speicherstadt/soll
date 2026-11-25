@@ -138,7 +138,7 @@ const Projektzeit = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern:
   );
 };
 
-/** Activities (Clockodo's services, S-703): created anew, matched or left out like customers */
+/** Activities (Clockodo's services, S-703; Kimai's activities, S-705): created anew, matched or left out like customers */
 const Taetigkeiten = (props: { vorschau: Vorschau; zuordnung: Zuordnung; aendern: Aendern }) => {
   const vorhanden = () =>
     props.vorschau.vorhandeneTaetigkeiten.map((t) => ({ id: t.taetigkeitId, name: t.name }));

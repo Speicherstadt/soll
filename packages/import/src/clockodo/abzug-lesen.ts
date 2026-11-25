@@ -1,8 +1,9 @@
+import { kennungVon, kurzerText, objekt } from "../abzug-gemeinsam.ts";
 import { type Gelesen, type LeseFehler, leer, MAX_DATENSAETZE } from "../modell.ts";
 import { ABZUG_FORMAT, ABZUG_VERSION, type AbzugArt } from "./abzug.ts";
 import { type Abwesenheit, type Bestand, type Eintrag, leererBestand } from "./bestand.ts";
 import { ausBestand } from "./gelesen.ts";
-import { kennungVon, kurzerText, zeitpunktLesen } from "./werte.ts";
+import { zeitpunktLesen } from "./werte.ts";
 
 /*
  * Reads the file of a fetch from Clockodo's API (abzug.ts) line by line. A line that is no JSON
@@ -12,39 +13,6 @@ import { kennungVon, kurzerText, zeitpunktLesen } from "./werte.ts";
 
 type Satz = Record<string, unknown>;
 type Fehler = Omit<LeseFehler, "zeile">;
-
-/**
- * Whether a line is one flat object: a `{` at its start and no other bracket outside a string. The
- * file holds only flat records (abzug.ts); a line of millions of nested brackets would keep
- * JSON.parse busy for half a second, so it is refused before (BAULISTE.md S-703: no file hangs
- * the reader).
- */
-const flach = (zeile: string): boolean => {
-  const text = zeile.trim();
-  if (!text.startsWith("{")) return false;
-  let inText = false;
-  for (let i = 1; i < text.length; i++) {
-    const zeichen = text[i];
-    if (inText) {
-      if (zeichen === "\\") i++;
-      else if (zeichen === '"') inText = false;
-    } else if (zeichen === '"') inText = true;
-    else if (zeichen === "{" || zeichen === "[") return false;
-  }
-  return true;
-};
-
-const objekt = (zeile: string): Satz | null => {
-  if (!flach(zeile)) return null;
-  try {
-    const wert: unknown = JSON.parse(zeile);
-    return typeof wert === "object" && wert !== null && !Array.isArray(wert)
-      ? (wert as Satz)
-      : null;
-  } catch {
-    return null;
-  }
-};
 
 const ganzOderNull = (wert: unknown): number | null | undefined =>
   wert === null || wert === undefined

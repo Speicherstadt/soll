@@ -48,4 +48,13 @@ export const WERKZEUGE: readonly Werkzeug[] = [
     endungen: [".csv", ".jsonl"],
     vorlagen: [],
   },
+  {
+    // only the API: the fetch becomes a file of JSON Lines the reader takes like an upload (S-705)
+    id: "kimai",
+    name: "Kimai",
+    wege: ["api"],
+    felder: [],
+    endungen: [".jsonl"],
+    vorlagen: [],
+  },
 ];

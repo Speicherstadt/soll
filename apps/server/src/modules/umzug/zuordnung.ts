@@ -38,8 +38,8 @@ const buchungPruefen = (
   return null;
 };
 
-const ids = (ziele: Zuordnung["kunden"]): string[] =>
-  Object.values(ziele).flatMap((ziel) => (typeof ziel === "object" ? [ziel.id] : []));
+const ids = (ziele: Zuordnung["kunden"] | undefined): string[] =>
+  Object.values(ziele ?? {}).flatMap((ziel) => (typeof ziel === "object" ? [ziel.id] : []));
 
 export const zuordnungPruefen = (
   db: Db,

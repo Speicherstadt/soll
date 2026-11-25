@@ -839,7 +839,65 @@ S-701 und unabhängig voneinander.
     zweite Lauf nichts anlegt; axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in
     `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-704 Personio** – Export und API: Mitarbeiter, Anwesenheiten, Abwesenheiten, Salden.
-- [ ] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
+- [x] **S-705 Kimai** – REST-API: Kunden, Projekte, Tätigkeiten, Zeitbuchungen.
+  Fertig, wenn: Fixtures nach Kimais API bestehen (Quelle im Test) und ein Playwright-Test den
+  ganzen Ablauf zeigt. Genauer:
+  - **Quellen**: kimai.org ist über den Proxy nicht erreichbar; gebaut wird nach dem Quelltext von
+    Kimai (github.com/kimai/kimai, 2.73.0): `src/API/*Controller.php` (Endpunkte, Filter, Seiten
+    mit `page` und `size` bis 500), `src/API/ViewHandler.php` (`X-Page`, `X-Total-Count`,
+    `X-Total-Pages`, `X-Per-Page`), `src/API/Authentication/` (`Authorization: Bearer <API-Token>`;
+    das alte `X-AUTH-USER`/`X-AUTH-TOKEN` lehnt 2.73 ab, ältere Instanzen nehmen es),
+    `config/packages/jms_serializer.yaml` (Zeitpunkte `Y-m-d\TH:i:sO`, Ortszeit mit Versatz),
+    `src/Entity/Timesheet.php` (`break` in Sekunden seit Migration `Version20240926111739`,
+    `duration` = Ende − Beginn − Pause); die Quelle steht in Code und Tests, die Fixtures folgen
+    diesen Klassen.
+  - **Nur über die API**: Werkzeug `kimai` mit dem Weg „API-Zugang“: Adresse der Instanz, API-Token
+    (Passwortfeld), freiwillig ein Benutzername für das alte Verfahren, Zeitraum (höchstens ein Jahr,
+    nicht in der Zukunft). `POST /api/v1/importe/abruf` (nur Inhaber) holt nacheinander
+    `/api/users`, `/api/customers`, `/api/projects` (`ignoreDates=1`), `/api/activities` (alle mit
+    `visible=3`, auch verborgene) und `/api/timesheets` (`user=all`, `begin`/`end` mit einem Tag Rand
+    wegen der Zeitzone des Tokens, `size=500`, `orderBy=begin`, `order=ASC`, Seite für Seite nach
+    `X-Total-Pages`) und antwortet mit einer Datei: JSON Lines mit genau den Feldern, die Soll liest
+    (keine Beschreibung, keine Sätze, keine Schlagworte, keine E-Mail; `full=true` nicht, weil die
+    Kennungen reichen und weniger Personendaten fließen), sortiert, sodass derselbe Stand dieselbe
+    Datei und denselben SHA-256 ergibt; danach Vorschau, Probelauf und Übernahme wie bei einer Datei.
+  - **Adresse vom Nutzer, also Schutz vor SSRF** (Test je Fall): nur `https`, ohne Nutzer und
+    Passwort in der Adresse; jede Adresse, die der Name im DNS ergibt, muss öffentlich sein (nicht
+    Loopback, privat, link-local, CGNAT, Unique-Local, Multicast, unspezifiziert, reserviert, auch
+    nicht als IPv4 in IPv6), geprüft beim Verbinden, sodass ein zweites DNS-Ergebnis (Rebinding)
+    nicht vorbeikommt; keine Weiterleitung (3xx ist ein Fehler, der Token geht nie an einen anderen
+    Ort); 30 s je Anfrage, höchstens 10 MiB je Antwort und 20.000 Datensätze. Ausnahme nur für
+    Ursprünge, die der Betreiber der Instanz ausdrücklich freigibt (`SOLL_IMPORT_ALLOWED_ORIGINS`,
+    z. B. eine Kimai-Instanz im eigenen Netz und der Ersatz in den Tests).
+  - **Zugang**: das Token wird nicht gespeichert, nicht geloggt und steht in keiner Antwort und
+    keiner Datei (Test). Fehler als Werte mit eigenem Grund: Adresse nicht erlaubt, Zugang abgelehnt
+    (401), Rechte fehlen (403: das Token braucht die Rechte, alle Zeiten und Personen zu sehen), zu
+    viele Anfragen (429), nicht erreichbar (Netz, Zeit, 5xx, Weiterleitung), Antwort ungültig oder zu
+    groß, zu viele Datensätze; kein automatischer Neuversuch.
+  - **Zeiten**: aus jeder beendeten Zeitbuchung (`end` gesetzt) Arbeitsstücke; eine Pause (`break`)
+    liegt in der Mitte der Buchung (wie S-701), zugunsten der Person gerundet. Die Stücke einer
+    Person, die sich berühren oder überschneiden, werden ein Block mit Kommen und Gehen; die Lücke
+    zwischen zwei Blöcken ist die Pause, wie gebucht (wie S-703). Beginn auf die Minute abgerundet,
+    Ende aufgerundet. Abgelehnt mit Zeile: eine laufende Buchung (`laeuft_noch`), ein Block ab 24
+    Stunden, eine Uhrzeit in der doppelten Stunde im Oktober, ein Zeitpunkt ohne Versatz.
+    Kimais gerundete `duration` zählt nicht: die Arbeitszeit sind die gebuchten Zeitpunkte.
+  - **Kunden, Projekte, Tätigkeiten**: Kunden und Projekte wie in S-701, Tätigkeiten neu, einer
+    vorhandenen zugeordnet oder nicht übernommen (mit Import und Kennung). Aus jeder übernommenen
+    Zeitbuchung mit Projekt wird eine Buchung der Projektzeit je Arbeitsstück auf das Projekt und die
+    Tätigkeit, die der Import dafür anlegt oder zuordnet, mit Import, Werkzeug und Kennung; ist
+    Projekt oder Tätigkeit nicht übernommen, keine Buchung (`ausgelassen`); bei Überschneidung mit
+    vorhandenen oder anderen Buchungen `ueberschneidung`. Sätze und Beträge aus Kimai werden nicht
+    übernommen (Entscheidung im Projektplan).
+  - **Wiederholbar**: Kennungen sind Kimais ids (Blöcke nach der ersten Zeitbuchung, Buchungen nach
+    Zeitbuchung und Stück); ein zweiter Abruf desselben Zeitraums legt nichts an (Test über die API).
+  - **Robust**: Fuzzing mit fast-check über die Datei (beliebiger Text, Zeilen mit falschen Typen,
+    kaputte Zeitpunkte) und über den Abruf (zufällige Antworten des Ersatzes): nie ein Wurf, nie
+    länger als 1 s; jeder Fehler nennt Zeile und Grund.
+  - **Ersatz** der API nach dem Quelltext (Token, Seiten, Kopfzeilen, Fehler), in Vitest und für
+    Playwright als eigener Dienst. **Oberfläche und Doku**: Kimai in der Liste der Werkzeuge mit
+    Anleitung; Playwright (desktop) geht den Abruf gegen den Ersatz bis zur Übernahme und zeigt, dass
+    der zweite Lauf nichts anlegt; axe grün; Texte in allen Sprachen der Umzugsseite; Doku
+    `docs/umzug.md`, Entscheidungen im Projektplan.
 - [ ] **S-706 Papershift, Planday, Crewmeister** – Exporte: Mitarbeiter, Schichten, Zeiten,
   Abwesenheiten.
 - [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.

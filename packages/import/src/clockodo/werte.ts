@@ -1,5 +1,4 @@
-import { MAX_TEXT } from "../modell.ts";
-import { bereinigt } from "../text.ts";
+export { kennungVon, kurzerText } from "../abzug-gemeinsam.ts";
 
 /* The values of Clockodo's data, read without a guess: what is not one of them is null (S-703) */
 
@@ -22,15 +21,4 @@ export const sekundenLesen = (text: string): number | null => {
   const wert = text.trim();
   if (wert === "") return 0;
   return /^-?\d{1,9}$/.test(wert) ? Number(wert) : null;
-};
-
-/** A text of at most MAX_TEXT characters, its spaces folded, or null */
-export const kurzerText = (wert: unknown): string | null =>
-  typeof wert === "string" && wert.length <= MAX_TEXT ? bereinigt(wert) : null;
-
-/** An id as Clockodo gives it, a whole number, as text; or null */
-export const kennungVon = (wert: unknown): string | null => {
-  if (typeof wert === "number" && Number.isSafeInteger(wert)) return String(wert);
-  if (typeof wert === "string" && /^\d{1,18}$/.test(wert.trim())) return wert.trim();
-  return null;
 };

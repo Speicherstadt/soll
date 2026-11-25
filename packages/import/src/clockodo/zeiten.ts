@@ -1,7 +1,7 @@
 import { plusTage } from "@soll/arbeitszeit";
 import type { ImportZeit, LeseFehler } from "../modell.ts";
+import { berlinerUhr } from "../uhr.ts";
 import { type Eintrag, ZEITEINTRAG } from "./bestand.ts";
-import { berlinerUhr } from "./uhr.ts";
 
 /*
  * Clockodo's time entries as spans of work (BAULISTE.md S-703). Clockodo keeps one entry per task;

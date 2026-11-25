@@ -99,10 +99,10 @@ const gezaehlt = <K extends string>(werte: readonly string[], name: K) =>
         },
     );
 
-/** The persons a file names, with the number of their times and absences */
+/** The persons a file names, with the number of their times, absences and bookings (S-705) */
 export const personenAus = (daten: ImportDaten) =>
   gezaehlt(
-    [...daten.zeiten, ...daten.abwesenheiten].map((satz) => satz.person),
+    [...daten.zeiten, ...daten.abwesenheiten, ...daten.buchungen].map((satz) => satz.person),
     "person",
   );
 

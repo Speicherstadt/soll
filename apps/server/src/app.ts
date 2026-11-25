@@ -7,8 +7,13 @@ import { schichtquelle } from "./modules/dienstplan/index.ts";
 import type { Push } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { terminalSchluesselAus } from "./modules/terminal/index.ts";
-import type { Dateispeicher } from "./modules/umzug/index.ts";
-import { CLOCKODO_API, type ClockodoDeps } from "./modules/umzug/index.ts";
+import {
+  CLOCKODO_API,
+  type ClockodoDeps,
+  type Dateispeicher,
+  type KimaiDeps,
+  sicherHolen,
+} from "./modules/umzug/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
 import { auskunftRouten } from "./routes/auskunft.ts";
@@ -80,6 +85,8 @@ export type AppDeps = {
   dateien: Dateispeicher;
   /** How the server calls Clockodo's API for an import (S-703); a stand-in in tests */
   clockodo?: ClockodoDeps;
+  /** How the server calls a Kimai instance for an import (S-705); a stand-in in tests */
+  kimai?: KimaiDeps;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -100,6 +107,7 @@ export const createApp = ({
   push = null,
   dateien,
   clockodo = { fetch, basis: CLOCKODO_API },
+  kimai = { holen: sicherHolen(), erlaubt: new Set() },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -145,7 +153,7 @@ export const createApp = ({
     .route("/personen", personenRouten(db, schreibDb, now))
     .route("/zugaenge", zugangRouten(db, schreibDb, now))
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
-    .route("/importe", importRouten(db, schreibDb, now, dateien, clockodo))
+    .route("/importe", importRouten(db, schreibDb, now, dateien, { clockodo, kimai }))
     .route(
       "/",
       modulRouten(db, {

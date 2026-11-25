@@ -450,7 +450,7 @@ Alle Punkte: nach S-306.
   anderen sieht oder ändert, und dass das abgeschaltete Modul abgelehnt wird; axe grün in hell und
   dunkel; Texte in allen sechs Sprachen, Normen auf Deutsch; Doku in `docs/dienstplan.md` und
   `docs/regeln.md`.
-- [ ] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
+- [x] **S-503 Veröffentlichen** – Benachrichtigung, ICS-Feed je Mitarbeiter mit geheimem Token (RFC
   5545).
   Fertig, wenn: ein Planer eine Woche je Standort veröffentlicht, die Beschäftigten danach ihre
   Schichten sehen und sie als Kalender abonnieren (Playwright). Dazu: „Veröffentlichen“ im Kopf des

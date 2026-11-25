@@ -11,6 +11,7 @@ import { PlanInhalt } from "./inhalt.tsx";
 import { PlanKopf } from "./kopf.tsx";
 import { ausVorlage, bleibt, PLAN_AENDERT, verschieben } from "./quelle.ts";
 import type { Standort, Vorlage, Woche, Ziel } from "./typen.ts";
+import { veroeffentlichung } from "./veroeffentlichung.ts";
 import type { Abgelegt } from "./ziehen.ts";
 
 /** Owner and planner plan; the server checks it again on every call (rollen.ts) */
@@ -59,6 +60,8 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
     () => PLAN_AENDERT,
     { immer: true },
   );
+  const veroeffentlichen = veroeffentlichung(setFehler);
+  const dieseWoche = () => ({ ort: standortId(), am: tag() });
   const ablegen = async (was: Abgelegt, ziel: Ziel) => {
     if ("schicht" in was && bleibt(was.schicht, ziel)) return;
     const ergebnis = await ablage.mutate({ was, ziel, standortId: standortId() });
@@ -83,8 +86,14 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
         onVorlagen={() => setOffen({ art: "vorlagen" })}
         onBedarf={() => setOffen({ art: "bedarf" })}
         onAngaben={() => setOffen({ art: "angaben" })}
+        onKalender={() => setOffen({ art: "kalender" })}
+        onVeroeffentlichen={() => void veroeffentlichen.veroeffentlichen(dieseWoche())}
+        veroeffentlicht={veroeffentlichen.laeuft()}
       />
       <Fehler text={fehler() || (woche.data.ok ? "" : m.laden_fehler())} />
+      <p role="status" class="text-success empty:hidden">
+        {veroeffentlichen.gemeldet(dieseWoche())}
+      </p>
       <Show when={geladen()}>
         {(aktuell) => (
           <PlanInhalt

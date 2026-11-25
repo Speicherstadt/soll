@@ -959,5 +959,19 @@
   "haben_fehler_recht": "Токену бракує права в Haben: «читати контакти» або «створювати послуги».",
   "haben_fehler_abgelehnt": "Haben відхилив послугу.",
   "haben_fehler_zu_viele": "Забагато викликів до Haben. Спробуйте ще раз за хвилину.",
-  "haben_fehler_haben": "Haben повідомив про помилку."
+  "haben_fehler_haben": "Haben повідомив про помилку.",
+  "plan_veroeffentlichen": "Опублікувати",
+  "plan_veroeffentlicht": "Опубліковано. Змін: {anzahl} · сповіщено: {personen}",
+  "plan_kalender": "Календар",
+  "plan_kalender_titel": "Зміни в календарі",
+  "plan_kalender_text": "За цим посиланням ваш календар показує ваші опубліковані зміни й оновлює їх. Посилання секретне: хто його знає, бачить ваші зміни. Не передавайте його.",
+  "plan_kalender_erstellen": "Створити посилання",
+  "plan_kalender_neu": "Нове посилання",
+  "plan_kalender_neu_hinweis": "Нове посилання замінює старе; старе одразу перестає працювати.",
+  "plan_kalender_widerrufen": "Відкликати посилання",
+  "plan_kalender_aktiv": "Посилання діє з {datum}.",
+  "plan_kalender_link": "Посилання для підписки",
+  "plan_kalender_kopieren": "Копіювати посилання",
+  "plan_kalender_oeffnen": "Відкрити в календарі",
+  "plan_kalender_einmal": "Посилання показано лише зараз."
 }

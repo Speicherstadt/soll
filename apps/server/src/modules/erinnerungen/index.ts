@@ -19,6 +19,13 @@ export {
   type PushSenden,
   pushPerFetch,
 } from "./lauf.ts";
-export { SPRACHEN } from "./texte.ts";
+export { SPRACHEN, type Sprache, spracheVon } from "./texte.ts";
 export { INSTANZ, vapidLaden } from "./vapid.ts";
 export { type VapidPaar, vapidKontakt } from "./webpush.ts";
+export {
+  benachrichtigen,
+  type Kanal,
+  type Nachricht,
+  type Push,
+  type ZustellDeps,
+} from "./zustellen.ts";

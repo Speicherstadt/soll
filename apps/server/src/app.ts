@@ -4,6 +4,7 @@ import type { Db, SchreibDb } from "./db/oeffnen.ts";
 import { formatRequestLog, type LogSink, redactUrl } from "./log.ts";
 import type { Schichtquelle } from "./modules/arbeitszeit/index.ts";
 import { schichtquelle } from "./modules/dienstplan/index.ts";
+import type { Push } from "./modules/erinnerungen/index.ts";
 import type { Mailer } from "./modules/mail/index.ts";
 import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
@@ -14,6 +15,7 @@ import { betriebRouten } from "./routes/betrieb.ts";
 import { buchungRouten } from "./routes/buchungen.ts";
 import { datevRouten } from "./routes/datev.ts";
 import { dienstplanRouten } from "./routes/dienstplan.ts";
+import { feedRouten } from "./routes/dienstplan-kalender.ts";
 import { einladungRouten, oeffentlicheEinladungRouten } from "./routes/einladungen.ts";
 import { einrichtungRouten } from "./routes/einrichtung.ts";
 import { erinnerungRouten } from "./routes/erinnerungen.ts";
@@ -67,6 +69,8 @@ export type AppDeps = {
   webVerzeichnis?: string | null;
   /** How the server calls a business's Haben (S-606); a stand-in in tests, never the network */
   habenFetch?: typeof fetch;
+  /** Web Push for messages about the plan (S-503); without it they go by mail only */
+  push?: Push | null;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -84,6 +88,7 @@ export const createApp = ({
   vapidOeffentlich,
   webVerzeichnis = null,
   habenFetch = fetch,
+  push = null,
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -114,6 +119,8 @@ export const createApp = ({
     "/mcp",
     mcpRouten({ db, zugang, version, url, fetch: (anfrage, env) => app.fetch(anfrage, env) }),
   );
+  // the calendar feed with its secret token, for a calendar app without a session (S-503)
+  app.route("/api/v1/ics", feedRouten(db, now));
   // the tablet with its device token, not a session (S-801)
   app.route("/api/v1/kiosk", kioskRouten(db, schreibDb, now, terminalSchluessel));
 
@@ -159,7 +166,12 @@ export const createApp = ({
             holen: habenFetch,
           }),
         },
-        dienstplan: { "/": dienstplanRouten(db, schreibDb, now) },
+        dienstplan: {
+          "/": dienstplanRouten(db, schreibDb, now, {
+            zustellung: { db, schreibDb, geheimerSchluessel, url, push, mail },
+            url,
+          }),
+        },
         terminal: {
           "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
           "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),

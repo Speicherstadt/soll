@@ -2,16 +2,15 @@ import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import type { Kontext } from "../audit/index.ts";
 import { betriebeMitModul } from "../betrieb/index.ts";
 import type { Mailer } from "../mail/index.ts";
-import { aboVerfallen } from "./abos.ts";
 import { type Erreichbar, personenDaten } from "./daten.ts";
 import { regelnVon } from "./einstellungen.ts";
 import { type Art, type Faellig, faelligeErinnerungen } from "./faellig.ts";
-import { spracheVon, textVon, zielVon } from "./texte.ts";
+import { textVon, zielVon } from "./texte.ts";
 import { erinnertIn, vermerken } from "./vermerk.ts";
-import { type PushAnfrage, pushAnfrage, type VapidPaar } from "./webpush.ts";
+import type { VapidPaar } from "./webpush.ts";
+import { anGeraete, type Kanal, type Nachricht, type PushSenden, perMail } from "./zustellen.ts";
 
-/** Sends one message to a push service; the stand-in in tests, fetch in production */
-export type PushSenden = (anfrage: PushAnfrage) => Promise<{ status: number }>;
+export type { PushSenden } from "./zustellen.ts";
 
 export type LaufDeps = {
   db: Db;
@@ -30,7 +29,7 @@ export type Gesendet = {
   betriebId: string;
   nutzerId: string;
   art: Art;
-  kanal: "push" | "mail" | "keiner";
+  kanal: Kanal;
 };
 
 /** The push service in production: one POST per message (RFC 8030, Section 5) */
@@ -49,53 +48,24 @@ export const pushPerFetch: PushSenden = async (anfrage) => {
   }
 };
 
-/** A message a push service accepted (RFC 8030, Section 5: 201 Created) */
-const angenommen = (status: number) => status >= 200 && status < 300;
-
-/** Push to every device of the person; true when one accepted. A gone device is removed. */
-const perPush = async (
-  deps: LaufDeps,
-  kontext: Kontext,
-  p: Erreichbar,
-  e: Faellig,
-  jetzt: number,
-) => {
-  const ergebnisse = await Promise.all(
-    p.abos.map(async ({ aboId, abo, sprache }) => {
-      const inhalt = JSON.stringify({
-        ...textVon(e, spracheVon(sprache)),
-        ziel: zielVon(e),
-        tag: e.art,
-      });
-      const { status } = await deps.push(
-        pushAnfrage({ abo, inhalt, vapid: deps.vapid, kontakt: deps.kontakt, jetzt }),
-      );
-      if (status === 404 || status === 410) aboVerfallen(deps.schreibDb, kontext, aboId);
-      return angenommen(status);
-    }),
-  );
-  return ergebnisse.includes(true);
-};
-
-const perMail = async (deps: LaufDeps, p: Erreichbar, e: Faellig): Promise<boolean> => {
-  if (!deps.mail || p.adresse === null) return false;
-  const { titel, text } = textVon(e, "de");
-  const ergebnis = await deps.mail({
-    an: p.adresse,
-    betreff: titel,
-    text: `${text}\n\n${deps.url}${zielVon(e)}\n`,
-  });
-  return ergebnis.ok;
-};
+/** A reminder as a message: its text in each language and where a tap leads */
+const nachrichtVon = (e: Faellig): Nachricht => ({
+  text: (sprache) => textVon(e, sprache),
+  ziel: zielVon(e),
+  tag: e.art,
+});
 
 const zustellen = async (
   deps: LaufDeps,
   kontext: Kontext,
   p: Erreichbar,
   e: Faellig,
-): Promise<Gesendet["kanal"]> => {
-  if (await perPush(deps, kontext, p, e, kontext.jetzt)) return "push";
-  if (await perMail(deps, p, e)) return "mail";
+): Promise<Kanal> => {
+  const nachricht = nachrichtVon(e);
+  const push = { vapid: deps.vapid, kontakt: deps.kontakt, senden: deps.push };
+  if (await anGeraete({ schreibDb: deps.schreibDb, push }, kontext, p.abos, nachricht))
+    return "push";
+  if (await perMail(deps.mail, deps.url, p.adresse, nachricht)) return "mail";
   return "keiner";
 };
 

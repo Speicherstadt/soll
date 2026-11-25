@@ -58,3 +58,9 @@ export const eingabeVon = (schicht: Schicht): SchichtEingabe => ({
   nutzerId: schicht.nutzerId,
   vorlageId: schicht.vorlageId,
 });
+
+/** Publishes the drafts of the week around a day at a site (S-503) */
+export const wocheVeroeffentlichen = (standortId: string, tag: Tag) =>
+  api<{ anzahl: number; benachrichtigt: number }>("/api/v1/dienstplan/veroeffentlichen", {
+    body: { standortId, tag },
+  });

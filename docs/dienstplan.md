@@ -2,8 +2,8 @@
 title: Dienstplan
 description: >-
   Die Woche je Standort planen: Schichtvorlagen, Ziehen und Ablegen mit Maus und Tastatur, Bedarf je
-  Rolle und wo er nicht gedeckt ist, Entwürfe bis zur Veröffentlichung und was die Zeitumstellung mit
-  einer Nachtschicht macht.
+  Rolle und wo er nicht gedeckt ist, Entwürfe bis zur Veröffentlichung mit Benachrichtigung, die
+  eigenen Schichten als Kalender und was die Zeitumstellung mit einer Nachtschicht macht.
 ---
 
 # Dienstplan
@@ -22,8 +22,8 @@ die geplanten Schichten bleiben erhalten.
 | Externe, Geräte | nichts |
 
 Alles, was geplant wird, ist zunächst ein **Entwurf**. Den sehen nur Inhaber und Planer; im Kopf
-der Woche steht dann „Entwurf“. Erst das Veröffentlichen (kommt mit S-503, mit Benachrichtigung und
-Kalender-Feed) macht Schichten für die Beschäftigten sichtbar. Wer nicht plant, sieht auch keine
+der Woche steht dann „Entwurf“. Erst das [Veröffentlichen](#veroffentlichen) macht Schichten für die
+Beschäftigten sichtbar, in der App und in ihrem Kalender. Wer nicht plant, sieht auch keine
 Mitgliederliste, sondern nur die Personen, die in der Woche eine veröffentlichte Schicht haben.
 
 Soll zeigt im Plan keine Summen je Person, etwa geplante Stunden oder Auslastung: Eine Auswertung
@@ -94,6 +94,56 @@ geschrieben sein; die App schlägt die Rollen der Vorlagen vor.
 - Eine Pause, die so lang ist wie die Schicht, lehnt der Server ab, auch in einer Vorlage; Minuten
   nur ganz.
 
+## Veröffentlichen
+
+„Veröffentlichen“ im Kopf der Woche (nur Inhaber und Planer, nur solange die Woche einen Entwurf
+hat) gibt alle Entwürfe der gezeigten Woche am gezeigten Standort frei, in einem Schritt. Entwürfe
+anderer Wochen und Standorte bleiben Entwurf. Danach steht unter dem Kopf, wie viele Schichten
+veröffentlicht und wie viele Personen benachrichtigt wurden.
+
+- **Benachrichtigung**: Jede Person mit einer neu veröffentlichten Schicht bekommt eine Nachricht,
+  einmal je Veröffentlichung: per Web Push auf jedes Gerät, auf dem sie Erinnerungen eingeschaltet
+  hat, in der Sprache der App dort; hat sie kein Gerät, per Mail (auf Deutsch, mit Link auf die
+  Woche), wenn der Betrieb Mail eingerichtet hat, ihre Adresse Mail empfängt und sie Mail in den
+  [Erinnerungen](erinnerungen.md) nicht ausgeschaltet hat. Wer veröffentlicht, bekommt keine
+  Nachricht; offene Schichten melden niemandem etwas.
+- **Später ändern**: Eine veröffentlichte Schicht bleibt veröffentlicht, auch wenn sie sich ändert;
+  die Änderung sehen die Beschäftigten sofort. Die Person bekommt „Schicht geändert“, wird sie einer
+  anderen Person gegeben, bekommt die bisherige „Schicht entfällt“ und die neue „Neue Schicht“; eine
+  entfernte veröffentlichte Schicht meldet „Schicht entfällt“. Eine Änderung an einem Entwurf meldet
+  niemandem etwas, ebenso eine Änderung, die nichts ändert.
+- **Mitteilung nach § 12 TzBfG**: Der Zeitpunkt der Veröffentlichung steht an der Schicht. Bei
+  Arbeit auf Abruf ist er die Mitteilung, und jede spätere Änderung einer veröffentlichten Schicht
+  ist eine neue Mitteilung (siehe [Arbeit auf Abruf](#prufung-beim-einplanen)).
+
+## Schichten im eigenen Kalender
+
+Jeder, der den Plan liest, kann seine veröffentlichten Schichten in seiner Kalender-App sehen
+(Apple Kalender, Google Kalender, Outlook, Thunderbird): **Kalender** im Kopf des Plans, dann **Link
+erstellen**. Der Link erscheint nur dieses eine Mal; „In Kalender-App öffnen“ legt das Abo an, oder
+man kopiert ihn und fügt ihn in der Kalender-App als Kalender-Abo per URL ein.
+
+- **Geheim**: Der Link enthält ein zufälliges Token aus 32 Bytes. Soll speichert davon nur den
+  SHA-256, wie bei den [Zugängen zur API](api.md); wer die Datenbank liest, kann den Link nicht
+  wiederherstellen. Wer den Link kennt, sieht die Schichten, also nicht weitergeben.
+- **Neu und widerrufen**: „Neuer Link“ ersetzt den alten, der sofort nichts mehr zeigt;
+  „Link widerrufen“ beendet das Abo. Je Person und Betrieb gibt es einen Link. Ein Link entsteht
+  nur in der App mit Anmeldung, nicht über ein API-Token.
+- **Was drin steht**: nur die eigenen veröffentlichten Schichten ab sechs Wochen vor heute, an allen
+  Standorten des Betriebs, mit Rolle, Standort und Pause; keine Entwürfe, keine Kollegen, keine
+  offenen Schichten und keine Abwesenheiten (Urlaub oder Krankheit gehören nicht in den Kalender
+  eines fremden Anbieters, Art. 9 DSGVO). Eine entfernte Schicht verschwindet beim nächsten Abruf.
+  Die Wörter stehen in der Sprache, die die App beim Erstellen des Links hatte.
+- **Gesperrt**: Ist das Modul Dienstplan aus, antwortet der Link mit 403; ist die Person nicht mehr
+  Mitglied des Betriebs, mit 404. Das Token steht nie im Log.
+- **Format**: iCalendar nach [RFC 5545](https://www.rfc-editor.org/rfc/rfc5545): jede Zeile endet
+  mit CRLF und wird nach 75 Bytes gefaltet, ohne ein Zeichen zu teilen; Text wird maskiert; alle
+  Zeiten in UTC (`20261123T130000Z`), so behält eine Nachtschicht in der Nacht der Zeitumstellung
+  ihre echte Länge von 7 oder 9 Stunden und die Kalender-App zeigt sie in ihrer Zeitzone. Die `UID`
+  ist die Kennung der Schicht und bleibt; `CREATED`, `LAST-MODIFIED`, `DTSTAMP` und `SEQUENCE`
+  kommen aus der [Audit-Kette](audit-kette.md) (erster und letzter Eintrag der Schicht, Zahl der
+  Änderungen). Kalender-Apps fragen etwa stündlich nach (`REFRESH-INTERVAL`).
+
 ## Prüfung beim Einplanen
 
 Soll prüft jede geplante Schicht mit denselben Regeln wie gestempelte Zeiten
@@ -158,11 +208,16 @@ der Sitzung, eine `betriebId` im Inhalt lehnt der Server ab.
 | `GET /woche?standortId=…&tag=JJJJ-MM-TT` | alle, die planen oder lesen | die Woche um den Tag; für Planer mit Entwurf, Personen, Deckung (`deckung`) und Befunden (`befunde`: Regel, Norm, Schwere, Art, Tage, Person, `schichtIds`), sonst nur Veröffentlichtes, `deckung: null` und `befunde: null` |
 | `GET`, `POST /vorlagen`; `PUT`, `DELETE /vorlagen/:id` | Inhaber, Planer | Schichtvorlagen |
 | `GET /bedarf?standortId=…`, `POST /bedarf`, `DELETE /bedarf/:id` | Inhaber, Planer | Bedarf je Rolle und Wochentag (1 Montag bis 7 Sonntag) |
-| `POST /schichten`, `PATCH`, `DELETE /schichten/:id` | Inhaber, Planer | Schichten: `standortId`, `tag`, `beginnMinute`, `endeMinute`, `pauseMinuten`, `rolle`, `nutzerId` (oder `null` für offen), beim Anlegen `vorlageId` |
+| `POST /schichten`, `PATCH`, `DELETE /schichten/:id` | Inhaber, Planer | Schichten: `standortId`, `tag`, `beginnMinute`, `endeMinute`, `pauseMinuten`, `rolle`, `nutzerId` (oder `null` für offen), beim Anlegen `vorlageId`; eine Änderung einer veröffentlichten Schicht benachrichtigt die betroffenen Personen |
+| `POST /veroeffentlichen` | Inhaber, Planer | `standortId`, `tag`: veröffentlicht die Entwürfe der Woche um den Tag; Antwort `anzahl` (Schichten) und `benachrichtigt` (Personen) |
+| `GET`, `POST`, `DELETE /kalender` | alle, die den Plan lesen; `POST` und `DELETE` nur mit Sitzung | der eigene Kalender-Link: `GET` sagt, ob es ihn gibt (`abo` mit `angelegtAm`, `sprache`), `POST` mit `sprache` stellt ihn (neu) aus und antwortet einmal mit `url`, `DELETE` widerruft ihn |
 
 Ein Standort, eine Person oder eine Vorlage eines anderen Betriebs ergibt 404
 (`standort_unbekannt`, `person_unbekannt`, `vorlage_unbekannt`), eine Uhrzeit, die es nicht gibt,
 422 `zeit_gibt_es_nicht`.
+
+Der Kalender selbst liegt außerhalb der Anmeldung, denn eine Kalender-App hat keine Sitzung:
+`GET /api/v1/ics/<token>.ics` antwortet mit `text/calendar`; das Token ist der einzige Schlüssel.
 
 Außerhalb des Moduls, weil auch die Zeiterfassung sie braucht:
 

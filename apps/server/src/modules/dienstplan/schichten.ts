@@ -3,6 +3,7 @@ import { and, eq, gte, lte } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { schichten } from "../../db/schema.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
+import { aenderungsMeldungen, type Meldung, unterscheidet } from "./meldungen.ts";
 import { type Verweisfehler, verweisFehler } from "./verweise.ts";
 
 export type Schicht = typeof schichten.$inferSelect & PlanSchicht;
@@ -19,8 +20,9 @@ export type SchichtAngaben = {
   vorlageId: string | null;
 };
 
+/** `meldungen`: whom a change to a published shift has to be told (S-503) */
 export type SchichtErgebnis =
-  | { ok: true; schicht: Schicht }
+  | { ok: true; schicht: Schicht; meldungen: Meldung[] }
   | { ok: false; grund: Verweisfehler | "unbekannt" | "zeit_gibt_es_nicht" | "pause_zu_lang" };
 
 const MINUTE = 60_000;
@@ -96,13 +98,14 @@ export const schichtAnlegen = (
       angelegtAm: kontext.jetzt,
     }),
   );
-  return { ok: true, schicht };
+  return { ok: true, schicht, meldungen: [] };
 };
 
 /**
  * Changes a shift: moving it to another day or person (drag and drop) keeps its times on the clock
  * (`verschoben` in packages/arbeitszeit), so a night shift stays 22:00 to 6:00 across a change of
- * clocks. What is not given stays.
+ * clocks. What is not given stays. A change to a published shift is published at once and is a new
+ * notice (`veroeffentlicht_am`, § 12 TzBfG, S-503); a change that changes nothing writes nothing.
  */
 export const schichtAendern = (
   db: Db,
@@ -125,19 +128,26 @@ export const schichtAendern = (
   };
   const neu = zeile(db, kontext.betriebId, angaben);
   if (!neu.ok) return neu;
+  if (!unterscheidet(alt, neu.werte)) return { ok: true, schicht: alt, meldungen: [] };
+  const veroeffentlichtAm = alt.veroeffentlichtAm === null ? null : kontext.jetzt;
   const schicht = schreiben(schreibDb, kontext, (s) =>
-    s.aendern("schichten", { schichtId }, neu.werte),
+    s.aendern("schichten", { schichtId }, { ...neu.werte, veroeffentlichtAm }),
   );
-  return { ok: true, schicht };
+  return { ok: true, schicht, meldungen: aenderungsMeldungen(alt, schicht) };
 };
 
+/**
+ * Removes a shift; null when the business has no such shift, else whom its removal has to be told:
+ * a published shift leaves the calendar of its person (S-503)
+ */
 export const schichtEntfernen = (
   db: Db,
   schreibDb: SchreibDb,
   kontext: Kontext,
   schichtId: string,
-): boolean => {
-  if (!schichtLesen(db, kontext.betriebId, schichtId)) return false;
+): Meldung[] | null => {
+  const alt = schichtLesen(db, kontext.betriebId, schichtId);
+  if (!alt) return null;
   schreiben(schreibDb, kontext, (s) => s.loeschen("schichten", { schichtId }));
-  return true;
+  return aenderungsMeldungen(alt, null);
 };

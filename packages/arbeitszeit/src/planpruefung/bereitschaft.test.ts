@@ -135,11 +135,8 @@ describe("R-12 with the call-outs recorded before today (S-505)", () => {
   it("Verstoß: Einsatz So 23:00 – Mo 0:30, Mo Schicht 8:00 (7:30 Ruhe) at the planned shift", () => {
     const mo = schicht(HEUTE, "08:00", "14:00");
     const einsaetze = [einsatz(SO, "23:00", HEUTE, "00:30")];
-    // as stamped, the shift goes on the call-out's working day, Sunday (R-29), and with it the
-    // finding about the hour of Sunday the call-out worked (R-07)
     expect(kurz(pruefe([mo], [], { einsaetze }))).toEqual([
       ["R-12", "ruhezeit_durch_einsatz_unterbrochen", [mo.schichtId]],
-      ["R-07", "sonntagsarbeit", [mo.schichtId]],
     ]);
   });
 
@@ -161,22 +158,9 @@ describe("R-12 with the call-outs recorded before today (S-505)", () => {
     const einsaetze = [einsatz(SO, "23:00", HEUTE, "01:00")];
     const mit = (branche?: "krankenhaus_pflege") =>
       kurz(pruefe([mo], [], { ist, einsaetze, betrieb: branche ? { branche } : {} }));
-    // as stamped, So 18:00 to Mo 14:00 is one shift of Sunday (R-29): the planned shift carries
-    // the findings of that working day, the Hinweis „Einsatz ausgleichen“ and no Verstoß of R-12
-    const sonntag = [
-      ["R-02", "ueber_8h", [mo.schichtId]],
-      ["R-07", "sonntagsarbeit", [mo.schichtId]],
-    ];
-    expect(mit("krankenhaus_pflege")).toEqual([
-      sonntag[0],
-      ["R-12", "einsatz_ausgleich", [mo.schichtId]],
-      sonntag[1],
-    ]);
-    expect(mit()).toEqual([
-      sonntag[0],
-      ["R-12", "ruhezeit_durch_einsatz_unterbrochen", [mo.schichtId]],
-      sonntag[1],
-    ]);
+    // the Hinweis „Einsatz ausgleichen“ names only Sunday, which is the record's, not the plan's
+    expect(mit("krankenhaus_pflege")).toEqual([]);
+    expect(mit()).toEqual([["R-12", "ruhezeit_durch_einsatz_unterbrochen", [mo.schichtId]]]);
   });
 
   it("two days later the rest is no matter of the call-out", () => {

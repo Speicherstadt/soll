@@ -30,7 +30,8 @@ export type PlanTageMitBereitschaft = PlanTage & {
 /**
  * The working days of `planTage` with the duties from `heute` on and the call-outs before it, and
  * the working day of every planned shift and duty within them: a duty that counts fully can join a
- * shift and the next one into one working day, as stamped work would (Grundbegriff „Schicht“).
+ * shift and the next one into one working day, as stamped work would (Grundbegriff „Schicht“);
+ * a call-out before today is read exactly as the same times worked (`ist`).
  */
 export const mitPlanBereitschaft = (
   plan: PlanTage,
@@ -48,10 +49,20 @@ export const mitPlanBereitschaft = (
     ende,
     ...(reaktionMinuten === null ? {} : { reaktionMinuten }),
   });
-  const ergebnis = bereitschaftstage(plan.tage, {
-    einsaetze: vorher,
-    rufdienste: dienste.map(alsRufdienst),
-  });
+  // the call-outs before today join the days worked, as the same times worked (`ist`) would, and
+  // the planned days stay grouped on their own as with `ist` (`planTage`; R-29, review S-505 round 6)
+  const ist = bereitschaftstage(
+    plan.tage.filter((tag) => tag.tag < heute),
+    { einsaetze: vorher },
+  );
+  const geplant = bereitschaftstage(plan.tage.filter((tag) => tag.tag >= heute));
+  if (!ist.ok || !geplant.ok) return leer;
+  const ergebnis =
+    dienste.length === 0
+      ? { ok: true as const, wert: [...ist.wert, ...geplant.wert] }
+      : bereitschaftstage([...ist.wert, ...geplant.wert], {
+          rufdienste: dienste.map(alsRufdienst),
+        });
   if (!ergebnis.ok) return leer;
   const tage: PruefTag[] = ergebnis.wert;
   const tagVon = new Map(

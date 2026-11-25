@@ -45,6 +45,7 @@ Die App ruft die API unter ihrer eigenen Adresse auf; Vite leitet `/api` an den 
 (`SOLL_API_PORT`, Standard 18200), so sehen Sitzungs-Cookie und die Herkunftsprüfung von Better Auth
 eine einzige Adresse. Für Playwright startet `scripts/e2e-server.ts` den Server auf Port 28200 mit
 einer leeren Datenbank in einem temporären Verzeichnis und einem Schlüssel nur für diesen Lauf;
+Playwright beendet ihn mit `SIGTERM` (`gracefulShutdown`), damit er das Verzeichnis wieder löscht;
 `e2e/betrieb.ts` legt je Test ein eigenes Konto mit Betrieb an.
 
 In der CI laufen die Ende-zu-Ende-Tests in vier Teilen parallel (`--shard`, Job `e2e-teil`), jeder
@@ -210,7 +211,8 @@ Das Schema steht in `apps/server/src/db/schema.ts`, größere Bereiche in Dateie
 eingecheckte Migration wird nie geändert. Tests laufen gegen SQLite in einer temporären Datei:
 `testDatenbank()` legt sie in einem eigenen Verzeichnis unter dem temporären Verzeichnis des
 Systems an und löscht es nach dem Test wieder, auch wenn der Test scheitert oder in seine Zeitgrenze
-läuft. Andere Tests holen sich ein temporäres Verzeichnis ebenso mit `temporaerOrdner()` aus
+läuft; was ein `beforeAll` oder der Rumpf eines `describe` öffnet, verschwindet, wenn die Datei
+fertig ist. Andere Tests holen sich ein temporäres Verzeichnis ebenso mit `temporaerOrdner()` aus
 `apps/server/src/test-ordner.ts`.
 
 ## Sprachen

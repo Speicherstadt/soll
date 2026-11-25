@@ -18,6 +18,6 @@ it("removes every test directory, also of a failed or timed-out test", { timeout
     env: { ...process.env, TMPDIR: eigenesTmp, NO_COLOR: "1" },
     encoding: "utf8",
   });
-  expect(`${lauf.stdout}${lauf.stderr}`).toMatch(/Tests\s+2 failed \| 6 passed \(8\)/);
+  expect(`${lauf.stdout}${lauf.stderr}`).toMatch(/Tests\s+2 failed \| 9 passed \(11\)/);
   expect(readdirSync(eigenesTmp).filter((name) => name.startsWith("soll-"))).toEqual([]);
 });

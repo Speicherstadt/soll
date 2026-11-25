@@ -274,7 +274,10 @@ gebuchte Projektzeit verteilt:
 | Ohne Buchung | anwesend, aber nicht gebucht, je Person nie unter null |
 | Anteil abrechenbar | abrechenbar von anwesend, in ganzen Prozent (kaufmännisch gerundet) |
 
-Eine Buchung zählt im Monat ihres Arbeitstags, eine laufende bis jetzt. Alles in ganzen Minuten.
+Eine Buchung zählt im Monat ihres Arbeitstags. Eine laufende Buchung und eine Schicht ohne Gehen
+zählen bis jetzt, solange ihr Monat läuft. In einem abgelaufenen Monat zählt eine Buchung erst, wenn
+sie gestoppt ist, und von einer offenen Schicht nur, was bis zum letzten Gehen oder Pausenbeginn
+gestempelt ist; so ändern sich seine Zahlen zwischen zwei Abrufen nicht. Alles in ganzen Minuten.
 
 ### Je Team
 

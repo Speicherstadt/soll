@@ -9,6 +9,7 @@ import type { Mailer } from "./modules/mail/index.ts";
 import { terminalSchluesselAus } from "./modules/terminal/index.ts";
 import {
   CLOCKODO_API,
+  type ClockifyDeps,
   type ClockodoDeps,
   type Dateispeicher,
   type KimaiDeps,
@@ -17,6 +18,8 @@ import {
   SCHICHTPLANER_ADRESSEN,
   type SchichtplanerDeps,
   sicherHolen,
+  TOGGL_API,
+  type TogglDeps,
 } from "./modules/umzug/index.ts";
 import { ratenGrenze } from "./modules/zugaenge/index.ts";
 import { abwesenheitRouten } from "./routes/abwesenheiten.ts";
@@ -95,6 +98,9 @@ export type AppDeps = {
   personio?: PersonioDeps;
   /** How the server calls Papershift, Planday and Crewmeister for an import (S-706) */
   schichtplaner?: SchichtplanerDeps;
+  /** How the server calls Toggl Track and Clockify for an import (S-707) */
+  toggl?: TogglDeps;
+  clockify?: ClockifyDeps;
 };
 
 /** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
@@ -118,6 +124,8 @@ export const createApp = ({
   kimai = { holen: sicherHolen(), erlaubt: new Set() },
   personio = { holen: sicherHolen(), basis: PERSONIO_API },
   schichtplaner = { holen: sicherHolen(), adressen: SCHICHTPLANER_ADRESSEN },
+  toggl = { holen: sicherHolen(), basis: TOGGL_API },
+  clockify = { holen: sicherHolen(), basis: null },
 }: AppDeps) => {
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
@@ -165,7 +173,14 @@ export const createApp = ({
     .route("/verfahrensdoku", verfahrensdokuRouten(db, schreibDb, now, version))
     .route(
       "/importe",
-      importRouten(db, schreibDb, now, dateien, { clockodo, kimai, personio, schichtplaner }),
+      importRouten(db, schreibDb, now, dateien, {
+        clockodo,
+        kimai,
+        personio,
+        schichtplaner,
+        toggl,
+        clockify,
+      }),
     )
     .route(
       "/",

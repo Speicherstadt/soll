@@ -129,7 +129,9 @@ export type Abruf = {
     // the shift planners (S-706): Papershift's token, Planday's app, a Crewmeister account
     | { token: string }
     | { appId: string; token: string }
-    | { email: string; passwort: string };
+    | { email: string; passwort: string }
+    // Clockify (S-707); Toggl Track shares { token }
+    | { schluessel: string; region: string };
   von: string;
   bis: string;
 };

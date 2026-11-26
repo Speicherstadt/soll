@@ -59,9 +59,10 @@ export const projektPlanen = (
   if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
   const gewaehlt = zugeordnet<NeuesProjekt>(ziel, stand.projekte, "projekt_unbekannt");
   if (gewaehlt) return gewaehlt;
-  if (stand.vorhanden.projekte.has(projekt.externalId))
-    return { art: "vorhanden", id: projekt.externalId };
-  if (kundeId === null) return { art: "abgelehnt", grund: "kunde_ausgelassen" };
+  const frueher = stand.vorhanden.projekte.get(projekt.externalId);
+  if (frueher !== undefined) return { art: "vorhanden", id: frueher };
+  if (kundeId === null)
+    return { art: "abgelehnt", grund: projekt.kunde === "" ? "kunde_fehlt" : "kunde_ausgelassen" };
   const projektId = stand.neueId();
   return {
     art: "neu",

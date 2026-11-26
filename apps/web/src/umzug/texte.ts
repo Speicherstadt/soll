@@ -24,6 +24,8 @@ export const ANLEITUNG: Record<string, () => string> = {
   papershift: () => m.umzug_anleitung_papershift(),
   planday: () => m.umzug_anleitung_planday(),
   crewmeister: () => m.umzug_anleitung_crewmeister(),
+  toggl: () => m.umzug_anleitung_toggl(),
+  clockify: () => m.umzug_anleitung_clockify(),
 };
 
 const LESEGRUND: Record<LeseGrund, () => string> = {
@@ -80,6 +82,7 @@ const PLANGRUND: Record<string, () => string> = {
   ueberschneidung: () => m.umzug_grund_ueberschneidung(),
   monat_abgeschlossen: () => m.umzug_grund_monat_abgeschlossen(),
   kunde_unbekannt: () => m.umzug_grund_kunde_unbekannt(),
+  kunde_fehlt: () => m.umzug_grund_kunde_fehlt(),
   projekt_unbekannt: () => m.umzug_grund_projekt_unbekannt(),
   kunde_ausgelassen: () => m.umzug_grund_kunde_ausgelassen(),
   taetigkeit_unbekannt: () => m.umzug_grund_taetigkeit_unbekannt(),

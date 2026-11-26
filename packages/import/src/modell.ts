@@ -59,13 +59,13 @@ export type ImportTaetigkeit = { externalId: string; zeile: number; name: string
 export type ImportBuchung = {
   externalId: string;
   zeile: number;
-  zeit: string;
+  zeit?: string;
   person: string;
   tag: string;
   beginn: number;
   ende: number;
-  projekt: string;
-  taetigkeit: string;
+  projekt?: string;
+  taetigkeit?: string;
 };
 
 /**

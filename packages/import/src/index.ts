@@ -83,6 +83,22 @@ export { datumLesen, minutenLesen, uhrzeitLesen } from "./werte.ts";
 export { MAX_ENTPACKT, xlsxLesen } from "./xlsx.ts";
 export { xlsxSchreiben, type Zelle } from "./xlsx-schreiben.ts";
 export {
+  CLOCKIFY_ARTEN,
+  CLOCKIFY_FELDER,
+  CLOCKIFY_FORMAT,
+  type ClockifyAbzug,
+  type ClockifyArt,
+  clockifyAbzugText,
+  clockifyLesen,
+  TOGGL_ARTEN,
+  TOGGL_FELDER,
+  TOGGL_FORMAT,
+  type TogglAbzug,
+  type TogglArt,
+  togglAbzugText,
+  togglLesen,
+} from "./zeiterfasser/index.ts";
+export {
   artenAus,
   artVorschlag,
   type Buchungszuordnung,

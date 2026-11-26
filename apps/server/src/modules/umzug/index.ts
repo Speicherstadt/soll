@@ -3,6 +3,14 @@
  * in the content-addressed store, the list of imports; the fetch from Clockodo's API (S-703)
  */
 export {
+  CLOCKIFY_REGIONEN,
+  type ClockifyDeps,
+  type ClockifyFehler,
+  type ClockifyRegion,
+  type ClockifyZugang,
+  clockifyAbrufen,
+} from "./clockify-abruf.ts";
+export {
   type AbrufFehler,
   CLOCKODO_API,
   type ClockodoDeps,
@@ -41,6 +49,13 @@ export {
   type SchichtplanerAdressen,
   type SchichtplanerDeps,
 } from "./schichtplaner-abruf.ts";
+export {
+  TOGGL_API,
+  type TogglDeps,
+  type TogglFehler,
+  type TogglZugang,
+  togglAbrufen,
+} from "./toggl-abruf.ts";
 export {
   type Eingabe,
   MAX_LISTE,

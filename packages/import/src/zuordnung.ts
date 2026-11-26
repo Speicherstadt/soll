@@ -134,9 +134,12 @@ export const zeitProjekteAus = (daten: ImportDaten) =>
  */
 export const zeitTaetigkeitenAus = (daten: ImportDaten) =>
   gezaehlt(
-    daten.zeiten.flatMap((zeit) =>
-      zeit.taetigkeit !== undefined ? [zeit.taetigkeit] : zeit.projekt !== undefined ? [""] : [],
-    ),
+    [
+      ...daten.zeiten.flatMap((zeit) =>
+        zeit.taetigkeit !== undefined ? [zeit.taetigkeit] : zeit.projekt !== undefined ? [""] : [],
+      ),
+      ...daten.buchungen.flatMap((b) => (b.taetigkeit === undefined ? [""] : [])),
+    ],
     "wert",
   );
 

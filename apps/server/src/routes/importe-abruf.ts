@@ -1,9 +1,18 @@
 import { istTag, plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { abzugText, kimaiAbzugText, personioAbzugText, schichtplanerAbzugText } from "@soll/import";
+import {
+  abzugText,
+  clockifyAbzugText,
+  kimaiAbzugText,
+  personioAbzugText,
+  schichtplanerAbzugText,
+  togglAbzugText,
+} from "@soll/import";
 import { Hono } from "hono";
 import { z } from "zod";
 import {
+  type ClockifyDeps,
   type ClockodoDeps,
+  clockifyAbrufen,
   clockodoAbrufen,
   crewmeisterAbrufen,
   type KimaiDeps,
@@ -15,6 +24,8 @@ import {
   personioAbrufen,
   plandayAbrufen,
   type SchichtplanerDeps,
+  type TogglDeps,
+  togglAbrufen,
 } from "../modules/umzug/index.ts";
 import type { Anfrage } from "./kontext.ts";
 import { koerper, ungueltig } from "./projektzeit-gemeinsam.ts";
@@ -106,6 +117,26 @@ export const abrufSchema = z.discriminatedUnion("quelle", [
       ...zeitraum,
     })
     .strict(),
+  // S-707: solo time trackers
+  z
+    .object({
+      quelle: z.literal("toggl"),
+      zugang: z.object({ token: z.string().trim().min(1).max(500) }).strict(),
+      ...zeitraum,
+    })
+    .strict(),
+  z
+    .object({
+      quelle: z.literal("clockify"),
+      zugang: z
+        .object({
+          schluessel: z.string().trim().min(1).max(500),
+          region: z.enum(["global", "eu", "usa", "uk", "au"]).default("global"),
+        })
+        .strict(),
+      ...zeitraum,
+    })
+    .strict(),
 ]);
 
 export type AbrufDeps = {
@@ -113,6 +144,8 @@ export type AbrufDeps = {
   kimai: KimaiDeps;
   personio: PersonioDeps;
   schichtplaner: SchichtplanerDeps;
+  toggl: TogglDeps;
+  clockify: ClockifyDeps;
 };
 
 /** The longest period of one fetch: a year; a longer one is fetched in parts */
@@ -174,6 +207,13 @@ const abrufen = async (deps: AbrufDeps, eingabe: Eingabe, heute: string) => {
         await crewmeisterAbrufen(deps.schichtplaner, eingabe.zugang, bisHeute),
         schichtplanerAbzugText,
       );
+    case "toggl":
+      return alsDatei(await togglAbrufen(deps.toggl, eingabe.zugang, zeitraum), togglAbzugText);
+    case "clockify":
+      return alsDatei(
+        await clockifyAbrufen(deps.clockify, eingabe.zugang, zeitraum),
+        clockifyAbzugText,
+      );
   }
 };
 
@@ -184,7 +224,12 @@ export const abrufRouten = (deps: AbrufDeps, jetzt: () => number) =>
     const { quelle, von, bis } = eingabe.data;
     const heute = tagInBerlin(jetzt());
     const spaetestens = SCHICHTPLANER.has(quelle) ? plusTage(heute, VORAUS_TAGE) : heute;
-    if (bis < von || bis > spaetestens || plusTage(von, MAX_TAGE) <= bis)
+    if (
+      bis < von ||
+      bis > spaetestens ||
+      plusTage(von, MAX_TAGE) <= bis ||
+      (quelle === "toggl" && von < plusTage(heute, -89))
+    )
       return c.json({ fehler: "zeitraum" }, 422);
     const abruf = await abrufen(deps, eingabe.data, heute);
     if (!abruf.ok) {

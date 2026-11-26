@@ -50,7 +50,7 @@ export const stand = (aenderung: Partial<Stand> = {}): Stand => {
       stempelungen: new Map(),
       abwesenheiten: new Map(),
       kunden: new Map(),
-      projekte: new Set(),
+      projekte: new Map(),
       taetigkeiten: new Map(),
       buchungen: new Set(),
       salden: new Map(),

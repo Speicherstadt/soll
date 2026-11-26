@@ -1,0 +1,6 @@
+Project,Client,Description,Task,User,Group,Email,Tags,Billable,Start Date,Start Time,End Date,End Time,Duration (h),Duration (decimal),Billable Rate (EUR),Billable Amount (EUR)
+Speisekarte,Café Elbblick,Erste Skizzen,Entwurf,Lina Petersen,,lina@petersen-design.test,Design,Yes,01.09.2026,09:00:00,01.09.2026,11:30:00,02:30:00,2.50,60.00,150.00
+Speisekarte,Café Elbblick,"Feinschliff, Farben",Entwurf,Lina Petersen,,lina@petersen-design.test,,Yes,01.09.2026,11:30:00,01.09.2026,12:15:20,00:45:20,0.76,60.00,45.33
+Exposé Bad Elbhof,Elbhof Immobilien,Fotos sichten,,Lina Petersen,,lina@petersen-design.test,,Yes,02.09.2026,13:00:00,02.09.2026,16:00:00,03:00:00,3.00,60.00,180.00
+Akquise,,Website,,Lina Petersen,,lina@petersen-design.test,,No,03.09.2026,08:00:00,03.09.2026,09:00:00,01:00:00,1.00,0.00,0.00
+,,Buchhaltung,,Lina Petersen,,lina@petersen-design.test,,No,03.09.2026,23:30:00,04.09.2026,00:30:00,01:00:00,1.00,0.00,0.00

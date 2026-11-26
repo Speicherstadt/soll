@@ -28,6 +28,9 @@ type Optionen = {
   personioFetch?: (anfrage: Request) => Promise<Response> | Response;
   /** The stand-ins for Papershift, Planday and Crewmeister, by the host asked (S-706) */
   schichtplanerFetch?: (anfrage: Request) => Promise<Response> | Response;
+  /** The stand-ins for Toggl Track and Clockify (S-707) */
+  togglFetch?: (anfrage: Request) => Promise<Response> | Response;
+  clockifyFetch?: (anfrage: Request) => Promise<Response> | Response;
 };
 
 /**
@@ -107,6 +110,18 @@ const testApp = (optionen: Optionen, jetzt: () => number) => {
         plandayId: "https://id.planday.test",
         crewmeister: "https://crewmeister.test",
       },
+    },
+    toggl: {
+      holen: ersatzHolen(
+        optionen.togglFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
+      ),
+      basis: "https://toggl.test",
+    },
+    clockify: {
+      holen: ersatzHolen(
+        optionen.clockifyFetch ?? (() => Promise.reject(new TypeError("no network in tests"))),
+      ),
+      basis: "https://clockify.test",
     },
   });
   return { datenbank, geheimerSchluessel, vapid, auth, app };

@@ -467,3 +467,44 @@ Bestätigung einer Abwesenheit ist; bei Planday die Pausen der Stempeluhr (`star
 `endDateTime`); bei Crewmeister, dass eine Schicht mit `publishedShiftId` der Entwurf einer
 veröffentlichten ist. Die geplante Pause einer Crewmeister-Schicht nennt keine Quelle, sie kommt
 nicht mit (0 Minuten). Echte, anonymisierte Abrufe ergänzen Menschen.
+
+### Toggl Track und Clockify
+
+Für den Solo-Modus holt Soll Kunden, Projekte, Aufgaben (als Tätigkeiten) und Zeiten aus
+Toggl Track und Clockify – wahlweise aus dem CSV-Export des **Detailed Report** oder direkt über
+die API des Anbieters. Beide Wege erzeugen dieselben Kennungen (Person, Beginn und Ende auf die
+Minute als SHA-256), sodass ein CSV-Export der älteren Monate und ein API-Abruf der letzten Wochen
+einander als „schon da“ erkennen und nichts doppelt anlegen.
+
+**CSV-Export**: In beiden Tools unter *Reports → Detailed* als CSV exportieren. Stelle im Profil
+vorher als Datumsformat `JJJJ-MM-TT` oder `TT.MM.JJJJ` ein; Datumsangaben mit `/` (wie
+`09/01/2026`) lehnt Soll mit Zeile ab, weil Monat und Tag nicht eindeutig sind. Uhrzeiten liest Soll
+in `Europe/Berlin` (24-Stunden- oder 12-Stunden-Format mit AM/PM, mit oder ohne Sekunden).
+
+**API-Abruf**:
+- **Toggl Track**: API-Token aus dem Profil. Die API v9 (`api.track.toggl.com`) liefert höchstens
+  die letzten **89 Tage**; ältere Zeiten lädst du als CSV-Export.
+- **Clockify**: API-Schlüssel aus den Profileinstellungen sowie die Region des Arbeitsbereichs
+  (Global `api.clockify.me`, EU `euc1`, USA `use2`, UK `euw2`, AU `apse2`). Im Free-Plan erlaubt
+  Clockify 30 Anfragen je Stunde; Soll ruft Seiten nacheinander ab und nur so weit, wie
+  `Last-Page` angibt.
+
+**Was daraus wird**:
+- **Zeiten werden Projektzeit**, keine Stempelungen der Arbeitszeit. Wer Arbeitszeit samt Kommen
+  und Gehen übernehmen will, nutzt [Excel/CSV mit freien Spalten](#excelcsv-mit-freien-spalten).
+- **Projekt ohne Kunden**: Ein Auftrag braucht in Soll einen Kunden. Hat ein Projekt beim Anbieter
+  keinen Kunden, legt Soll es nicht neu an (`kunde_fehlt`); du ordnest es einem bestehenden Auftrag
+  zu oder lässt es aus.
+- **Buchung ohne Projekt** wird eine interne Buchung.
+- **Buchung ohne Aufgabe**: Wähle in der Zuordnung eine Tätigkeit für „ohne Tätigkeit“; ohne sie
+  wird der Eintrag ausgelassen.
+- **Abgelehnt mit Zeile**: laufende Einträge, Einträge unter einer Minute oder ab 24 Stunden,
+  Uhrzeiten in einer Zeitumstellung sowie Überschneidungen. Bei Clockify übernimmt Soll nur
+  Einträge vom Typ `REGULAR`.
+
+**Quellen und Annahmen**: Gebaut nach Toggls OpenAPI-Dokument der API v9 (`engineering.toggl.com`),
+Clockifys OpenAPI-Dokument „Clockify API v1“ (`docs.clockify.me`) sowie den Spaltenbeschreibungen
+des Detailed Report beider Anbieter. Was keine Quelle belegt, ist eine Annahme: dass der
+CSV-Export in der eingestellten Profilzeitzone (`Europe/Berlin`) vorliegt und aufeinanderfolgende
+Einträge durch Abrunden von Beginn und Ende auf die ganze Minute lückenlos anschließen.
+

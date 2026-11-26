@@ -127,5 +127,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0031_import_schichten",
     "sql": "ALTER TABLE `schichten` ADD `import_id` text;--> statement-breakpoint\nALTER TABLE `schichten` ADD `extern_quelle` text;--> statement-breakpoint\nALTER TABLE `schichten` ADD `extern_id` text;--> statement-breakpoint\nCREATE UNIQUE INDEX `schichten_extern` ON `schichten` (`betrieb_id`,`extern_quelle`,`extern_id`);"
+  },
+  {
+    "tag": "0032_white_spyke",
+    "sql": "ALTER TABLE `arbeitszeitmodelle` ADD `pausenabzug` integer DEFAULT false NOT NULL;"
   }
 ];

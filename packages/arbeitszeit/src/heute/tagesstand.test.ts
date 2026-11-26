@@ -261,4 +261,30 @@ describe("days around the running one", () => {
       grund: "ungueltig",
     });
   });
+
+  it("deducts missing statutory break transparently on closed shifts without hiding R-04 findings", () => {
+    const stempel = [kommen("2026-11-19T07:00:00+01:00"), gehen("2026-11-19T14:30:00+01:00")];
+    const ergebnis = tagesstand(stempel, am("09:00"), "2026-11-19", { pausenabzug: true });
+    expect(ergebnis.ok).toBe(true);
+    if (!ergebnis.ok) return;
+    expect(ergebnis.wert).toMatchObject({
+      istMinuten: 420,
+      pausenMinuten: 30,
+      pausenabzugMinuten: 30,
+    });
+    expect(arten(ergebnis.wert)).toEqual(["pause_fehlt", "ohne_pause"]);
+  });
+
+  it("does not apply automatic break deduction while a shift is still running", () => {
+    const stempel = [kommen("2026-11-20T06:00:00+01:00")];
+    const ergebnis = tagesstand(stempel, am("13:30"), "2026-11-20", { pausenabzug: true });
+    expect(ergebnis.ok).toBe(true);
+    if (!ergebnis.ok) return;
+    expect(ergebnis.wert).toMatchObject({
+      zustand: "arbeit",
+      istMinuten: 450,
+      pausenMinuten: 0,
+      pausenabzugMinuten: 0,
+    });
+  });
 });

@@ -69,6 +69,7 @@ export const modellabschnitte = (db: Db, betriebId: string, nutzerId: string): M
   zeitraeume(db, betriebId, nutzerId).map(({ ab, modell }) => ({
     ab,
     sollMinuten: modell.sollMinuten,
+    pausenabzug: modell.pausenabzug,
   }));
 
 /** The person's models as payroll needs them: wage, mini-job and surcharges (S-308) */

@@ -1,0 +1,1 @@
+ALTER TABLE `arbeitszeitmodelle` ADD `pausenabzug` integer DEFAULT false NOT NULL;

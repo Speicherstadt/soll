@@ -15,6 +15,8 @@ export type Modellabschnitt = {
   sollMinuten: Wochenminuten;
   urlaubHalbtage?: number | null;
   arbeitstageJeWoche?: number | null;
+  /** automatic statutory break deduction on closed shifts (docs/regeln.md, R-04); default false */
+  pausenabzug?: boolean;
 };
 
 /**

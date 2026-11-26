@@ -20,6 +20,7 @@ type Modell = {
   lohnArt: "monat" | "stunde";
   lohnCent: number | null;
   minijob: boolean;
+  pausenabzug?: boolean;
 };
 
 const VORLAGE_TEXTE: Record<Vorlage["id"], () => string> = {
@@ -39,6 +40,13 @@ const lohnText = (modell: Modell) =>
     : (modell.lohnArt === "monat" ? m.modell_lohn_monat : m.modell_lohn_stunde)({
         betrag: euroText(modell.lohnCent, getLocale()),
       });
+
+const modellBeschreibung = (modell: Modell) =>
+  [
+    wochenText(modell),
+    lohnText(modell),
+    ...(modell.pausenabzug ? [m.modell_pausenabzug()] : []),
+  ].join(" · ");
 
 type Eingabe = Omit<Modell, "modellId"> & {
   zuschlagssaetze: NonNullable<ReturnType<typeof zuschlaegeAus>>;
@@ -63,6 +71,7 @@ const VorlageKarte = (props: {
     const lohnText = String(daten.get("lohn")).trim();
     const lohnCent = lohnText === "" ? null : centAus(lohnText);
     const zuschlagssaetze = zuschlaegeAus(daten);
+    const pausenabzug = daten.get("pausenabzug") === "on";
     if (minuten === null) return setFehler(m.fehler_stunden());
     if (lohnCent === null && lohnText !== "") return setFehler(m.fehler_betrag());
     if (zuschlagssaetze === null) return setFehler(m.fehler_prozent());
@@ -74,6 +83,7 @@ const VorlageKarte = (props: {
       lohnArt: props.vorlage.lohnArt,
       lohnCent,
       minijob: props.vorlage.minijob,
+      pausenabzug,
       zuschlagssaetze,
     });
     if (!antwort.ok) return setFehler(m.fehler_speichern());
@@ -108,6 +118,17 @@ const VorlageKarte = (props: {
         />
       </div>
       <ZuschlagFelder />
+      <label class="flex items-start gap-2.5 text-[14px]">
+        <input
+          type="checkbox"
+          name="pausenabzug"
+          class="mt-1 size-4 shrink-0 rounded border-border accent-primary"
+        />
+        <span class="flex flex-col gap-0.5">
+          <span class="font-medium">{m.modell_pausenabzug()}</span>
+          <span class="text-[12px] text-muted-foreground">{m.modell_pausenabzug_hinweis()}</span>
+        </span>
+      </label>
       <Fehler text={fehler()} />
       <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
         {m.modell_uebernehmen({ name: name() })}
@@ -164,7 +185,7 @@ export const ModelleSchritt = (props: {
                 <li class="flex items-center justify-between gap-3 px-3 py-2">
                   <span class="flex min-w-0 flex-col">
                     <span class="font-medium">{modell.name}</span>
-                    <span class="text-muted-foreground">{`${wochenText(modell)} · ${lohnText(modell)}`}</span>
+                    <span class="text-muted-foreground">{modellBeschreibung(modell)}</span>
                   </span>
                   <Button
                     variant="icon"

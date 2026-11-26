@@ -27,6 +27,7 @@ export type Monatsinhalt = {
   summen: {
     sollMinuten: number;
     gearbeitetMinuten: number;
+    pausenabzugMinuten?: number;
     gutschriftMinuten: number;
     istMinuten: number;
     saldoMinuten: number;

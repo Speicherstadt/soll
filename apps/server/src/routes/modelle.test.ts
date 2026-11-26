@@ -96,6 +96,19 @@ describe("/api/v1/arbeitszeit/modelle", () => {
       ).toBe(400);
   });
 
+  it("defaults pausenabzug to false and keeps it when enabled on a model", async () => {
+    const server = testServer();
+    const mia = await server.inhaberMitBetrieb("Café Elbblick", "elbblick");
+    const ohne = await json(await mia.anfrage("/api/v1/arbeitszeit/modelle", { body: VOLLZEIT }));
+    expect(ohne.pausenabzug).toBe(false);
+    const mit = await json(
+      await mia.anfrage("/api/v1/arbeitszeit/modelle", {
+        body: { ...VOLLZEIT, name: "Vollzeit Auto-Pause", pausenabzug: true },
+      }),
+    );
+    expect(mit.pausenabzug).toBe(true);
+  });
+
   it("is refused while working time is switched off", async () => {
     const server = testServer();
     const solo = await server.inhaberMitBetrieb("Solo", "solo");

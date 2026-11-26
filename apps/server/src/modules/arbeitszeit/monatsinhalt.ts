@@ -46,7 +46,10 @@ export type Blattbefund = Pick<Befund, "regel" | "norm" | "schwere" | "art" | "t
 export type Summen = Pick<
   Monatsstand,
   "sollMinuten" | "gearbeitetMinuten" | "gutschriftMinuten" | "istMinuten" | "saldoMinuten"
->;
+> & {
+  /** only present when > 0, so months without automatic break deduction keep their hash unchanged */
+  pausenabzugMinuten?: number;
+};
 
 /** A counter-entry to a day of a closed month, counted in the month it was entered in */
 export type Gegeneintrag = { tag: Tag; minuten: number; grund: string };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ruhepausen } from "./ruhepausen.ts";
+import { ruhepausen, tagesPausenabzug } from "./ruhepausen.ts";
 import { arbeit, gehen, kommen, pause, schicht, tage, um, weiter } from "./testhilfen.ts";
 
 /*
@@ -164,5 +164,63 @@ describe("R-04: midnight, DST and shifts", () => {
       befunde: [],
       nichtHinterlegt: ["2025-12-30"],
     });
+  });
+});
+
+describe("R-04: automatischer Pausenabzug", () => {
+  const abzug = (arbeitsMinuten: number, pausenMinuten: number, aktiv = true) => {
+    const [tag] = tage(tagMit(arbeitsMinuten, pausenMinuten));
+    if (tag === undefined) throw new Error("erwartet");
+    return tagesPausenabzug(tag, aktiv);
+  };
+
+  it("deducts nothing when disabled on the model", () => {
+    expect(abzug(480, 0, false)).toBe(0);
+    expect(abzug(600, 0, false)).toBe(0);
+  });
+
+  it("deducts nothing up to 6:00 and when statutory breaks are already stamped", () => {
+    expect(abzug(360, 0)).toBe(0);
+    expect(abzug(480, 30)).toBe(0);
+    expect(abzug(600, 45)).toBe(0);
+  });
+
+  it("never drops net working time below the 6:00 threshold (no cliff)", () => {
+    expect(abzug(361, 0)).toBe(1);
+    expect(abzug(370, 0)).toBe(10);
+    expect(abzug(390, 0)).toBe(30);
+    expect(abzug(480, 0)).toBe(30);
+  });
+
+  it("deducts only the missing minutes when a partial Ruhepause was stamped", () => {
+    expect(abzug(480, 15)).toBe(15);
+    expect(abzug(370, 15)).toBe(10);
+    expect(abzug(550, 30)).toBe(10);
+    expect(abzug(555, 30)).toBe(15);
+    expect(abzug(570, 30)).toBe(15);
+  });
+
+  it("never drops net working time below 9:00 on the second tier and stays monotonic", () => {
+    expect(abzug(540, 0)).toBe(30); // net 510
+    expect(abzug(550, 0)).toBe(30); // net 520
+    expect(abzug(570, 0)).toBe(30); // net 540
+    expect(abzug(580, 0)).toBe(40); // net 540
+    expect(abzug(585, 0)).toBe(45); // net 540
+    expect(abzug(600, 0)).toBe(45); // net 555
+    let vorher = 0;
+    for (let m = 350; m <= 610; m += 5) {
+      const netto = m - abzug(m, 0);
+      expect(netto).toBeGreaterThanOrEqual(vorher);
+      vorher = netto;
+    }
+  });
+
+  it("deducts nothing on an open shift or before the first rule version", () => {
+    const [offen] = tage([kommen(am("08:00"))], um("2026-11-17T12:00+01:00"));
+    if (offen === undefined) throw new Error("erwartet");
+    expect(tagesPausenabzug(offen, true)).toBe(0);
+    const [vorRegel] = tage(arbeit("2025-12-30T08:00+01:00", 500));
+    if (vorRegel === undefined) throw new Error("erwartet");
+    expect(tagesPausenabzug(vorRegel, true)).toBe(0);
   });
 });

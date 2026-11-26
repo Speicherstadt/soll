@@ -41,6 +41,7 @@ export type TagAnsicht = {
   tag: Tag;
   jetzt: number;
   sollMinuten: number | null;
+  pausenabzug?: boolean;
   stand: Tagesstand;
   stempelungen: Stempel[];
   umfeld: Stempel[];

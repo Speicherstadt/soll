@@ -225,6 +225,13 @@
       "when": 1795643816216,
       "tag": "0031_import_schichten",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "6",
+      "when": 1795715234865,
+      "tag": "0032_white_spyke",
+      "breakpoints": true
     }
   ]
 }

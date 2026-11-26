@@ -95,6 +95,8 @@ export const arbeitszeitmodelle = sqliteTable(
     lohnArt: text("lohn_art", { enum: ["monat", "stunde"] }).notNull(),
     lohnCent: integer("lohn_cent"),
     minijob: integer("minijob", { mode: "boolean" }).notNull().default(false),
+    // optional automatic deduction of missing statutory Ruhepausen on closed shifts (docs/regeln.md, R-04)
+    pausenabzug: integer("pausenabzug", { mode: "boolean" }).notNull().default(false),
     // JSON object of the surcharges the model pays, in basis points (`Zuschlagssaetze`, S-207/S-308)
     zuschlagssaetze: text("zuschlagssaetze").notNull().default("{}"),
     gueltigAb: text("gueltig_ab").notNull(),

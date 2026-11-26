@@ -221,4 +221,18 @@ describe("Soll eines Monats: Beschäftigung, Grenzen und nicht hinterlegt", () =
     expect(sachsen.sollMinuten).toBe(hm("160:00"));
     expect(stand("2026-11", { standort: HAMBURG }).sollMinuten).toBe(hm("168:00"));
   });
+
+  it("applies automatic break deduction per day when the active model enables it", () => {
+    const tage = gearbeitet(["2026-11-02", "2026-11-03"], 480);
+    const ohne = stand("2026-11", { arbeitstage: tage });
+    expect(ohne.gearbeitetMinuten).toBe(960);
+    expect(ohne.pausenabzugMinuten).toBe(0);
+    const mit = stand("2026-11", {
+      modelle: [{ ...modell("2026-01-01"), pausenabzug: true }],
+      arbeitstage: tage,
+    });
+    expect(mit.pausenabzugMinuten).toBe(60);
+    expect(mit.gearbeitetMinuten).toBe(900);
+    expect(mit.istMinuten).toBe(900);
+  });
 });

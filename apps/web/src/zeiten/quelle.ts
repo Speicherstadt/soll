@@ -51,7 +51,9 @@ export const tagQuelle = (anfrage: () => Anfrage, offline?: Offline) => {
     const tag = ansicht();
     if (!tag) return null;
     const spaetester = Math.max(0, ...tag.umfeld.map((stempel) => stempel.zeitpunkt));
-    const neu = tagesstand(tag.umfeld, Math.max(jetzt(), tag.jetzt, spaetester), tag.tag);
+    const neu = tagesstand(tag.umfeld, Math.max(jetzt(), tag.jetzt, spaetester), tag.tag, {
+      pausenabzug: tag.pausenabzug === true,
+    });
     return neu.ok ? neu.wert : tag.stand;
   });
   return {

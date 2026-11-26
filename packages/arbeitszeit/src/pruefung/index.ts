@@ -19,6 +19,8 @@ export {
   type PauseFehltBefund,
   type RuhepausenBefund,
   ruhepausen,
+  schichtPausenabzug,
+  tagesPausenabzug,
 } from "./ruhepausen.ts";
 export {
   type RuhezeitAusgleich,

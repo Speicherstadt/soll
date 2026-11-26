@@ -156,10 +156,23 @@ const summenDesMonats = (
   // a day of the employment without a model is never counted as 0 (CLAUDE.md, "Never")
   const fehlend = ohneModell.filter((tag) => tag >= beschaeftigung.eintritt);
   if (fehlend.length > 0) return { summen: null, nichtHinterlegt: fehlend, befunde: [] };
-  const { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten } =
-    stand.wert;
+  const {
+    sollMinuten,
+    gearbeitetMinuten,
+    pausenabzugMinuten,
+    gutschriftMinuten,
+    istMinuten,
+    saldoMinuten,
+  } = stand.wert;
   return {
-    summen: { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten },
+    summen: {
+      sollMinuten,
+      gearbeitetMinuten,
+      gutschriftMinuten,
+      istMinuten,
+      saldoMinuten,
+      ...(pausenabzugMinuten > 0 ? { pausenabzugMinuten } : {}),
+    },
     nichtHinterlegt: [],
     // R-24: sickness without a certificate in leave (§ 9 BUrlG)
     befunde: stand.wert.befunde,

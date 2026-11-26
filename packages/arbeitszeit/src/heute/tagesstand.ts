@@ -8,7 +8,7 @@ import {
   type HoechstarbeitszeitBefund,
   hoechstarbeitszeit,
 } from "../pruefung/hoechstarbeitszeit.ts";
-import { type RuhepausenBefund, ruhepausen } from "../pruefung/ruhepausen.ts";
+import { type RuhepausenBefund, ruhepausen, tagesPausenabzug } from "../pruefung/ruhepausen.ts";
 import { type RuhezeitBefund, ruhezeit } from "../pruefung/ruhezeit.ts";
 import { type Ausblick, ausblickBeiArbeit, ruheAusblick } from "./ausblick.ts";
 
@@ -34,6 +34,8 @@ export type Tagesstand = {
   istMinuten: number;
   /** the Ruhepausen taken, and a break running now with its whole minutes */
   pausenMinuten: number;
+  /** minutes automatically deducted from closed shifts when the model enables it (docs/regeln.md, R-04) */
+  pausenabzugMinuten: number;
   beginn: number | null;
   ende: number | null;
   /** R-01 on the stamps; R-02, R-04 and R-05 as if the person left now */
@@ -48,6 +50,8 @@ export type TagesstandErgebnis = { ok: true; wert: Tagesstand } | { ok: false; g
 export type TagesstandOptionen = {
   /** the industry of the business for § 5 Abs. 2 ArbZG; default "andere" */
   branche?: Branche;
+  /** automatic statutory break deduction on closed shifts from the working-time model; default false */
+  pausenabzug?: boolean;
 };
 
 export type { Ausblick };
@@ -138,6 +142,8 @@ export const tagesstand = (
       ? Math.max(0, Math.floor((jetzt - laufend.offen.seit) / MINUTE))
       : 0;
   const heute = tag === (laufend?.tag ?? tagInBerlin(jetzt));
+  const pausenabzugMinuten =
+    echt !== undefined ? tagesPausenabzug(echt, optionen.pausenabzug === true) : 0;
   return {
     ok: true,
     wert: {
@@ -149,8 +155,9 @@ export const tagesstand = (
           : zustand === "arbeit"
             ? laufend.beginn
             : (laufend.offen?.seit ?? null),
-      istMinuten: amTag?.arbeitsMinuten ?? 0,
-      pausenMinuten: (amTag?.pausenMinuten ?? 0) + laufendePause,
+      istMinuten: (amTag?.arbeitsMinuten ?? 0) - pausenabzugMinuten,
+      pausenMinuten: (amTag?.pausenMinuten ?? 0) + laufendePause + pausenabzugMinuten,
+      pausenabzugMinuten,
       beginn: echt?.beginn ?? null,
       ende: echt?.ende ?? null,
       befunde: [

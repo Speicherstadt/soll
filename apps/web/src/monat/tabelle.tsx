@@ -29,11 +29,20 @@ export const Summen = (props: { inhalt: Monatsinhalt }) => (
       }
     >
       {(summen) => (
-        <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Wert name={m.monat_soll()} wert={dauerText(summen().sollMinuten)} />
-          <Wert name={m.monat_ist()} wert={dauerText(summen().istMinuten)} />
-          <Wert name={m.monat_saldo()} wert={saldoText(summen().saldoMinuten)} />
-        </dl>
+        <div class="flex flex-col gap-2">
+          <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Wert name={m.monat_soll()} wert={dauerText(summen().sollMinuten)} />
+            <Wert name={m.monat_ist()} wert={dauerText(summen().istMinuten)} />
+            <Wert name={m.monat_saldo()} wert={saldoText(summen().saldoMinuten)} />
+          </dl>
+          <Show when={(summen().pausenabzugMinuten ?? 0) > 0}>
+            <p class="text-[12px] text-muted-foreground">
+              {m.monat_pausenabzug_hinweis({
+                dauer: dauerText(summen().pausenabzugMinuten ?? 0),
+              })}
+            </p>
+          </Show>
+        </div>
       )}
     </Show>
   </section>

@@ -1,6 +1,7 @@
 import {
   aktuellerTag,
   beginnInBerlin,
+  minutenAmWochentag,
   plusTage,
   stempelungenAm,
   type Tag,
@@ -11,7 +12,7 @@ import {
 import type { Db } from "../../db/oeffnen.ts";
 import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
 import { type Stempel, stempelungenIn } from "./stempelungen.ts";
-import { sollAm } from "./zuordnungen.ts";
+import { modellAm } from "./zuordnungen.ts";
 
 /** A working day of one person as Heute and the times of a day show it (S-304) */
 export type TagAnsicht = {
@@ -20,6 +21,8 @@ export type TagAnsicht = {
   jetzt: number;
   /** from the person's working-time model; null: nicht hinterlegt */
   sollMinuten: number | null;
+  /** whether the person's model on this day enables automatic statutory break deduction */
+  pausenabzug: boolean;
   stand: Tagesstand;
   /** the stamps in force of the day */
   stempelungen: Stempel[];
@@ -56,7 +59,9 @@ export const tagLesen = (
     datum ?? aktuellerTag(stempelungenIn(db, betriebId, nutzerId, heute.von, jetzt + 1), jetzt);
   const { von, bis } = umfeldVon(tag);
   const umfeld = stempelungenIn(db, betriebId, nutzerId, von, bis);
-  const stand = tagesstand(umfeld, jetzt, tag);
+  const modell = modellAm(db, betriebId, nutzerId, tag);
+  const pausenabzug = modell?.pausenabzug === true;
+  const stand = tagesstand(umfeld, jetzt, tag, { pausenabzug });
   if (!stand.ok) return null;
   const amTag = stempelungenAm(umfeld, jetzt, tag);
   const ids = new Set(amTag.map((stempel) => stempel.stempelId));
@@ -79,7 +84,8 @@ export const tagLesen = (
   return {
     tag,
     jetzt,
-    sollMinuten: sollAm(db, betriebId, nutzerId, tag),
+    sollMinuten: modell === null ? null : minutenAmWochentag(modell.sollMinuten, tag),
+    pausenabzug,
     stand: stand.wert,
     stempelungen: amTag,
     umfeld,

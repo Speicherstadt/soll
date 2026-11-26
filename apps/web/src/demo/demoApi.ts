@@ -24,6 +24,7 @@ const tagDaten = (tag: string) => {
     nutzerId: zustand.betrieb.nutzerId,
     name: "Jonas Weber",
     sollMinuten: 468,
+    pausenabzug: false,
     luecken: [],
     aenderungen: [],
     umfeld,

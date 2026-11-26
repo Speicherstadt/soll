@@ -21,6 +21,8 @@ export type NeuesModell = {
   /** Cents per month or per hour; null while not yet known ("nicht hinterlegt") */
   lohnCent: number | null;
   minijob: boolean;
+  /** Automatic deduction of missing statutory Ruhepausen on closed shifts (R-04); default false */
+  pausenabzug?: boolean | undefined;
   /** The surcharges it pays in basis points (S-207); a rate not set is not paid */
   zuschlagssaetze?: Zuschlagssaetze | undefined;
   /** The first day it holds; today in Europe/Berlin if not given */
@@ -64,6 +66,7 @@ export const modellAnlegen = (schreibDb: SchreibDb, kontext: Kontext, neu: Neues
         lohnArt: neu.lohnArt,
         lohnCent: neu.lohnCent,
         minijob: neu.minijob,
+        pausenabzug: neu.pausenabzug ?? false,
         zuschlagssaetze: JSON.stringify(neu.zuschlagssaetze ?? {}),
         gueltigAb: neu.gueltigAb ?? tagInBerlin(kontext.jetzt),
         angelegtAm: kontext.jetzt,

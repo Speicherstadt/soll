@@ -74,7 +74,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Tabelle | Klasse | Inhalt | Was Soll heute tut |
 | --- | --- | --- | --- |
 | `stempelungen` | M | Kommen, Pause, Gehen mit Zeit, Quelle, jeder Fassung und ihrem Grund | sondert jede Fassung mit dem Monat ihres Arbeitstags aus; vorher nie gelöscht, nur ersetzt oder als entfernt markiert |
-| `importe` | M | Werkzeug, SHA-256, Name und Größe der Originaldatei, Zuordnung der Personen, was dabei herauskam, wer und wann | bleibt; die Aussonderung entfernt die übernommenen Monate, nicht den Import (offener Punkt) |
+| `importe` | M | Werkzeug, SHA-256, Name und Größe der Originaldatei, Zuordnung der Personen, was dabei herauskam, wer und wann | sondert die Zeile aus, sobald alle Monate ausgesondert sind, in denen übernommene Zeiten oder Abwesenheiten liegen |
 | `korrekturen` | M | Gegeneinträge nach dem Abschluss mit Grund | sondert sie mit dem Monat aus, in dem sie gebucht sind |
 | `monatsabschluesse` | M | Bestätigung und Abschluss mit Inhalt und Prüfwert | sondert beide Schritte mit dem Monat aus |
 | `abwesenheiten` | M | Art, Zeitraum, Status, Grund, Bescheinigung ja oder nein, Kind als Nummer | sondert sie aus, wenn alle Monate entfernt sind, die sie berührt; eine offene Krankheit nie |
@@ -105,7 +105,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | `urlaubshinweise` | P | Tag und Inhalt jedes Hinweises auf den Verfall von Urlaub | bleibt nach dem Austritt (offener Punkt) |
 | `erinnerungseinstellungen` | P | abgeschaltete Erinnerungen, Mail der Person | bleibt nach dem Austritt (offener Punkt) |
 | `schichten` | V | Schicht mit Person, Zeit, Rolle, Standort, veröffentlicht oder Entwurf; bei einer aus Planday oder Crewmeister übernommenen Import, Werkzeug und Kennung im alten Tool | Planer und Inhaber löschen von Hand; von selbst nichts (offener Punkt) |
-| `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | bleibt (offener Punkt) |
+| `schichttausche` | V | Tausch einer Schicht: wer anbietet, an wen, wer übernimmt, Status, Grund einer Ablehnung | sondert zwei Jahre nach Ablauf des Kalenderjahrs der Schicht aus |
 | `erinnerungen` | V | welche Erinnerung wann an wen ging | bleibt (offener Punkt) |
 | `projektzeiten` | L | Buchungen mit Person, Auftrag, Tätigkeit, Zeit, Notiz, abgerechnet am; bei einer aus einer Tabelle oder aus Kimai übernommenen Buchung Import, Werkzeug und Kennung im alten Tool | die Person oder Inhaber und Planer löschen von Hand, bis sie abgerechnet ist; danach bleibt sie (offener Punkt) |
 | `stundensaetze` | L | Stundensätze in Cent, auch je Person | Inhaber löscht von Hand |
@@ -135,7 +135,7 @@ Aussonderung und beim Entziehen einer Karte (siehe [Offene Punkte](#offene-punkt
 | Wo | Was | Frist |
 | --- | --- | --- |
 | Sicherungen (`soll backup`) | eine Kopie der ganzen Datenbank, auch was danach ausgesondert wurde | der Betreiber räumt sie weg ([Installation](installation.md#sicherung)); eine Sicherung sollte nicht länger liegen als die längste Frist der Daten in ihr, höchstens 8 Jahre und ein Kalenderjahr; wer aus einer alten Sicherung wiederherstellt, lässt danach die Aussonderung laufen, sie holt Fälliges von selbst nach |
-| Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256 (CSV oder Excel-Mappe `.xlsx`, auch mit weiteren Blättern, die Soll nicht liest; bei einem Abruf aus Kimai die Datei, die der Abruf wurde, ohne Token, Beschreibungen und Sätze), mit Namen, Zeiten und Salden aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: bis der letzte Monat ausgesondert ist, in den übernommene Zeiten fallen; Soll entfernt keine Datei (offener Punkt), der Betreiber löscht sie bis dahin von Hand; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
+| Dateispeicher `/data/dateien/` (`SOLL_DATA_DIR/dateien/`) | jede Originaldatei eines Imports unverändert unter ihrem SHA-256 (CSV oder Excel-Mappe `.xlsx`, auch mit weiteren Blättern, die Soll nicht liest; bei einem Abruf die Datei, die der Abruf wurde, ohne Token, Beschreibungen und Sätze), mit Namen, Zeiten und Salden aller Personen darin; die Tabelle `importe` nennt Name und Hash | Regelfrist wie Klasse M: sobald alle zugehörigen `importe`-Zeilen ausgesondert sind und kein anderer Import denselben SHA-256 nutzt, löscht Soll die Datei automatisch; sie liegt nicht in `soll backup`, sondern im Backup des Datenverzeichnisses |
 | Log des Servers | je Anfrage Zeit, Methode, Pfad ohne Query, Status und Dauer; keine Header, keine Inhalte; ein Pfad kann die Kennung einer Person enthalten | der Betreiber legt sie im Log-System fest (Vorschlag: 14 Tage) |
 | Gerät der Person | die Warteschlange ohne Netz und der zuletzt geladene Tag (IndexedDB) | bis die Warteschlange gesendet ist; der Tag bis zum nächsten Laden |
 | Tablet am Eingang | die Warteschlange des Terminals ohne Netz, der Ausweis darin nur verschlüsselt für den Server | bis sie gesendet ist |
@@ -168,11 +168,7 @@ Was Soll heute nicht von selbst löscht und ein Betrieb bis dahin anders regeln 
   der Modelle, Konten, Hinweise, Einstellungen der Erinnerungen, PIN, Geräte und das Konto selbst
   bleiben, bis die Datenbank gelöscht wird. Gebraucht werden sie, bis der letzte Monat der Person
   ausgesondert ist.
-- **Planung und Hinweise** (Klasse V): Schichten, Tausche und gesendete Erinnerungen haben keine
-  Frist.
-- **Importe**: die Zeile in `importe` und die Originaldatei unter `/data/dateien/` bleiben, auch
-  wenn alle Monate ausgesondert sind, in die ihre Zeiten fallen; der Dateispeicher kann heute nichts
-  entfernen.
+- **Planung und Hinweise** (Klasse V): Schichten und gesendete Erinnerungen haben keine Frist.
 - **Leistungsnachweise** (Klasse L): abgerechnete Buchungen, Stundennachweise und Übergaben an Haben
   bleiben ohne Frist.
 - **Inhalte gelöschter Zeilen**: Löscht Soll eine Zeile außerhalb der Aussonderung, bleiben die

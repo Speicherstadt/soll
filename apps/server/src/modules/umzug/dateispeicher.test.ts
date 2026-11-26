@@ -49,4 +49,12 @@ describe("the content-addressed file store", () => {
     expect(() => speicher.pfad("../../etc/passwd")).toThrow("invalid hash");
     expect(() => speicher.pfad("A".repeat(64))).toThrow("invalid hash");
   });
+
+  it("removes a file and returns false when it is already gone", async () => {
+    const speicher = dateispeicher(() => ordner);
+    const hash = await speicher.speichern(inhalt);
+    expect(await speicher.loeschen(hash)).toBe(true);
+    expect(await speicher.pruefen(hash)).toBe("fehlt");
+    expect(await speicher.loeschen(hash)).toBe(false);
+  });
 });

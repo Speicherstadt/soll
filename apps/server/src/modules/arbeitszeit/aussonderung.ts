@@ -13,6 +13,7 @@ import { abwesenheiten, korrekturen, monatsabschluesse, stempelungen } from "../
 import { schreiben } from "../audit/index.ts";
 import { aenderungGesperrt, ausgesonderteMonate } from "./abschluss.ts";
 import { type Aufbewahrungsjahre, aufbewahrungsjahre, aussonderbarAb } from "./aufbewahrung.ts";
+import { importeAussondern, schichttauscheAussondern } from "./aussonderung-weiteres.ts";
 import { lesefenster } from "./monatsinhalt.ts";
 import { stempelungenIn } from "./stempelungen.ts";
 import { lohnmodelle } from "./zuordnungen.ts";
@@ -263,6 +264,8 @@ const monatAussondern = (
     return { ...a, zeilen, inhalte };
   });
 
+export type AussonderOptionen = { dateiLoeschen?: (sha256: string) => void };
+
 /**
  * Removes the content of every closed month whose retention period ended by `jetzt`, in every
  * business. A month whose removal would change the records of another closed month (a night shift
@@ -272,6 +275,7 @@ export const aussondern = (
   db: Db,
   schreibDb: SchreibDb,
   jetzt: number,
+  optionen: AussonderOptionen = {},
 ): { ausgesondert: Aussonderung[]; aufgeschoben: Aufgeschoben[] } => {
   const ausgesondert: Aussonderung[] = [];
   const aufgeschoben: Aufgeschoben[] = [];
@@ -291,6 +295,8 @@ export const aussondern = (
     } = monatAussondern(db, schreibDb, a, zeilen, jetzt);
     ausgesondert.push({ betriebId, nutzerId, monat, jahre, zeilen: n, inhalte });
   }
+  importeAussondern(db, schreibDb, jetzt, optionen.dateiLoeschen);
+  schichttauscheAussondern(db, schreibDb, jetzt);
   return { ausgesondert, aufgeschoben };
 };
 
@@ -304,10 +310,11 @@ export const aussonderungsSchleife = (
   jetzt: () => number,
   log: (zeile: string) => void,
   intervallMs = 6 * 60 * 60_000,
+  optionen: AussonderOptionen = {},
 ): (() => void) => {
   const lauf = () => {
     try {
-      const { ausgesondert, aufgeschoben } = aussondern(db, schreibDb, jetzt());
+      const { ausgesondert, aufgeschoben } = aussondern(db, schreibDb, jetzt(), optionen);
       if (ausgesondert.length > 0 || aufgeschoben.length > 0)
         log(
           JSON.stringify({

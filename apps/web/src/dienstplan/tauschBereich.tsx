@@ -1,4 +1,4 @@
-import { Badge, Button } from "@soll/ui";
+import { Badge, Button, Checkbox } from "@soll/ui";
 import { createSignal, For, Loading, Show } from "solid-js";
 import { abfrage, daten, schreiben } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
@@ -90,15 +90,14 @@ const Eintrag = (props: {
 
 /** The owner's setting: a takeover holds at once while the check finds no Verstoß */
 const OhneFreigabe = (props: { wert: boolean; onWert: (wert: boolean) => void }) => (
-  <label class="flex items-start gap-2">
-    <input
-      type="checkbox"
-      class="mt-1"
-      checked={props.wert}
-      onChange={(event) => props.onWert(event.currentTarget.checked)}
-    />
+  <Checkbox
+    class="flex items-start gap-2"
+    boxClass="mt-1"
+    checked={props.wert}
+    onChange={(event) => props.onWert(event.currentTarget.checked)}
+  >
     {m.plan_tausch_ohne_freigabe()}
-  </label>
+  </Checkbox>
 );
 
 /**

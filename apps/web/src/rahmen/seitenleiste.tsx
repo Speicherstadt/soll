@@ -40,9 +40,9 @@ export const Seitenleiste = () => (
         </Link>
       )}
     </For>
-    <div class="mt-auto px-1">
+    <div class="mt-auto border-t border-border pt-3">
       <Darstellung />
-      <p class="mt-3 text-[12px] text-muted-foreground tabular-nums">v{__APP_VERSION__}</p>
+      <p class="mt-2.5 px-1 text-[11px] text-muted-foreground tabular-nums">v{__APP_VERSION__}</p>
     </div>
   </nav>
 );

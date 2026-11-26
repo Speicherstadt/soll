@@ -1,4 +1,4 @@
-import { Badge, Input, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
+import { Badge, Checkbox, Input, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
 import { createSignal, For, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { type ProjektQuelle, zeilenAktionen } from "./quelle.ts";
@@ -20,15 +20,14 @@ const Abrechenbar = (props: {
       </Show>
     }
   >
-    <label class="inline-flex min-h-9 items-center gap-2">
-      <input
-        type="checkbox"
-        checked={props.taetigkeit.abrechenbar}
-        aria-label={m.taetigkeit_abrechenbar_fuer({ name: taetigkeitName(props.taetigkeit) })}
-        onChange={(event) => props.aendern(event.currentTarget.checked)}
-      />
+    <Checkbox
+      class="min-h-9"
+      checked={props.taetigkeit.abrechenbar}
+      aria-label={m.taetigkeit_abrechenbar_fuer({ name: taetigkeitName(props.taetigkeit) })}
+      onChange={(event) => props.aendern(event.currentTarget.checked)}
+    >
       <span aria-hidden="true">{m.taetigkeit_abrechenbar()}</span>
-    </label>
+    </Checkbox>
   </Show>
 );
 
@@ -94,10 +93,9 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
           onSubmit={anlegen}
         >
           <Input label={m.taetigkeit_name()} name="name" required maxlength={100} class="md:w-64" />
-          <label class="flex min-h-9 items-center gap-2">
-            <input type="checkbox" name="abrechenbar" value="ja" checked />
+          <Checkbox name="abrechenbar" value="ja" defaultChecked class="min-h-9">
             {m.taetigkeit_abrechenbar()}
-          </label>
+          </Checkbox>
         </NeuFormular>
       </Show>
       <Table beschriftung={m.taetigkeiten_liste()}>

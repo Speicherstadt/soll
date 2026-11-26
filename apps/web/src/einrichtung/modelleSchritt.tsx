@@ -1,4 +1,4 @@
-import { Button, Icon, Input } from "@soll/ui";
+import { Button, Checkbox, Icon, Input } from "@soll/ui";
 import { Trash2 } from "lucide";
 import { createSignal, For, Loading, Show } from "solid-js";
 import { abfrage, aenderung, daten, listeAendern } from "../abfragen/abfrage.ts";
@@ -118,17 +118,12 @@ const VorlageKarte = (props: {
         />
       </div>
       <ZuschlagFelder />
-      <label class="flex items-start gap-2.5 text-[14px]">
-        <input
-          type="checkbox"
-          name="pausenabzug"
-          class="mt-1 size-4 shrink-0 rounded border-border accent-primary"
-        />
+      <Checkbox name="pausenabzug" class="flex items-start gap-2.5 text-[14px]" boxClass="mt-1">
         <span class="flex flex-col gap-0.5">
           <span class="font-medium">{m.modell_pausenabzug()}</span>
           <span class="text-[12px] text-muted-foreground">{m.modell_pausenabzug_hinweis()}</span>
         </span>
-      </label>
+      </Checkbox>
       <Fehler text={fehler()} />
       <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
         {m.modell_uebernehmen({ name: name() })}

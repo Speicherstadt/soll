@@ -1,3 +1,4 @@
+import { Checkbox } from "@soll/ui";
 import { useQueryClient } from "@tanstack/solid-query";
 import { createSignal, For, Loading, Show } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
@@ -61,16 +62,15 @@ export const Erinnerungen = () => {
             <GeraetSchalter vapidSchluessel={a().vapidSchluessel} onGeaendert={neuLaden} />
             <For each={ARTEN}>
               {(eintrag) => (
-                <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
-                  <input
-                    type="checkbox"
-                    class="mt-1"
-                    checked={a().wuensche[eintrag.art]}
-                    disabled={eintrag.art === "mail" && !a().mail}
-                    onChange={(event) =>
-                      setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
-                    }
-                  />
+                <Checkbox
+                  class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5"
+                  boxClass="mt-1"
+                  checked={a().wuensche[eintrag.art]}
+                  disabled={eintrag.art === "mail" && !a().mail}
+                  onChange={(event) =>
+                    setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
+                  }
+                >
                   <span class="flex flex-col">
                     <span class="font-medium">{eintrag.name()}</span>
                     <span class="text-muted-foreground">
@@ -79,7 +79,7 @@ export const Erinnerungen = () => {
                         : eintrag.text()}
                     </span>
                   </span>
-                </label>
+                </Checkbox>
               )}
             </For>
             <Fehler text={fehler()} />

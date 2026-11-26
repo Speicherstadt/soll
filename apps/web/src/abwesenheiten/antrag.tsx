@@ -1,4 +1,4 @@
-import { Button } from "@soll/ui";
+import { Button, Checkbox } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
@@ -81,14 +81,12 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
           </div>
         </div>
         <div class="flex flex-wrap gap-x-5 gap-y-2">
-          <label class="flex min-h-11 items-center gap-2">
-            <input type="checkbox" name="ersterHalb" />
+          <Checkbox name="ersterHalb" class="min-h-11">
             {m.abw_erster_halb()}
-          </label>
-          <label class="flex min-h-11 items-center gap-2">
-            <input type="checkbox" name="letzterHalb" />
+          </Checkbox>
+          <Checkbox name="letzterHalb" class="min-h-11">
             {m.abw_letzter_halb()}
-          </label>
+          </Checkbox>
         </div>
         <Show when={schichten().length > 0}>
           <p class="rounded-md bg-warning-surface px-3 py-2 text-foreground">

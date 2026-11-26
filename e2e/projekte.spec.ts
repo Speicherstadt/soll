@@ -112,3 +112,20 @@ test("an employee sees orders and activities, without money and without changing
   await expect(page.getByRole("row", { name: new RegExp(t("taetigkeit_fahrt")) })).toBeVisible();
   await expect(page.getByRole("button", { name: t("taetigkeit_anlegen") })).toHaveCount(0);
 });
+
+// [tdd-review] PR #101: Checkbox spreads `checked` as DOM property, not defaultChecked,
+// so form.reset() clears the default checked state on the new-activity form.
+test("the new-activity billable checkbox stays checked after creating an activity", async ({
+  page,
+}) => {
+  await betriebAnlegen(page);
+  await page.goto("/projekte");
+  await tab(page, "projekte_tab_taetigkeiten");
+  const formular = page.getByRole("form", { name: t("taetigkeit_anlegen") });
+  const abrechenbar = formular.getByRole("checkbox", { name: t("taetigkeit_abrechenbar") });
+  await expect(abrechenbar).toBeChecked();
+  await feld(page, "taetigkeit_name").fill("Montage");
+  await page.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
+  await expect(page.getByRole("cell", { name: "Montage", exact: true })).toBeVisible();
+  await expect(abrechenbar).toBeChecked();
+});

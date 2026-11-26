@@ -73,28 +73,41 @@ test("the tab targets are at least 44 px high @phone", async ({ page, isMobile }
 
 test("dark stays dark after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
+  const gruppe = page.getByRole("main").getByRole("group", { name: text("theme_label") });
+  await gruppe.getByRole("button", { name: text("theme_dunkel") }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("system");
+  await gruppe.getByRole("button", { name: text("theme_system") }).click();
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
 });
 
 test("both colour pickers show the theme chosen in either", async ({ page }) => {
   await page.goto("/einstellungen");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
-  await expect(page.getByRole("navigation").getByLabel(text("theme_label"))).toHaveValue("dunkel");
+  await page
+    .getByRole("main")
+    .getByRole("group", { name: text("theme_label") })
+    .getByRole("button", { name: text("theme_dunkel") })
+    .click();
+  await expect(
+    page
+      .getByRole("navigation")
+      .getByRole("group", { name: text("theme_label") })
+      .getByRole("button", { name: text("theme_dunkel") }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
 test("a picker reached by keyboard shows its focus @phone", async ({ page }) => {
   await page.goto("/mehr");
-  const feld = page.getByRole("main").getByLabel(text("theme_label"));
-  await feld.focus();
+  const knopf = page
+    .getByRole("main")
+    .getByRole("group", { name: text("theme_label") })
+    .getByRole("button", { name: text("theme_system") });
+  await knopf.focus();
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Tab");
-  await expect(feld).toBeFocused();
-  await expect(feld).not.toHaveCSS("outline-style", "none");
+  await expect(knopf).toBeFocused();
+  await expect(knopf).not.toHaveCSS("outline-style", "none");
 });
 
 test("the chosen language stays after a reload", async ({ page }) => {
@@ -124,6 +137,25 @@ test.describe("in Arabic", () => {
     const leiste = await page.getByRole("navigation").boundingBox();
     const breite = page.viewportSize()?.width ?? 0;
     expect((leiste?.x ?? 0) + (leiste?.width ?? 0)).toBeGreaterThan(breite - 2);
+  });
+
+  // [tdd-review] PR #101: darstellung.tsx uses physical `right-2` instead of logical `end-2`,
+  // placing the chevron on top of the globe icon in RTL (Arabic).
+  test("the language picker icons sit on opposite sides in RTL", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    const select = page
+      .getByRole("navigation")
+      .getByLabel(messagesOf("ar").sprache_label ?? "sprache_label");
+    const icons = select.locator("..").locator("svg");
+    await expect(icons).toHaveCount(2);
+    const globe = await icons.nth(0).boundingBox();
+    const chevron = await icons.nth(1).boundingBox();
+    expect(globe).not.toBeNull();
+    expect(chevron).not.toBeNull();
+    if (!globe || !chevron) return;
+    // In RTL, globe (inline-start) is on the right and chevron (inline-end) must be to its left without overlapping
+    expect(chevron.x + chevron.width).toBeLessThan(globe.x);
   });
 });
 

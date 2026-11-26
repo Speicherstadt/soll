@@ -62,7 +62,7 @@ export const NeuFormular = (props: {
 }) => (
   <form
     aria-label={props.label}
-    class="flex flex-col gap-3 rounded-lg border border-border p-3 md:flex-row md:flex-wrap md:items-end"
+    class="grid grid-cols-1 items-start gap-4 rounded-xl border border-border p-4 sm:grid-cols-2 lg:grid-cols-3"
     onSubmit={(event) => {
       event.preventDefault();
       const form = event.currentTarget;
@@ -70,15 +70,10 @@ export const NeuFormular = (props: {
     }}
   >
     {props.children}
-    <Button
-      type="submit"
-      variant="outline"
-      class="self-start md:self-end"
-      disabled={props.arbeitet}
-    >
-      {props.knopf}
-    </Button>
-    <div class="basis-full">
+    <div class="flex flex-col gap-2 sm:col-span-full">
+      <Button type="submit" variant="outline" class="self-start" disabled={props.arbeitet}>
+        {props.knopf}
+      </Button>
       <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
     </div>
   </form>

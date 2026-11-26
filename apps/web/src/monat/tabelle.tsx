@@ -9,9 +9,9 @@ import type { Gegeneintrag, Monatsinhalt } from "./typen.ts";
 import { saldoText, type Zeile } from "./zeilen.ts";
 
 const Wert = (props: { name: string; wert: string }) => (
-  <div class="flex flex-col gap-0.5">
+  <div class="flex flex-col gap-0.5 rounded-xl border border-border p-4">
     <dt class="text-[12px] text-muted-foreground">{props.name}</dt>
-    <dd class="font-mono font-semibold text-[17px] tabular-nums" dir="ltr">
+    <dd class="font-mono font-semibold text-[20px] tabular-nums" dir="ltr">
       {props.wert}
     </dd>
   </div>
@@ -19,17 +19,17 @@ const Wert = (props: { name: string; wert: string }) => (
 
 /** Soll, Ist and balance of the month, or "nicht hinterlegt" with the days that lack a model */
 export const Summen = (props: { inhalt: Monatsinhalt }) => (
-  <section aria-label={m.monat_summen()} class="flex flex-wrap gap-x-8 gap-y-3">
+  <section aria-label={m.monat_summen()}>
     <Show
       when={props.inhalt.summen}
       fallback={
-        <p class="text-muted-foreground">
+        <p class="rounded-xl border border-border p-4 text-muted-foreground">
           {m.monat_nicht_hinterlegt({ tage: tageText(props.inhalt.nichtHinterlegt) })}
         </p>
       }
     >
       {(summen) => (
-        <dl class="flex flex-wrap gap-x-8 gap-y-3">
+        <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Wert name={m.monat_soll()} wert={dauerText(summen().sollMinuten)} />
           <Wert name={m.monat_ist()} wert={dauerText(summen().istMinuten)} />
           <Wert name={m.monat_saldo()} wert={saldoText(summen().saldoMinuten)} />

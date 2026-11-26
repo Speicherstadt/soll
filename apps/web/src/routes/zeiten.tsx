@@ -37,7 +37,7 @@ const Zeiten = () => {
   const darfKorrigieren = () => eigene() || hatRolle("inhaber", "planer");
   return (
     <Seite titel={m.nav_zeiten()}>
-      <div class="flex max-w-2xl flex-wrap items-end gap-3">
+      <div class="flex flex-wrap items-end gap-3">
         <Loading>
           <Show when={personen().length > 0}>
             <div class="flex min-w-48 flex-col gap-1.5">

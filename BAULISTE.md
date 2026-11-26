@@ -1364,7 +1364,7 @@ Alle Punkte: nach S-305.
   auflistet; ein offenes bekommt bei geänderten Befunden einen Kommentar und neuen Text, bei gleichen
   nichts; ohne Befund entsteht keins (Tests mit nachgestellter API). Alle Abrufe in Tests laufen
   gegen Fixtures, ohne Netz. Doku `docs/gesetzeswaechter.md` und `docs/entwicklung.md`.
-- [ ] **S-907 Doku und Website** – alle Seiten aus dem Projektplan, Startseite als Produktseite,
+- [x] **S-907 Doku und Website** – alle Fachseiten aktuell, Startseite als Produktseite,
   README aktuell.
 - [x] **S-908 Screenshots** – Workflow „Update screenshots“, hell und dunkel, Desktop, Handy,
   Terminal.

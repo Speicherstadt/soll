@@ -16,15 +16,16 @@ const ok = <T>(daten: T, status = 200): Antwort<T> => ({ ok: true, status, daten
 
 const tagDaten = (tag: string) => {
   const jetzt = Date.now();
-  const umfeld = zustand.stempelungen.map((s) => ({ art: s.art, zeitpunkt: s.zeitpunkt }));
+  const umfeld = zustand.stempelungen;
   const stand = tagesstand(umfeld, jetzt, tag);
   return {
     tag,
     jetzt,
     nutzerId: zustand.betrieb.nutzerId,
+    name: "Jonas Weber",
     sollMinuten: 468,
-    gesperrt: false,
     luecken: [],
+    aenderungen: [],
     umfeld,
     stempelungen: zustand.stempelungen,
     stand: stand.ok
@@ -53,25 +54,36 @@ const monatDaten = (monat: string) => ({
   abschluss: null,
   ausgesondert: null,
   inhalt: {
-    summen: { sollMinuten: 9828, istMinuten: 9640, saldoMinuten: -188 },
+    monat,
+    summen: {
+      sollMinuten: 9828,
+      gearbeitetMinuten: 9640,
+      gutschriftMinuten: 0,
+      istMinuten: 9640,
+      saldoMinuten: -188,
+    },
     nichtHinterlegt: [],
     befunde: [],
     tage: [
       {
         tag: `${monat}-02`,
-        beginn: Date.parse(`${monat}-02T07:05:00+01:00`),
-        ende: Date.parse(`${monat}-02T15:18:00+01:00`),
-        pauseMinuten: 32,
-        dauerMinuten: 461,
-        abwesenheiten: [],
+        modellMinuten: 468,
+        stempel: [
+          ["kommen", Date.parse(`${monat}-02T07:05:00+01:00`)],
+          ["pause_anfang", Date.parse(`${monat}-02T12:00:00+01:00`)],
+          ["pause_ende", Date.parse(`${monat}-02T12:32:00+01:00`)],
+          ["gehen", Date.parse(`${monat}-02T15:18:00+01:00`)],
+        ],
       },
       {
         tag: `${monat}-03`,
-        beginn: Date.parse(`${monat}-03T07:01:00+01:00`),
-        ende: Date.parse(`${monat}-03T15:24:00+01:00`),
-        pauseMinuten: 34,
-        dauerMinuten: 469,
-        abwesenheiten: [],
+        modellMinuten: 468,
+        stempel: [
+          ["kommen", Date.parse(`${monat}-03T07:01:00+01:00`)],
+          ["pause_anfang", Date.parse(`${monat}-03T12:00:00+01:00`)],
+          ["pause_ende", Date.parse(`${monat}-03T12:34:00+01:00`)],
+          ["gehen", Date.parse(`${monat}-03T15:24:00+01:00`)],
+        ],
       },
     ],
     gegeneintraege: [],
@@ -79,18 +91,26 @@ const monatDaten = (monat: string) => ({
   },
 });
 
-const wocheDaten = (montag: string) => ({
-  montag,
-  standorte: [{ standortId: "st1", name: "Hamburg", bundesland: "DE-HH" }],
-  personen: DEMO_PERSONEN.map((p) => ({ nutzerId: p.nutzerId, name: p.name, rolle: p.rolle })),
+const wocheDaten = () => ({
+  standortId: "st1",
+  tage: [
+    "2026-11-23",
+    "2026-11-24",
+    "2026-11-25",
+    "2026-11-26",
+    "2026-11-27",
+    "2026-11-28",
+    "2026-11-29",
+  ],
+  kw: { jahr: 2026, woche: 48 },
+  personen: DEMO_PERSONEN.map((p) => ({ nutzerId: p.nutzerId, name: p.name })),
   schichten: [],
-  veroeffentlichtAm: null,
+  deckung: [],
   befunde: [],
-  tauschregeln: { ohneFreigabe: false },
 });
 
 const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query.get("montag") ?? "2026-11-23");
+  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten();
   if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: [] };
   if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
   if (pfad === "/api/v1/dienstplan/tausch")
@@ -102,14 +122,15 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/projektzeit/saetze/personen") return { personen: [] };
   if (pfad === "/api/v1/projektzeit/stoppuhr")
     return {
+      nutzerId: "jonas",
       tag: query.get("datum") ?? heuteTag(),
       jetzt: Date.now(),
-      aktiv: zustand.stoppuhr.aktiv,
+      laufend: zustand.stoppuhr.laufend,
       buchungen: zustand.stoppuhr.buchungen,
-      projekte: DEMO_PROJEKTE,
-      taetigkeiten: DEMO_TAETIGKEITEN,
       gestempeltMinuten: 220,
       gebuchtMinuten: 150,
+      hinweis: null,
+      zuletzt: [{ projektId: "p1", taetigkeitId: "t2" }],
     };
   if (pfad === "/api/v1/projektzeit/stundennachweise") return { nachweise: [] };
   if (pfad === "/api/v1/projektzeit/auslastung")
@@ -159,20 +180,39 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/arbeitszeit/abwesenheiten")
     return {
       nutzerId: "jonas",
+      name: "Jonas Weber",
       jahr: 2026,
+      heute: heuteTag(),
       bescheinigungAbTag: zustand.bescheinigungAbTag,
+      urlaub: {
+        jahr: 2026,
+        anspruchHalbtage: 56,
+        genommenHalbtage: 10,
+        beantragtHalbtage: 0,
+        restHalbtage: 46,
+      },
       kinderkrank: { ok: true, wert: { anspruchJeKind: 15, jeKind: {} } },
-      rechte: { genehmigen: true, einstellen: true },
+      rechte: { freigeben: true, gesundheit: true, einstellen: true },
       abwesenheiten: zustand.abwesenheiten,
     };
-  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/offen") return { antraege: [] };
-  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/team") return { eintraege: [] };
+  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/offen") return { antraege: [], erinnerungen: [] };
+  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/team")
+    return {
+      von: "2026-11-25",
+      bis: "2026-12-22",
+      standortId: "st1",
+      feiertage: [],
+      abwesenheiten: [],
+    };
   if (pfad === "/api/v1/arbeitszeit/konten")
     return {
       nutzerId: query.get("nutzerId") ?? "jonas",
+      name: "Jonas Weber",
+      heute: heuteTag(),
       urlaub: { ok: true, restHalbtage: 46, geplantHalbtage: 0, befunde: [] },
       ueberstunden: { ok: true, saldoMinuten: 215, luecken: [] },
       hinweise: [],
+      anpassungen: [],
       rechte: { pflegen: true },
     };
   return getBereichAntwort(pfad, query);
@@ -183,7 +223,17 @@ const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
     const art = (body.art as Stempelart) ?? "kommen";
     zustand.stempelungen = [
       ...zustand.stempelungen,
-      { id: `s-${Date.now()}`, art, zeitpunkt: Date.now(), quelle: "web" },
+      {
+        stempelId: `s-${Date.now()}`,
+        nutzerId: "jonas",
+        art,
+        zeitpunkt: Date.now(),
+        geraetZeitpunkt: null,
+        quelle: "app",
+        offline: false,
+        nummer: null,
+        korrigiert: false,
+      },
     ];
     return { ok: true };
   }
@@ -199,25 +249,29 @@ const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
     return zustand.pruefung;
   }
   if (pfad === "/api/v1/projektzeit/stoppuhr/start") {
-    zustand.stoppuhr.aktiv = {
+    zustand.stoppuhr.laufend = {
       buchungId: `b-${Date.now()}`,
-      projektId: String(body.projektId ?? ""),
+      nutzerId: "jonas",
+      projektId: body.projektId ? String(body.projektId) : null,
       taetigkeitId: String(body.taetigkeitId ?? "t1"),
       beginn: Date.now(),
+      ende: null,
+      tag: heuteTag(),
+      notiz: "",
+      abgerechnetAm: null,
+      minuten: 0,
+      kommen: null,
     };
     return { ok: true };
   }
-  if (pfad === "/api/v1/projektzeit/stoppuhr/stopp" && zustand.stoppuhr.aktiv) {
+  if (pfad === "/api/v1/projektzeit/stoppuhr/stopp" && zustand.stoppuhr.laufend) {
+    const ende = Date.now();
+    const minuten = Math.max(1, Math.round((ende - zustand.stoppuhr.laufend.beginn) / 60000));
     zustand.stoppuhr.buchungen = [
-      {
-        ...zustand.stoppuhr.aktiv,
-        ende: Date.now(),
-        notiz: null,
-        abgerechnetAm: null,
-      },
+      { ...zustand.stoppuhr.laufend, ende, minuten },
       ...zustand.stoppuhr.buchungen,
     ];
-    zustand.stoppuhr.aktiv = null;
+    zustand.stoppuhr.laufend = null;
     return { ok: true };
   }
   return { ok: true };

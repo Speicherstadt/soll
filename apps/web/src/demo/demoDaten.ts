@@ -12,34 +12,57 @@ const mitUhr = (stunde: number, minute: number): number => {
 export type DemoZustand = {
   betrieb: Betrieb;
   stempelungen: {
-    id: string;
+    stempelId: string;
+    nutzerId: string;
     art: Stempelart;
     zeitpunkt: number;
-    quelle: string;
+    geraetZeitpunkt: number | null;
+    quelle: "app" | "terminal" | "api" | "import";
+    offline: boolean;
+    nummer: number | null;
+    korrigiert: boolean;
   }[];
   stoppuhr: {
-    aktiv: { buchungId: string; projektId: string; taetigkeitId: string; beginn: number } | null;
-    buchungen: {
+    laufend: {
       buchungId: string;
-      projektId: string;
+      nutzerId: string;
+      projektId: string | null;
       taetigkeitId: string;
       beginn: number;
-      ende: number;
-      notiz: string | null;
+      ende: number | null;
+      tag: string;
+      notiz: string;
       abgerechnetAm: number | null;
+      minuten: number;
+      kommen: { stempelId: string; zeitpunkt: number } | null;
+    } | null;
+    buchungen: {
+      buchungId: string;
+      nutzerId: string;
+      projektId: string | null;
+      taetigkeitId: string;
+      beginn: number;
+      ende: number | null;
+      tag: string;
+      notiz: string;
+      abgerechnetAm: number | null;
+      minuten: number;
+      kommen: { stempelId: string; zeitpunkt: number } | null;
     }[];
   };
   abwesenheiten: {
     abwesenheitId: string;
     nutzerId: string;
     name: string;
-    art: string;
+    art: "urlaub" | "krank" | "kind_krank" | "sonderurlaub" | "ueberstunden";
     von: string;
-    bis: string;
-    ersterTagHalb: boolean;
-    letzterTagHalb: boolean;
-    status: string;
-    bescheinigung: boolean;
+    bis: string | null;
+    ersterHalb: boolean;
+    letzterHalb: boolean;
+    status: "beantragt" | "genehmigt" | "abgelehnt" | "zurueckgezogen" | "storniert";
+    kind: string | null;
+    bescheinigung: "eau" | "papier" | null;
+    grund: string | null;
   }[];
   pruefung: {
     branche: string | null;
@@ -61,18 +84,34 @@ export const demoStartzustand = (): DemoZustand => ({
     module: { arbeitszeit: true, dienstplan: true, projektzeit: true, terminal: true },
     auswertungJePersonSeit: null,
   },
-  stempelungen: [{ id: "s1", art: "kommen", zeitpunkt: mitUhr(7, 3), quelle: "web" }],
+  stempelungen: [
+    {
+      stempelId: "s1",
+      nutzerId: "jonas",
+      art: "kommen",
+      zeitpunkt: mitUhr(7, 3),
+      geraetZeitpunkt: null,
+      quelle: "app",
+      offline: false,
+      nummer: null,
+      korrigiert: false,
+    },
+  ],
   stoppuhr: {
-    aktiv: null,
+    laufend: null,
     buchungen: [
       {
         buchungId: "b1",
+        nutzerId: "jonas",
         projektId: "p1",
         taetigkeitId: "t2",
         beginn: mitUhr(7, 15),
         ende: mitUhr(9, 45),
+        tag: heuteTag(),
         notiz: "Rohinstallation 3. OG",
         abgerechnetAm: null,
+        minuten: 150,
+        kommen: { stempelId: "s1", zeitpunkt: mitUhr(7, 3) },
       },
     ],
   },
@@ -84,10 +123,12 @@ export const demoStartzustand = (): DemoZustand => ({
       art: "urlaub",
       von: "2026-09-14",
       bis: "2026-09-18",
-      ersterTagHalb: false,
-      letzterTagHalb: false,
+      ersterHalb: false,
+      letzterHalb: false,
       status: "genehmigt",
-      bescheinigung: false,
+      kind: null,
+      bescheinigung: null,
+      grund: null,
     },
   ],
   pruefung: {

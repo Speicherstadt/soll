@@ -98,4 +98,21 @@ describe("demoApi", () => {
       expect(Array.isArray(antwort.daten.postenarten)).toBe(true);
     }
   });
+
+  test("GET /api/v1/projektzeit/stundennachweise/vorschau matches Vorschau shape", async () => {
+    const antwort = await demoAntwort<{
+      kunde: { name: string; nummer: string };
+      auftrag: { name: string; nummer: string };
+      zeilen: unknown[];
+      summeMinuten: number;
+      stand: string;
+    }>("/api/v1/projektzeit/stundennachweise/vorschau?projektId=p1&von=2026-11-26&bis=2026-11-26");
+    expect(antwort.ok).toBe(true);
+    if (antwort.ok) {
+      expect(Array.isArray(antwort.daten.zeilen)).toBe(true);
+      expect(typeof antwort.daten.summeMinuten).toBe("number");
+      expect(typeof antwort.daten.kunde.name).toBe("string");
+      expect(typeof antwort.daten.auftrag.name).toBe("string");
+    }
+  });
 });

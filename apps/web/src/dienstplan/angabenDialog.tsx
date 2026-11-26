@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@soll/ui";
+import { Button, Checkbox, Dialog } from "@soll/ui";
 import { createSignal, For, Loading, untrack } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
@@ -37,14 +37,9 @@ const DatumFeld = (props: { label: string; wert: string; onWert: (wert: string) 
 );
 
 const Haken = (props: { label: string; wert: boolean; onWert: (wert: boolean) => void }) => (
-  <label class="flex items-center gap-2">
-    <input
-      type="checkbox"
-      checked={props.wert}
-      onChange={(event) => props.onWert(event.currentTarget.checked)}
-    />
+  <Checkbox checked={props.wert} onChange={(event) => props.onWert(event.currentTarget.checked)}>
     {props.label}
-  </label>
+  </Checkbox>
 );
 
 /**

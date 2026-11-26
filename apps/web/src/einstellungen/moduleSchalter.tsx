@@ -1,4 +1,5 @@
 import { MODULE, type Modul } from "@soll/arbeitszeit";
+import { Checkbox } from "@soll/ui";
 import { createSignal, For } from "solid-js";
 import { api } from "../api.ts";
 import { MODUL_NAMEN } from "../einrichtung/namen.ts";
@@ -44,21 +45,20 @@ export const ModuleSchalter = () => {
       <div class="grid gap-3 sm:grid-cols-2">
         <For each={MODULE}>
           {(modul) => (
-            <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
-              <input
-                type="checkbox"
-                class="mt-1"
-                checked={aktuellerBetrieb()?.module[modul] ?? false}
-                disabled={!darf()}
-                onChange={(event) =>
-                  schalten(modul, event.currentTarget.checked, event.currentTarget)
-                }
-              />
+            <Checkbox
+              class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5"
+              boxClass="mt-1"
+              checked={aktuellerBetrieb()?.module[modul] ?? false}
+              disabled={!darf()}
+              onChange={(event) =>
+                schalten(modul, event.currentTarget.checked, event.currentTarget)
+              }
+            >
               <span class="flex flex-col">
                 <span class="font-medium">{MODUL_NAMEN[modul]()}</span>
                 <span class="text-muted-foreground">{MODUL_TEXTE[modul]()}</span>
               </span>
-            </label>
+            </Checkbox>
           )}
         </For>
       </div>

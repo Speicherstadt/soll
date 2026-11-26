@@ -1,5 +1,5 @@
 import { LAENDER, type Land, REGIONEN, type Region } from "@soll/arbeitszeit";
-import { Button, Icon, Input } from "@soll/ui";
+import { Button, Checkbox, Icon, Input } from "@soll/ui";
 import { Trash2 } from "lucide";
 import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
 import { abfrage, aenderung, daten, listeAendern } from "../abfragen/abfrage.ts";
@@ -92,10 +92,9 @@ const NeuerStandort = (props: {
           <legend class="mb-1 font-medium">{m.standort_regionen()}</legend>
           <For each={regionenVon(land())}>
             {(region) => (
-              <label class="flex min-h-7 items-center gap-2">
-                <input type="checkbox" name="regionen" value={region} />
+              <Checkbox name="regionen" value={region} class="min-h-7">
                 {REGION_NAMEN[region]()}
-              </label>
+              </Checkbox>
             )}
           </For>
         </fieldset>

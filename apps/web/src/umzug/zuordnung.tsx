@@ -1,5 +1,6 @@
 import { ABWESENHEITSARTEN, type Abwesenheitsart } from "@soll/arbeitszeit";
 import type { Ziel, Zuordnung } from "@soll/import";
+import { Checkbox } from "@soll/ui";
 import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { m } from "../paraglide/messages.js";
@@ -170,14 +171,13 @@ const Abgeschlossen = (props: {
   const id = createUniqueId();
   return (
     <Abschnitt titel={m.umzug_abgeschlossen_titel()} text={m.umzug_abgeschlossen_text()}>
-      <label class="flex min-h-11 items-center gap-3">
-        <input
-          type="checkbox"
-          checked={props.bis !== null}
-          onChange={(event) => props.setzen(event.currentTarget.checked ? props.hoechstens : null)}
-        />
+      <Checkbox
+        class="min-h-11 gap-3"
+        checked={props.bis !== null}
+        onChange={(event) => props.setzen(event.currentTarget.checked ? props.hoechstens : null)}
+      >
         {m.umzug_abgeschlossen_an()}
-      </label>
+      </Checkbox>
       <Show when={props.bis}>
         {(bis) => (
           <div class="flex flex-col gap-1.5">

@@ -134,6 +134,22 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
       zuletzt: [{ projektId: "p1", taetigkeitId: "t2" }],
     };
   if (pfad === "/api/v1/projektzeit/stundennachweise") return { nachweise: [] };
+  if (pfad === "/api/v1/projektzeit/stundennachweise/vorschau") {
+    const projekt =
+      DEMO_PROJEKTE.find((p) => p.projektId === query.get("projektId")) ?? DEMO_PROJEKTE[0];
+    const kunde = DEMO_KUNDEN.find((k) => k.kundeId === projekt?.kundeId) ?? DEMO_KUNDEN[0];
+    const von = query.get("von") ?? heuteTag();
+    const bis = query.get("bis") ?? heuteTag();
+    return {
+      kunde: { name: kunde?.name ?? "Kunde", nummer: kunde?.nummer ?? "" },
+      auftrag: { name: projekt?.name ?? "Auftrag", nummer: projekt?.nummer ?? "" },
+      von,
+      bis,
+      zeilen: [],
+      summeMinuten: 0,
+      stand: "demo-stand",
+    };
+  }
   if (pfad === "/api/v1/projektzeit/auslastung")
     return {
       monat: query.get("monat") ?? "2026-10",

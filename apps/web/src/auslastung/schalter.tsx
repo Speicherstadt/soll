@@ -1,3 +1,4 @@
+import { Checkbox } from "@soll/ui";
 import { createSignal, createUniqueId, Show } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
 import { alle, PFAD } from "../abfragen/schluessel.ts";
@@ -40,15 +41,14 @@ export const JePersonSchalter = () => {
   };
   return (
     <div class="flex max-w-xl flex-col gap-2">
-      <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
-        <input
-          type="checkbox"
-          class="mt-1"
-          checked={seit() !== null}
-          disabled={!darf()}
-          aria-describedby={`${id}-text`}
-          onChange={(event) => umschalten(event.currentTarget.checked, event.currentTarget)}
-        />
+      <Checkbox
+        class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5"
+        boxClass="mt-1"
+        checked={seit() !== null}
+        disabled={!darf()}
+        aria-describedby={`${id}-text`}
+        onChange={(event) => umschalten(event.currentTarget.checked, event.currentTarget)}
+      >
         <span class="flex flex-col">
           <span class="font-medium">{m.auslastung_je_person()}</span>
           <span id={`${id}-text`} class="text-muted-foreground">
@@ -62,7 +62,7 @@ export const JePersonSchalter = () => {
             )}
           </Show>
         </span>
-      </label>
+      </Checkbox>
       <Fehler text={fehler()} />
     </div>
   );

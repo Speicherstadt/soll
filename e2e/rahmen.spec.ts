@@ -73,28 +73,41 @@ test("the tab targets are at least 44 px high @phone", async ({ page, isMobile }
 
 test("dark stays dark after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
+  const gruppe = page.getByRole("main").getByRole("group", { name: text("theme_label") });
+  await gruppe.getByRole("button", { name: text("theme_dunkel") }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("system");
+  await gruppe.getByRole("button", { name: text("theme_system") }).click();
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
 });
 
 test("both colour pickers show the theme chosen in either", async ({ page }) => {
   await page.goto("/einstellungen");
-  await page.getByRole("main").getByLabel(text("theme_label")).selectOption("dunkel");
-  await expect(page.getByRole("navigation").getByLabel(text("theme_label"))).toHaveValue("dunkel");
+  await page
+    .getByRole("main")
+    .getByRole("group", { name: text("theme_label") })
+    .getByRole("button", { name: text("theme_dunkel") })
+    .click();
+  await expect(
+    page
+      .getByRole("navigation")
+      .getByRole("group", { name: text("theme_label") })
+      .getByRole("button", { name: text("theme_dunkel") }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
 
 test("a picker reached by keyboard shows its focus @phone", async ({ page }) => {
   await page.goto("/mehr");
-  const feld = page.getByRole("main").getByLabel(text("theme_label"));
-  await feld.focus();
+  const knopf = page
+    .getByRole("main")
+    .getByRole("group", { name: text("theme_label") })
+    .getByRole("button", { name: text("theme_system") });
+  await knopf.focus();
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Tab");
-  await expect(feld).toBeFocused();
-  await expect(feld).not.toHaveCSS("outline-style", "none");
+  await expect(knopf).toBeFocused();
+  await expect(knopf).not.toHaveCSS("outline-style", "none");
 });
 
 test("the chosen language stays after a reload", async ({ page }) => {

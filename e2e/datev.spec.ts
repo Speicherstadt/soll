@@ -109,7 +109,11 @@ test("the export and its mapping pass axe in the dark theme", async ({ page, bro
   const sandra = await zweiterBrowser(browser, test.info());
   await weberAbgeschlossen(page, sandra);
   await page.goto("/einstellungen");
-  await page.getByRole("main").getByLabel(t("theme_label")).selectOption("dunkel");
+  await page
+    .getByRole("main")
+    .getByRole("group", { name: t("theme_label") })
+    .getByRole("button", { name: t("theme_dunkel") })
+    .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.getByRole("region", { name: t("datev_titel") })).toBeVisible();
   await axeGruen(page);

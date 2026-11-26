@@ -1,5 +1,6 @@
 export { Badge, type BadgeProps } from "./badge.tsx";
 export { Button, type ButtonProps } from "./button.tsx";
+export { Checkbox, type CheckboxProps } from "./checkbox.tsx";
 export { type ClassValue, cn } from "./cn.ts";
 export { Combobox, type ComboboxProps, type Option } from "./combobox.tsx";
 export { Dialog, type DialogProps } from "./dialog.tsx";

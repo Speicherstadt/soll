@@ -51,6 +51,12 @@ jobs:
       - run: zensical build --strict
       # Every page has its own description for search engines
       - run: test -z "$(grep -L '^description:' docs/*.md)"
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Build static GitHub Pages demo
+        env:
+          VITE_DEMO: "1"
+        run: bun run --cwd apps/web build -- --outDir ../../site/demo --emptyOutDir
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request'
         with:

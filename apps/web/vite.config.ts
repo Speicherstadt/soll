@@ -23,20 +23,24 @@ const paraglideOutput = (development: boolean) =>
   development ? { outputStructure: "locale-modules" as const } : {};
 
 // The app is a static SPA/PWA; the Hono server serves the API (CLAUDE.md, "Code style")
-export default defineConfig(({ command, isPreview }) => ({
-  define: { __APP_VERSION__: JSON.stringify(version) },
-  plugins: [
-    paraglideVitePlugin({
-      project: "../../project.inlang",
-      outdir: "./src/paraglide",
-      strategy: ["localStorage", "cookie", "preferredLanguage", "baseLocale"],
-      ...paraglideOutput(command === "serve" && !isPreview),
-    }),
-    tanstackRouter({ target: "solid", autoCodeSplitting: true }),
-    solid(),
-    tailwindcss(),
-    serviceWorker(),
-  ],
-  server: { port: 5177, strictPort: true, proxy: api },
-  preview: { port: 5177, strictPort: true, proxy: api },
-}));
+export default defineConfig(({ command, isPreview }) => {
+  const istDemo = process.env.VITE_DEMO === "1";
+  return {
+    base: istDemo ? "/demo/" : "/",
+    define: { __APP_VERSION__: JSON.stringify(version) },
+    plugins: [
+      paraglideVitePlugin({
+        project: "../../project.inlang",
+        outdir: "./src/paraglide",
+        strategy: ["localStorage", "cookie", "preferredLanguage", "baseLocale"],
+        ...paraglideOutput(command === "serve" && !isPreview),
+      }),
+      tanstackRouter({ target: "solid", autoCodeSplitting: true }),
+      solid(),
+      tailwindcss(),
+      ...(istDemo ? [] : [serviceWorker()]),
+    ],
+    server: { port: 5177, strictPort: true, proxy: api },
+    preview: { port: 5177, strictPort: true, proxy: api },
+  };
+});

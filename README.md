@@ -12,11 +12,13 @@
 [![CI](https://github.com/Speicherstadt/soll/actions/workflows/ci.yml/badge.svg)](https://github.com/Speicherstadt/soll/actions/workflows/ci.yml)
 [![Lizenz: AGPL-3.0](https://img.shields.io/badge/Lizenz-AGPL--3.0-blue)](LICENSE)
 [![Doku](https://img.shields.io/badge/Doku-soll.work-4f46e5?logo=zensical&logoColor=white)](https://soll.work/)
+[![Demo](https://img.shields.io/badge/Demo-soll.work%2Fdemo-16a34a)](https://soll.work/demo/)
 [![Docker](https://img.shields.io/badge/Container-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white)](https://soll.work/installation.html)
 
 [Warum?](#warum-soll) •
 [Funktionen](#funktionen) •
 [Screenshots](#screenshots) •
+[Live-Demo](https://soll.work/demo/) •
 [Umzug](#umzug-aus-anderen-tools) •
 [Schnellstart](#schnellstart) •
 [FAQ](#faq) •

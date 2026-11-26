@@ -1051,7 +1051,7 @@ S-701 und unabhängig voneinander.
     Abwesenheiten) und zeigt, dass der zweite Lauf nichts anlegt (die beiden anderen teilen ab der
     Datei denselben Weg); axe grün; Texte in allen sechs Sprachen; Doku `docs/umzug.md`, README,
     Entscheidungen im Projektplan; Abdeckungstests (S-903) für die neuen Spalten.
-- [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
+- [x] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
   Fertig, wenn: Fixtures nach der Exportbeschreibung und der API-Beschreibung beider Anbieter
   bestehen (Quelle im Test) und ein Playwright-Test den ganzen Ablauf zeigt. Genauer:
   - **Quellen**: **Toggl Track** nach Toggls OpenAPI-Dokument der API v9 (engineering.toggl.com,

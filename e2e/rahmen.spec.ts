@@ -152,7 +152,7 @@ test("projekte and verfahrensdoku do not overflow horizontally on phone @phone",
   isMobile,
 }) => {
   test.skip(!isMobile, "the overflow check is for phones");
-  for (const route of ["/projekte", "/verfahrensdoku"]) {
+  for (const route of ["/", "/projekte", "/verfahrensdoku", "/einstellungen"]) {
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const overflow = await page.evaluate(

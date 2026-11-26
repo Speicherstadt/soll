@@ -59,7 +59,7 @@ export const Stoppuhr = () => {
     setFehler(antwort.ok ? "" : buchungFehler(antwort.fehler));
   };
   return (
-    <section aria-labelledby={`${id}-titel`} class="flex flex-col gap-4">
+    <section aria-labelledby={`${id}-titel`} class="flex min-w-0 flex-col gap-4">
       <h2 id={`${id}-titel`} class="font-semibold text-[17px]">
         {m.stoppuhr_titel()}
       </h2>
@@ -84,7 +84,7 @@ export const Stoppuhr = () => {
                 onStarten={(wahl) => nach(aktionen.starten(wahl))}
               />
               <Fehler text={fehler()} />
-              <div class="flex items-end justify-between gap-3">
+              <div class="flex flex-wrap items-end justify-between gap-3">
                 <div class="flex flex-col gap-1.5">
                   <label for={`${id}-tag`} class="font-medium">
                     {m.stoppuhr_tag()}

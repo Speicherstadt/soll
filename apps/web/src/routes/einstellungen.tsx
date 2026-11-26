@@ -53,7 +53,7 @@ const Einstellungen = () => {
     "rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
   return (
     <Seite titel={m.nav_einstellungen()}>
-      <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_210px] xl:items-start">
+      <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_210px] xl:items-start">
         <div class="flex min-w-0 flex-col gap-8">
           <div id="module" class="scroll-mt-6">
             <ModuleSchalter />

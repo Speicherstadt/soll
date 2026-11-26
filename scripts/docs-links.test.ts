@@ -61,6 +61,8 @@ describe("documentation links", () => {
   // tdd-review S-907: README.md still says Toggl and Clockify "folgen" / "nächsten Versionen", though both are implemented and marked verfügbar in docs/umzug.md
   it("does not describe already-available import tools as upcoming in README.md", () => {
     const readme = readFileSync("README.md", "utf8");
-    expect(readme).not.toMatch(/Toggl und Clockify\s+(folgen|liest Soll mit den nächsten Versionen)/);
+    expect(readme).not.toMatch(
+      /Toggl und Clockify\s+(folgen|liest Soll mit den nächsten Versionen)/,
+    );
   });
 });

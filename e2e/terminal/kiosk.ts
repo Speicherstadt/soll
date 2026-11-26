@@ -70,6 +70,7 @@ export const weberMitTerminal = async (jonas: Page, browser: Browser, info: Test
   await einladungAnnehmen(jonas, sandra, "Sandra Kühn");
   await einladungAnnehmen(jonas, max, "Max Peters");
   await jonas.goto("/einstellungen");
+  await jonas.getByRole("tab", { name: t("einstellungen_tab_terminal") }).click();
   return { sandra, max };
 };
 

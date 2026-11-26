@@ -1323,5 +1323,9 @@
   "monat_chart_label": "مخطط الشهر: الساعات الفعلية والمطلوبة ومسار الرصيد يوميًا",
   "auslastung_chart_label": "الاستخدام لكل شخص بالساعات",
   "konten_verlauf_titel": "مسار الساعات الإضافية",
-  "konten_verlauf_label": "مسار رصيد الساعات الإضافية عبر الأشهر"
+  "konten_verlauf_label": "مسار رصيد الساعات الإضافية عبر الأشهر",
+  "einstellungen_tab_betrieb": "الشركة",
+  "einstellungen_tab_terminal": "الجهاز",
+  "einstellungen_tab_export": "التصدير والنقل",
+  "einstellungen_tab_konto": "الحساب"
 }

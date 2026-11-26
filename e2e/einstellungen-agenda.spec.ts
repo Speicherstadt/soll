@@ -6,7 +6,7 @@ test.use({ locale: "de" });
 const de = messagesOf("de");
 const t = (key: string) => de[key] ?? key;
 
-test("settings agenda only links to sections visible to an employee", async ({
+test("settings tabs only show sections visible to an employee and switch cleanly", async ({
   page,
   browser,
 }, info) => {
@@ -18,19 +18,24 @@ test("settings agenda only links to sections visible to an employee", async ({
     await expect(
       sandra.getByRole("heading", { level: 1, name: t("nav_einstellungen") }),
     ).toBeVisible();
+
+    const tablist = sandra.getByRole("tablist", { name: t("nav_einstellungen") });
+    await expect(tablist).toBeVisible();
+    // Employee sees Betrieb and Konto tabs, not owner-only Export & Umzug or Terminal
+    await expect(tablist.getByRole("tab", { name: t("einstellungen_tab_betrieb") })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: t("einstellungen_tab_konto") })).toBeVisible();
+    await expect(tablist.getByRole("tab", { name: t("einstellungen_tab_export") })).toHaveCount(0);
+    await expect(tablist.getByRole("tab", { name: t("einstellungen_tab_terminal") })).toHaveCount(
+      0,
+    );
+
     await expect(sandra.getByRole("heading", { level: 2, name: t("module_titel") })).toBeVisible();
 
-    const agenda = sandra.getByRole("navigation", { name: t("nav_einstellungen") });
-    await expect(agenda).toBeVisible();
-    for (const link of await agenda.getByRole("link").all()) {
-      const href = await link.getAttribute("href");
-      expect(href).toMatch(/^#/);
-      const target = sandra.locator(href as string);
-      await expect(
-        target.getByRole("heading").first(),
-        `agenda link ${href} points to an empty or hidden section`,
-      ).toBeVisible();
-    }
+    await tablist.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
+    await expect(sandra.getByRole("heading", { level: 2, name: t("konto_titel") })).toBeVisible();
+    await expect(
+      sandra.getByRole("heading", { level: 2, name: t("darstellung_titel") }),
+    ).toBeVisible();
   } finally {
     await sandra.context().close();
   }

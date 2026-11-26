@@ -4,7 +4,12 @@ import { istRtl, naechsterIndex } from "./tastatur.ts";
 
 export type Tab = { id: string; label: string; inhalt: () => JSX.Element };
 
-export type TabsProps = { label: string; tabs: readonly Tab[]; start?: string };
+export type TabsProps = {
+  label: string;
+  tabs: readonly Tab[];
+  start?: string | undefined;
+  onWechsel?: ((id: string) => void) | undefined;
+};
 
 /**
  * Tabs with a roving tab stop: Tab reaches the active tab, arrows (mirrored in right-to-left text),
@@ -12,16 +17,22 @@ export type TabsProps = { label: string; tabs: readonly Tab[]; start?: string };
  */
 export const Tabs = (props: TabsProps) => {
   const id = createUniqueId();
-  const [aktiv, setAktiv] = createSignal(() => props.start ?? props.tabs[0]?.id);
+  const [aktiv, setAktiv] = createSignal<string | undefined>(props.start);
+  const gewaehlt = () =>
+    props.tabs.some((tab) => tab.id === aktiv()) ? aktiv() : props.tabs[0]?.id;
   let leiste: HTMLDivElement | undefined;
+  const aktivieren = (tabId: string) => {
+    setAktiv(tabId);
+    props.onWechsel?.(tabId);
+  };
   const waehlen = (index: number) => {
     const tab = props.tabs[index];
     if (!tab) return;
-    setAktiv(tab.id);
+    aktivieren(tab.id);
     leiste?.querySelectorAll<HTMLElement>('[role="tab"]')[index]?.focus();
   };
   return (
-    <div class="flex flex-col gap-3">
+    <div class="flex min-w-0 flex-col gap-4">
       <div
         role="tablist"
         aria-label={props.label}
@@ -29,9 +40,9 @@ export const Tabs = (props: TabsProps) => {
           leiste = el;
         }}
         // wrap tabs onto a second line on narrow screens instead of clipping them
-        class="flex w-fit max-w-full flex-wrap gap-1 rounded-md bg-muted p-1"
+        class="flex w-fit max-w-full flex-wrap gap-1 rounded-lg border border-border bg-muted p-1"
         onKeyDown={(event) => {
-          const index = props.tabs.findIndex((tab) => tab.id === aktiv());
+          const index = props.tabs.findIndex((tab) => tab.id === gewaehlt());
           const ziel = naechsterIndex(
             event.key,
             index,
@@ -50,17 +61,17 @@ export const Tabs = (props: TabsProps) => {
               type="button"
               role="tab"
               id={`${id}-${tab.id}-tab`}
-              aria-selected={aktiv() === tab.id ? "true" : "false"}
+              aria-selected={gewaehlt() === tab.id ? "true" : "false"}
               aria-controls={`${id}-${tab.id}-panel`}
-              tabindex={aktiv() === tab.id ? "0" : "-1"}
+              tabindex={gewaehlt() === tab.id ? "0" : "-1"}
               class={[
-                "h-7 shrink-0 whitespace-nowrap rounded-sm px-3 font-medium outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground",
+                "min-h-11 max-w-full rounded-md px-3 font-medium outline-hidden transition-colors focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground md:min-h-8 md:shrink-0 md:whitespace-nowrap",
                 {
-                  "bg-background shadow-sm": aktiv() === tab.id,
-                  "text-muted-foreground": aktiv() !== tab.id,
+                  "bg-background text-foreground shadow-xs": gewaehlt() === tab.id,
+                  "text-muted-foreground hover:text-foreground": gewaehlt() !== tab.id,
                 },
               ]}
-              onClick={() => setAktiv(tab.id)}
+              onClick={() => aktivieren(tab.id)}
             >
               {tab.label}
             </button>
@@ -73,10 +84,10 @@ export const Tabs = (props: TabsProps) => {
             role="tabpanel"
             id={`${id}-${tab.id}-panel`}
             aria-labelledby={`${id}-${tab.id}-tab`}
-            hidden={aktiv() !== tab.id}
+            hidden={gewaehlt() !== tab.id}
             tabindex="0"
           >
-            {aktiv() === tab.id ? tab.inhalt() : null}
+            {gewaehlt() === tab.id ? tab.inhalt() : null}
           </div>
         )}
       </For>

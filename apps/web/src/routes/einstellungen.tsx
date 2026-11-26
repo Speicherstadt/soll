@@ -1,6 +1,7 @@
-import { Button } from "@soll/ui";
+import type { JSX } from "@solidjs/web";
+import { Button, type Tab, Tabs } from "@soll/ui";
 import { createFileRoute, Link, useNavigate } from "@tanstack/solid-router";
-import { createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Show } from "solid-js";
 import { api } from "../api.ts";
 import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
@@ -19,6 +20,28 @@ import { abgemeldet, aktuellerBetrieb, sitzungNeu } from "../sitzung/sitzung.ts"
 import { istInhaber } from "../sitzung/ziel.ts";
 import { Zugaenge } from "../zugaenge/zugaenge.tsx";
 
+const TAB_SPEICHER = "soll.einstellungen.tab";
+
+const tabLesen = (): string | undefined => {
+  try {
+    return sessionStorage.getItem(TAB_SPEICHER) ?? undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const tabSchreiben = (id: string) => {
+  try {
+    sessionStorage.setItem(TAB_SPEICHER, id);
+  } catch {
+    // storage may be blocked in private/restricted browsers
+  }
+};
+
+const Karte = (props: { children: JSX.Element }) => (
+  <div class="rounded-xl border border-border bg-background p-5">{props.children}</div>
+);
+
 const Einstellungen = () => {
   const navigate = useNavigate();
   const [fehler, setFehler] = createSignal("");
@@ -32,6 +55,7 @@ const Einstellungen = () => {
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
+
   // the move from other tools writes everyone's records (S-701), and the Verfahrensdokumentation
   // describes the business's procedure (S-902): both the owner's
   const inhaber = () => {
@@ -49,65 +73,102 @@ const Einstellungen = () => {
   const arbeitszeit = () => Boolean(aktuellerBetrieb()?.module.arbeitszeit);
   const erinnerungenSichtbar = () => arbeitszeit() && hatRolle("inhaber", "planer", "mitarbeiter");
   const datevSichtbar = () => hatRolle("inhaber", "lohnbuero");
-  const agendaLink =
-    "rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
-  return (
-    <Seite titel={m.nav_einstellungen()}>
-      <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_210px] xl:items-start">
-        <div class="flex min-w-0 flex-col gap-8">
-          <div id="module" class="scroll-mt-6">
-            <ModuleSchalter />
-          </div>
-          <Show when={inhaber()}>
-            <div id="pruefung" class="scroll-mt-6">
-              <PruefungEinstellungen />
-            </div>
-          </Show>
-          <Show when={inhaber() && arbeitszeit()}>
-            <div id="bescheinigung" class="scroll-mt-6">
-              <BescheinigungEinstellung />
-            </div>
-          </Show>
-          <Show when={erinnerungenSichtbar()}>
-            <div id="erinnerungen" class="scroll-mt-6">
-              <Erinnerungen />
-            </div>
-          </Show>
-          <Show when={terminal()}>
-            <div id="terminal" class="flex scroll-mt-6 flex-col gap-6">
-              <TerminalGeraete />
-              <TerminalPersonen />
-              <TerminalKarten />
-            </div>
-          </Show>
-          <Show when={datevSichtbar()}>
-            <div id="datev" class="scroll-mt-6">
-              <DatevZuordnung />
-            </div>
-          </Show>
-          <Show when={inhaber()}>
-            <section id="umzug" class="flex scroll-mt-6 flex-col items-start gap-3">
+
+  // Stable Tab object references so <For> in Tabs never remounts active tabpanels on session refresh
+  const betriebTab: Tab = {
+    id: "betrieb",
+    label: m.einstellungen_tab_betrieb(),
+    inhalt: () => (
+      <div class="flex max-w-3xl flex-col gap-5">
+        <Karte>
+          <ModuleSchalter />
+        </Karte>
+        <Show when={inhaber()}>
+          <Karte>
+            <PruefungEinstellungen />
+          </Karte>
+        </Show>
+        <Show when={inhaber() && arbeitszeit()}>
+          <Karte>
+            <BescheinigungEinstellung />
+          </Karte>
+        </Show>
+        <Show when={erinnerungenSichtbar()}>
+          <Karte>
+            <Erinnerungen />
+          </Karte>
+        </Show>
+      </div>
+    ),
+  };
+
+  const terminalTab: Tab = {
+    id: "terminal",
+    label: m.einstellungen_tab_terminal(),
+    inhalt: () => (
+      <div class="flex max-w-3xl flex-col gap-5">
+        <Karte>
+          <TerminalGeraete />
+        </Karte>
+        <Karte>
+          <TerminalPersonen />
+        </Karte>
+        <Karte>
+          <TerminalKarten />
+        </Karte>
+      </div>
+    ),
+  };
+
+  const exportTab: Tab = {
+    id: "export",
+    label: m.einstellungen_tab_export(),
+    inhalt: () => (
+      <div class="flex max-w-3xl flex-col gap-5">
+        <Show when={datevSichtbar()}>
+          <Karte>
+            <DatevZuordnung />
+          </Karte>
+        </Show>
+        <Show when={inhaber()}>
+          <Karte>
+            <section class="flex flex-col items-start gap-3">
               <h2 class="font-semibold">{m.umzug_titel()}</h2>
               <Link to="/umzug" class={knopfLink}>
                 {m.umzug_link()}
               </Link>
             </section>
-            <section id="verfahrensdoku" class="flex scroll-mt-6 flex-col items-start gap-3">
+          </Karte>
+          <Karte>
+            <section class="flex flex-col items-start gap-3">
               <h2 class="font-semibold">{m.verfahrensdoku_titel()}</h2>
               <p class="text-muted-foreground">{m.verfahrensdoku_link_text()}</p>
               <Link to="/verfahrensdoku" class={knopfLink}>
                 {m.verfahrensdoku_oeffnen()}
               </Link>
             </section>
-          </Show>
-          <div id="zugaenge" class="scroll-mt-6">
-            <Zugaenge />
-          </div>
-          <section id="darstellung" class="flex max-w-sm scroll-mt-6 flex-col gap-3">
+          </Karte>
+        </Show>
+      </div>
+    ),
+  };
+
+  const kontoTab: Tab = {
+    id: "konto",
+    label: m.einstellungen_tab_konto(),
+    inhalt: () => (
+      <div class="flex max-w-3xl flex-col gap-5">
+        <Karte>
+          <Zugaenge />
+        </Karte>
+        <Karte>
+          <section class="flex max-w-sm flex-col gap-3">
             <h2 class="font-semibold">{m.darstellung_titel()}</h2>
             <Darstellung />
           </section>
-          <section id="konto" class="flex scroll-mt-6 flex-col items-start gap-3">
+        </Karte>
+        <Karte>
+          <section class="flex flex-col items-start gap-3">
             <h2 class="font-semibold">{m.konto_titel()}</h2>
             <div class="flex flex-wrap gap-2">
               <Link to="/export" class={knopfLink}>
@@ -119,58 +180,27 @@ const Einstellungen = () => {
             </div>
             <Fehler text={fehler()} />
           </section>
-        </div>
-        <nav
-          aria-label={m.nav_einstellungen()}
-          class="hidden flex-col gap-1 rounded-xl border border-border p-3 text-[13px] xl:sticky xl:top-6 xl:flex"
-        >
-          <a href="#module" class={agendaLink}>
-            {m.module_titel()}
-          </a>
-          <Show when={inhaber()}>
-            <a href="#pruefung" class={agendaLink}>
-              {m.pruefung_titel()}
-            </a>
-          </Show>
-          <Show when={inhaber() && arbeitszeit()}>
-            <a href="#bescheinigung" class={agendaLink}>
-              {m.abw_einstellung_titel()}
-            </a>
-          </Show>
-          <Show when={erinnerungenSichtbar()}>
-            <a href="#erinnerungen" class={agendaLink}>
-              {m.erinnerungen_titel()}
-            </a>
-          </Show>
-          <Show when={terminal()}>
-            <a href="#terminal" class={agendaLink}>
-              {m.terminal_titel()}
-            </a>
-          </Show>
-          <Show when={datevSichtbar()}>
-            <a href="#datev" class={agendaLink}>
-              {m.datev_titel()}
-            </a>
-          </Show>
-          <Show when={inhaber()}>
-            <a href="#umzug" class={agendaLink}>
-              {m.umzug_titel()}
-            </a>
-            <a href="#verfahrensdoku" class={agendaLink}>
-              {m.verfahrensdoku_titel()}
-            </a>
-          </Show>
-          <a href="#zugaenge" class={agendaLink}>
-            {m.zugaenge_titel()}
-          </a>
-          <a href="#darstellung" class={agendaLink}>
-            {m.darstellung_titel()}
-          </a>
-          <a href="#konto" class={agendaLink}>
-            {m.konto_titel()}
-          </a>
-        </nav>
+        </Karte>
       </div>
+    ),
+  };
+
+  const tabs = createMemo<Tab[]>(() => {
+    const liste: Tab[] = [betriebTab];
+    if (terminal()) liste.push(terminalTab);
+    if (datevSichtbar() || inhaber()) liste.push(exportTab);
+    liste.push(kontoTab);
+    return liste;
+  });
+
+  return (
+    <Seite titel={m.nav_einstellungen()}>
+      <Tabs
+        label={m.nav_einstellungen()}
+        tabs={tabs()}
+        start={tabLesen()}
+        onWechsel={tabSchreiben}
+      />
     </Seite>
   );
 };

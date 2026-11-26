@@ -1323,5 +1323,9 @@
   "monat_chart_label": "Wykres miesięczny: godziny rzeczywiste, planowane i saldo dzienne",
   "auslastung_chart_label": "Obłożenie na osobę w godzinach",
   "konten_verlauf_titel": "Przebieg nadgodzin",
-  "konten_verlauf_label": "Przebieg salda nadgodzin w kolejnych miesiącach"
+  "konten_verlauf_label": "Przebieg salda nadgodzin w kolejnych miesiącach",
+  "einstellungen_tab_betrieb": "Firma",
+  "einstellungen_tab_terminal": "Terminal",
+  "einstellungen_tab_export": "Eksport i migracja",
+  "einstellungen_tab_konto": "Konto"
 }

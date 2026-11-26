@@ -45,6 +45,7 @@ test("the owner fills in the statements and downloads the Verfahrensdokumentatio
 }) => {
   await betriebAnlegen(page);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_export") }).click();
   await page.getByRole("link", { name: t("verfahrensdoku_oeffnen") }).click();
   await expect(page).toHaveURL("/verfahrensdoku");
   await expect(

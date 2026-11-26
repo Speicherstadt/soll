@@ -1323,5 +1323,9 @@
   "monat_chart_label": "Monthly chart: actual and target hours and balance trend per day",
   "auslastung_chart_label": "Utilization per person in hours",
   "konten_verlauf_titel": "Overtime trend",
-  "konten_verlauf_label": "Overtime balance trend across months"
+  "konten_verlauf_label": "Overtime balance trend across months",
+  "einstellungen_tab_betrieb": "Business",
+  "einstellungen_tab_terminal": "Terminal",
+  "einstellungen_tab_export": "Export & import",
+  "einstellungen_tab_konto": "Account"
 }

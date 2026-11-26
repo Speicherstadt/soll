@@ -82,6 +82,7 @@ test("the owner maps the wage types and downloads the LODAS file of the closed m
   await axeGruen(page);
 
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_export") }).click();
   const abschnitt = page.getByRole("region", { name: t("datev_titel") });
   await abschnitt.getByLabel(t("datev_berater")).fill("1234567");
   await abschnitt.getByLabel(t("datev_mandant")).fill("10001");
@@ -109,12 +110,14 @@ test("the export and its mapping pass axe in the dark theme", async ({ page, bro
   const sandra = await zweiterBrowser(browser, test.info());
   await weberAbgeschlossen(page, sandra);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await page
     .getByRole("main")
     .getByRole("group", { name: t("theme_label") })
     .getByRole("button", { name: t("theme_dunkel") })
     .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("tab", { name: t("einstellungen_tab_export") }).click();
   await expect(page.getByRole("region", { name: t("datev_titel") })).toBeVisible();
   await axeGruen(page);
   await page.goto("/auswertungen");
@@ -129,6 +132,7 @@ test("a colleague sees neither the export nor the mapping", async ({ page, brows
   await expect(page.getByText(t("seite_leer"))).toBeVisible();
   await expect(page.getByRole("button", { name: t("datev_herunterladen") })).toHaveCount(0);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await expect(page.getByRole("heading", { name: t("darstellung_titel") })).toBeVisible();
   await expect(page.getByRole("region", { name: t("datev_titel") })).toHaveCount(0);
 });

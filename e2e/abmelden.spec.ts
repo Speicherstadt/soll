@@ -6,11 +6,16 @@ test.use({ locale: "de" });
 const de = messagesOf("de");
 const t = (key: string) => de[key] ?? key;
 
+const kontoOeffnen = async (page: import("@playwright/test").Page) => {
+  await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
+};
+
 test("signing out leads to the sign-in, and the session is gone after a reload @phone", async ({
   page,
 }) => {
   await betriebAnlegen(page);
-  await page.goto("/einstellungen");
+  await kontoOeffnen(page);
   await page.getByRole("button", { name: t("abmelden") }).click();
   await expect(page).toHaveURL(/\/anmelden$/);
   await page.goto("/einstellungen");
@@ -21,7 +26,7 @@ test("a sign-out the server never got says so and does not show the sign-in @pho
   page,
 }) => {
   await betriebAnlegen(page);
-  await page.goto("/einstellungen");
+  await kontoOeffnen(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   // the connection drops: neither the sign-out nor the question after it reaches the server
   await page.route(
@@ -41,7 +46,7 @@ test("a sign-out the server got clears the business on the device, even if the n
   page,
 }) => {
   await betriebAnlegen(page);
-  await page.goto("/einstellungen");
+  await kontoOeffnen(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("soll.betrieb"))).not.toBeNull();
   // the sign-out reaches the server, then the connection drops before the session is asked again
@@ -60,7 +65,7 @@ test("a sign-out the server got clears the business on the device, even if the n
 
 test("a sign-out the server refused says so and does not pretend @phone", async ({ page }) => {
   await betriebAnlegen(page);
-  await page.goto("/einstellungen");
+  await kontoOeffnen(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.route("**/api/auth/sign-out", (route) =>
     route.fulfill({ status: 500, contentType: "application/json", body: "{}" }),
@@ -74,7 +79,7 @@ test("a double click on Abmelden lands on the sign-in without an error @phone", 
   page,
 }) => {
   await betriebAnlegen(page);
-  await page.goto("/einstellungen");
+  await kontoOeffnen(page);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.getByRole("button", { name: t("abmelden") }).dblclick();
   await expect(page).toHaveURL(/\/anmelden$/);

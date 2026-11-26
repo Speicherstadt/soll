@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "ABD (use2)",
   "umzug_region_uk": "Birleşik Krallık (euw2)",
   "umzug_region_au": "Avustralya (apse2)",
-  "umzug_grund_kunde_fehlt": "Müşterisiz proje (mevcut bir siparişe eşleyin veya hariç tutun)"
+  "umzug_grund_kunde_fehlt": "Müşterisiz proje (mevcut bir siparişe eşleyin veya hariç tutun)",
+  "monat_chart_titel": "Aylık gelişim",
+  "monat_chart_tagesstunden": "Günlük saatler",
+  "monat_chart_saldoverlauf": "Bakiye gelişimi",
+  "monat_chart_label": "Aylık grafik: günlük fiili ve hedef saatler ile bakiye gelişimi",
+  "auslastung_chart_label": "Kişi başı saatlik kullanım"
 }

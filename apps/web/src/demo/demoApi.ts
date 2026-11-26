@@ -42,6 +42,27 @@ const tagDaten = (tag: string) => {
   };
 };
 
+const MONAT_MUSTER: readonly [string, number, string, string, string, string][] = [
+  ["02", 468, "07:05", "12:00", "12:32", "15:18"],
+  ["03", 468, "07:01", "12:00", "12:34", "15:24"],
+  ["04", 468, "07:10", "12:05", "12:38", "15:52"],
+  ["05", 468, "06:55", "12:00", "12:30", "15:35"],
+  ["06", 468, "07:15", "12:00", "12:30", "14:55"],
+  ["09", 468, "07:02", "12:00", "12:35", "15:40"],
+  ["10", 468, "07:00", "12:10", "12:40", "15:20"],
+  ["11", 468, "07:08", "12:00", "12:30", "16:05"],
+  ["12", 468, "07:04", "12:00", "12:32", "15:22"],
+  ["13", 468, "07:12", "12:00", "12:30", "14:48"],
+  ["16", 468, "06:58", "12:00", "12:30", "15:30"],
+  ["17", 468, "07:05", "12:00", "12:35", "15:45"],
+  ["18", 468, "07:00", "12:00", "12:30", "15:12"],
+  ["19", 468, "07:10", "12:05", "12:35", "15:55"],
+  ["20", 468, "07:00", "12:00", "12:30", "15:08"],
+  ["23", 468, "07:03", "12:00", "12:32", "15:28"],
+  ["24", 468, "06:55", "12:00", "12:30", "15:42"],
+  ["25", 468, "07:06", "12:00", "12:30", "15:19"],
+];
+
 const monatDaten = (monat: string) => ({
   monat,
   nutzerId: zustand.betrieb.nutzerId,
@@ -57,36 +78,24 @@ const monatDaten = (monat: string) => ({
   inhalt: {
     monat,
     summen: {
-      sollMinuten: 9828,
-      gearbeitetMinuten: 9640,
+      sollMinuten: 8424,
+      gearbeitetMinuten: 8612,
       gutschriftMinuten: 0,
-      istMinuten: 9640,
-      saldoMinuten: -188,
+      istMinuten: 8612,
+      saldoMinuten: 188,
     },
     nichtHinterlegt: [],
     befunde: [],
-    tage: [
-      {
-        tag: `${monat}-02`,
-        modellMinuten: 468,
-        stempel: [
-          ["kommen", Date.parse(`${monat}-02T07:05:00+01:00`)],
-          ["pause_anfang", Date.parse(`${monat}-02T12:00:00+01:00`)],
-          ["pause_ende", Date.parse(`${monat}-02T12:32:00+01:00`)],
-          ["gehen", Date.parse(`${monat}-02T15:18:00+01:00`)],
-        ],
-      },
-      {
-        tag: `${monat}-03`,
-        modellMinuten: 468,
-        stempel: [
-          ["kommen", Date.parse(`${monat}-03T07:01:00+01:00`)],
-          ["pause_anfang", Date.parse(`${monat}-03T12:00:00+01:00`)],
-          ["pause_ende", Date.parse(`${monat}-03T12:34:00+01:00`)],
-          ["gehen", Date.parse(`${monat}-03T15:24:00+01:00`)],
-        ],
-      },
-    ],
+    tage: MONAT_MUSTER.map(([tag, modellMinuten, k, pa, pe, g]) => ({
+      tag: `${monat}-${tag}`,
+      modellMinuten,
+      stempel: [
+        ["kommen", Date.parse(`${monat}-${tag}T${k}:00+01:00`)],
+        ["pause_beginn", Date.parse(`${monat}-${tag}T${pa}:00+01:00`)],
+        ["pause_ende", Date.parse(`${monat}-${tag}T${pe}:00+01:00`)],
+        ["gehen", Date.parse(`${monat}-${tag}T${g}:00+01:00`)],
+      ],
+    })),
     gegeneintraege: [],
     startsalden: [],
   },
@@ -162,6 +171,39 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
         internMinuten: 2640,
         ohneBuchungMinuten: 14727,
       },
+    };
+  if (pfad === "/api/v1/projektzeit/auslastung/personen")
+    return {
+      monat: query.get("monat") ?? "2026-10",
+      personen: [
+        {
+          nutzerId: "jonas",
+          name: "Jonas Weber",
+          anwesendMinuten: 9360,
+          abrechenbarMinuten: 6840,
+          internMinuten: 1080,
+          ohneBuchungMinuten: 1440,
+          abrechenbarProzent: 73,
+        },
+        {
+          nutzerId: "miriam",
+          name: "Miriam Koch",
+          anwesendMinuten: 8940,
+          abrechenbarMinuten: 5940,
+          internMinuten: 1320,
+          ohneBuchungMinuten: 1680,
+          abrechenbarProzent: 66,
+        },
+        {
+          nutzerId: "tarek",
+          name: "Tarek Al-Mansour",
+          anwesendMinuten: 9120,
+          abrechenbarMinuten: 4897,
+          internMinuten: 960,
+          ohneBuchungMinuten: 3263,
+          abrechenbarProzent: 54,
+        },
+      ],
     };
   if (pfad === "/api/v1/projektzeit/haben/zugang") return { verbunden: false, url: null };
   if (pfad === "/api/v1/betrieb/pruefung") return zustand.pruefung;

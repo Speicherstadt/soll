@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "USA (use2)",
   "umzug_region_uk": "UK (euw2)",
   "umzug_region_au": "AU (apse2)",
-  "umzug_grund_kunde_fehlt": "Projekt bez klienta (przypisz do istniejącego zlecenia lub pomiń)"
+  "umzug_grund_kunde_fehlt": "Projekt bez klienta (przypisz do istniejącego zlecenia lub pomiń)",
+  "monat_chart_titel": "Przebieg miesiąca",
+  "monat_chart_tagesstunden": "Godziny dzienne",
+  "monat_chart_saldoverlauf": "Przebieg salda",
+  "monat_chart_label": "Wykres miesięczny: godziny rzeczywiste, planowane i saldo dzienne",
+  "auslastung_chart_label": "Obłożenie na osobę w godzinach"
 }

@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "США (use2)",
   "umzug_region_uk": "Велика Британія (euw2)",
   "umzug_region_au": "Австралія (apse2)",
-  "umzug_grund_kunde_fehlt": "Проєкт без клієнта (прив’яжіть до наявного замовлення або пропустіть)"
+  "umzug_grund_kunde_fehlt": "Проєкт без клієнта (прив’яжіть до наявного замовлення або пропустіть)",
+  "monat_chart_titel": "Динаміка місяця",
+  "monat_chart_tagesstunden": "Години за днями",
+  "monat_chart_saldoverlauf": "Динаміка сальдо",
+  "monat_chart_label": "Місячний графік: фактичні та планові години й динаміка сальдо",
+  "auslastung_chart_label": "Завантаженість на особу в годинах"
 }

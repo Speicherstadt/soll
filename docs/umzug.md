@@ -136,8 +136,8 @@ in einer Antwort oder in der Datei.
 | Clockodo | Datei und API | verfügbar |
 | Kimai | API | verfügbar |
 | Personio | API (Berichte über Excel/CSV) | verfügbar |
-| Papershift, Planday, Crewmeister | Datei | folgt |
-| Toggl, Clockify | Datei und API | folgt |
+| Papershift, Planday, Crewmeister | API (Exporte über Excel/CSV) | verfügbar |
+| Toggl, Clockify | Datei und API | verfügbar |
 
 ### Soll-CSV
 

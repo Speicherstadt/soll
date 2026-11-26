@@ -1,5 +1,6 @@
-import { Button } from "@soll/ui";
-import { createSignal, For, Loading, Show } from "solid-js";
+import { Badge, Button, Icon } from "@soll/ui";
+import { Check } from "lucide";
+import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
 import { abfrage, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
 import { api } from "../api.ts";
@@ -36,7 +37,7 @@ export const GrundFuer = (props: {
 const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
   const [ablehnen, setAblehnen] = createSignal(false);
   return (
-    <li class="flex flex-wrap items-center justify-between gap-2 border-border border-t py-2 first:border-t-0">
+    <li class="flex flex-wrap items-center justify-between gap-2 border-border border-t py-2.5 first:border-t-0">
       <span>
         <span class="font-medium">{props.a.name}</span> · {ART[props.a.art]()} ·{" "}
         {zeitraumText(props.a)}
@@ -72,24 +73,46 @@ const Antrag = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
 
 /** Requests waiting for owner or planner, and certificates the business should fetch (R-27) */
 const OffeneKarten = (props: { quelle: AbwesenheitQuelle; rechte: Liste["rechte"] }) => {
+  const offenId = createUniqueId();
   const offen = abfrage<OffeneListe>(ressourcen.abwesenheitenOffen);
   const stand = () => daten(offen.data);
+  const antraege = () => stand()?.antraege ?? [];
   return (
     <Loading>
       <Fehler text={offen.data.ok ? "" : m.laden_fehler()} />
       <Show when={props.rechte.freigeben}>
-        <Karte titel={m.abw_offen_titel()}>
-          <Show
-            when={(stand()?.antraege.length ?? 0) > 0}
-            fallback={<p class="text-muted-foreground">{m.abw_offen_keine()}</p>}
+        <Show
+          when={antraege().length > 0}
+          fallback={
+            <section
+              aria-labelledby={offenId}
+              class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/40 px-4 py-2.5"
+            >
+              <div class="flex items-center gap-2">
+                <Icon icon={Check} class="size-4 text-success" />
+                <h2 id={offenId} class="font-medium text-[13px] text-foreground">
+                  {m.abw_offen_titel()}
+                </h2>
+              </div>
+              <p class="text-[12px] text-muted-foreground">{m.abw_offen_keine()}</p>
+            </section>
+          }
+        >
+          <section
+            aria-labelledby={offenId}
+            class="flex flex-col gap-3 rounded-xl border border-warning/40 bg-background p-4"
           >
+            <div class="flex items-center justify-between gap-2">
+              <h2 id={offenId} class="font-semibold">
+                {m.abw_offen_titel()}
+              </h2>
+              <Badge ton="warning">{String(antraege().length)}</Badge>
+            </div>
             <ul class="flex flex-col">
-              <For each={stand()?.antraege ?? []}>
-                {(a) => <Antrag a={a} quelle={props.quelle} />}
-              </For>
+              <For each={antraege()}>{(a) => <Antrag a={a} quelle={props.quelle} />}</For>
             </ul>
-          </Show>
-        </Karte>
+          </section>
+        </Show>
       </Show>
       <Show when={props.rechte.gesundheit && (stand()?.erinnerungen.length ?? 0) > 0}>
         <Karte titel={m.abw_erinnerungen_titel()}>

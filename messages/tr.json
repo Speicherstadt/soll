@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "Günlük saatler",
   "monat_chart_saldoverlauf": "Bakiye gelişimi",
   "monat_chart_label": "Aylık grafik: günlük fiili ve hedef saatler ile bakiye gelişimi",
-  "auslastung_chart_label": "Kişi başı saatlik kullanım"
+  "auslastung_chart_label": "Kişi başı saatlik kullanım",
+  "konten_verlauf_titel": "Fazla mesai gelişimi",
+  "konten_verlauf_label": "Aylar boyunca fazla mesai bakiyesi gelişimi"
 }

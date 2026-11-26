@@ -42,16 +42,20 @@ const Abwesenheiten = () => {
                 zusatz={<Kinderkrank jahr={l().jahr} stand={l().kinderkrank} />}
               />
               <Offen quelle={q} rechte={l().rechte} />
-              <div class="grid gap-5 lg:grid-cols-2 lg:items-stretch">
-                <Antrag quelle={q} heute={l().heute} />
-                <Krank
-                  quelle={q}
-                  abwesenheiten={l().abwesenheiten}
-                  heute={l().heute}
-                  abTag={l().bescheinigungAbTag}
-                />
-                <MeineListe quelle={q} abwesenheiten={l().abwesenheiten} />
-                <Team heute={l().heute} onGespeichert={q.geschafft} />
+              <div class="grid gap-5 lg:grid-cols-12 lg:items-start">
+                <div class="flex flex-col gap-5 lg:col-span-7">
+                  <Team heute={l().heute} onGespeichert={q.geschafft} />
+                  <MeineListe quelle={q} abwesenheiten={l().abwesenheiten} />
+                </div>
+                <div class="flex flex-col gap-5 lg:col-span-5">
+                  <Antrag quelle={q} heute={l().heute} />
+                  <Krank
+                    quelle={q}
+                    abwesenheiten={l().abwesenheiten}
+                    heute={l().heute}
+                    abTag={l().bescheinigungAbTag}
+                  />
+                </div>
               </div>
             </>
           )}

@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "الساعات اليومية",
   "monat_chart_saldoverlauf": "مسار الرصيد",
   "monat_chart_label": "مخطط الشهر: الساعات الفعلية والمطلوبة ومسار الرصيد يوميًا",
-  "auslastung_chart_label": "الاستخدام لكل شخص بالساعات"
+  "auslastung_chart_label": "الاستخدام لكل شخص بالساعات",
+  "konten_verlauf_titel": "مسار الساعات الإضافية",
+  "konten_verlauf_label": "مسار رصيد الساعات الإضافية عبر الأشهر"
 }

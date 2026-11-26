@@ -55,6 +55,7 @@ export const Stempeln = () => {
                     <BefundListe
                       befunde={stand().befunde}
                       nichtHinterlegt={stand().nichtHinterlegt}
+                      laufend={stand().zustand !== "aus"}
                     />
                   </Show>
                 </>

@@ -193,6 +193,41 @@ test("lets a person add a forgotten stamp of their own with a reason @phone", as
   );
 });
 
+test("frames findings on Heute as Bitte prüfen while running and Verstoß once clocked out @phone", async ({
+  page,
+  browser,
+}) => {
+  await weberMitSandra(page, browser, test.info());
+  const kommen = Date.parse("2027-06-15T06:00:00+02:00");
+  const gehen = Date.parse("2027-06-15T13:30:00+02:00");
+  await page.route(
+    (url) => url.pathname === "/api/v1/arbeitszeit/tag",
+    async (route) => {
+      const response = await route.fetch();
+      const body = await response.json();
+      if (body.stempelungen?.length === 1) {
+        body.tag = "2027-06-15";
+        body.jetzt = gehen;
+        body.umfeld = [{ art: "kommen", zeitpunkt: kommen }];
+      } else if (body.stempelungen?.length >= 2) {
+        body.tag = "2027-06-15";
+        body.jetzt = gehen;
+        body.umfeld = [
+          { art: "kommen", zeitpunkt: kommen },
+          { art: "gehen", zeitpunkt: gehen },
+        ];
+      }
+      await route.fulfill({ response, json: body });
+    },
+  );
+  await page.goto("/");
+  await knopf(page, "stempeln_kommen").click();
+  await expect(page.getByText(`${t("befund_pruefen")} · § 4 Satz 1 ArbZG`)).toBeVisible();
+  await expect(page.getByText(`${t("befund_verstoss")} · § 4 Satz 1 ArbZG`)).toBeHidden();
+  await knopf(page, "stempeln_gehen").click();
+  await expect(page.getByText(`${t("befund_verstoss")} · § 4 Satz 1 ArbZG`)).toBeVisible();
+});
+
 for (const theme of ["light", "dark"] as const) {
   test(`axe finds nothing on Heute while working and in a correction in ${theme} @phone`, async ({
     page,

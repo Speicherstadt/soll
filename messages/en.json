@@ -224,6 +224,7 @@
   "befunde_keine": "Checked, no findings",
   "befund_hinweis": "Note",
   "befund_verstoss": "Violation",
+  "befund_pruefen": "Please check",
   "befund_sonst": "Finding",
   "befund_gehen_fehlt": "Clock-out missing",
   "befund_kommen_fehlt": "Clock-in missing",

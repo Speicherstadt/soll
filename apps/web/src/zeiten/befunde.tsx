@@ -24,7 +24,12 @@ export const AusblickKarte = (props: { ausblick: Ausblick }) => {
  * The findings of a day with their severity in words and their norm; green means checked and in
  * order, nothing else (DESIGN.md, "Befund mit Norm")
  */
-export const BefundListe = (props: { befunde: TagesBefund[]; nichtHinterlegt: boolean }) => (
+export const BefundListe = (props: {
+  befunde: TagesBefund[];
+  nichtHinterlegt: boolean;
+  /** While the shift is still running on Heute, frame findings as a prompt to check rather than a red breach */
+  laufend?: boolean;
+}) => (
   <section aria-labelledby="befunde-titel" class="flex flex-col gap-2">
     <h2 id="befunde-titel" class="font-semibold text-[13px] text-muted-foreground">
       {m.befunde_titel()}
@@ -44,18 +49,25 @@ export const BefundListe = (props: { befunde: TagesBefund[]; nichtHinterlegt: bo
           {(befund) => {
             const text = () => befundText(befund);
             const verstoss = () => text().schwere === "verstoss";
+            const dringend = () => verstoss() && !props.laufend;
+            const stufe = () =>
+              !verstoss()
+                ? m.befund_hinweis()
+                : props.laufend
+                  ? m.befund_pruefen()
+                  : m.befund_verstoss();
             return (
               <li class="flex items-start gap-2.5 rounded-lg border border-border px-3 py-2">
                 <Icon
-                  icon={verstoss() ? TriangleAlert : CircleAlert}
+                  icon={dringend() ? TriangleAlert : CircleAlert}
                   class={
-                    verstoss() ? "mt-0.5 shrink-0 text-danger" : "mt-0.5 shrink-0 text-warning"
+                    dringend() ? "mt-0.5 shrink-0 text-danger" : "mt-0.5 shrink-0 text-warning"
                   }
                 />
                 <span class="flex flex-col">
                   <span class="font-medium">{text().titel}</span>
                   <span class="text-[12px] text-muted-foreground">
-                    {`${verstoss() ? m.befund_verstoss() : m.befund_hinweis()} · ${text().norm}`}
+                    {`${stufe()} · ${text().norm}`}
                   </span>
                 </span>
               </li>

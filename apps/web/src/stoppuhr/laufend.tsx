@@ -17,7 +17,7 @@ export const LaufendKarte = (props: {
   arbeitet: boolean;
   onStoppen: () => void;
 }) => (
-  <div class="flex flex-col gap-3 rounded-xl border border-border bg-card p-5">
+  <div class="flex flex-col gap-3 rounded-xl border border-border bg-background p-5">
     <Show
       when={props.laufend}
       fallback={
@@ -87,7 +87,7 @@ export const Wechsel = (props: {
               {(wahl) => (
                 <Button
                   variant="outline"
-                  class="min-h-10"
+                  class="min-h-11"
                   aria-pressed={gleich(wahl, props.laufend) ? "true" : "false"}
                   aria-label={m.stoppuhr_wechseln_zu({ name: name(wahl) })}
                   disabled={props.arbeitet}
@@ -102,7 +102,7 @@ export const Wechsel = (props: {
       </Show>
       <form
         aria-label={m.stoppuhr_neu()}
-        class="flex flex-col gap-3 rounded-xl border border-border bg-card p-4"
+        class="flex flex-col gap-3 rounded-xl border border-border bg-background p-4"
         onSubmit={(event) => {
           event.preventDefault();
           props.onStarten(wahlAus(new FormData(event.currentTarget)));

@@ -44,6 +44,11 @@ const Einstellungen = () => {
     if (!betrieb?.module.terminal) return false;
     return istInhaber(betrieb);
   };
+  const hatRolle = (...rollen: string[]) =>
+    (aktuellerBetrieb()?.rolle ?? "").split(",").some((rolle) => rollen.includes(rolle.trim()));
+  const arbeitszeit = () => Boolean(aktuellerBetrieb()?.module.arbeitszeit);
+  const erinnerungenSichtbar = () => arbeitszeit() && hatRolle("inhaber", "planer", "mitarbeiter");
+  const datevSichtbar = () => hatRolle("inhaber", "lohnbuero");
   const agendaLink =
     "rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground";
   return (
@@ -53,15 +58,21 @@ const Einstellungen = () => {
           <div id="module" class="scroll-mt-6">
             <ModuleSchalter />
           </div>
-          <div id="pruefung" class="scroll-mt-6">
-            <PruefungEinstellungen />
-          </div>
-          <div id="bescheinigung" class="scroll-mt-6">
-            <BescheinigungEinstellung />
-          </div>
-          <div id="erinnerungen" class="scroll-mt-6">
-            <Erinnerungen />
-          </div>
+          <Show when={inhaber()}>
+            <div id="pruefung" class="scroll-mt-6">
+              <PruefungEinstellungen />
+            </div>
+          </Show>
+          <Show when={inhaber() && arbeitszeit()}>
+            <div id="bescheinigung" class="scroll-mt-6">
+              <BescheinigungEinstellung />
+            </div>
+          </Show>
+          <Show when={erinnerungenSichtbar()}>
+            <div id="erinnerungen" class="scroll-mt-6">
+              <Erinnerungen />
+            </div>
+          </Show>
           <Show when={terminal()}>
             <div id="terminal" class="flex scroll-mt-6 flex-col gap-6">
               <TerminalGeraete />
@@ -69,9 +80,11 @@ const Einstellungen = () => {
               <TerminalKarten />
             </div>
           </Show>
-          <div id="datev" class="scroll-mt-6">
-            <DatevZuordnung />
-          </div>
+          <Show when={datevSichtbar()}>
+            <div id="datev" class="scroll-mt-6">
+              <DatevZuordnung />
+            </div>
+          </Show>
           <Show when={inhaber()}>
             <section id="umzug" class="flex scroll-mt-6 flex-col items-start gap-3">
               <h2 class="font-semibold">{m.umzug_titel()}</h2>
@@ -114,23 +127,31 @@ const Einstellungen = () => {
           <a href="#module" class={agendaLink}>
             {m.module_titel()}
           </a>
-          <a href="#pruefung" class={agendaLink}>
-            {m.pruefung_titel()}
-          </a>
-          <a href="#bescheinigung" class={agendaLink}>
-            {m.abw_einstellung_titel()}
-          </a>
-          <a href="#erinnerungen" class={agendaLink}>
-            {m.erinnerungen_titel()}
-          </a>
+          <Show when={inhaber()}>
+            <a href="#pruefung" class={agendaLink}>
+              {m.pruefung_titel()}
+            </a>
+          </Show>
+          <Show when={inhaber() && arbeitszeit()}>
+            <a href="#bescheinigung" class={agendaLink}>
+              {m.abw_einstellung_titel()}
+            </a>
+          </Show>
+          <Show when={erinnerungenSichtbar()}>
+            <a href="#erinnerungen" class={agendaLink}>
+              {m.erinnerungen_titel()}
+            </a>
+          </Show>
           <Show when={terminal()}>
             <a href="#terminal" class={agendaLink}>
               {m.terminal_titel()}
             </a>
           </Show>
-          <a href="#datev" class={agendaLink}>
-            {m.datev_titel()}
-          </a>
+          <Show when={datevSichtbar()}>
+            <a href="#datev" class={agendaLink}>
+              {m.datev_titel()}
+            </a>
+          </Show>
           <Show when={inhaber()}>
             <a href="#umzug" class={agendaLink}>
               {m.umzug_titel()}

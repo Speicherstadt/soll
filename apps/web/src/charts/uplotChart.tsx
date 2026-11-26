@@ -91,21 +91,21 @@ export const UPlotChart = (props: UPlotChartProps) => {
       const el = host();
       const daten = props.daten;
       const hoehe = props.hoehe ?? 220;
-      const optFn = props.optionen;
-      const tick = themeTick();
-      return { el, daten, hoehe, optFn, tick };
+      const _tick = themeTick();
+      void _tick;
+      const opts = el ? props.optionen(chartFarben()) : null;
+      return { el, daten, hoehe, opts };
     },
-    ({ el, daten, hoehe, optFn }) => {
-      if (!el) return;
-      const farben = chartFarben();
+    ({ el, daten, hoehe, opts }) => {
+      if (!el || !opts) return;
       const breite = Math.max(240, Math.floor(el.clientWidth || 320));
-      const opts: uPlot.Options = {
-        ...optFn(farben),
+      const vollOpts: uPlot.Options = {
+        ...opts,
         width: breite,
         height: hoehe,
       };
       el.replaceChildren();
-      const plot = new uPlot(opts, daten, el);
+      const plot = new uPlot(vollOpts, daten, el);
 
       const resize = new ResizeObserver((entries) => {
         const entry = entries[0];

@@ -91,7 +91,7 @@ export const UeberstundenChart = (props: { verlauf: UeberstundenVerlaufPunkt[] |
     <Show when={daten().hatDaten}>
       <div class="flex flex-col gap-2 rounded-xl border border-border bg-background p-4">
         <div class="flex items-center justify-between gap-2">
-          <h3 class="font-semibold text-[13px] text-foreground">{m.konten_verlauf_titel()}</h3>
+          <h2 class="font-semibold text-[13px] text-foreground">{m.konten_verlauf_titel()}</h2>
           <span
             class={`font-mono font-semibold text-[12px] tabular-nums ${
               daten().letzterSaldoMinuten >= 0 ? "text-success" : "text-danger"

@@ -214,8 +214,6 @@
   "tag_zeitraum": "Період",
   "tag_zeitstrahl": "Перебіг дня",
   "zeitstrahl_arbeit": "Робота",
-  "tag_beginn": "Початок",
-  "tag_ende": "Кінець",
   "tag_nicht_hinterlegt": "Для цього дня немає версії правил, Soll його не перевіряє.",
   "soll_nicht_hinterlegt": "не вказано",
   "soll_nicht_hinterlegt_text": "Для тебе ще не вказано модель робочого часу; підприємство вносить її в розділі «Час».",

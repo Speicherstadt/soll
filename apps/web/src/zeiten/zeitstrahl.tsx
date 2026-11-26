@@ -12,7 +12,8 @@ const segmentLabel = (segment: ZeitstrahlSegment): string =>
 
 /**
  * Interactive visual day timeline on Zeiten: shows work and break segments proportionally across
- * the day's span with hover/focus/click inspection and a compact legend.
+ * the day's span with RTL-safe positioning, clamped widths, 44px mobile touch targets, and
+ * hover/focus/click inspection.
  */
 export const TagesZeitstrahl = (props: { stempelungen: readonly Stempel[]; jetzt: number }) => {
   const segmente = createMemo(() => zeitstrahlSegmente(props.stempelungen, props.jetzt));
@@ -34,7 +35,7 @@ export const TagesZeitstrahl = (props: { stempelungen: readonly Stempel[]; jetzt
       {(bereich) => (
         <section
           aria-label={m.tag_zeitstrahl()}
-          class="flex flex-col gap-3 rounded-xl border border-border bg-background p-4"
+          class="flex flex-col gap-2 rounded-xl border border-border bg-background p-4"
         >
           <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="font-semibold text-[13px] text-muted-foreground">{m.tag_zeitstrahl()}</h2>
@@ -60,28 +61,42 @@ export const TagesZeitstrahl = (props: { stempelungen: readonly Stempel[]; jetzt
               )}
             </Show>
           </div>
-          <div class="relative h-7 w-full overflow-hidden rounded-lg bg-muted">
+          <div class="relative flex h-11 w-full items-center overflow-hidden md:h-8">
+            <div aria-hidden="true" class="h-5 w-full rounded-lg bg-muted" />
             <For each={segmente()}>
               {(segment, index) => {
-                const links = () => ((segment.beginn - bereich().anfang) / bereich().gesamt) * 100;
                 const breite = () =>
-                  Math.max(1.5, ((segment.ende - segment.beginn) / bereich().gesamt) * 100);
+                  Math.min(
+                    100,
+                    Math.max(1.5, ((segment.ende - segment.beginn) / bereich().gesamt) * 100),
+                  );
+                const start = () =>
+                  Math.min(
+                    100 - breite(),
+                    ((segment.beginn - bereich().anfang) / bereich().gesamt) * 100,
+                  );
                 const label = () => segmentLabel(segment);
                 return (
                   <button
                     type="button"
                     aria-label={label()}
                     title={label()}
-                    class={`absolute top-1 bottom-1 rounded-sm outline-hidden transition-opacity focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-solid ${
-                      segment.art === "arbeit" ? "bg-primary" : "bg-warning"
-                    } ${aktiv() !== null && aktiv() !== index() ? "opacity-55" : "opacity-100"}`}
-                    style={{ left: `${links()}%`, width: `${breite()}%` }}
+                    class="absolute inset-y-0 flex items-center outline-hidden focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-solid"
+                    style={{ "inset-inline-start": `${start()}%`, width: `${breite()}%` }}
                     onMouseEnter={() => setAktiv(index())}
                     onMouseLeave={() => setAktiv(null)}
                     onFocus={() => setAktiv(index())}
                     onBlur={() => setAktiv(null)}
                     onClick={() => setAktiv((vorher) => (vorher === index() ? null : index()))}
-                  />
+                  >
+                    <span
+                      class={[
+                        "block h-5 w-full rounded-sm transition-opacity",
+                        segment.art === "arbeit" ? "bg-primary" : "bg-warning",
+                        aktiv() !== null && aktiv() !== index() ? "opacity-55" : "opacity-100",
+                      ]}
+                    />
+                  </button>
                 );
               }}
             </For>

@@ -214,8 +214,6 @@
   "tag_zeitraum": "Zaman aralığı",
   "tag_zeitstrahl": "Günlük akış",
   "zeitstrahl_arbeit": "Çalışma",
-  "tag_beginn": "Başlangıç",
-  "tag_ende": "Bitiş",
   "tag_nicht_hinterlegt": "Bu gün için kural sürümü kayıtlı değil, Soll bu günü kontrol etmez.",
   "soll_nicht_hinterlegt": "kayıtlı değil",
   "soll_nicht_hinterlegt_text": "Senin için henüz çalışma süresi modeli kayıtlı değil; işletme bunu Süreler bölümünde girer.",

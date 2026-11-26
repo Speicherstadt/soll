@@ -38,31 +38,34 @@ const Summen = (props: { stand: Tagesstand; sollMinuten: number | null }) => {
     <div class="flex flex-col gap-2">
       <dl class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div class="flex flex-col justify-between gap-2 rounded-xl border border-border bg-background p-4">
-          <div class="flex items-center justify-between gap-2">
-            <dt class="text-[12px] text-muted-foreground">{m.tag_ist()}</dt>
+          <dt class="flex items-center justify-between gap-2 text-[12px] text-muted-foreground">
+            <span>{m.tag_ist()}</span>
             <Show when={saldo() !== null}>
               <Badge ton={(saldo() ?? 0) >= 0 ? "success" : "warning"}>
                 {saldoText(saldo() ?? 0)}
               </Badge>
             </Show>
-          </div>
-          <dd class="font-mono font-semibold text-[22px] tabular-nums leading-tight">
-            {dauerText(props.stand.istMinuten)}
+          </dt>
+          <dd class="flex flex-col gap-2">
+            <span class="font-mono font-semibold text-[22px] tabular-nums leading-tight">
+              {dauerText(props.stand.istMinuten)}
+            </span>
+            <Show when={anteil() !== null}>
+              <div aria-hidden="true" class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  class={[
+                    "h-full rounded-full",
+                    props.stand.istMinuten > 600
+                      ? "bg-warning"
+                      : (saldo() ?? 0) >= 0
+                        ? "bg-success"
+                        : "bg-primary",
+                  ]}
+                  style={{ width: `${anteil() ?? 0}%` }}
+                />
+              </div>
+            </Show>
           </dd>
-          <Show when={anteil() !== null}>
-            <div aria-hidden="true" class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                class={`h-full rounded-full ${
-                  props.stand.istMinuten > 600
-                    ? "bg-warning"
-                    : (saldo() ?? 0) >= 0
-                      ? "bg-success"
-                      : "bg-primary"
-                }`}
-                style={{ width: `${anteil() ?? 0}%` }}
-              />
-            </div>
-          </Show>
         </div>
         <KpiKarte
           name={m.tag_soll()}

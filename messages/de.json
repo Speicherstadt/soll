@@ -214,8 +214,6 @@
   "tag_zeitraum": "Zeitraum",
   "tag_zeitstrahl": "Tagesverlauf",
   "zeitstrahl_arbeit": "Arbeit",
-  "tag_beginn": "Beginn",
-  "tag_ende": "Ende",
   "tag_nicht_hinterlegt": "Für diesen Tag ist keine Regelversion hinterlegt, Soll prüft ihn nicht.",
   "soll_nicht_hinterlegt": "nicht hinterlegt",
   "soll_nicht_hinterlegt_text": "Für dich ist noch kein Arbeitszeitmodell hinterlegt; der Betrieb trägt es unter Zeiten ein.",

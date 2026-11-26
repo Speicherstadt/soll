@@ -214,8 +214,6 @@
   "tag_zeitraum": "الفترة",
   "tag_zeitstrahl": "المخطط الزمني لليوم",
   "zeitstrahl_arbeit": "عمل",
-  "tag_beginn": "البداية",
-  "tag_ende": "النهاية",
   "tag_nicht_hinterlegt": "لا توجد نسخة من القواعد لهذا اليوم، لذلك لا يفحصه Soll.",
   "soll_nicht_hinterlegt": "غير مسجل",
   "soll_nicht_hinterlegt_text": "لم يتم تسجيل نموذج وقت عمل لك بعد؛ تُدخله المنشأة في قسم الأوقات.",

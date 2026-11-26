@@ -37,4 +37,30 @@ describe("documentation links", () => {
     }
     expect(broken).toEqual([]);
   });
+
+  // tdd-review S-907: README.md still links to #soll-und-die-alternativen after the section was removed in #91
+  it("resolves every internal #anchor link in README.md to a heading", () => {
+    const readme = readFileSync("README.md", "utf8");
+    const headings = new Set(
+      [...readme.matchAll(/^#{1,6}\s+(.+)$/gm)].map((m) =>
+        (m[1] ?? "")
+          .trim()
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}\s-]/gu, "")
+          .replace(/\s+/g, "-"),
+      ),
+    );
+    const broken: string[] = [];
+    for (const match of readme.matchAll(/\]\(#([a-z0-9-]+)\)/g)) {
+      const anchor = match[1] ?? "";
+      if (!headings.has(anchor)) broken.push(match[0]);
+    }
+    expect(broken).toEqual([]);
+  });
+
+  // tdd-review S-907: README.md still says Toggl and Clockify "folgen" / "nächsten Versionen", though both are implemented and marked verfügbar in docs/umzug.md
+  it("does not describe already-available import tools as upcoming in README.md", () => {
+    const readme = readFileSync("README.md", "utf8");
+    expect(readme).not.toMatch(/Toggl und Clockify\s+(folgen|liest Soll mit den nächsten Versionen)/);
+  });
 });

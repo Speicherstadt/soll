@@ -60,7 +60,7 @@ export const Stoppuhr = () => {
   };
   return (
     <section aria-labelledby={`${id}-titel`} class="flex min-w-0 flex-col gap-4">
-      <h2 id={`${id}-titel`} class="font-semibold text-[17px]">
+      <h2 id={`${id}-titel`} class="font-semibold text-[17px] leading-7">
         {m.stoppuhr_titel()}
       </h2>
       <Loading>

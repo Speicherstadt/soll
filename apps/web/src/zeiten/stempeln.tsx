@@ -38,7 +38,7 @@ export const Stempeln = () => {
       >
         {(ansicht) => (
           <div class="flex min-w-0 flex-col gap-4">
-            <p class="-mt-4 text-[15px] text-muted-foreground">{tagText(ansicht().tag)}</p>
+            <h2 class="font-semibold text-[17px] leading-7">{tagText(ansicht().tag)}</h2>
             <WartendKarte
               anzahl={schlange.wartende().length}
               ohneNetz={quelle.ohneNetz() || schlange.ohneNetz()}
@@ -47,7 +47,40 @@ export const Stempeln = () => {
             <Show when={quelle.stand()}>
               {(stand) => (
                 <>
-                  <LaufenderTag stand={stand()} sollMinuten={ansicht().sollMinuten} />
+                  <LaufenderTag
+                    stand={stand()}
+                    sollMinuten={ansicht().sollMinuten}
+                    aktionen={
+                      <>
+                        <Button
+                          class="h-14 w-full rounded-xl text-[18px] sm:h-11 sm:w-auto sm:min-w-[148px] sm:rounded-lg sm:px-5 sm:text-[15px]"
+                          aria-pressed={
+                            aktionen().haupt.name.startsWith("pause")
+                              ? (String(stand().zustand === "pause") as "true" | "false")
+                              : undefined
+                          }
+                          disabled={arbeitet()}
+                          onClick={() => stempeln(aktionen().haupt.art)}
+                        >
+                          <Icon icon={ICONS[aktionen().haupt.name]} size={18} />
+                          {NAMEN[aktionen().haupt.name]()}
+                        </Button>
+                        <Show when={aktionen().neben}>
+                          {(neben) => (
+                            <Button
+                              variant="outline"
+                              class="h-12 w-full rounded-xl text-[15px] sm:h-11 sm:w-auto sm:rounded-lg sm:px-4"
+                              disabled={arbeitet()}
+                              onClick={() => stempeln(neben().art)}
+                            >
+                              <Icon icon={ICONS[neben().name]} size={18} />
+                              {NAMEN[neben().name]()}
+                            </Button>
+                          )}
+                        </Show>
+                      </>
+                    }
+                  />
                   <Show when={stand().ausblick}>
                     {(ausblick) => <AusblickKarte ausblick={ausblick()} />}
                   </Show>
@@ -59,32 +92,6 @@ export const Stempeln = () => {
                     />
                   </Show>
                 </>
-              )}
-            </Show>
-            <Button
-              class="h-[72px] rounded-xl text-[20px]"
-              aria-pressed={
-                aktionen().haupt.name.startsWith("pause")
-                  ? (String(quelle.stand()?.zustand === "pause") as "true" | "false")
-                  : undefined
-              }
-              disabled={arbeitet()}
-              onClick={() => stempeln(aktionen().haupt.art)}
-            >
-              <Icon icon={ICONS[aktionen().haupt.name]} size={22} />
-              {NAMEN[aktionen().haupt.name]()}
-            </Button>
-            <Show when={aktionen().neben}>
-              {(neben) => (
-                <Button
-                  variant="outline"
-                  class="h-[52px] rounded-xl text-[16px]"
-                  disabled={arbeitet()}
-                  onClick={() => stempeln(neben().art)}
-                >
-                  <Icon icon={ICONS[neben().name]} size={20} />
-                  {NAMEN[neben().name]()}
-                </Button>
               )}
             </Show>
             <Fehler text={fehler()} />

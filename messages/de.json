@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "USA (use2)",
   "umzug_region_uk": "UK (euw2)",
   "umzug_region_au": "AU (apse2)",
-  "umzug_grund_kunde_fehlt": "Projekt ohne Kunden (einem bestehenden Auftrag zuordnen oder auslassen)"
+  "umzug_grund_kunde_fehlt": "Projekt ohne Kunden (einem bestehenden Auftrag zuordnen oder auslassen)",
+  "monat_chart_titel": "Monatsverlauf",
+  "monat_chart_tagesstunden": "Tagesstunden",
+  "monat_chart_saldoverlauf": "Saldoverlauf",
+  "monat_chart_label": "Monatsverlauf: Ist- und Soll-Stunden sowie Saldoverlauf pro Tag",
+  "auslastung_chart_label": "Auslastung je Person in Stunden"
 }

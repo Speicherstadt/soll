@@ -5,6 +5,7 @@ import { daten } from "../abfragen/abfrage.ts";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { Auswahl } from "../monat/auswahl.tsx";
 import { GegeneintragDialog, OhneBestaetigungDialog } from "../monat/dialoge.tsx";
+import { MonatChart } from "../monat/monatChart.tsx";
 import { Pruefwert } from "../monat/pruefwert.tsx";
 import { monatQuelle } from "../monat/quelle.ts";
 import { Stand } from "../monat/stand.tsx";
@@ -65,27 +66,30 @@ const Aktionen = (props: {
   );
 };
 
-/** The records of a month: sums, days, counter-entries and the Prüfwert */
-const Inhalt = (props: { ansicht: MonatAnsicht }) => (
-  <>
-    <Summen inhalt={props.ansicht.inhalt} />
-    <TageTabelle
-      zeilen={zeilenDesMonats(
-        props.ansicht.inhalt.tage,
-        props.ansicht.inhalt.befunde,
-        props.ansicht.geaenderteTage,
-        props.ansicht.abschluss?.am ?? Date.now(),
-      )}
-    />
-    <Gegeneintraege eintraege={props.ansicht.inhalt.gegeneintraege} />
-    <Startsalden monat={props.ansicht.monat} salden={props.ansicht.inhalt.startsalden} />
-    <Pruefwert
-      name={props.ansicht.name}
-      pruefwert={props.ansicht.abschluss?.pruefwert ?? null}
-      betriebId={aktuellerBetrieb()?.betriebId ?? ""}
-    />
-  </>
-);
+/** The records of a month: sums, chart, days, counter-entries and the Prüfwert */
+const Inhalt = (props: { ansicht: MonatAnsicht }) => {
+  const zeilen = () =>
+    zeilenDesMonats(
+      props.ansicht.inhalt.tage,
+      props.ansicht.inhalt.befunde,
+      props.ansicht.geaenderteTage,
+      props.ansicht.abschluss?.am ?? Date.now(),
+    );
+  return (
+    <>
+      <Summen inhalt={props.ansicht.inhalt} />
+      <MonatChart zeilen={zeilen()} />
+      <TageTabelle zeilen={zeilen()} />
+      <Gegeneintraege eintraege={props.ansicht.inhalt.gegeneintraege} />
+      <Startsalden monat={props.ansicht.monat} salden={props.ansicht.inhalt.startsalden} />
+      <Pruefwert
+        name={props.ansicht.name}
+        pruefwert={props.ansicht.abschluss?.pruefwert ?? null}
+        betriebId={aktuellerBetrieb()?.betriebId ?? ""}
+      />
+    </>
+  );
+};
 
 /**
  * Monatsabschluss (S-306): the days of a month with Soll and Ist, confirmed by the person and closed

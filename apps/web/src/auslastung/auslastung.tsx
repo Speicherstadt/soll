@@ -6,6 +6,7 @@ import { Auswahl } from "../monat/auswahl.tsx";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { AuslastungPersonenChart } from "./auslastungChart.tsx";
 import { AuslastungWerte } from "./balken.tsx";
 import { PersonenTabelle } from "./personen.tsx";
 import { JePersonSchalter } from "./schalter.tsx";
@@ -53,9 +54,11 @@ const Team = (props: { monat: Monat }) => {
 /** Every person of the month, while the business has switched it on */
 const Personen = (props: { monat: Monat }) => {
   const personen = abfrage<PersonenAntwort>(() => ressourcen.auslastungPersonen(props.monat));
+  const liste = () => daten(personen.data)?.personen ?? [];
   return (
     <>
-      <PersonenTabelle personen={daten(personen.data)?.personen ?? []} />
+      <AuslastungPersonenChart personen={liste()} />
+      <PersonenTabelle personen={liste()} />
       <Fehler text={personen.data.ok ? "" : m.laden_fehler()} />
     </>
   );

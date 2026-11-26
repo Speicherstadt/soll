@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "USA (use2)",
   "umzug_region_uk": "UK (euw2)",
   "umzug_region_au": "AU (apse2)",
-  "umzug_grund_kunde_fehlt": "Project without client (match to an existing order or leave out)"
+  "umzug_grund_kunde_fehlt": "Project without client (match to an existing order or leave out)",
+  "monat_chart_titel": "Monthly trend",
+  "monat_chart_tagesstunden": "Daily hours",
+  "monat_chart_saldoverlauf": "Balance trend",
+  "monat_chart_label": "Monthly chart: actual and target hours and balance trend per day",
+  "auslastung_chart_label": "Utilization per person in hours"
 }

@@ -1316,5 +1316,10 @@
   "umzug_region_usa": "أمريكا (use2)",
   "umzug_region_uk": "بريطانيا (euw2)",
   "umzug_region_au": "أستراليا (apse2)",
-  "umzug_grund_kunde_fehlt": "مشروع بلا عميل (اربطه بطلب قائم أو تخطّه)"
+  "umzug_grund_kunde_fehlt": "مشروع بلا عميل (اربطه بطلب قائم أو تخطّه)",
+  "monat_chart_titel": "مسار الشهر",
+  "monat_chart_tagesstunden": "الساعات اليومية",
+  "monat_chart_saldoverlauf": "مسار الرصيد",
+  "monat_chart_label": "مخطط الشهر: الساعات الفعلية والمطلوبة ومسار الرصيد يوميًا",
+  "auslastung_chart_label": "الاستخدام لكل شخص بالساعات"
 }

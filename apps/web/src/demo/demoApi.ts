@@ -136,26 +136,32 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/projektzeit/auslastung")
     return {
       monat: query.get("monat") ?? "2026-10",
-      anwesendMinuten: 35044,
-      abrechenbarMinuten: 17677,
-      internMinuten: 2640,
-      ohneBuchungMinuten: 14727,
       jePersonSeit: null,
+      team: {
+        art: "team",
+        personen: 5,
+        anwesendMinuten: 35044,
+        abrechenbarMinuten: 17677,
+        internMinuten: 2640,
+        ohneBuchungMinuten: 14727,
+      },
     };
   if (pfad === "/api/v1/projektzeit/haben/zugang") return { verbunden: false, url: null };
   if (pfad === "/api/v1/betrieb/pruefung") return zustand.pruefung;
   if (pfad === "/api/v1/arbeitszeit/erinnerungen")
     return {
+      vapidSchluessel: "",
       wuensche: { ausstempeln: true, pause: true, monat: true, mail: true },
-      geraetAktiv: false,
-      regeln: { ausstempeln: "20:00", monat: 3 },
-      inhaber: true,
+      regeln: { gehenMinuten: 1200, pauseVorlauf: 15, monatTag: 3 },
+      mail: true,
+      geraete: 0,
     };
   if (pfad === "/api/v1/arbeitszeit/datev")
     return {
-      beraternummer: "12345",
-      mandantennummer: "67890",
+      beraterNr: "12345",
+      mandantenNr: "67890",
       lohnarten: {},
+      postenarten: [],
       personen: DEMO_PERSONEN.map((p, i) => ({
         nutzerId: p.nutzerId,
         name: p.name,
@@ -219,7 +225,7 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
 };
 
 const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
-  if (pfad === "/api/v1/arbeitszeit/stempel") {
+  if (pfad === "/api/v1/arbeitszeit/stempelungen" || pfad === "/api/v1/arbeitszeit/stempel") {
     const art = (body.art as Stempelart) ?? "kommen";
     zustand.stempelungen = [
       ...zustand.stempelungen,

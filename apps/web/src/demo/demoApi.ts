@@ -89,31 +89,7 @@ const wocheDaten = (montag: string) => ({
   tauschregeln: { ohneFreigabe: false },
 });
 
-const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/betrieb") return zustand.betrieb;
-  if (pfad === "/api/v1/arbeitszeit/personen") return { personen: DEMO_PERSONEN };
-  if (pfad === "/api/v1/arbeitszeit/modelle") return { modelle: DEMO_MODELLE };
-  if (pfad === "/api/v1/arbeitszeit/tag") return tagDaten(query.get("datum") ?? heuteTag());
-  if (pfad === "/api/v1/arbeitszeit/monat") return monatDaten(query.get("monat") ?? "2026-11");
-  if (pfad === "/api/v1/arbeitszeit/abwesenheiten")
-    return {
-      nutzerId: "jonas",
-      jahr: 2026,
-      bescheinigungAbTag: zustand.bescheinigungAbTag,
-      kinderkrank: { ok: true, wert: { anspruchJeKind: 15, jeKind: {} } },
-      rechte: { genehmigen: true, einstellen: true },
-      abwesenheiten: zustand.abwesenheiten,
-    };
-  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/offen") return { antraege: [] };
-  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/team") return { eintraege: [] };
-  if (pfad === "/api/v1/arbeitszeit/konten")
-    return {
-      nutzerId: query.get("nutzerId") ?? "jonas",
-      urlaub: { ok: true, restHalbtage: 46, geplantHalbtage: 0, befunde: [] },
-      ueberstunden: { ok: true, saldoMinuten: 215, luecken: [] },
-      hinweise: [],
-      rechte: { pflegen: true },
-    };
+const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query.get("montag") ?? "2026-11-23");
   if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: [] };
   if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
@@ -172,6 +148,34 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/standorte")
     return { standorte: [{ standortId: "st1", name: "Hamburg", bundesland: "DE-HH" }] };
   return {};
+};
+
+const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
+  if (pfad === "/api/v1/betrieb") return zustand.betrieb;
+  if (pfad === "/api/v1/arbeitszeit/personen") return { personen: DEMO_PERSONEN };
+  if (pfad === "/api/v1/arbeitszeit/modelle") return { modelle: DEMO_MODELLE };
+  if (pfad === "/api/v1/arbeitszeit/tag") return tagDaten(query.get("datum") ?? heuteTag());
+  if (pfad === "/api/v1/arbeitszeit/monat") return monatDaten(query.get("monat") ?? "2026-11");
+  if (pfad === "/api/v1/arbeitszeit/abwesenheiten")
+    return {
+      nutzerId: "jonas",
+      jahr: 2026,
+      bescheinigungAbTag: zustand.bescheinigungAbTag,
+      kinderkrank: { ok: true, wert: { anspruchJeKind: 15, jeKind: {} } },
+      rechte: { genehmigen: true, einstellen: true },
+      abwesenheiten: zustand.abwesenheiten,
+    };
+  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/offen") return { antraege: [] };
+  if (pfad === "/api/v1/arbeitszeit/abwesenheiten/team") return { eintraege: [] };
+  if (pfad === "/api/v1/arbeitszeit/konten")
+    return {
+      nutzerId: query.get("nutzerId") ?? "jonas",
+      urlaub: { ok: true, restHalbtage: 46, geplantHalbtage: 0, befunde: [] },
+      ueberstunden: { ok: true, saldoMinuten: 215, luecken: [] },
+      hinweise: [],
+      rechte: { pflegen: true },
+    };
+  return getBereichAntwort(pfad, query);
 };
 
 const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {

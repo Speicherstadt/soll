@@ -134,7 +134,7 @@ export const DEMO_PROJEKTE = [
   {
     projektId: "p1",
     kundeId: "k1",
-    name: "Bäder Elbhof, 3. OG",
+    name: "Elbhof, 3. OG",
     nummer: "A-2026-14",
     budgetMinuten: 24000,
     budgetCent: null,

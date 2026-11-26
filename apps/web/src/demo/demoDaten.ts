@@ -183,11 +183,11 @@ export const DEMO_PROJEKTE = [
     archiviertAm: null,
     budget: [
       {
-        art: "stunden",
+        art: "minuten",
         verbraucht: 19440,
-        limit: 24000,
-        prozent: 81,
-        status: "warnung",
+        budget: 24000,
+        rest: 4560,
+        stufe: "warnung",
       },
     ],
   },
@@ -200,7 +200,15 @@ export const DEMO_PROJEKTE = [
     budgetCent: null,
     warnungProzent: 80,
     archiviertAm: null,
-    budget: [],
+    budget: [
+      {
+        art: "minuten",
+        verbraucht: 2820,
+        budget: 6000,
+        rest: 3180,
+        stufe: "ok",
+      },
+    ],
   },
   {
     projektId: "p3",

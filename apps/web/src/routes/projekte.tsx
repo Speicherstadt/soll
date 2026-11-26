@@ -8,6 +8,7 @@ import { Kunden } from "../projekte/kunden.tsx";
 import { projektQuelle } from "../projekte/quelle.ts";
 import { Saetze } from "../projekte/saetze.tsx";
 import { Taetigkeiten } from "../projekte/taetigkeiten.tsx";
+import { ProjekteUebersicht } from "../projekte/uebersicht.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
@@ -64,6 +65,7 @@ const Projekte = () => {
     <Seite titel={m.nav_projekte()}>
       <Loading>
         <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />
+        <ProjekteUebersicht quelle={quelle} />
         <Tabs label={m.projekte_tabs()} tabs={tabs} />
       </Loading>
     </Seite>

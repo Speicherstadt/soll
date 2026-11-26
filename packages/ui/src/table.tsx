@@ -12,7 +12,7 @@ const weitere = <T,>(props: Teil<T>) => omit(props, "class", "children");
 
 /** A native table, dense and quiet (DESIGN.md); numbers and times line up with tabular-nums */
 export const Table = (props: Teil<HTMLTableElement> & { beschriftung: string }) => (
-  <div class="w-full overflow-x-auto">
+  <section class="w-full overflow-x-auto" tabindex={0} aria-label={props.beschriftung}>
     <table
       {...omit(props, "class", "children", "beschriftung")}
       class={cn("w-full border-collapse text-start tabular-nums", props.class)}
@@ -20,7 +20,7 @@ export const Table = (props: Teil<HTMLTableElement> & { beschriftung: string }) 
       <caption class="sr-only">{props.beschriftung}</caption>
       {props.children}
     </table>
-  </div>
+  </section>
 );
 
 export const Thead = (props: Teil<HTMLTableSectionElement>) => (

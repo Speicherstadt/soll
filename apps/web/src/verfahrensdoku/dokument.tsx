@@ -46,15 +46,17 @@ export const DokumentKopf = (props: { dokument: Dokument }) => (
  * the German authorities, as the PDF is.
  */
 const AbschnittAnsicht = (props: { abschnitt: Abschnitt }) => (
-  <section lang="de" class="flex flex-col gap-2">
+  <section lang="de" class="flex min-w-0 flex-col gap-2">
     <h3 class="font-semibold">{props.abschnitt.titel}</h3>
     <For each={props.abschnitt.absaetze}>
-      {(absatz) => <p class="whitespace-pre-line">{absatz}</p>}
+      {(absatz) => <p class="whitespace-pre-line break-words">{absatz}</p>}
     </For>
     <Show when={props.abschnitt.liste}>
       {(liste) => (
         <ul class="list-disc ps-5">
-          <For each={liste()}>{(eintrag) => <li class="whitespace-pre-line">{eintrag}</li>}</For>
+          <For each={liste()}>
+            {(eintrag) => <li class="whitespace-pre-line break-words">{eintrag}</li>}
+          </For>
         </ul>
       )}
     </Show>
@@ -65,7 +67,7 @@ const AbschnittAnsicht = (props: { abschnitt: Abschnitt }) => (
             {(luecke) => (
               <li class="flex items-start gap-2">
                 <Badge ton="warning">{m.verfahrensdoku_fehlt()}</Badge>
-                <span>{luecke}</span>
+                <span class="min-w-0 break-words">{luecke}</span>
               </li>
             )}
           </For>
@@ -79,7 +81,7 @@ const AbschnittAnsicht = (props: { abschnitt: Abschnitt }) => (
 export const DokumentAnsicht = (props: { dokument: Dokument }) => {
   const id = createUniqueId();
   return (
-    <section aria-labelledby={`${id}-titel`} class="flex max-w-3xl flex-col gap-4">
+    <section aria-labelledby={`${id}-titel`} class="flex min-w-0 max-w-3xl flex-col gap-4">
       <h2 id={`${id}-titel`} class="font-semibold">
         {m.verfahrensdoku_dokument_titel()}
       </h2>

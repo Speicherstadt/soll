@@ -28,8 +28,8 @@ export const Tabs = (props: TabsProps) => {
         ref={(el) => {
           leiste = el;
         }}
-        // a phone scrolls the tabs sideways when they are wider than the screen
-        class="inline-flex w-fit max-w-full gap-1 overflow-x-auto rounded-md bg-muted p-1"
+        // wrap tabs onto a second line on narrow screens instead of clipping them
+        class="flex w-fit max-w-full flex-wrap gap-1 rounded-md bg-muted p-1"
         onKeyDown={(event) => {
           const index = props.tabs.findIndex((tab) => tab.id === aktiv());
           const ziel = naechsterIndex(

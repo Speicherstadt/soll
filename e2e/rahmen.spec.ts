@@ -138,6 +138,25 @@ test.describe("in Arabic", () => {
     const breite = page.viewportSize()?.width ?? 0;
     expect((leiste?.x ?? 0) + (leiste?.width ?? 0)).toBeGreaterThan(breite - 2);
   });
+
+  // [tdd-review] PR #101: darstellung.tsx uses physical `right-2` instead of logical `end-2`,
+  // placing the chevron on top of the globe icon in RTL (Arabic).
+  test("the language picker icons sit on opposite sides in RTL", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    const select = page
+      .getByRole("navigation")
+      .getByLabel(messagesOf("ar").sprache_label ?? "sprache_label");
+    const icons = select.locator("..").locator("svg");
+    await expect(icons).toHaveCount(2);
+    const globe = await icons.nth(0).boundingBox();
+    const chevron = await icons.nth(1).boundingBox();
+    expect(globe).not.toBeNull();
+    expect(chevron).not.toBeNull();
+    if (!globe || !chevron) return;
+    // In RTL, globe (inline-start) is on the right and chevron (inline-end) must be to its left without overlapping
+    expect(chevron.x + chevron.width).toBeLessThan(globe.x);
+  });
 });
 
 test("the chosen language stays when the browser blocks local storage", async ({ page }) => {

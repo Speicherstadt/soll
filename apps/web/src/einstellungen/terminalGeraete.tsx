@@ -65,9 +65,9 @@ export const TerminalGeraete = () => {
     <section class="flex max-w-lg flex-col gap-3">
       <h2 class="font-semibold">{m.terminal_titel()}</h2>
       <p class="text-muted-foreground">{m.terminal_text()}</p>
-      <form class="flex items-end gap-2" onSubmit={koppeln}>
+      <form class="flex flex-wrap items-end gap-2" onSubmit={koppeln}>
         <Input
-          class="flex-1"
+          class="min-w-44 flex-1"
           label={m.terminal_geraet_name()}
           name="name"
           required

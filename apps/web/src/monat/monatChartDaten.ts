@@ -1,4 +1,5 @@
-import type { Zeile } from "./zeilen.ts";
+import type { SichtbareArt } from "@soll/arbeitszeit";
+import type { Zeile, ZeilenAbwesenheit } from "./zeilen.ts";
 
 export type MonatChartDaten = {
   tage: number[];
@@ -9,11 +10,31 @@ export type MonatChartDaten = {
   maxStunden: number;
 };
 
+const GUTGESCHRIEBEN: ReadonlySet<SichtbareArt> = new Set([
+  "urlaub",
+  "krank",
+  "kind_krank",
+  "sonderurlaub",
+  "abwesend",
+]);
+
+const abwesenheitsGutschrift = (
+  abwesenheiten: readonly ZeilenAbwesenheit[],
+  sollMinuten: number,
+): number => {
+  if (sollMinuten <= 0 || abwesenheiten.length === 0) return 0;
+  const summe = abwesenheiten
+    .filter((a) => GUTGESCHRIEBEN.has(a.art))
+    .reduce((teil, a) => teil + (a.halb === true ? Math.ceil(sollMinuten / 2) : sollMinuten), 0);
+  return Math.min(sollMinuten, summe);
+};
+
 const rundeStunden = (minuten: number): number => Math.round((minuten / 60) * 100) / 100;
 
 /**
  * Pure chart series builder for the monthly Ist vs. Soll and cumulative balance uPlot views.
- * Keeps weekends/days without target smooth in the cumulative curve by carrying the running balance.
+ * Credits paid absences (urlaub, krank, kind_krank, sonderurlaub, redacted abwesend) matching
+ * packages/arbeitszeit/src/soll/abwesenheit.ts, while ueberstundenabbau draws from the balance.
  */
 export const monatChartDaten = (zeilen: readonly Zeile[]): MonatChartDaten => {
   const tage: number[] = [];
@@ -27,8 +48,8 @@ export const monatChartDaten = (zeilen: readonly Zeile[]): MonatChartDaten => {
 
   for (const zeile of zeilen) {
     const tagNummer = Number.parseInt(zeile.tag.slice(8, 10), 10);
-    const istMin = zeile.arbeitsMinuten;
     const sollMin = zeile.sollMinuten ?? 0;
+    const istMin = zeile.arbeitsMinuten + abwesenheitsGutschrift(zeile.abwesenheiten, sollMin);
     const istH = rundeStunden(istMin);
     const sollH = rundeStunden(sollMin);
 

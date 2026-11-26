@@ -42,6 +42,7 @@ export const Seitenleiste = () => (
     </For>
     <div class="mt-auto px-1">
       <Darstellung />
+      <p class="mt-3 text-[12px] text-muted-foreground tabular-nums">v{__APP_VERSION__}</p>
     </div>
   </nav>
 );

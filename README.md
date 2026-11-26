@@ -1,105 +1,95 @@
 <div align="center">
 
-<h1>Soll: Zeiterfassung und Dienstplan für dein Team, selbst gehostet</h1>
+<h1>Soll – Zeiterfassung und Dienstplan für dein Team.</h1>
 
-**Arbeitszeit erfassen, wie es das Gesetz verlangt – mit Prüfung nach Paragraph, ohne Kosten pro Kopf.**<br>
-Stempeln im Browser, am Handy und am Tablet, Dienstplan, Urlaub und Lohndaten für DATEV.<br>
-Open Source, auf deinem eigenen Server.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/heute-dark-desktop.png">
+  <img src="docs/assets/screenshots/heute-light-desktop.png" alt="Soll auf dem Desktop: Stempeln mit laufender Arbeitszeit, Pausenhinweis nach § 4 ArbZG und Projekt-Stoppuhr" width="900">
+</picture>
 
-![Status: in Entwicklung](https://img.shields.io/badge/Status-in%20Entwicklung-orange)
+**Selbst gehostete Zeiterfassung mit Dienstplan für kleine Betriebe: Stempeln im Web, am Handy und am Tablet, Prüfung nach Arbeitszeitgesetz mit Paragraph, Monatsabschluss mit Prüfwert und DATEV-Export – ohne Kosten pro Kopf.**
+
+[![CI](https://github.com/Speicherstadt/soll/actions/workflows/ci.yml/badge.svg)](https://github.com/Speicherstadt/soll/actions/workflows/ci.yml)
 [![Lizenz: AGPL-3.0](https://img.shields.io/badge/Lizenz-AGPL--3.0-blue)](LICENSE)
 [![Doku](https://img.shields.io/badge/Doku-soll.work-4f46e5?logo=zensical&logoColor=white)](https://soll.work/)
+[![Docker](https://img.shields.io/badge/Container-amd64%20%7C%20arm64-2496ed?logo=docker&logoColor=white)](https://soll.work/installation.html)
 
 [Warum?](#warum-soll) •
 [Funktionen](#funktionen) •
-[Alternativen](#soll-und-die-alternativen) •
+[Screenshots](#screenshots) •
+[Umzug](#umzug-aus-anderen-tools) •
+[Schnellstart](#schnellstart) •
 [FAQ](#faq) •
-[Dokumentation](https://soll.work/)
+[Dokumentation](https://soll.work/) •
+[Entwicklung](#entwicklung)
+
+<sub>English: self-hosted open-source time tracking and shift planning for small businesses in Germany, built around the BAG ruling (1 ABR 22/21) and German labour law (ArbZG, MiLoG, JArbSchG, MuSchG, BUrlG). Clock in via web, offline-capable PWA, or a shared tablet terminal, close months with a tamper-evident hash chain, and export payroll data to DATEV. The app supports German, English, Turkish, Polish, Ukrainian and Arabic (RTL); the [documentation](https://soll.work/) is in German.</sub>
 
 </div>
 
-> [!WARNING]
-> **In Entwicklung:** Soll ist noch nicht veröffentlicht.
-
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/heute-dark-desktop.png">
-    <img src="docs/assets/screenshots/heute-light-desktop.png" width="640" alt="Heute am Desktop: eingestempelt seit 07:03, Soll, Ist und der Hinweis auf die fällige Pause nach § 4 ArbZG">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/heute-dark-phone.png">
-    <img src="docs/assets/screenshots/heute-light-phone.png" width="180" alt="Heute am Handy">
-  </picture>
-</p>
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dienstplan-dark-desktop.png">
-    <img src="docs/assets/screenshots/dienstplan-light-desktop.png" width="410" alt="Der Dienstplan einer Woche im Café">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/terminal-dark-terminal.png">
-    <img src="docs/assets/screenshots/terminal-light-terminal.png" width="410" alt="Das Terminal am Tablet mit Uhr und PIN-Feld">
-  </picture>
-</p>
-
 ## Warum Soll?
 
-Seit dem Beschluss des Bundesarbeitsgerichts von 2022 muss jeder Betrieb die Arbeitszeit erfassen.
-Viele kleine Betriebe nutzen dafür Excel oder ein Abo-Tool, das pro Kopf kostet. Soll ist die
-Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
+**Arbeitszeit erfassen, wie es das Gesetz verlangt – auf deinem eigenen Server.** 🇩🇪 🇪🇺
 
-- **Prüfung nach Paragraph**: Pausen, Ruhezeit, Höchstarbeitszeit, Jugendliche, Mutterschutz,
-  Minijobs; jeder Hinweis nennt seine Norm, schon beim Stempeln und beim Einplanen.
-- **Nachweislich unverändert**: Jede Änderung steht mit Grund im Protokoll; zum Monatsabschluss
-  bekommt jede Person einen Prüfwert, an dem eine spätere Änderung auffällt.
-- **Lohn ohne Abtippen**: Export für DATEV mit Nacht-, Sonntags- und Feiertagszuschlägen.
-- **Für Schichtbetriebe und Handwerk**: Dienstplan, Tablet am Eingang, Aufträge, Stundennachweis mit
-  Unterschrift.
-- **Keine Kosten pro Kopf**: zehn Mitarbeiter kosten so viel wie einer; bezahlt wird nur der Server.
+Seit dem Beschluss des Bundesarbeitsgerichts (BAG, 13.09.2022, 1 ABR 22/21) müssen Betriebe Beginn, Ende und Dauer der Arbeitszeit erfassen. Soll ist die selbst gehostete Open-Source-Lösung dafür: ein Container mit SQLite auf deinem eigenen Server oder NAS, ohne laufende Kosten pro Person.
+
+- **Prüfung nach Paragraph statt Rätselraten:** Höchstarbeitszeit (§ 3 ArbZG), Pausen (§ 4 ArbZG), Ruhezeit (§ 5 ArbZG), Nacht-, Sonn- und Feiertage, Mindestlohn, Minijob-Grenze, Jugendschutz und Mutterschutz – jeder Befund nennt die konkrete Norm ([Regelwerk](https://soll.work/regeln.html)).
+- **Unveränderlicher Monatsabschluss (GoBD):** Jede Schreiboperation hängt an der [Audit-Kette](https://soll.work/audit-kette.html); Beschäftigte bestätigen ihren Monat und erhalten auf dem Stundenzettel einen Prüfwert, der nachträgliche Änderungen aufdeckt.
+- **Modular für jeden Betrieb:** Arbeitszeit, Dienstplan, Projektzeit und Terminal lassen sich einzeln ein- und ausschalten; wer nur Projektzeit oder nur Stempeln braucht, sieht auch nur das.
+- **Keine Kosten pro Kopf:** 2 oder 50 Beschäftigte laufen auf derselben Instanz; bezahlt wird nur der eigene Server.
+- **Reibungsloser Umzug:** Zeiten, Abwesenheiten, Kunden, Aufträge, Tätigkeiten, Schichten und Salden zum Stichtag aus anderen Werkzeugen oder Excel/CSV übernehmen ([Umzug](https://soll.work/umzug.html)).
 
 ## Funktionen
 
+Kurz je Bereich; alle Details stehen auf der verlinkten Seite der [Dokumentation](https://soll.work/).
+
 | Bereich | Was Soll kann |
 |---|---|
-| 🧭 Einrichtung | Assistent mit vier Fragen, der nur die Module zeigt, die dein Betrieb braucht (allein nur Projektzeit; mit der ersten beschäftigten Person schaltet Soll die Arbeitszeit ein und sagt warum); Standorte, Arbeitszeitmodelle aus Vorlagen, Mitarbeiter per CSV, Einladung per Link ohne E-Mail |
-| ⏱️ Stempeln | Ein Tipp für Kommen, Pause und Gehen; der laufende Tag mit Soll, Ist und dem nächsten Befund; Nachtragen und Ändern mit Grund, für die Person sichtbar; Browser, Handy (auch offline: jede Stempelung nummeriert und signiert, eine Lücke fällt auf) und Tablet-Terminal im Kiosk-Modus, gekoppelt per Code, mit PIN, gedrucktem QR-Code oder NFC-Karte (einfache Karte mit PIN, NTAG 424 DNA allein mit geprüfter SUN-Nachricht), auch ohne Netz (der Ausweis liegt nur verschlüsselt auf dem Tablet) |
-| ⚖️ Prüfung | Arbeitszeitgesetz, Mindestlohn, Jugendarbeitsschutz, Mutterschutz, Bereitschaft; mit Norm im Hinweis |
-| 📅 Dienstplan | Woche je Standort aus Schichtvorlagen planen, per Ziehen und Ablegen auch mit der Tastatur; Bedarf je Rolle mit dem, was fehlt; Entwurf nur für Planer, am Handy ein Tag zur Zeit; jede Schicht beim Einplanen geprüft nach Arbeitszeitgesetz, Jugend- und Mutterschutz, Mindestlohn, Minijob-Grenze und § 12 TzBfG, mit der Norm am Block; eine Woche veröffentlichen mit Benachrichtigung per Push oder Mail, die eigenen Schichten als Kalender abonnieren (ICS-Link, jederzeit neu oder widerrufen); Schichten tauschen: anbieten, übernehmen, freigeben mit der Prüfung für die Person, die übernimmt |
-| 🌴 Abwesenheiten | Urlaub beantragen, freigeben, ablehnen und stornieren, ganze und halbe Tage; Resturlaub mit Übertrag und Verfall, Überstundenkonto und Tag des Hinweises auf Verfall in der App; Überstunden und Resturlaub zum Stichtag als Startsaldo, von Hand oder aus dem Import, im Prüfwert des Monats; Krankmeldung ohne Diagnose mit Erinnerung an die Bescheinigung und die eAU; Kinderkrankentage; Teamkalender je Standort mit Feiertagen, in dem nur „abwesend“ steht |
-| 🔔 Erinnerungen | Ausstempeln vergessen, Pause fällig, Monat bestätigen; per Web Push aufs Handy oder per Mail, je Art abschaltbar; Soll stempelt nie selbst aus |
-| 🗓️ Monatsabschluss | Person bestätigt, Betrieb schließt ab, danach gesperrt; Korrektur nur als Gegeneintrag mit Grund; Stundenzettel als PDF per Mail und zum Herunterladen, mit Prüfwert; Prüfseite ohne Anmeldung zeigt jede spätere Änderung; nach Ablauf der Aufbewahrungsfrist (2 oder 8 Jahre) entfernt Soll den Inhalt, Kette und Prüfwert bleiben gültig |
-| 🧾 Lohn und Prüfung | [DATEV-Lohnexport](https://soll.work/datev.html) für LODAS und Lohn und Gehalt aus abgeschlossenen Monaten: Stunden, Feiertagsstunden und Zuschläge nach § 3b EStG getrennt nach steuerfrei und steuerpflichtig, mit den Lohnarten des Betriebs; Prüfexport für Zoll und Arbeitsschutz als CSV und PDF mit Erfassungszeit, Änderungen mit Grund, Befunden und Prüfwert je Monat; Auskunft nach Art. 15 DSGVO als Datei für jede Person; [Verfahrensdokumentation](https://soll.work/verfahrensdokumentation.html) nach den GoBD, bei jedem Abruf aus dem Stand des Betriebs erzeugt, mit eigenen Angaben und Abschnitten, als PDF und Markdown |
-| 🛠️ Projekte | Kunden und Aufträge mit Budget in Stunden und Euro und Warnung, feste interne Tätigkeiten (Fahrt, Werkstatt, Lager, Schulung), Stundensätze nach Kunde, Auftrag, Tätigkeit und Person; Stoppuhr unter Heute mit Wechsel per Tipp, Verweis auf die Stempelung und Hinweis bei mehr Projektzeit als Arbeitszeit, änderbar bis „abgerechnet“; Auslastung des Teams (anwesend gegen gebucht, abrechenbar und intern, ab drei Personen), je Person nur eingeschaltet und für alle sichtbar; Stundennachweis (Regiebericht), den der Kunde auf dem Handy unterschreibt, als PDF mit Prüfsumme, das die Buchungen darin sperrt; Übergabe an [Haben](https://haben.app/): Kunden aus Haben verbinden, abgerechnete Buchungen als Leistungen, wiederholbar ohne Doppel |
-| 🔌 Anbindung | [REST-API und MCP-Server](https://soll.work/api.html) für andere Programme und KI-Assistenten: persönliche Zugänge mit den Rechten der eigenen Rolle, einmal angezeigt und jederzeit widerrufbar; OpenAPI-Beschreibung; Werkzeuge zum Lesen von Tag, Monat, Aufträgen und Dienstplan und zum Stempeln |
-| 🔒 Datenschutz | Vorlagen zum Anpassen: [Infoblatt für Beschäftigte](https://soll.work/infoblatt.html) nach Art. 13 DSGVO, [Betriebsvereinbarung](https://soll.work/betriebsvereinbarung.html) nach § 87 Abs. 1 Nr. 6 BetrVG mit jedem Schalter von Soll, [Löschkonzept](https://soll.work/loeschkonzept.html) mit jeder Tabelle und ihrer Frist; kein Standort, keine Fotos, keine Fingerabdrücke, keine Diagnose |
-| 🔁 Umzug | [Import](https://soll.work/umzug.html) in einem Assistenten: Werkzeug wählen, Datei hochladen, Personen, Spalten, Abwesenheitsarten, Kunden und Aufträge zuordnen, Vorschau mit den Befunden der Prüfregeln, Probelauf, Übernahme; die Originaldatei bleibt unter ihrem SHA-256 aufbewahrt, jeder Eintrag trägt „übernommen aus …“, ein zweiter Lauf legt nichts doppelt an, im alten Tool abgeschlossene Monate werden als übernommen abgeschlossen. Salden zum Stichtag (Überstunden, Resturlaub) über eine eigene Vorlage. Heute aus einer Soll-CSV, aus jeder Excel-Tabelle (`.xlsx`) oder CSV mit frei zugeordneten Spalten, deutschen Datums- und Zahlenformaten und Projekt und Tätigkeit als Buchungen (Vorlagen zum Herunterladen), aus Clockodo, über die API mit einem Schlüssel, der nur für den Abruf gilt, oder als CSV-Datensicherung (mit Leistungen als Tätigkeiten), aus Kimai über dessen REST-API (Kunden, Projekte, Tätigkeiten, Zeitbuchungen als Zeiten und Projektzeit; nur sichere `https`-Adressen, das Token wird nicht gespeichert) und aus Personio über dessen API v2 (Mitarbeiter, Anwesenheiten mit Pausen, Abwesenheiten mit halben Tagen; der Zugang wird nicht gespeichert, das Token am Ende widerrufen) und aus Papershift, Planday und Crewmeister über deren API (Mitarbeiter, gestempelte Zeiten mit ihren Pausen, Abwesenheiten mit halben Tagen und bei Planday und Crewmeister die geplanten Schichten als Entwurf im Dienstplan); Toggl und Clockify folgen |
-| 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |
+| ⏱️ [Stempeln](https://soll.work/stempeln.html) | Kommen, Pause und Gehen im Browser oder als PWA auf dem Handy (auch offline mit signierter Warteschlange), Nachtrag und Korrektur mit Pflichtgrund |
+| 📱 [Terminal](https://soll.work/terminal.html) | Geteiltes Android-Tablet am Eingang mit PIN, QR-Code oder NFC-Karte, auch ohne Netz |
+| ⚖️ [Prüfung](https://soll.work/pruefung.html) · [Bereitschaft](https://soll.work/bereitschaft.html) · [Nacht & Sonntag](https://soll.work/nacht-sonntag.html) | Tägliche Prüfung nach [Regelwerk](https://soll.work/regeln.html), [Mindestlohn & Minijob](https://soll.work/mindestlohn.html), [JArbSchG & MuSchG](https://soll.work/jugend-mutterschutz.html) und [Feiertagen](https://soll.work/feiertage.html) je Bundesland |
+| 🌴 [Abwesenheiten](https://soll.work/abwesenheiten.html) · [Konten](https://soll.work/konten.html) | Urlaub mit Verfallshinweis (EuGH / BAG), Krankmeldung und eAU-Frist, Kinderkrankentage, Überstundenkonto und Teamkalender |
+| 📅 [Dienstplan](https://soll.work/dienstplan.html) | Schichtvorlagen, Bedarf je Rolle, Arbeitszeitprüfung bereits beim Einplanen, Entwurf und Veröffentlichung, Schichttausch und iCal-Kalender-Feed |
+| 💼 [Projektzeit](https://soll.work/projektzeit.html) | Kunden, Aufträge mit Budgetwarnung, Tätigkeiten, Stundensätze, Stoppuhr, Auslastung, Stundennachweis-PDF mit Unterschrift und Übergabe an [Haben](https://github.com/Speicherstadt/haben) |
+| 🔒 [Monatsabschluss](https://soll.work/monatsabschluss.html) · [Prüfexport](https://soll.work/pruefexport.html) | Bestätigung durch Beschäftigte, Abschluss durch den Betrieb, Stundenzettel-PDF mit Prüfwert und Prüfseite, [Verfahrensdokumentation](https://soll.work/verfahrensdokumentation.html) nach GoBD |
+| 💶 [DATEV-Lohnexport](https://soll.work/datev.html) | Bewegungsdaten für LODAS und Lohn und Gehalt mit [steuerfreien Zuschlägen nach § 3b EStG](https://soll.work/zuschlaege.html) aus abgeschlossenen Monaten |
+| 🔔 [Erinnerungen](https://soll.work/erinnerungen.html) | Hinweise per Web Push und E-Mail bei fehlender Stempelung, fälliger Pause, offenem Monat oder fehlender Bescheinigung |
+| 🔐 [Anmeldung](https://soll.work/anmeldung.html) · [Einrichtung](https://soll.work/einrichtung.html) | Passkeys, Passwort, OpenID Connect, Einladungslinks; 6 Sprachen (`de`, `en`, `tr`, `pl`, `uk`, `ar` RTL) |
+| 🛡️ [Datenschutz](https://soll.work/loeschkonzept.html) | [Infoblatt für Beschäftigte](https://soll.work/infoblatt.html), [Vorlage Betriebsvereinbarung](https://soll.work/betriebsvereinbarung.html), automatische Aussonderung abgelaufener Monate und DSGVO-Auskunft |
+| 🔌 [REST-API & MCP](https://soll.work/api.html) | Versionierte Schnittstelle mit OpenAPI und schreibgeschützter MCP-Server für KI-Assistenten |
 
-## FAQ
+## Screenshots
 
-### Muss ich die Arbeitszeit meiner Mitarbeiter erfassen?
-Ja. Seit dem Beschluss des Bundesarbeitsgerichts vom 13.09.2022 (1 ABR 22/21) gilt die Pflicht für
-jeden Betrieb, für Minijobs schon länger nach § 17 MiLoG.
+<table>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/dienstplan-dark-desktop.png"><img src="docs/assets/screenshots/dienstplan-light-desktop.png" alt="Dienstplan mit Schichten je Person und Wochentag sowie Arbeitszeitprüfung"></picture><br><sub><b>Dienstplan</b>: Schichten planen mit Prüfung nach ArbZG</sub></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/projekte-dark-desktop.png"><img src="docs/assets/screenshots/projekte-light-desktop.png" alt="Projekte mit Aufträgen, Budgetanzeige und Verbrauchsstatus"></picture><br><sub><b>Projekte</b>: Aufträge, Budgets, Stundennachweise und Übergabe</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/monat-dark-desktop.png"><img src="docs/assets/screenshots/monat-light-desktop.png" alt="Monatsabschluss mit Soll, Ist, Saldo, Bestätigung, Stundenzettel-PDF und Prüfwert"></picture><br><sub><b>Monatsabschluss</b>: Soll, Ist, Saldo, PDF und Prüfwert</sub></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/screenshots/abwesenheiten-dark-desktop.png"><img src="docs/assets/screenshots/abwesenheiten-light-desktop.png" alt="Abwesenheiten mit Resturlaub, Überstunden, Kinderkrankentagen, Antrag und Teamkalender"></picture><br><sub><b>Abwesenheiten</b>: Konten, Urlaubsantrag, Krankmeldung und Teamkalender</sub></td>
+  </tr>
+</table>
 
-### Kann ich von Clockodo, Personio oder Kimai umziehen?
-Der Umzug steht: Soll übernimmt Zeiten, Abwesenheiten, Überstunden und Resturlaub zum Stichtag,
-Kunden und Aufträge, prüft sie vorher und bewahrt die Originaldatei nachvollziehbar auf. Aus Clockodo holt Soll Mitarbeiter, Zeiten,
-Abwesenheiten, Kunden, Projekte und Leistungen direkt über die API (der Schlüssel wird nicht
-gespeichert) oder liest die CSV-Datensicherung; sonst kommen die Daten als Soll-CSV oder als
-beliebige Excel-Tabelle oder CSV, deren Spalten du selbst zuordnest. Aus Kimai holt Soll
-Kunden, Projekte, Tätigkeiten und Zeitbuchungen über die REST-API, aus Personio Mitarbeiter,
-Anwesenheiten und Abwesenheiten über die API v2, aus Papershift, Planday und Crewmeister
-Mitarbeiter, Zeiten, Abwesenheiten und den Dienstplan über deren API (Zugang und Token werden
-nicht gespeichert). Toggl und Clockify liest Soll mit den nächsten Versionen direkt.
+## Umzug aus anderen Tools
 
-### Brauche ich eine Stempeluhr?
-Nein. Ein Android-Tablet an der Wand reicht; gestempelt wird mit PIN, QR-Code oder NFC-Karte.
+Alle Daten werden in einem geführten [Umzugs-Assistenten](https://soll.work/umzug.html) vorab geprüft (Probelauf ohne Schreiben, Dubletten-Schutz, Aufbewahrung der Originaldatei unter ihrem SHA-256).
 
-## Installation
+| Werkzeug | Weg | Was übernommen wird |
+|---|---|---|
+| **Clockodo** | API & CSV | Mitarbeiter, Zeiten, Abwesenheiten, Kunden, Projekte und Leistungen |
+| **Kimai** | REST-API | Kunden, Projekte, Tätigkeiten und Zeitbuchungen als Zeiten & Projektzeit |
+| **Personio** | API v2 & Excel/CSV | Mitarbeiter, Anwesenheiten mit Pausen, Abwesenheiten mit halben Tagen |
+| **Papershift · Planday · Crewmeister** | API & Excel/CSV | Mitarbeiter, Zeiten, Abwesenheiten und geplante Schichten (Planday, Crewmeister) |
+| **Toggl Track · Clockify** | API & CSV | Kunden, Projekte und Zeiten (Solo-Modus) |
+| **Excel / CSV & Soll-CSV** | Datei | Freie Spaltenzuordnung (`.xlsx`/`.csv`) sowie Vorlagen für Salden zum Stichtag |
 
-Soll läuft als ein Container mit SQLite, ohne Datenbankserver, für amd64 und arm64:
+## Schnellstart
+
+Soll läuft als einzelner Container mit SQLite (ohne Datenbankserver) für `amd64` und `arm64`:
 
 ```sh
+mkdir soll && cd soll
 curl -fsSLO https://raw.githubusercontent.com/Speicherstadt/soll/main/deploy/compose.yaml
 curl -fsSL -o soll.env https://raw.githubusercontent.com/Speicherstadt/soll/main/deploy/soll.env.example
 # in soll.env: SOLL_SECRET_KEY (openssl rand -base64 32) und SOLL_URL eintragen
@@ -107,35 +97,82 @@ docker compose up -d
 docker compose exec soll soll backup   # Sicherung im laufenden Betrieb
 ```
 
-Podman Quadlet, Sicherung und Wiederherstellung, Update und alle Einstellungen stehen unter
-[Installation](https://soll.work/installation.html). Das Image erscheint mit dem ersten Release; bis
-dahin `docker build -f Containerfile -t soll .`
+Podman Quadlet, Sicherung & Wiederherstellung, Updates und alle Umgebungsvariablen stehen in der [Installationsanleitung](https://soll.work/installation.html). Zum lokalen Ausprobieren mit zwei Musterbetrieben gibt es [Demo-Daten](https://soll.work/demo.html) (`bun run demo`).
+
+## FAQ
+
+<details>
+<summary><b>Muss ich die Arbeitszeit meiner Beschäftigten erfassen?</b></summary>
+
+Ja. Seit dem Beschluss des Bundesarbeitsgerichts vom 13.09.2022 (1 ABR 22/21) gilt die Pflicht zur Erfassung von Beginn, Ende und Dauer für jeden Betrieb, für Minijobs bereits länger nach § 17 MiLoG.
+</details>
+
+<details>
+<summary><b>Wie verhindert Soll nachträgliche Manipulationen (GoBD)?</b></summary>
+
+Jede Schreiboperation hängt in derselben Transaktion ein Glied an die [Audit-Kette](https://soll.work/audit-kette.html) an. Nach dem [Monatsabschluss](https://soll.work/monatsabschluss.html) sind Zeiten gesperrt (Korrekturen laufen als Gegeneintrag mit Grund), und der Stundenzettel-PDF enthält einen Prüfwert, mit dem Beschäftigte den Stand auf der Prüfseite unabhängig verifizieren können. Die [Verfahrensdokumentation](https://soll.work/verfahrensdokumentation.html) entsteht direkt aus dem Betriebsstand.
+</details>
+
+<details>
+<summary><b>Brauche ich eine eigene Stempeluhr?</b></summary>
+
+Nein. Neben Browser und Handy-PWA reicht ein Android-Tablet am Eingang; gestempelt wird mit PIN, QR-Code oder NFC-Karte ([Terminal](https://soll.work/terminal.html)).
+</details>
+
+<details>
+<summary><b>Werden meine Zugangsdaten beim Import aus anderen Tools gespeichert?</b></summary>
+
+Nein. API-Tokens und Zugänge für den [Umzug](https://soll.work/umzug.html) werden nur für den jeweiligen Abruf verwendet und nirgends gespeichert.
+</details>
+
+<details>
+<summary><b>Kann ich Soll mit Haben verbinden?</b></summary>
+
+Ja. Abgerechnete Projektzeiten lassen sich als Leistungspositionen an [Haben](https://github.com/Speicherstadt/haben) übergeben ([Projektzeit](https://soll.work/projektzeit.html)).
+</details>
+
+## Dokumentation
+
+Alles im Detail, mit Suche: **https://soll.work/**.
 
 ## Entwicklung
 
-Bun, Hono, Drizzle und SQLite auf dem Server; Solid und Tailwind im Client. Hinweise für
-Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), die [Dokumentation](https://soll.work/)
-sowie Aufbau und Befehle unter [Entwicklung](https://soll.work/entwicklung.html).
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)](https://bun.sh)
+[![Hono](https://img.shields.io/badge/Hono-e36002?logo=hono&logoColor=white)](https://hono.dev)
+[![SolidJS](https://img.shields.io/badge/Solid%202-2c4f7c?logo=solid&logoColor=white)](https://www.solidjs.com)
+[![SQLite](https://img.shields.io/badge/SQLite-Drizzle-003b57?logo=sqlite&logoColor=white)](https://orm.drizzle.team)
+
+Hinweise für Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), offene Punkte in [BAULISTE.md](BAULISTE.md), Aufbau und Befehle unter [Entwicklung](https://soll.work/entwicklung.html).
 
 ```sh
 bun install
-bun run check        # Typen, Lint, Tests, Build
+bun run check        # Typen, Lint, Solid-2-Prüfung, Tests, Build
 bun run e2e          # Playwright: desktop, phone, terminal
-bun run demo         # Demo-Daten in ./demo-daten
-bun run screenshots  # die Bilder dieser Seite und der Doku neu
+bun run demo         # Demo-Daten: Weber Haustechnik & Café Elbblick
 ```
 
-`bun run demo` legt die Testbetriebe „Weber Haustechnik“ und „Café Elbblick“ mit drei Monaten
-Stempelungen, Abwesenheiten, Dienstplänen, Projektzeit und abgeschlossenen Monaten in einem frischen
-Datenverzeichnis an, nur zum Ausprobieren: alle Konten haben dasselbe Passwort. Anmeldedaten und
-Ablauf unter [Demo-Daten](https://soll.work/demo.html).
+| Paket | Inhalt |
+|---|---|
+| `packages/arbeitszeit` | Prüfregeln, Feiertage, Jahreswerte, Soll/Ist, Konten, Zuschläge (reine Funktionen) |
+| `packages/import` | Parser für Soll-CSV, Excel/CSV, Clockodo, Kimai, Personio, Papershift, Planday, Crewmeister, Toggl, Clockify |
+| `packages/export` | DATEV-ASCII, CSV, PDF (Stundenzettel, Prüfexport, Stundennachweis, Verfahrensdokumentation) |
+| `packages/ui` | UI-Komponenten nach `DESIGN.md` (Solid 2, Tailwind 4) |
+| `apps/server` | Hono-API, Drizzle mit SQLite (WAL), Better Auth, Audit-Kette |
+| `apps/web` | Solid-2-SPA/PWA, Terminal-Ansicht, Offline-Warteschlange |
+
+## Mehr von uns
+
+Weitere Open-Source-Apps für deinen eigenen Server: **[speicherstadt.org](https://speicherstadt.org)**
 
 ---
 
 <div align="center">
 
-<sub>Lizenz: <a href="LICENSE">AGPL-3.0</a> · © Tristan Teufel und Mitwirkende<br>
-Veränderte Versionen, die du weitergibst oder für andere betreibst, müssen ihren Quellcode unter der AGPL anbieten; eine kommerzielle Lizenz ohne diese Pflichten gibt es über <a href="https://teufel-it.de">teufel-it.de</a>.<br>
-Soll steht in keiner Verbindung zu Clockodo, Kimai, Personio, Papershift, Planday oder den anderen genannten Produkten.</sub>
+⭐ **Gefällt dir Soll?** Ein [Stern auf GitHub](https://github.com/Speicherstadt/soll) hilft anderen, es zu finden.
+
+<sub>Lizenz: <a href="LICENSE">AGPL-3.0</a><br>
+Soll ist keine Rechtsberatung. Einstellungen nach Arbeitszeitgesetz, Zuschläge und Aufbewahrungsfristen vor dem Echtbetrieb prüfen.<br>
+DATEV, Clockodo, Kimai, Personio, Papershift, Planday, Crewmeister, Toggl und Clockify sind Marken ihrer jeweiligen Inhaber; Soll steht in keiner Verbindung zu diesen Unternehmen.</sub>
 
 </div>

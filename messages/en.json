@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "Daily hours",
   "monat_chart_saldoverlauf": "Balance trend",
   "monat_chart_label": "Monthly chart: actual and target hours and balance trend per day",
-  "auslastung_chart_label": "Utilization per person in hours"
+  "auslastung_chart_label": "Utilization per person in hours",
+  "konten_verlauf_titel": "Overtime trend",
+  "konten_verlauf_label": "Overtime balance trend across months"
 }

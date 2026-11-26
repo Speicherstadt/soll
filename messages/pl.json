@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "Godziny dzienne",
   "monat_chart_saldoverlauf": "Przebieg salda",
   "monat_chart_label": "Wykres miesięczny: godziny rzeczywiste, planowane i saldo dzienne",
-  "auslastung_chart_label": "Obłożenie na osobę w godzinach"
+  "auslastung_chart_label": "Obłożenie na osobę w godzinach",
+  "konten_verlauf_titel": "Przebieg nadgodzin",
+  "konten_verlauf_label": "Przebieg salda nadgodzin w kolejnych miesiącach"
 }

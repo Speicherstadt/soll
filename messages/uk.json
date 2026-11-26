@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "Години за днями",
   "monat_chart_saldoverlauf": "Динаміка сальдо",
   "monat_chart_label": "Місячний графік: фактичні та планові години й динаміка сальдо",
-  "auslastung_chart_label": "Завантаженість на особу в годинах"
+  "auslastung_chart_label": "Завантаженість на особу в годинах",
+  "konten_verlauf_titel": "Динаміка понаднормових",
+  "konten_verlauf_label": "Динаміка балансу понаднормових годин за місяцями"
 }

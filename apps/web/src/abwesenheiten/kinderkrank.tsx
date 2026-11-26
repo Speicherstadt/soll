@@ -1,4 +1,5 @@
 import type { KinderkrankErgebnis } from "@soll/arbeitszeit";
+import { HeartPulse } from "lucide";
 import { Show } from "solid-js";
 import { Wert } from "../konten/konten.tsx";
 import { m } from "../paraglide/messages.js";
@@ -22,7 +23,9 @@ const zaehler = (k: KinderkrankErgebnis): string => {
 export const Kinderkrank = (props: { jahr: number; stand: KinderkrankErgebnis | null }) => (
   <Show when={props.stand}>
     {(stand) => (
-      <Wert name={m.abw_kinderkrank({ jahr: String(props.jahr) })}>{zaehler(stand())}</Wert>
+      <Wert name={m.abw_kinderkrank({ jahr: String(props.jahr) })} icon={HeartPulse}>
+        {zaehler(stand())}
+      </Wert>
     )}
   </Show>
 );

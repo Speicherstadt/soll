@@ -1321,5 +1321,7 @@
   "monat_chart_tagesstunden": "Tagesstunden",
   "monat_chart_saldoverlauf": "Saldoverlauf",
   "monat_chart_label": "Monatsverlauf: Ist- und Soll-Stunden sowie Saldoverlauf pro Tag",
-  "auslastung_chart_label": "Auslastung je Person in Stunden"
+  "auslastung_chart_label": "Auslastung je Person in Stunden",
+  "konten_verlauf_titel": "Überstundenverlauf",
+  "konten_verlauf_label": "Verlauf des Überstundenkontos über die Monate"
 }

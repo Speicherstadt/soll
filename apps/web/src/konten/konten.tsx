@@ -1,5 +1,6 @@
 import type { JSX } from "@solidjs/web";
-import { Button } from "@soll/ui";
+import { Button, Icon } from "@soll/ui";
+import { Clock, type IconNode, Palmtree } from "lucide";
 import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
 import { abfrage, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
@@ -11,27 +12,80 @@ import { Fehler } from "../rahmen/karte.tsx";
 import type { Person } from "../zeiten/typen.ts";
 import { AnpassungDialog, HinweisDialog } from "./dialoge.tsx";
 import { anpassungText, befundZeilen, hinweisText, lueckeText } from "./text.ts";
-import type { Konten as KontenDaten } from "./typen.ts";
+import type { Konten as KontenDaten, Urlaub } from "./typen.ts";
+import { UeberstundenChart } from "./ueberstundenChart.tsx";
 
-export const Wert = (props: { name: string; children: JSX.Element }) => (
-  <div class="flex flex-col gap-0.5 rounded-xl border border-border p-3">
-    <dt class="text-[12px] text-muted-foreground">{props.name}</dt>
-    <dd class="font-semibold text-[17px] tabular-nums">{props.children}</dd>
+const WERT_TON = {
+  default: "text-foreground",
+  success: "text-success",
+  danger: "text-danger",
+} as const;
+
+export const Wert = (props: {
+  name: string;
+  icon?: IconNode;
+  ton?: keyof typeof WERT_TON;
+  mono?: boolean;
+  /** Optional 0..100 fill bar rendered aria-hidden inside <dd> (keeps dd text exact) */
+  fortschritt?: number | null;
+  children: JSX.Element;
+}) => (
+  <div class="flex flex-col gap-1 rounded-xl border border-border bg-background p-4">
+    <dt class="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+      <Show when={props.icon}>
+        {(ic) => <Icon icon={ic()} class="size-3.5 shrink-0 text-muted-foreground" />}
+      </Show>
+      <span>{props.name}</span>
+    </dt>
+    <dd
+      class={`flex flex-col gap-2 font-semibold text-[20px] tabular-nums ${
+        props.mono ? "font-mono" : ""
+      } ${WERT_TON[props.ton ?? "default"]}`}
+      dir={props.mono ? "ltr" : undefined}
+    >
+      {props.children}
+      <Show when={props.fortschritt !== undefined && props.fortschritt !== null}>
+        <div aria-hidden="true" class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            class="h-full rounded-full bg-primary transition-[width] duration-300"
+            style={{ width: `${Math.max(0, Math.min(100, props.fortschritt ?? 0))}%` }}
+          />
+        </div>
+      </Show>
+    </dd>
   </div>
 );
+
+const urlaubFortschritt = (u: Urlaub): number | null => {
+  if (!u.ok) return null;
+  const gesamt = u.toepfe?.reduce((s, t) => s + t.anspruchHalbtage, 0) ?? 0;
+  if (gesamt > 0) return Math.round((u.restHalbtage / gesamt) * 100);
+  const basis = u.restHalbtage + u.geplantHalbtage;
+  return basis > 0 ? Math.round((u.restHalbtage / basis) * 100) : null;
+};
 
 /** Leave left with its years and when each expires, and the overtime (R-23, S-208) */
 const Stand = (props: { k: KontenDaten; zusatz?: JSX.Element }) => {
   const urlaub = () => props.k.urlaub;
+  const ueber = () => props.k.ueberstunden;
   const zeilen = () => {
     const u = urlaub();
     if (!u.ok) return [];
     return befundZeilen(u.befunde ?? []);
   };
+  const ueberTon = (): keyof typeof WERT_TON => {
+    const u = ueber();
+    if (!u.ok || u.saldoMinuten === 0) return "default";
+    return u.saldoMinuten > 0 ? "success" : "danger";
+  };
   return (
     <>
       <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Wert name={m.konten_resturlaub()}>
+        <Wert
+          name={m.konten_resturlaub()}
+          icon={Palmtree}
+          fortschritt={urlaubFortschritt(urlaub())}
+        >
           {(() => {
             const u = urlaub();
             if (!u.ok) return lueckeText(u);
@@ -43,14 +97,23 @@ const Stand = (props: { k: KontenDaten; zusatz?: JSX.Element }) => {
               : tageText(u.restHalbtage);
           })()}
         </Wert>
-        <Wert name={m.konten_ueberstunden()}>
+        <Wert name={m.konten_ueberstunden()} icon={Clock} ton={ueberTon()} mono={ueber().ok}>
           {(() => {
-            const u = props.k.ueberstunden;
+            const u = ueber();
             return u.ok ? saldoText(u.saldoMinuten) : lueckeText(u);
           })()}
         </Wert>
         {props.zusatz}
       </dl>
+      <Show when={ueber().ok}>
+        <UeberstundenChart
+          verlauf={
+            ueber().ok
+              ? (ueber() as { verlauf?: { monat: string; saldoMinuten: number }[] }).verlauf
+              : undefined
+          }
+        />
+      </Show>
       <Show when={zeilen().length > 0}>
         <ul class="flex flex-col gap-1">
           <For each={zeilen()}>
@@ -135,8 +198,8 @@ const PersonWahl = (props: {
 }) => {
   const id = createUniqueId();
   return (
-    <div class="flex max-w-xs flex-col gap-1.5">
-      <label for={id} class="font-medium">
+    <div class="flex min-w-52 max-w-xs flex-col gap-1.5">
+      <label for={id} class="font-medium text-[12px] text-muted-foreground">
         {m.konten_person()}
       </label>
       <select
@@ -154,9 +217,9 @@ const PersonWahl = (props: {
 };
 
 /**
- * The accounts in the app (S-402): leave left with carry-over and expiry, overtime, the notices on
- * leave expiring and the changes by hand. Whoever sees all times picks a person; there is no list of
- * everyone's balances (BetrVG § 87 Abs. 1 Nr. 6).
+ * The accounts in the app (S-402): leave left with carry-over and expiry, overtime + monthly trend
+ * chart, the notices on leave expiring and the changes by hand. Whoever sees all times picks a
+ * person; there is no list of everyone's balances (BetrVG § 87 Abs. 1 Nr. 6).
  */
 export const Konten = (props: {
   ich: string;
@@ -173,27 +236,31 @@ export const Konten = (props: {
     setNutzerId(id === props.ich ? undefined : id);
   };
   return (
-    <section aria-label={m.konten_titel()} class="flex flex-col gap-3">
-      <Show when={props.personen.length > 0}>
-        <PersonWahl
-          personen={props.personen}
-          nutzerId={nutzerId() ?? props.ich}
-          onPerson={waehlen}
-        />
-      </Show>
+    <section aria-label={m.konten_titel()} class="flex flex-col gap-4">
       <Loading>
         <Fehler text={konten.data.ok ? "" : m.laden_fehler()} />
         <Show when={k()}>
           {(stand) => (
             <>
+              <Show when={props.personen.length > 0 || stand().rechte.pflegen}>
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                  <Show when={props.personen.length > 0}>
+                    <PersonWahl
+                      personen={props.personen}
+                      nutzerId={nutzerId() ?? props.ich}
+                      onPerson={waehlen}
+                    />
+                  </Show>
+                  <Show when={stand().rechte.pflegen}>
+                    <Pflege k={stand()} onMeldung={setMeldung} />
+                  </Show>
+                </div>
+              </Show>
               <Stand
                 k={stand()}
                 zusatz={<Show when={stand().nutzerId === props.ich}>{props.zusatz}</Show>}
               />
               <Verlauf k={stand()} />
-              <Show when={stand().rechte.pflegen}>
-                <Pflege k={stand()} onMeldung={setMeldung} />
-              </Show>
             </>
           )}
         </Show>

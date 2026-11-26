@@ -85,12 +85,6 @@ const Zeiten = () => {
             </Button>
           </div>
         </div>
-        <Link to="/monat" class={knopfLink}>
-          {m.monat_titel()}
-        </Link>
-        <Link to="/export" class={knopfLink}>
-          {m.pruefexport_titel()}
-        </Link>
         <Loading>
           <Show when={hatRolle("inhaber") && quelle.ansicht()}>
             {(ansicht) => (
@@ -103,6 +97,14 @@ const Zeiten = () => {
             )}
           </Show>
         </Loading>
+        <div class="flex flex-wrap items-center gap-2 lg:ms-auto">
+          <Link to="/monat" class={knopfLink}>
+            {m.monat_titel()}
+          </Link>
+          <Link to="/export" class={knopfLink}>
+            {m.pruefexport_titel()}
+          </Link>
+        </div>
       </div>
       <Loading>
         <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />

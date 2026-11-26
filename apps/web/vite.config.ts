@@ -1,9 +1,12 @@
+import { readFileSync } from "node:fs";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import solid from "@solidjs/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { defineConfig } from "vite";
 import { serviceWorker } from "./build/service-worker.ts";
+
+const { version } = JSON.parse(readFileSync("../../package.json", "utf8")) as { version: string };
 
 // The API of the Hono server, reached through Vite under the app's own origin, so the session cookie
 // and Better Auth's origin check see one site (dev: 18200, e2e: 28200; CLAUDE.md, "Working rules");
@@ -21,6 +24,7 @@ const paraglideOutput = (development: boolean) =>
 
 // The app is a static SPA/PWA; the Hono server serves the API (CLAUDE.md, "Code style")
 export default defineConfig(({ command, isPreview }) => ({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     paraglideVitePlugin({
       project: "../../project.inlang",

@@ -1,8 +1,10 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { betriebAnlegen } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
 import { SEITEN } from "./seiten.ts";
 
+const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { version: string };
 const de = messagesOf("de");
 
 // The app follows the browser's language; Playwright's default is en-US
@@ -17,6 +19,7 @@ test.beforeEach(async ({ page }) => {
 test("the sidebar reaches every page and marks the current one", async ({ page }) => {
   await page.goto("/");
   const leiste = page.getByRole("navigation", { name: text("nav_bereiche") });
+  await expect(leiste.getByText(`v${version}`)).toBeVisible();
   for (const seite of SEITEN.filter((s) => s.pfad !== "/mehr")) {
     await leiste.getByRole("link", { name: text(seite.titel) }).click();
     await expect(page).toHaveURL(seite.pfad);

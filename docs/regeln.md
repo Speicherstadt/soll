@@ -22,7 +22,7 @@ betroffenen Tage. Jede Regel hat mindestens drei Testfälle: **erlaubt**, **Gren
 Grenze) und **Verstoß** (jenseits der Grenze; bei einer Regel der Schwere Hinweis ist das Ergebnis
 ein Hinweis, bei einer Berechnung der Teil über der Grenze). Weitere Fälle tragen einen eigenen
 Namen. Die Tests in `packages/arbeitszeit` übernehmen sie wörtlich; `scripts/regeln.test.ts` prüft,
-dass jede Regel ihre drei Fälle mit Quelle hat und jede Norm des Projektplans eine Regel.
+dass jede Regel ihre drei Fälle mit Quelle hat und jede beobachtete Norm eine Regel.
 
 Die Regeln sind Daten mit Gültigkeit: Eine Reform des Arbeitszeitgesetzes wird eine neue
 Regelversion (S-104), keine Änderung der alten. Diese Fassung ist die **Regelversion 2026-1**, gültig
@@ -90,30 +90,29 @@ Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäfti
 | R-33 | Soll, Ist und Überstundenkonto | § 611a Abs. 1 BGB; § 2 Abs. 1 EntgFG | – (Berechnung) |
 | R-34 | Salden zum Stichtag | § 7 Abs. 3, § 5 Abs. 3 BUrlG | – (Berechnung) |
 
-Jede Norm der Tabelle „Rechtlicher Rahmen“ im [Projektplan](plan.md#rechtlicher-rahmen) hat eine
-Regel:
+Jede beobachtete Norm hat eine Regel im Regelwerk:
 
-| Norm im Projektplan | Regel |
-| --- | --- |
-| BAG 1 ABR 22/21; § 3 Abs. 2 Nr. 1 ArbSchG; EuGH C-55/18 | R-01 |
-| § 3 ArbZG | R-02, R-03 |
-| § 4 ArbZG | R-04 |
-| § 5 ArbZG | R-05, R-12 |
-| §§ 2, 6 ArbZG | R-06 |
-| §§ 9 bis 11 ArbZG | R-07, R-08, R-09 |
-| § 16 Abs. 2 ArbZG | R-10 |
-| §§ 2, 5, 7 ArbZG; EuGH C-151/02, C-518/15 | R-11, R-12 |
-| §§ 1, 17 MiLoG; § 2a SchwarzArbG | R-13, R-14 |
-| §§ 8, 11 bis 14 JArbSchG | R-15 bis R-19 (dazu R-20 für §§ 15 bis 18) |
-| §§ 4 bis 6 MuSchG | R-21 |
-| § 12 Abs. 3 TzBfG | R-22 |
-| §§ 3, 5, 7, 9 BUrlG; § 208 SGB IX; § 17 BEEG | R-23, R-24, R-25, R-26 |
-| § 5 EntgFG; § 109 SGB IV | R-27 |
-| § 45 SGB V | R-28 |
-| § 3b EStG, R 3b LStR | R-29 |
-| § 87 Abs. 1 Nr. 6 BetrVG | R-30 |
-| Art. 5, 9, 15, 17, 88 DSGVO | R-31 |
-| § 8 Abs. 1, 1a, 1b SGB IV | R-32 |
+| Thema | Norm | Regel |
+| --- | --- | --- |
+| Pflicht zur Erfassung von Beginn, Ende und Dauer | BAG 1 ABR 22/21; § 3 Abs. 2 Nr. 1 ArbSchG; EuGH C-55/18 | R-01 |
+| Höchstarbeitszeit 8 h, bis 10 h mit Ausgleich | § 3 ArbZG | R-02, R-03 |
+| Pausen 30 min ab 6 h, 45 min ab 9 h, Blöcke ab 15 min | § 4 ArbZG | R-04 |
+| 11 h Ruhezeit; ein Einsatz in der Rufbereitschaft unterbricht sie | § 5 ArbZG | R-05, R-12 |
+| Nachtarbeit | §§ 2, 6 ArbZG | R-06 |
+| Sonn- und Feiertage, Ersatzruhetag | §§ 9 bis 11 ArbZG | R-07, R-08, R-09 |
+| Aufzeichnung über 8 h, 2 Jahre aufbewahren | § 16 Abs. 2 ArbZG | R-10 |
+| Bereitschaftsdienst und Rufbereitschaft | §§ 2, 5, 7 ArbZG; EuGH C-151/02, C-518/15 | R-11, R-12 |
+| Minijobs und Branchen: Erfassung binnen 7 Tagen, Mindestlohn | §§ 1, 17 MiLoG; § 2a SchwarzArbG | R-13, R-14 |
+| Jugendliche | §§ 8, 11 bis 14 JArbSchG | R-15 bis R-19 (dazu R-20 für §§ 15 bis 18) |
+| Mutterschutz | §§ 4 bis 6 MuSchG | R-21 |
+| Arbeit auf Abruf: Schicht 4 Tage vorher | § 12 Abs. 3 TzBfG | R-22 |
+| Urlaub, Zusatzurlaub, Elternzeit, Krankheit im Urlaub | §§ 3, 5, 7, 9 BUrlG; § 208 SGB IX; § 17 BEEG | R-23, R-24, R-25, R-26 |
+| Krankmeldung, Bescheinigung ab dem 4. Tag, eAU | § 5 EntgFG; § 109 SGB IV | R-27 |
+| Kinderkrankentage | § 45 SGB V | R-28 |
+| Steuerfreie Zuschläge | § 3b EStG, R 3b LStR | R-29 |
+| Mitbestimmung bei technischer Überwachung | § 87 Abs. 1 Nr. 6 BetrVG | R-30 |
+| Datenschutz | Art. 5, 9, 15, 17, 88 DSGVO | R-31 |
+| Minijob-Grenze, gelegentliches Überschreiten | § 8 Abs. 1, 1a, 1b SGB IV | R-32 |
 
 ## Arbeitszeitgesetz
 
@@ -448,7 +447,7 @@ Regel:
 - **Regel**: Soll zeichnet jede Arbeitszeit auf (R-01) und bewahrt jeden abgeschlossenen Monat mindestens
   zwei Jahre ab Ablauf des Kalenderjahres seines Abschlusses auf; bucht das Lohnbüro aus ihm
   (Stundenlohn, Minijob, Zuschläge oder kein Modell an einem Tag), als Buchungsbeleg 8 Jahre
-  (§ 147 Abs. 3 Satz 1 AO; Projektplan, „Aufbewahrung je Monatsabschluss“); die Aussonderung (S-901)
+  (§ 147 Abs. 3 Satz 1 AO; [Löschkonzept](loeschkonzept.md)); die Aussonderung (S-901)
   wählt nur Monate, deren Frist abgelaufen ist, und nie einen offenen.
 - **Schwere**: Verstoß, wenn eine Aussonderung eine Aufzeichnung vor Ablauf entfernen würde; sie
   entfernt dann nichts.
@@ -458,7 +457,7 @@ Regel:
 | erlaubt | Monat Januar 2026 ohne Lohnbezug, abgeschlossen im Februar 2026, Aussonderung am 1.1.2029 | entfernt | § 16 Abs. 2 Satz 2 ArbZG |
 | Grenze | Monat Dezember 2026 ohne Lohnbezug, Aussonderung am 31.12.2028 | nicht entfernt (Frist mit Ablauf des Jahres 2026 + 2 Jahre); abgeschlossen im Januar 2027 erst am 1.1.2030 | § 16 Abs. 2 Satz 2 ArbZG; § 147 Abs. 4 AO |
 | Verstoß | Aussonderung eines Monats von 2026 im Jahr 2027 | nicht entfernt | § 16 Abs. 2 Satz 2 ArbZG |
-| Buchungsbeleg | Monat Januar 2026 mit Stundenlohn, Aussonderung am 1.1.2029 | nicht entfernt (8 Jahre), am 1.1.2035 entfernt | § 147 Abs. 3 Satz 1 AO; Projektplan, „Aufbewahrung je Monatsabschluss“ |
+| Buchungsbeleg | Monat Januar 2026 mit Stundenlohn, Aussonderung am 1.1.2029 | nicht entfernt (8 Jahre), am 1.1.2035 entfernt | § 147 Abs. 3 Satz 1 AO; [Löschkonzept](loeschkonzept.md) |
 
 ### R-11 Bereitschaftsdienst
 
@@ -971,7 +970,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Verfall mit Hinweis | Resturlaub 2026 3 Tage, Hinweis am 1.10.2026 | Hinweis „Verfall droht“ bis 31.3.2027, danach 3 Tage verfallen | § 7 Abs. 3 Satz 3 BUrlG; BAG, 19.02.2019, 9 AZR 423/16 |
 | Verfall ohne Hinweis | Resturlaub 2026 3 Tage, kein Hinweis | ab 1.1.2027 Hinweis „Hinweis auf Verfall fehlt“, die 3 Tage verfallen nicht | EuGH C-684/16 (Max-Planck); BAG, 20.12.2022, 9 AZR 266/20 |
 | Hinweis verspätet | Resturlaub 2026 3 Tage, Hinweis erst am 15.1.2027 | verfällt nicht zum 31.3.2027, sondern mit Ablauf des 31.3.2028 | BAG, 19.02.2019, 9 AZR 423/16 |
-| Hinweis fällig | Resturlaub 2026, noch kein Hinweis, Stand 20.11.2026 | Hinweis „Hinweis auf Verfall fällig bis 31.12.2026“ | docs/plan.md, „Verfall von Urlaub“ |
+| Hinweis fällig | Resturlaub 2026, noch kein Hinweis, Stand 20.11.2026 | Hinweis „Hinweis auf Verfall fällig bis 31.12.2026“ | § 7 Abs. 3 BUrlG; EuGH C-684/16 |
 | Teilurlaub übertragen | Eintritt 1.8.2026, 8,5 Tage, Übertragung verlangt, Hinweis am 1.9.2026 | verfällt mit Ablauf des 31.12.2027 | § 7 Abs. 3 Satz 4 BUrlG |
 | Hinweis nennt weniger | Resturlaub 2026 3 Tage, der Hinweis am 1.10.2026 nannte 2 (ein Tag kam danach durch eine Korrektur dazu), Stand 1.4.2027 | 2 Tage verfallen, 1 Tag bleibt mit „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 (der Hinweis muss den Urlaub konkret nennen) |
 | genommen nach dem Hinweis | Hinweis am 1.10.2026 nennt 3 Tage aus 2026, 1 Tag genommen am 2.11.2026, danach 1 Tag durch Korrektur dazu | am 1.12.2026 „Verfall droht“ für 2 Tage bis 31.3.2027 und „Hinweis auf Verfall fällig bis 31.12.2026“ für den einen Tag, den kein Hinweis nennt; am 1.4.2027 sind 2 Tage verfallen (genannt und noch offen), 1 Tag bleibt mit „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 |
@@ -979,7 +978,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 | Hinweis nach dem Verfall | wie „Hinweis nennt weniger“, am 3.5.2027 nennt ein neuer Hinweis den übrigen Tag | er nennt den Verfall mit Ablauf des 31.3.2028 (nicht den vergangenen 31.3.2027); am 1.4.2028 ist auch dieser Tag verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
 | zwei Fristen | 2025 10 Tage, Hinweis am 1.10.2025 nennt 10, danach 5 Tage durch Korrektur dazu, ein später Hinweis am 2.2.2026 nennt 15, Stand 2.3.2026 | „Verfall droht“ für 10 Tage bis 31.3.2026 und für 5 Tage bis 31.3.2027, kein „Hinweis fehlt“; am 1.4.2027 sind alle 15 verfallen | BAG, 19.02.2019, 9 AZR 423/16 |
 | Vorgriff | 2026 und 2027 je 20 Tage, 22 Tage im Jahr 2026 genommen, Hinweis am 1.10.2027 nennt 18 Tage aus 2027, Stand 3.4.2028 | 2 Tage zählen gegen 2027, 18 Tage verfallen, Rest 0 (nie unter null) | § 7 Abs. 3 BUrlG (nur offener Urlaub verfällt) |
-| Vorgriff ohne Folgejahr | 2026 20 Tage, 22 Tage genommen, Stand 1.12.2026 (2027 noch nicht bekannt) | Rest 2026: −2 Tage; ab 4.1.2027 mit 20 Tagen 2027: Rest 2026 0, Rest 2027 18 Tage | § 7 Abs. 3 BUrlG; Projektplan, „Verfall von Urlaub“ |
+| Vorgriff ohne Folgejahr | 2026 20 Tage, 22 Tage genommen, Stand 1.12.2026 (2027 noch nicht bekannt) | Rest 2026: −2 Tage; ab 4.1.2027 mit 20 Tagen 2027: Rest 2026 0, Rest 2027 18 Tage | § 7 Abs. 3 BUrlG; [Konten](konten.md) |
 | Vorgriff aus einer Korrektur | 2026 20 Tage, Korrektur für 2025 −2 Tage (Vorgriff aus dem alten Tool), Hinweis am 1.10.2026, Stand 1.4.2027 | offen und im Hinweis genannt 18 Tage aus 2026; am 1.4.2027 sind 18 Tage verfallen, Rest 0 (nie unter null) | § 7 Abs. 3 BUrlG; EuGH C-684/16 (der Hinweis nennt den offenen Urlaub richtig) |
 
 Hinweis zur Rundung: § 5 Abs. 2 BUrlG rundet nur Bruchteile ab einem halben Tag auf; kleinere
@@ -1253,14 +1252,14 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Verstoß | November 2026, jeden Arbeitstag 9:00 | Ist 189:00, 21:00 über dem Soll ins Überstundenkonto | § 611a Abs. 1 BGB |
 | Feiertag | Mai 2026 (1.5., 14.5. und 25.5. Feiertage) | Soll 144:00 (18 Arbeitstage), Ausfall 24:00 | § 2 Abs. 1 EntgFG |
 | Feiertag am freien Tag | Oktober 2026 (3.10. und 31.10. sind Samstage) | Soll 176:00 (22 Arbeitstage), keine Minderung | § 2 Abs. 1 EntgFG („infolge eines gesetzlichen Feiertages ausfällt“) |
-| Modellwechsel | ab Mo 16.11.2026 Modell Mo–Do 6:00 | Soll 134:00 (10 × 8:00 + 9 × 6:00) | docs/plan.md, „Soll eines Tages“ |
+| Modellwechsel | ab Mo 16.11.2026 Modell Mo–Do 6:00 | Soll 134:00 (10 × 8:00 + 9 × 6:00) | [Konten](konten.md#soll-eines-tages) |
 | Eintritt | Eintritt Mi 18.11.2026 | Soll 72:00 (9 Arbeitstage ab 18.11.) | § 611a Abs. 1 BGB |
 | Urlaub | Urlaub Mo 9.11. – Fr 13.11.2026, sonst je 8:00 | 128:00 gearbeitet + 40:00 gutgeschrieben = Ist 168:00, 5 Urlaubstage | § 1 BUrlG |
 | Urlaub am Feiertag | Urlaub Mo 11.5. – Fr 15.5.2026 (Do 14.5. Christi Himmelfahrt) | 4 Urlaubstage, 32:00 gutgeschrieben | § 3 Abs. 2 BUrlG |
 | halber Tag | Modell Fr 7:15, halber Urlaubstag am Fr 27.11.2026 | 3:38 gutgeschrieben (aufgerundet), 0,5 Urlaubstage | CLAUDE.md, „Never“ (nie zulasten der Beschäftigten) |
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
-| Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | docs/plan.md, „Abwesenheiten im Soll“ |
-| Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | docs/plan.md, „Konten“ |
+| Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | [Konten](konten.md#abwesenheiten) |
+| Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | [Konten](konten.md) |
 
 ### R-34 Salden zum Stichtag
 
@@ -1285,7 +1284,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 
 | Fall | Lage (Modell Mo–Fr, 25 Urlaubstage) | Erwartet | Quelle |
 | --- | --- | --- | --- |
-| erlaubt | Stichtag 1.10.2026, Resturlaub 8,5 Tage, Urlaub am 10.9.2026 in Soll | Rest 8,5 Tage; der Jahresurlaub 2026 und der Urlaub vom 10.9. zählen nicht | Projektplan, „Salden zum Stichtag“ |
+| erlaubt | Stichtag 1.10.2026, Resturlaub 8,5 Tage, Urlaub am 10.9.2026 in Soll | Rest 8,5 Tage; der Jahresurlaub 2026 und der Urlaub vom 10.9. zählen nicht | [Umzug](umzug.md#salden-zum-stichtag) |
 | Urlaub nach dem Stichtag | wie oben, 2 Tage Urlaub am 2. und 3.11.2026 | Rest 6,5 Tage | § 7 Abs. 3 BUrlG |
 | Folgejahr | wie oben, Stand 1.2.2027 | Rest 33,5 Tage (8,5 aus 2026 und 25 aus 2027) | § 7 Abs. 3 BUrlG |
 | ohne Hinweis | Stichtag 1.10.2026, 8,5 Tage, kein Hinweis, Stand 1.4.2027 | die 8,5 Tage verfallen nicht, Hinweis „Hinweis auf Verfall fehlt“ | EuGH C-684/16; BAG, 20.12.2022, 9 AZR 266/20 |
@@ -1295,8 +1294,8 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Hinweis vor dem Eintrag | Hinweis am 15.10.2026 (nannte 5 Tage), danach Resturlaub zum Stichtag 1.10.2026 mit 20 Tagen eingetragen | abgelehnt (`409 widerspruch`); auch sonst verfiele nur, was ein Hinweis nannte (R-23) | EuGH C-684/16; BAG, 19.02.2019, 9 AZR 541/15 |
 | Grenze | Stichtag 1.10.2026, Resturlaub 0 Tage | gültig, Rest 0 Tage | § 5 Abs. 3 BUrlG |
 | Verstoß | Resturlaub −2 Tage | ungültig (zu viel gewährter Urlaub wird nicht zurückgefordert) | § 5 Abs. 3 BUrlG |
-| kein Monatserster | Stichtag 15.10.2026 | ungültig | Projektplan, „Salden zum Stichtag“ |
-| Überstunden | Startsaldo −3:15 zum 1.10.2026, September +5:00 erst danach abgeschlossen, Oktober +2:00 | Saldo −1:15; der September zählt nicht | Projektplan, „Anpassungen der Konten“ |
+| kein Monatserster | Stichtag 15.10.2026 | ungültig | [Umzug](umzug.md#salden-zum-stichtag) |
+| Überstunden | Startsaldo −3:15 zum 1.10.2026, September +5:00 erst danach abgeschlossen, Oktober +2:00 | Saldo −1:15; der September zählt nicht | [Konten](konten.md) |
 
 ## Was Soll nicht prüft
 

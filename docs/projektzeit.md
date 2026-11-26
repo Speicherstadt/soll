@@ -149,7 +149,7 @@ nicht.
 
 Ein **abgeschlossener Monat** sperrt Projektzeit nicht: Die Stempelungen sind die Aufzeichnung nach
 § 16 Abs. 2 ArbZG und werden gesperrt, die Projektzeit ist eine Grundlage der Rechnung und bleibt bis
-„abgerechnet“ änderbar (Projektplan, „Arbeitszeit und Projektzeit“).
+„abgerechnet“ änderbar.
 
 ## Stundennachweis
 

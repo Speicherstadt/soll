@@ -3,11 +3,9 @@ import { describe, expect, it } from "vitest";
 
 /*
  * docs/regeln.md is the specification of every rule packages/arbeitszeit checks (BAULISTE.md S-103):
- * each rule carries the three cases erlaubt, Grenze and Verstoß with a source, and each norm of the
- * table "Rechtlicher Rahmen" in docs/plan.md has a rule.
+ * each rule carries the three cases erlaubt, Grenze and Verstoß with a source.
  */
 const regeln = readFileSync("docs/regeln.md", "utf8");
-const plan = readFileSync("docs/plan.md", "utf8");
 
 type Regel = { kennung: string; text: string };
 
@@ -31,16 +29,22 @@ const faelle = (text: string): string[][] =>
         .map((zelle) => zelle.trim()),
     );
 
-/** The norms of the plan's table "Rechtlicher Rahmen", one per entry between semicolons */
-const normenDesPlans = (): string[] => {
-  const abschnitt = plan.split("## Rechtlicher Rahmen")[1] ?? "";
-  const tabelle = abschnitt.slice(abschnitt.indexOf("| Regel")).split("\n\n")[0] ?? "";
+/** The rows of the legal framework table in docs/regeln.md */
+const rahmenZeilen = (): { norm: string; regel: string }[] => {
+  const start = regeln.indexOf("| Thema | Norm | Regel |");
+  if (start === -1) return [];
+  const tabelle = regeln.slice(start).split("\n\n")[0] ?? "";
   return tabelle
     .split("\n")
     .slice(2)
-    .flatMap((zeile) => (zeile.split("|")[2] ?? "").split(";"))
-    .map((norm) => norm.trim())
-    .filter((norm) => norm !== "");
+    .map((zeile) => {
+      const [, norm = "", regel = ""] = zeile
+        .slice(1, -1)
+        .split("|")
+        .map((zelle) => zelle.trim());
+      return { norm, regel };
+    })
+    .filter((eintrag) => eintrag.norm !== "");
 };
 
 describe("docs/regeln.md", () => {
@@ -66,30 +70,17 @@ describe("docs/regeln.md", () => {
     }
   });
 
-  it("has a rule for every norm of the plan's legal framework", () => {
-    const normen = normenDesPlans();
+  it("has a rule for every norm of the legal framework", () => {
+    const zeilen = rahmenZeilen();
+    const normen = zeilen.flatMap((z) => z.norm.split(";").map((n) => n.trim())).filter(Boolean);
     expect(normen.length).toBeGreaterThan(20);
-    const zuordnung = new Map(
-      regeln
-        .split("\n")
-        .filter((zeile) => zeile.startsWith("| ") && zeile.includes("| R-"))
-        .map((zeile) => {
-          const [norm = "", regel = ""] = zeile
-            .slice(1, -1)
-            .split("|")
-            .map((zelle) => zelle.trim());
-          return [norm, regel] as const;
-        }),
-    );
     const vorhanden = new Set(alle.map((regel) => regel.kennung));
-    for (const norm of normen.flatMap((n) => [...zuordnung.keys()].filter((k) => k.includes(n)))) {
-      const genannt = zuordnung.get(norm)?.match(/R-\d{2}/g) ?? [];
+    for (const { norm, regel } of zeilen) {
+      const genannt = regel.match(/R-\d{2}/g) ?? [];
       expect(genannt.length, norm).toBeGreaterThan(0);
       for (const kennung of genannt)
         expect(vorhanden.has(kennung), `${norm} → ${kennung}`).toBe(true);
     }
-    const ohneRegel = normen.filter((norm) => ![...zuordnung.keys()].some((k) => k.includes(norm)));
-    expect(ohneRegel).toEqual([]);
   });
 
   it("writes durations as h:mm and never as decimal hours in a case", () => {
@@ -169,7 +160,6 @@ describe("docs/regeln.md against the law", () => {
     // the Buchungsbelege; ten years remain for books and records (Nummer 1 and 4a).
     expect(regel("R-10")).not.toMatch(/Buchungsbeleg 10 Jahre/);
     expect(regel("R-10")).toMatch(/Buchungsbeleg 8 Jahre/);
-    expect(plan).not.toMatch(/10 Jahre als Buchungsbeleg/);
   });
 
   it("R-21: work after the birth is allowed after two weeks when the child has died", () => {
@@ -269,20 +259,5 @@ describe("docs/regeln.md: the overview against the rules", () => {
         if (eigen.includes(stufe))
           expect(zeile, `${regel.kennung}: ${eigen.trim()}`).toContain(stufe);
     }
-  });
-});
-
-/*
- * Review of PR #15: the merge with main kept both versions of the decision "Uhrzeit in Berlin", one
- * of which no longer names `eingabeInBerlin`. Each question is decided once in docs/plan.md.
- */
-describe("docs/plan.md", () => {
-  it("decides each question once in the table Entscheidungen", () => {
-    const abschnitt = (plan.split("## Entscheidungen")[1] ?? "").split("\n## ")[0] ?? "";
-    const fragen = abschnitt
-      .split("\n")
-      .filter((zeile) => zeile.startsWith("| ") && !/^\|\s*-/.test(zeile))
-      .map((zeile) => zeile.split("|")[1]?.trim() ?? "");
-    expect(fragen.filter((frage, index) => fragen.indexOf(frage) !== index)).toEqual([]);
   });
 });

@@ -65,8 +65,7 @@ und sich mit Benutzername und Passwort anmelden, so wie im Browser. Dann stempel
 selben Augenblick „Kommen“. Der Lauf misst je Anfrage die Zeit bis zur ganzen Antwort und zählt jede
 Antwort ohne 201 als Fehler. Danach prüft er in der Datenbank, dass jede Person genau eine Stempelung
 hat und die Audit-Kette jedes Betriebs ohne Befund prüft. Er endet mit Code 0 nur, wenn kein Fehler
-auftrat, p95 höchstens 15 s und die langsamste Anfrage höchstens 30 s brauchte; die Gründe stehen im
-[Projektplan](plan.md#entscheidungen). Mit `--betriebe`, `--personen` und `--port` läuft er kleiner
+auftrat, p95 höchstens 15 s und die langsamste Anfrage höchstens 30 s brauchte. Mit `--betriebe`, `--personen` und `--port` läuft er kleiner
 oder auf einem anderen Port; ist der Port belegt, bricht er ab, statt einen fremden Server zu messen.
 
 Eine kleine Fassung mit 5 Betrieben zu je 10 Personen läuft mit jedem `bun run test`, mit demselben

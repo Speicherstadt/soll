@@ -13,7 +13,7 @@ connection goes through an open standard or a documented API (OpenID Connect, RE
 | What | Where |
 | --- | --- |
 | What to build next, acceptance criteria, how the loop works | `BAULISTE.md` |
-| Why: goals, decisions, stack, law, GoBD, data model, tests | `docs/plan.md` |
+| Architecture, stack, commands, database | `docs/entwicklung.md` |
 | Look and behaviour of the UI | `DESIGN.md`, the mockup in `design/mockup/` (read the screen before building it) |
 | Solid 2.0 API (before any Solid code; memory is mostly 1.x) | `docs/solid-2.0/MIGRATION.md`, `docs/solid-2.0/CHEATSHEET.md` |
 | Every rule the app checks, with its norm and test cases (before anything in `packages/arbeitszeit`) | `docs/regeln.md` (written in S-103) |
@@ -26,8 +26,8 @@ point to the site, not to `docs/*.md`.
 Work through `BAULISTE.md` as it describes: the first open item whose dependencies are done, one
 item per pull request, tests first, an independent review by a separate subagent (`tdd-review`),
 then **merge it yourself** (squash) once CI is green and the review has no findings left, and tick
-the item in the same pull request. Never wait for a person: open questions are decided by
-`docs/plan.md` ("Entscheidungen"), and a new decision is written there with its reason. An item that
+the item in the same pull request. Never wait for a person: open questions are decided against the
+existing topic pages in `docs/`, and new decisions are documented there with their reason. An item that
 fails three times goes under "Zurückgestellt" with the reason and the loop goes on with the next
 independent one. Steps only a person can do (trademark, pilot, translations by native speakers,
 DATEV test import at a tax office) are not on the loop's path.

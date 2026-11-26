@@ -81,7 +81,7 @@ Gliederung, Datenmodell (Abschnitte mit Absätzen, Listen und Lücken), die Anga
 das Markdown stammen aus `packages/gobd-kern/src/verfahrensdoku/` in
 [Haben](https://github.com/firsttris/haben) und sind für Soll angepasst: Haben sichert mit Triggern
 in PostgreSQL, Soll mit seiner eigenen Kette im Code und dem Prüfwert bei den Beschäftigten
-(Projektplan, „Unveränderbarkeit“). Der Code liegt in `packages/export/src/verfahrensdoku/` (reine
+([Audit-Kette](audit-kette.md)). Der Code liegt in `packages/export/src/verfahrensdoku/` (reine
 Funktionen, Golden-Tests für „Weber Haustechnik“ und „Café Elbblick“) und
 `apps/server/src/modules/verfahrensdoku/` (Stand und Angaben).
 

@@ -1444,9 +1444,8 @@ requests“).
   Projektzeit, Stundennachweise und Übergaben an Haben (Klasse L)
 - [ ] Inhalte gelöschter Zeilen bleiben in `audit_inhalte`; abgelaufene Einladungen, Zugänge zur
   API und Sitzungen bleiben als Zeile (`docs/loeschkonzept.md`, „Offene Punkte“)
-- [ ] Importe: Originaldateien unter `dateien/` und Zeilen in `importe` entfernen, wenn der letzte
-  Monat ausgesondert ist, in den ihre Zeiten fallen (der Dateispeicher kann heute nichts entfernen);
-  ebenso Fristen für `schichttausche`
+- [x] Importe: Originaldateien unter `dateien/` und Zeilen in `importe` entfernen, wenn der letzte
+  Monat ausgesondert ist, in den ihre Zeiten fallen; ebenso Fristen für `schichttausche`
 - [ ] Solo-Betrieb: Oberfläche für „später einladen“ fehlt
 - [ ] Projektzeit über MCP buchen
 - [ ] Inhaber kann API-Zugänge anderer nicht widerrufen

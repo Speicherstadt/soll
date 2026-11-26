@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { mkdir, open, readFile, rename } from "node:fs/promises";
+import { mkdir, open, readFile, rename, rmdir, unlink } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 
 /*
@@ -8,8 +8,8 @@ import { dirname, join, resolve } from "node:path";
  * it is read, and the hash in the row of the import names the content (BAULISTE.md S-701).
  *
  * Copied from firsttris/haben, packages/gobd-kern/src/dateispeicher.ts (commit b163e05), without a
- * dependency on it (CLAUDE.md, "Reference implementations"); left out are the check of all files
- * and the removal, which Soll does not use yet. Comments and messages translated into English.
+ * dependency on it (CLAUDE.md, "Reference implementations"); left out is the check of all files,
+ * which Soll does not use yet. Comments and messages translated into English.
  */
 
 export const sha256Von = (bytes: Uint8Array): string =>
@@ -24,6 +24,8 @@ export type Dateispeicher = {
   laden: (sha256: string) => Promise<Buffer>;
   /** Checks a file against its hash without loading it whole; other errors than a missing file throw */
   pruefen: (sha256: string) => Promise<"ok" | "fehlt" | "beschaedigt">;
+  /** Removes a file by its hash; returns false if already missing */
+  loeschen: (sha256: string) => Promise<boolean>;
 };
 
 /** `verzeichnis` is read at each access, so it may come from the environment late */
@@ -88,5 +90,17 @@ export const dateispeicher = (verzeichnis: () => string): Dateispeicher => {
     return hash.digest("hex") === sha256 ? "ok" : "beschaedigt";
   };
 
-  return { pfad, speichern, laden, pruefen };
+  const loeschen = async (sha256: string): Promise<boolean> => {
+    const ziel = pfad(sha256);
+    try {
+      await unlink(ziel);
+    } catch (fehler) {
+      if ((fehler as NodeJS.ErrnoException).code === "ENOENT") return false;
+      throw fehler;
+    }
+    await rmdir(dirname(ziel)).catch(() => {});
+    return true;
+  };
+
+  return { pfad, speichern, laden, pruefen, loeschen };
 };

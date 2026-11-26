@@ -68,6 +68,8 @@ export const serverStarten = () => {
   const mail = env.smtp ? smtpMailer(env.smtp.url, env.smtp.von) : null;
   const kontakt = vapidKontakt(env.url, env.smtp?.von);
 
+  // the original files of imports beside the database (S-701)
+  const dateien = dateispeicher(() => join(env.dataDir, "dateien"));
   const app = createApp({
     log: (line) => console.log(line),
     now: Date.now,
@@ -82,8 +84,7 @@ export const serverStarten = () => {
     webVerzeichnis: env.webDir,
     // messages about the plan go the same way as the reminders (S-503)
     push: { vapid, kontakt, senden: pushPerFetch },
-    // the original files of imports beside the database (S-701)
-    dateien: dateispeicher(() => join(env.dataDir, "dateien")),
+    dateien,
     // Clockodo's API for imports (S-703); another address only for a stand-in in the e2e tests
     clockodo: { fetch, basis: env.clockodoApi ?? CLOCKODO_API },
     // Kimai instances for imports (S-705): public https only, unless the operator allows an origin
@@ -114,7 +115,9 @@ export const serverStarten = () => {
   );
 
   // Removal after the retention period, at the start and every 6 hours (S-901)
-  aussonderungsSchleife(db, schreibDb, Date.now, (zeile) => console.log(zeile));
+  aussonderungsSchleife(db, schreibDb, Date.now, (zeile) => console.log(zeile), undefined, {
+    dateiLoeschen: (sha) => void dateien.loeschen(sha),
+  });
 
   const server = Bun.serve({ port: env.port, hostname: env.host, fetch: app.fetch });
   console.log(JSON.stringify({ msg: "listening", url: server.url.href }));

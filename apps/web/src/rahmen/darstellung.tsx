@@ -65,7 +65,7 @@ export const Darstellung = () => (
       <Icon icon={Globe} size={14} class="pointer-events-none shrink-0 text-muted-foreground" />
       <select
         aria-label={m.sprache_label()}
-        class="h-full w-full cursor-pointer appearance-none bg-transparent pr-5 pl-2 text-[13px] text-foreground outline-hidden"
+        class="h-full w-full cursor-pointer appearance-none bg-transparent ps-2 pe-5 text-[13px] text-foreground outline-hidden"
         value={getLocale()}
         onChange={(event) => setLocale(event.currentTarget.value as Locale)}
       >
@@ -80,7 +80,7 @@ export const Darstellung = () => (
       <Icon
         icon={ChevronDown}
         size={14}
-        class="pointer-events-none absolute right-2 shrink-0 text-muted-foreground"
+        class="pointer-events-none absolute end-2 shrink-0 text-muted-foreground"
       />
     </div>
   </div>

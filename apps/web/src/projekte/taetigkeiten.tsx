@@ -93,7 +93,7 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
           onSubmit={anlegen}
         >
           <Input label={m.taetigkeit_name()} name="name" required maxlength={100} class="md:w-64" />
-          <Checkbox name="abrechenbar" value="ja" checked class="min-h-9">
+          <Checkbox name="abrechenbar" value="ja" defaultChecked class="min-h-9">
             {m.taetigkeit_abrechenbar()}
           </Checkbox>
         </NeuFormular>

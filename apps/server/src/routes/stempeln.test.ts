@@ -172,4 +172,40 @@ describe("stamping on Heute (S-304)", () => {
       expect(await json(antwort)).toEqual({ fehler: "modul_aus", modul: "arbeitszeit" });
     }
   });
+
+  it("deducts missing statutory breaks transparently when the model enables pausenabzug, keeping R-04 findings", async () => {
+    const { server, mia, tom } = await cafe();
+    const modell = await json(
+      await mia.anfrage("/api/v1/arbeitszeit/modelle", {
+        body: {
+          name: "Vollzeit mit Pausenabzug",
+          sollMinuten: [480, 480, 480, 480, 480, 0, 0],
+          lohnArt: "monat",
+          lohnCent: 320_000,
+          minijob: false,
+          pausenabzug: true,
+          gueltigAb: "2026-01-01",
+        },
+      }),
+    );
+    await mia.anfrage(`/api/v1/arbeitszeit/personen/${tom.nutzerId}/modell`, {
+      method: "PUT",
+      body: { modellId: modell.modellId, gueltigAb: "2026-01-01" },
+    });
+    server.stelleUhr(um("08:00"));
+    await tom.anfrage("/api/v1/arbeitszeit/stempelungen", { body: { art: "kommen" } });
+    server.stelleUhr(um("15:30"));
+    await tom.anfrage("/api/v1/arbeitszeit/stempelungen", { body: { art: "gehen" } });
+    const tag = await json(await tom.anfrage("/api/v1/arbeitszeit/tag"));
+    expect(tag.pausenabzug).toBe(true);
+    expect(tag.stand).toMatchObject({
+      zustand: "aus",
+      istMinuten: 420,
+      pausenMinuten: 30,
+      pausenabzugMinuten: 30,
+      befunde: expect.arrayContaining([
+        expect.objectContaining({ art: "pause_fehlt", norm: "§ 4 Satz 1 ArbZG", fehlt: 30 }),
+      ]),
+    });
+  });
 });

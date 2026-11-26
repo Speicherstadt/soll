@@ -49,6 +49,7 @@ export type Stundenzettel = {
     saldoMinuten: number;
     gearbeitetMinuten: number;
     gutschriftMinuten: number;
+    pausenabzugMinuten?: number;
   } | null;
   nichtHinterlegt: string[];
   befunde: ZettelBefund[];
@@ -134,7 +135,8 @@ const summen = (s: Schreiber, zettel: Stundenzettel) => {
       { fett: true },
     );
   } else {
-    const { sollMinuten, istMinuten, saldoMinuten, gutschriftMinuten } = zettel.summen;
+    const { sollMinuten, istMinuten, saldoMinuten, gutschriftMinuten, pausenabzugMinuten } =
+      zettel.summen;
     s.text(
       `Soll ${dauerText(sollMinuten)} · Ist ${dauerText(istMinuten)} · Saldo ${dauerText(saldoMinuten, true)}` +
         (gutschriftMinuten > 0 ? ` · davon Gutschrift ${dauerText(gutschriftMinuten)}` : ""),
@@ -142,6 +144,12 @@ const summen = (s: Schreiber, zettel: Stundenzettel) => {
       { fett: true },
     );
     s.zeile();
+    if ((pausenabzugMinuten ?? 0) > 0) {
+      s.text(`Automatischer Pausenabzug: ${dauerText(pausenabzugMinuten ?? 0)} (§ 4 ArbZG)`, 0, {
+        grau: true,
+      });
+      s.zeile();
+    }
   }
   s.zeile(6);
 };

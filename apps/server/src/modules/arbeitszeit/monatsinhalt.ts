@@ -38,6 +38,8 @@ export type Aufzeichnung = {
   /** the model's minutes for the weekday; null without a model ("nicht hinterlegt") */
   modellMinuten: number | null;
   abwesenheiten?: Tagesabwesenheit[];
+  /** only set when true, so months without automatic break deduction keep their hash unchanged */
+  pausenabzug?: true;
 };
 
 /** A finding as the time sheet shows it: rule, norm (German in every language), severity, days */
@@ -46,7 +48,10 @@ export type Blattbefund = Pick<Befund, "regel" | "norm" | "schwere" | "art" | "t
 export type Summen = Pick<
   Monatsstand,
   "sollMinuten" | "gearbeitetMinuten" | "gutschriftMinuten" | "istMinuten" | "saldoMinuten"
->;
+> & {
+  /** only present when > 0, so months without automatic break deduction keep their hash unchanged */
+  pausenabzugMinuten?: number;
+};
 
 /** A counter-entry to a day of a closed month, counted in the month it was entered in */
 export type Gegeneintrag = { tag: Tag; minuten: number; grund: string };
@@ -114,6 +119,7 @@ export const aufzeichnungen = (
   stempelungen: readonly Stempelung[],
   modellMinuten: (tag: Tag) => number | null,
   abwesenheiten: readonly Abwesenheit[] = [],
+  pausenabzug?: (tag: Tag) => boolean,
 ): Aufzeichnung[] => {
   const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
   const tagVon = stempeltage(sortiert);
@@ -130,6 +136,7 @@ export const aufzeichnungen = (
       stempel: jeTag.get(tag) ?? [],
       modellMinuten: modellMinuten(tag),
       ...(abwesend.length > 0 ? { abwesenheiten: abwesend } : {}),
+      ...(pausenabzug?.(tag) ? { pausenabzug: true as const } : {}),
     };
   });
 };

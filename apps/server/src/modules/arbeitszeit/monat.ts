@@ -33,7 +33,7 @@ import {
   type Summen,
 } from "./monatsinhalt.ts";
 import { stempelungenIn } from "./stempelungen.ts";
-import { modellabschnitte, sollAm } from "./zuordnungen.ts";
+import { modellAm, modellabschnitte, sollAm } from "./zuordnungen.ts";
 
 /*
  * A person's month as the database holds it now, brought into the form of `monatsinhalt` (S-306).
@@ -82,6 +82,7 @@ export const aufzeichnungenJetzt = (
     stempelDesMonats(db, betriebId, nutzerId, monat),
     (tag) => sollAm(db, betriebId, nutzerId, tag),
     abwesenheitenDesMonats(db, betriebId, nutzerId, monat, letzterTag(monat)),
+    (tag) => modellAm(db, betriebId, nutzerId, tag)?.pausenabzug === true,
   );
 
 /** The holidays at the place in the year of the month and the one before, for R-03 */
@@ -156,10 +157,23 @@ const summenDesMonats = (
   // a day of the employment without a model is never counted as 0 (CLAUDE.md, "Never")
   const fehlend = ohneModell.filter((tag) => tag >= beschaeftigung.eintritt);
   if (fehlend.length > 0) return { summen: null, nichtHinterlegt: fehlend, befunde: [] };
-  const { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten } =
-    stand.wert;
+  const {
+    sollMinuten,
+    gearbeitetMinuten,
+    pausenabzugMinuten,
+    gutschriftMinuten,
+    istMinuten,
+    saldoMinuten,
+  } = stand.wert;
   return {
-    summen: { sollMinuten, gearbeitetMinuten, gutschriftMinuten, istMinuten, saldoMinuten },
+    summen: {
+      sollMinuten,
+      gearbeitetMinuten,
+      gutschriftMinuten,
+      istMinuten,
+      saldoMinuten,
+      ...(pausenabzugMinuten > 0 ? { pausenabzugMinuten } : {}),
+    },
     nichtHinterlegt: [],
     // R-24: sickness without a certificate in leave (§ 9 BUrlG)
     befunde: stand.wert.befunde,
@@ -230,6 +244,7 @@ export const monatJetzt = (
     stempel,
     (tag) => sollAm(db, betriebId, nutzerId, tag),
     abwesenheiten,
+    (tag) => modellAm(db, betriebId, nutzerId, tag)?.pausenabzug === true,
   );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });

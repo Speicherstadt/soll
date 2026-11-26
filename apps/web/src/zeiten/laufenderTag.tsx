@@ -53,6 +53,11 @@ export const LaufenderTag = (props: { stand: Tagesstand; sollMinuten: number | n
       <Wert name={m.tag_ist()} wert={dauerText(props.stand.istMinuten)} />
       <Wert name={m.tag_pause()} wert={dauerText(props.stand.pausenMinuten)} />
     </dl>
+    <Show when={props.stand.pausenabzugMinuten > 0}>
+      <p class="text-[12px] text-muted-foreground">
+        {m.pausenabzug_hinweis({ minuten: String(props.stand.pausenabzugMinuten) })}
+      </p>
+    </Show>
     <Show when={props.sollMinuten === null}>
       <p class="text-[12px] text-muted-foreground">{m.soll_nicht_hinterlegt_text()}</p>
     </Show>

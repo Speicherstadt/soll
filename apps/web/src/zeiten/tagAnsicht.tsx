@@ -20,22 +20,29 @@ const Wert = (props: { name: string; wert: string }) => (
 
 /** A day in figures: begin, end, target, actual and break */
 const Summen = (props: { stand: Tagesstand; sollMinuten: number | null }) => (
-  <dl class="grid grid-cols-3 gap-3 rounded-xl border border-border p-4 sm:grid-cols-5">
-    <Wert
-      name={m.tag_beginn()}
-      wert={props.stand.beginn === null ? "–" : uhrzeitText(props.stand.beginn)}
-    />
-    <Wert
-      name={m.tag_ende()}
-      wert={props.stand.ende === null ? "–" : uhrzeitText(props.stand.ende)}
-    />
-    <Wert
-      name={m.tag_soll()}
-      wert={props.sollMinuten === null ? m.soll_nicht_hinterlegt() : dauerText(props.sollMinuten)}
-    />
-    <Wert name={m.tag_ist()} wert={dauerText(props.stand.istMinuten)} />
-    <Wert name={m.tag_pause()} wert={dauerText(props.stand.pausenMinuten)} />
-  </dl>
+  <div class="flex flex-col gap-2 rounded-xl border border-border p-4">
+    <dl class="grid grid-cols-3 gap-3 sm:grid-cols-5">
+      <Wert
+        name={m.tag_beginn()}
+        wert={props.stand.beginn === null ? "–" : uhrzeitText(props.stand.beginn)}
+      />
+      <Wert
+        name={m.tag_ende()}
+        wert={props.stand.ende === null ? "–" : uhrzeitText(props.stand.ende)}
+      />
+      <Wert
+        name={m.tag_soll()}
+        wert={props.sollMinuten === null ? m.soll_nicht_hinterlegt() : dauerText(props.sollMinuten)}
+      />
+      <Wert name={m.tag_ist()} wert={dauerText(props.stand.istMinuten)} />
+      <Wert name={m.tag_pause()} wert={dauerText(props.stand.pausenMinuten)} />
+    </dl>
+    <Show when={props.stand.pausenabzugMinuten > 0}>
+      <p class="text-[12px] text-muted-foreground">
+        {m.pausenabzug_hinweis({ minuten: String(props.stand.pausenabzugMinuten) })}
+      </p>
+    </Show>
+  </div>
 );
 
 /**

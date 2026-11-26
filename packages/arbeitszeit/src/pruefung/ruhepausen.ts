@@ -1,6 +1,6 @@
 import type { Stueck } from "../arbeitstag/schichten.ts";
 import type { Befund } from "../befund.ts";
-import type { ArbzgGrenzen } from "./grenzen.ts";
+import { type ArbzgGrenzen, arbzgGrenzenAm } from "./grenzen.ts";
 import {
   geschlossen,
   mitGrenzen,
@@ -84,3 +84,39 @@ export const ruhepausen = (tage: readonly PruefTag[]): Pruefergebnis<RuhepausenB
       ...zuLangOhnePause(schicht, grenzen),
     ],
   );
+
+/**
+ * Automatic break deduction for one closed shift (docs/regeln.md, R-04): deducts missing statutory
+ * Ruhepausen tier by tier without ever dropping net working time below a tier's threshold (no
+ * cliff, monotonically non-decreasing in worked time). Never hides R-04 findings.
+ */
+export const schichtPausenabzug = (schicht: PruefSchicht, grenzen: ArbzgGrenzen): number => {
+  if (schicht.ende === null) return 0;
+  let arbeit = schicht.arbeitsMinuten;
+  let pause = ruhepausenMinuten(schicht);
+  let abzug = 0;
+  const stufen = [...grenzen.pausen].sort((a, b) => a.ab - b.ab);
+  for (const stufe of stufen) {
+    if (arbeit <= stufe.ab) continue;
+    const fehlt = Math.max(0, stufe.minuten - pause);
+    const teil = Math.min(fehlt, arbeit - stufe.ab);
+    arbeit -= teil;
+    pause += teil;
+    abzug += teil;
+  }
+  return abzug;
+};
+
+/**
+ * Total automatic break deduction across the closed shifts of a working day; 0 when inactive or
+ * before the first rule version ("nicht hinterlegt").
+ */
+export const tagesPausenabzug = (tag: PruefTag, aktiv: boolean): number => {
+  if (!aktiv) return 0;
+  const grenzen = arbzgGrenzenAm(tag.tag);
+  if (grenzen === null) return 0;
+  return geschlossen(tag).reduce(
+    (summe, schicht) => summe + schichtPausenabzug(schicht, grenzen),
+    0,
+  );
+};

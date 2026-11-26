@@ -1,7 +1,8 @@
 import { istMonat, type Monat, monatVon, tageImMonat } from "../kalender/monat.ts";
 import { istTag, type Tag } from "../kalender/tag.ts";
+import { tagesPausenabzug } from "../pruefung/ruhepausen.ts";
 import { arbeitsMinutenAm, type PruefTag } from "../pruefung/typen.ts";
-import { modelleGueltig } from "./modell.ts";
+import { modellAm, modelleGueltig } from "./modell.ts";
 import {
   type KrankImUrlaubBefund,
   type SollGrundlagen,
@@ -25,6 +26,8 @@ export type Monatsstand = {
   monat: Monat;
   sollMinuten: number;
   gearbeitetMinuten: number;
+  /** minutes automatically deducted as statutory breaks across the month (docs/regeln.md, R-04) */
+  pausenabzugMinuten: number;
   gutschriftMinuten: number;
   istMinuten: number;
   saldoMinuten: number;
@@ -91,7 +94,13 @@ export const monatsstand = (monat: Monat, eingaben: MonatsEingaben): Monatsstand
   const arbeitstage = (eingaben.arbeitstage ?? []).filter((tag) => monatVon(tag.tag) === monat);
   const sollMinuten = summe(ergebnis.tage, (tag) => tag.sollMinuten);
   const gutschriftMinuten = summe(ergebnis.tage, (tag) => tag.gutschriftMinuten);
-  const gearbeitetMinuten = arbeitstage.reduce((teil, tag) => teil + arbeitsMinutenAm(tag), 0);
+  const pausenabzugMinuten = arbeitstage.reduce(
+    (teil, tag) =>
+      teil + tagesPausenabzug(tag, modellAm(eingaben.modelle, tag.tag)?.pausenabzug === true),
+    0,
+  );
+  const gearbeitetMinuten =
+    arbeitstage.reduce((teil, tag) => teil + arbeitsMinutenAm(tag), 0) - pausenabzugMinuten;
   const istMinuten = gearbeitetMinuten + gutschriftMinuten;
   return {
     ok: true,
@@ -99,6 +108,7 @@ export const monatsstand = (monat: Monat, eingaben: MonatsEingaben): Monatsstand
       monat,
       sollMinuten,
       gearbeitetMinuten,
+      pausenabzugMinuten,
       gutschriftMinuten,
       istMinuten,
       saldoMinuten: istMinuten - sollMinuten,

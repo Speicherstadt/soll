@@ -12,6 +12,7 @@ import {
   type Standort,
   type Stempelart,
   type Tag,
+  tagesPausenabzug,
   type Zuschlagssaetze,
   zuschlaege,
 } from "@soll/arbeitszeit";
@@ -112,7 +113,11 @@ const gearbeitet = (
     const art = stundenpostenVon(modell);
     if (art !== null) dazu(summen, art, minuten);
   };
-  for (const tag of tage) buchen(tag.tag, tag.arbeitsMinuten);
+  for (const tag of tage) {
+    const modell = modellAm(eingabe.modelle, tag.tag);
+    const abzug = tagesPausenabzug(tag, modell?.pausenabzug === true);
+    buchen(tag.tag, tag.arbeitsMinuten - abzug);
+  }
   for (const eintrag of eingabe.gegeneintraege) buchen(eintrag.tag, eintrag.minuten);
   return ohneModell.length > 0
     ? [{ art: "modell", nutzerId: eingabe.nutzerId, tage: [...new Set(ohneModell)].sort() }]

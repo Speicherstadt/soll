@@ -56,11 +56,17 @@ bildet, steht unter [Arbeitstag aus Stempelungen](arbeitstag.md).
 | nach dem Gehen: Ende der Ruhezeit | „Ruhezeit bis Sa., 21. Nov., 03:30“ | § 5 Abs. 1 ArbZG |
 
 Gezählt wird, als ginge die Person jetzt: die angefangene Minute zählt mit, nie zu ihrem Nachteil.
-Ist eine Grenze schon überschritten, steht der Befund selbst darunter, etwa „Pause fehlt noch
-30 min · Verstoß · § 4 Satz 1 ArbZG“. Die Prüfung ist dieselbe wie für den ganzen Tag
+Ist eine Grenze schon überschritten, steht der Befund selbst darunter — während der Tag noch läuft
+als ruhiger Hinweis („Bitte prüfen · § 4 Satz 1 ArbZG“), nach dem Gehen und in den Auswertungen als
+„Verstoß · § 4 Satz 1 ArbZG“. Die Prüfung ist dieselbe wie für den ganzen Tag
 ([Prüfung nach §§ 3 bis 5 ArbZG](pruefung.md)): Höchstarbeitszeit, Ruhepausen und Ruhezeit. Den
 Ausgleichszeitraum über sechs Monate prüft Soll mit dem [Monatsabschluss](monatsabschluss.md), weil
 er alle Tage des Zeitraums und die Feiertage am Standort braucht.
+
+Ist am Arbeitszeitmodell der optionale **automatische Pausenabzug** eingeschaltet, zieht Soll nach
+Schichtende fehlende gesetzliche Ruhepausen (§ 4 ArbZG) ab, ohne die Arbeitszeit unter die
+6- bzw. 9-Stunden-Grenze zu kürzen. Die abgezogenen Minuten stehen transparent am Tag und am Monat;
+eine nicht gestempelte Pause wird trotzdem als Befund gemeldet ([R-04](regeln.md)).
 
 ## Ohne Netz
 

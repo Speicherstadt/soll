@@ -3,6 +3,7 @@ import {
   arbeitstage,
   type Stempelung,
   sichtbareArt,
+  tagesPausenabzug,
 } from "@soll/arbeitszeit";
 import type { Stundenzettel } from "@soll/export";
 import type { MonatStatus } from "./monatsabschluss.ts";
@@ -61,19 +62,23 @@ export const stundenzettelAus = (
     monat: inhalt.monat,
     tage: inhalt.tage.map((aufzeichnung) => {
       const tag = tage.get(aufzeichnung.tag);
+      const abzug = tag ? tagesPausenabzug(tag, aufzeichnung.pausenabzug === true) : 0;
       return {
         tag: aufzeichnung.tag,
         beginn: tag?.beginn ?? null,
         ende: tag?.ende ?? null,
-        pauseMinuten: tag?.pausenMinuten ?? 0,
-        arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
+        pauseMinuten: (tag?.pausenMinuten ?? 0) + abzug,
+        arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) - abzug,
         sollMinuten: aufzeichnung.modellMinuten,
         abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),
-        hinweise: befunde
-          .filter((befund) => befund.tage.includes(aufzeichnung.tag))
-          .map(
-            (befund) => `${befund.schwere === "verstoss" ? "Verstoß" : "Hinweis"} ${befund.norm}`,
-          ),
+        hinweise: [
+          ...(abzug > 0 ? [`Pausenabzug ${abzug} min`] : []),
+          ...befunde
+            .filter((befund) => befund.tage.includes(aufzeichnung.tag))
+            .map(
+              (befund) => `${befund.schwere === "verstoss" ? "Verstoß" : "Hinweis"} ${befund.norm}`,
+            ),
+        ],
       };
     }),
     summen: inhalt.summen,

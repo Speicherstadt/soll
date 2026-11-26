@@ -28,6 +28,7 @@ export const modellSchema = z
     lohnArt: z.enum(["monat", "stunde"]),
     lohnCent: z.number().int().min(0).max(100_000_000).nullable(),
     minijob: z.boolean(),
+    pausenabzug: z.boolean().optional(),
     zuschlagssaetze: saetzeSchema.optional(),
     gueltigAb: z.string().refine(istTag).optional(),
   })

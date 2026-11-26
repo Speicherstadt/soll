@@ -1052,6 +1052,76 @@ S-701 und unabhängig voneinander.
     Datei denselben Weg); axe grün; Texte in allen sechs Sprachen; Doku `docs/umzug.md`, README,
     Entscheidungen im Projektplan; Abdeckungstests (S-903) für die neuen Spalten.
 - [ ] **S-707 Toggl und Clockify** – Export und API für den Solo-Modus: Kunden, Projekte, Zeiten.
+  Fertig, wenn: Fixtures nach der Exportbeschreibung und der API-Beschreibung beider Anbieter
+  bestehen (Quelle im Test) und ein Playwright-Test den ganzen Ablauf zeigt. Genauer:
+  - **Quellen**: **Toggl Track** nach Toggls OpenAPI-Dokument der API v9 (engineering.toggl.com,
+    `api.track.toggl.com/api/v9`: `GET /me`, `/me/clients`, `/me/projects`, `/me/tasks`,
+    `/me/time_entries` mit `start_date`/`end_date`; Basic-Auth `<Token>:api_token`; 403 bei falschem
+    Token, 402 mit `X-Toggl-Quota-Resets-In`, wenn das Kontingent der Stunde verbraucht ist, 429) und
+    den Spalten des CSV-Exports des Detailed Report, wie Anleitungen anderer Importe sie zeigen
+    (`User`, `Email`, `Client`, `Project`, `Task`, `Description`, `Billable`, `Start date`,
+    `Start time`, `End date`, `End time`, `Duration`, `Tags`; die neuere Form `Member`, `Date`,
+    `Start and stop time`); **Clockify** nach Clockifys OpenAPI-Dokument „Clockify API v1“
+    (docs.clockify.me: `X-Api-Key`, `GET /v1/user`, `/v1/workspaces/{ws}/clients`, `/projects`,
+    `/projects/{id}/tasks`, `/user/{userId}/time-entries` mit `start`, `end`, `page`, `page-size`
+    und der Kopfzeile `Last-Page`; Präfixe der Regionen `euc1`, `use2`, `euw2`, `apse2`; 30
+    Anfragen je Stunde im Free-Plan) und den Spalten des CSV-Exports des Detailed Report
+    (`Project`, `Client`, `Description`, `Task`, `User`, `Email`, `Tags`, `Billable`, `Start Date`,
+    `Start Time`, `End Date`, `End Time`, `Duration (h)`). Die Quelle steht in Code und Tests, die
+    Fixtures folgen ihr; was keine Quelle belegt, steht als Annahme in `docs/umzug.md`.
+  - **Datei und API**: Werkzeuge `toggl` und `clockify` mit beiden Wegen. Datei: der CSV-Export des
+    Detailed Report (Trennzeichen erkannt, BOM, Anführung), Datum `2026-09-01` oder `01.09.2026`,
+    Uhrzeit mit 24 oder 12 Stunden, mit oder ohne Sekunden, gelesen in Europe/Berlin; ein Datum mit
+    `/` ist mehrdeutig und wird mit Zeile abgelehnt (die Anleitung sagt, welches Format man vor dem
+    Export im Profil einstellt). API: Toggl mit API-Token, Clockify mit API-Schlüssel und der
+    Region aus einer festen Liste (global, EU, USA, UK, AU); die Adressen sind fest, für die Tests
+    ein Ersatz, den nur der Betreiber setzt. Zeitraum höchstens ein Jahr, nicht in der Zukunft; bei
+    Toggl höchstens 89 Tage zurück, weil `/me/time_entries` nur drei Monate zurückreicht (ältere
+    Zeiten aus dem Export, die Oberfläche sagt das). Anfragen nacheinander und so wenige wie möglich
+    (Free-Pläne: 30 je Stunde), keine Weiterleitung, 30 s und 10 MiB je Antwort, 5 min je Abruf,
+    20.000 Datensätze; Seiten nur so weit, wie `Last-Page` sagt. Token und Schlüssel werden nicht
+    gespeichert, nicht geloggt und stehen in keiner Antwort und keiner Datei (Test). Fehler als
+    Werte wie in S-705: Zugang abgelehnt (Toggl 403, Clockify 401), Rechte fehlen (Clockify 403),
+    zu viele Anfragen (429 und Toggls 402, mit der Wartezeit), nicht erreichbar, Antwort ungültig
+    oder zu groß, zu viele; kein Neuversuch. Der Abruf antwortet mit einer Datei aus JSON Lines mit
+    genau den Feldern, die Soll liest (keine E-Mail, keine Beschreibung, keine Schlagworte, keine
+    Sätze), sortiert, sodass derselbe Stand dieselbe Datei und denselben SHA-256 ergibt.
+  - **Ein gemeinsamer Weg**: Export und Abruf beider Anbieter werden dieselben flachen Einträge
+    (Person, Kunde, Projekt, Aufgabe, Beginn, Ende) und daraus mit einer Funktion die Sätze von
+    S-701; Kennungen hängen nicht am Weg: Kunden nach Namen, Projekte nach Kunde und Name,
+    Tätigkeiten nach Namen, Buchungen nach Person, Beginn und Ende auf die Minute (SHA-256), sodass
+    die Geschichte aus dem Export und der Abruf der letzten Wochen einander als „schon da“ erkennen
+    (Test).
+  - **Kunden, Projekte, Tätigkeiten**: Kunden (Clients) und Projekte wie in S-701, Aufgaben (Tasks)
+    als Tätigkeiten wie in S-705, je neu, einer vorhandenen zugeordnet oder nicht übernommen. Ein
+    Projekt ohne Kunden legt der Import nicht neu an (ein Auftrag braucht in Soll einen Kunden,
+    Grund `kunde_fehlt`); der Inhaber ordnet es einem vorhandenen Auftrag zu oder lässt es aus.
+  - **Zeiten werden Projektzeit**: jeder beendete Eintrag wird eine Buchung der Projektzeit der
+    Person, keine Stempelung: beide Werkzeuge erfassen Projektzeit, im Solo-Modus ist die
+    Arbeitszeit aus, und erfundenes Kommen und Gehen wäre falsch (Entscheidung im Projektplan; wer
+    Arbeitszeit aus ihnen übernehmen will, nimmt „Excel und CSV“, S-702). Ohne Projekt eine interne
+    Buchung, ohne Aufgabe die Tätigkeit, die der Inhaber für „ohne Tätigkeit“ wählt (wie S-702);
+    ohne sie keine Buchung (`ausgelassen`). Beginn und Ende auf die Minute abgerundet, sodass
+    aneinander anschließende Einträge aneinander anschließen; abgelehnt mit Zeile: laufend
+    (`laeuft_noch`), kürzer als eine Minute oder ab 24 Stunden (`dauer_ungueltig`), eine Uhrzeit,
+    die es wegen der Zeitumstellung nicht oder zweimal gibt; Clockify nur Einträge vom Typ
+    `REGULAR`. Überschneidung mit vorhandenen oder anderen Buchungen `ueberschneidung`.
+  - **Wiederholbar und abgeschlossen**: ein zweiter Lauf desselben Zeitraums, auch einmal als Datei
+    und einmal über die API, legt nichts an (Test über die API). Ein abgeschlossener Monat sperrt in
+    Soll die Projektzeit bisher nicht (offener Punkt der Übergabe); der Import hält sich an dieselbe
+    Regel wie eine Buchung von Hand, ändert keine Stempel und schließt keinen Monat ab (Test).
+  - **Mandanten**: Abruf, Vorschau, Probelauf und Übernahme nur für den Inhaber des eigenen
+    Betriebs, nichts eines anderen Betriebs wird gelesen oder geändert (Test je Route).
+  - **Robust**: Fuzzing mit fast-check über beide CSV-Leser und den Leser der Datei des Abrufs
+    (beliebiger Text, Zeilen aus gültigen und kaputten Feldern) und über die Umformungen der
+    Antworten: nie ein Wurf, nie länger als 1 s; jeder Fehler nennt Zeile und Grund.
+  - **Ersatz** je Anbieter nach den Quellen (Zugang, Seiten, Kontingent, Fehler), in Vitest und für
+    Playwright als eigener Dienst. **Oberfläche und Doku**: beide in der Liste der Werkzeuge mit
+    Anleitung für Export und API, Region bei Clockify, „ohne Tätigkeit“ in der Zuordnung;
+    Playwright (desktop) geht den Abruf von Toggl gegen den Ersatz und den Export von Clockify bis
+    zur Übernahme im Solo-Betrieb und zeigt, dass der zweite Lauf nichts anlegt; axe grün in hell
+    und dunkel; Texte in allen sechs Sprachen; Doku `docs/umzug.md`, README, Entscheidungen im
+    Projektplan.
 - [x] **S-708 Salden zum Stichtag** – Überstunden und Resturlaub je Person als Startsaldo, von Hand
   oder aus dem Import, im Audit-Log.
   nach: S-402, S-701. Fertig, wenn: ein Startsaldo von Hand und aus einer Datei dasselbe Konto ergibt,

@@ -75,14 +75,6 @@ Open-Source-Alternative, die du auf deinem eigenen Server betreibst.
 | 🔁 Umzug | [Import](https://soll.work/umzug.html) in einem Assistenten: Werkzeug wählen, Datei hochladen, Personen, Spalten, Abwesenheitsarten, Kunden und Aufträge zuordnen, Vorschau mit den Befunden der Prüfregeln, Probelauf, Übernahme; die Originaldatei bleibt unter ihrem SHA-256 aufbewahrt, jeder Eintrag trägt „übernommen aus …“, ein zweiter Lauf legt nichts doppelt an, im alten Tool abgeschlossene Monate werden als übernommen abgeschlossen. Salden zum Stichtag (Überstunden, Resturlaub) über eine eigene Vorlage. Heute aus einer Soll-CSV, aus jeder Excel-Tabelle (`.xlsx`) oder CSV mit frei zugeordneten Spalten, deutschen Datums- und Zahlenformaten und Projekt und Tätigkeit als Buchungen (Vorlagen zum Herunterladen), aus Clockodo, über die API mit einem Schlüssel, der nur für den Abruf gilt, oder als CSV-Datensicherung (mit Leistungen als Tätigkeiten), aus Kimai über dessen REST-API (Kunden, Projekte, Tätigkeiten, Zeitbuchungen als Zeiten und Projektzeit; nur sichere `https`-Adressen, das Token wird nicht gespeichert) und aus Personio über dessen API v2 (Mitarbeiter, Anwesenheiten mit Pausen, Abwesenheiten mit halben Tagen; der Zugang wird nicht gespeichert, das Token am Ende widerrufen) und aus Papershift, Planday und Crewmeister über deren API (Mitarbeiter, gestempelte Zeiten mit ihren Pausen, Abwesenheiten mit halben Tagen und bei Planday und Crewmeister die geplanten Schichten als Entwurf im Dienstplan); Toggl und Clockify folgen |
 | 🌍 Sprachen | Deutsch und Englisch; für Beschäftigte auch Türkisch, Polnisch, Ukrainisch und Arabisch |
 
-## Soll und die Alternativen
-
-| | Was es ist | Wo Soll anders ist |
-|---|---|---|
-| [Clockodo](https://www.clockodo.com/) | Zeiterfassung für Agenturen und KMU | Dienstplan, Prüfung nach Paragraph, DATEV-Export mit Zuschlägen, selbst gehostet |
-| [Kimai](https://www.kimai.org/) | Open-Source-Projektzeiterfassung | Arbeitszeit nach Gesetz, Dienstplan, Terminal |
-| [Papershift](https://www.papershift.com/), [Planday](https://www.planday.com/) | Dienstplan und Zeiterfassung als Abo | Open Source, selbst gehostet, ohne Kosten pro Kopf |
-
 ## FAQ
 
 ### Muss ich die Arbeitszeit meiner Mitarbeiter erfassen?
@@ -122,9 +114,8 @@ dahin `docker build -f Containerfile -t soll .`
 ## Entwicklung
 
 Bun, Hono, Drizzle und SQLite auf dem Server; Solid und Tailwind im Client. Hinweise für
-Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), der Plan in der
-[Dokumentation](https://soll.work/plan.html), Aufbau und Befehle unter
-[Entwicklung](https://soll.work/entwicklung.html).
+Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), die [Dokumentation](https://soll.work/)
+sowie Aufbau und Befehle unter [Entwicklung](https://soll.work/entwicklung.html).
 
 ```sh
 bun install

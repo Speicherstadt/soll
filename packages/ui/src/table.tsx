@@ -12,7 +12,7 @@ const weitere = <T,>(props: Teil<T>) => omit(props, "class", "children");
 
 /** A native table, dense and quiet (DESIGN.md); numbers and times line up with tabular-nums */
 export const Table = (props: Teil<HTMLTableElement> & { beschriftung: string }) => (
-  <div class="w-full overflow-x-auto">
+  <div class="w-full overflow-x-auto" tabindex={0}>
     <table
       {...omit(props, "class", "children", "beschriftung")}
       class={cn("w-full border-collapse text-start tabular-nums", props.class)}

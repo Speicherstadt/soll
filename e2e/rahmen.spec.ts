@@ -146,3 +146,26 @@ test("the chosen language stays when the browser blocks local storage", async ({
     nachNeuladen,
   );
 });
+
+test("projekte and verfahrensdoku do not overflow horizontally on phone @phone", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "the overflow check is for phones");
+  for (const route of ["/projekte", "/verfahrensdoku"]) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    );
+    expect(overflow, `${route} overflowed`).toBe(false);
+  }
+  const tablist = page.getByRole("tablist");
+  await page.goto("/projekte");
+  for (const tab of await tablist.getByRole("tab").all()) {
+    await expect(tab).toBeVisible();
+    const box = await tab.boundingBox();
+    const breite = page.viewportSize()?.width ?? 0;
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(breite);
+  }
+});

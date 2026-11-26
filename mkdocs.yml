@@ -91,7 +91,6 @@ nav:
   - Jahreswerte: jahreswerte.md
   - Feiertage: feiertage.md
   - Entwicklung:
-      - Projektplan: plan.md
       - Aufbau und Befehle: entwicklung.md
       - Demo-Daten: demo.md
       - Audit-Kette und Prüfwert: audit-kette.md

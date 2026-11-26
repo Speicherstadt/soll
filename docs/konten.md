@@ -10,7 +10,7 @@ description: >-
 Soll rechnet aus dem Arbeitszeitmodell, den Stempelungen und den Abwesenheiten, was eine Person
 schuldet, was sie geleistet hat und was ihr zusteht. Gerechnet wird nur mit ganzen Zahlen: Zeit in
 Minuten, Urlaub in halben Tagen. Gespeichert werden die Konten nicht; sie entstehen jedes Mal neu
-aus den Monatsabschlüssen und den Anpassungen von Hand (Projektplan, „Konten“). Die Regeln mit ihren
+aus den Monatsabschlüssen und den Anpassungen von Hand. Die Regeln mit ihren
 Testfällen stehen im [Regelwerk](regeln.md#r-33-soll-ist-und-uberstundenkonto) unter R-23 bis R-28
 und R-33.
 
@@ -44,7 +44,7 @@ Kind krank oder Sonderurlaub sind im Ausgleichszeitraum neutral (R-03).
 | Krankheit | das Soll des Tages | §§ 3, 4 Abs. 1 EntgFG |
 | Kind krank | das Soll des Tages (unbezahlt, aber entschuldigt) | § 45 Abs. 3 SGB V |
 | Sonderurlaub | das Soll des Tages | § 616 BGB |
-| Überstundenabbau | nichts: das Konto bezahlt den Tag | Projektplan, „Abwesenheiten im Soll“ |
+| Überstundenabbau | nichts: das Konto bezahlt den Tag | § 611a Abs. 1 BGB |
 
 Ein halber Tag bekommt die Hälfte des Solls, auf die Minute aufgerundet (7:15 Soll, halber Tag:
 3:38). Zwei halbe Tage zusammen bekommen nie mehr als das Soll.

@@ -73,17 +73,20 @@ test("the tab targets are at least 44 px high @phone", async ({ page, isMobile }
 
 test("dark stays dark after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: text("einstellungen_tab_konto") }).click();
   const gruppe = page.getByRole("main").getByRole("group", { name: text("theme_label") });
   await gruppe.getByRole("button", { name: text("theme_dunkel") }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("tab", { name: text("einstellungen_tab_konto") }).click();
   await gruppe.getByRole("button", { name: text("theme_system") }).click();
   await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);
 });
 
 test("both colour pickers show the theme chosen in either", async ({ page }) => {
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: text("einstellungen_tab_konto") }).click();
   await page
     .getByRole("main")
     .getByRole("group", { name: text("theme_label") })
@@ -112,6 +115,7 @@ test("a picker reached by keyboard shows its focus @phone", async ({ page }) => 
 
 test("the chosen language stays after a reload", async ({ page }) => {
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: text("einstellungen_tab_konto") }).click();
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
   // choosing a language reloads the page (Paraglide's setLocale), and the settings load their
   // data again: on a busy CI runner the heading takes longer than the default 5 s to return
@@ -168,6 +172,7 @@ test("the chosen language stays when the browser blocks local storage", async ({
     });
   });
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: text("einstellungen_tab_konto") }).click();
   await page.getByRole("main").getByLabel(text("sprache_label")).selectOption("en");
   // the same reload after setLocale as above: on a busy runner it takes longer than 5 s
   const nachNeuladen = { timeout: 15_000 };

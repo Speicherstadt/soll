@@ -74,6 +74,7 @@ test("a person downloads their own days and their Auskunft @phone", async ({ pag
   const { jonas, nutzerId } = await weberMitSandra(page, browser, test.info());
   await mitTag(jonas, nutzerId);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await page.getByRole("link", { name: t("auskunft_titel") }).click();
   await expect(page).toHaveURL("/export");
   // no list of people: Sandra sees only her own times

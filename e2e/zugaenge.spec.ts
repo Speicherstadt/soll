@@ -31,6 +31,7 @@ const mitToken = (page: Page, token: string) => ({
 test("a person creates a token, a program uses it, she revokes it @phone", async ({ page }) => {
   await betriebAnlegen(page);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await expect(page.getByRole("heading", { level: 2, name: t("zugaenge_titel") })).toBeVisible();
   await expect(page.getByText(t("zugaenge_leer"))).toBeVisible();
 

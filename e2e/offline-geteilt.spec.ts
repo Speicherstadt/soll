@@ -56,6 +56,7 @@ test("the next person on a shared browser never sees the previous person's day o
 
   // Sandra signs out; Max signs in on the same browser, and the network drops before his day loads
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await page.getByRole("button", { name: t("abmelden") }).click();
   await expect(page).toHaveURL(/\/anmelden$/);
   await einladungAnnehmen(jonas, page, "Max Brandt");
@@ -98,6 +99,7 @@ test("a tab left open with the previous person's waiting stamp does not lose it 
   // in a second tab Sandra signs out and Max signs in; her tab stays open
   const zweiterTab = await context.newPage();
   await zweiterTab.goto("/einstellungen");
+  await zweiterTab.getByRole("tab", { name: t("einstellungen_tab_konto") }).click();
   await zweiterTab.getByRole("button", { name: t("abmelden") }).click();
   await expect(zweiterTab).toHaveURL(/\/anmelden$/);
   await einladungAnnehmen(jonas, zweiterTab, "Max Brandt");

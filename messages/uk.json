@@ -1323,5 +1323,9 @@
   "monat_chart_label": "Місячний графік: фактичні та планові години й динаміка сальдо",
   "auslastung_chart_label": "Завантаженість на особу в годинах",
   "konten_verlauf_titel": "Динаміка понаднормових",
-  "konten_verlauf_label": "Динаміка балансу понаднормових годин за місяцями"
+  "konten_verlauf_label": "Динаміка балансу понаднормових годин за місяцями",
+  "einstellungen_tab_betrieb": "Підприємство",
+  "einstellungen_tab_terminal": "Термінал",
+  "einstellungen_tab_export": "Експорт і переїзд",
+  "einstellungen_tab_konto": "Обліковий запис"
 }

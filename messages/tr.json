@@ -1323,5 +1323,9 @@
   "monat_chart_label": "Aylık grafik: günlük fiili ve hedef saatler ile bakiye gelişimi",
   "auslastung_chart_label": "Kişi başı saatlik kullanım",
   "konten_verlauf_titel": "Fazla mesai gelişimi",
-  "konten_verlauf_label": "Aylar boyunca fazla mesai bakiyesi gelişimi"
+  "konten_verlauf_label": "Aylar boyunca fazla mesai bakiyesi gelişimi",
+  "einstellungen_tab_betrieb": "İşletme",
+  "einstellungen_tab_terminal": "Terminal",
+  "einstellungen_tab_export": "Dışa aktarma",
+  "einstellungen_tab_konto": "Hesap"
 }

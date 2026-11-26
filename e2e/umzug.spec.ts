@@ -75,6 +75,7 @@ test("the owner moves from another tool, and a second run creates nothing twice"
 }) => {
   await betriebAnlegen(page);
   await page.goto("/einstellungen");
+  await page.getByRole("tab", { name: t("einstellungen_tab_export") }).click();
   await page.getByRole("link", { name: t("umzug_link") }).click();
   await expect(page).toHaveURL("/umzug");
   await expect(page.getByText(t("umzug_liste_leer"))).toBeVisible();

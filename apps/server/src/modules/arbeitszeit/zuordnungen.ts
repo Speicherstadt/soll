@@ -80,6 +80,7 @@ export const lohnmodelle = (db: Db, betriebId: string, nutzerId: string): Lohnmo
     lohnArt: modell.lohnArt,
     lohnCent: modell.lohnCent,
     minijob: modell.minijob,
+    pausenabzug: modell.pausenabzug,
     zuschlagssaetze: modell.zuschlagssaetze,
   }));
 

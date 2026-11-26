@@ -21,7 +21,7 @@ export const Wert = (props: { name: string; children: JSX.Element }) => (
 );
 
 /** Leave left with its years and when each expires, and the overtime (R-23, S-208) */
-const Stand = (props: { k: KontenDaten }) => {
+const Stand = (props: { k: KontenDaten; zusatz?: JSX.Element }) => {
   const urlaub = () => props.k.urlaub;
   const zeilen = () => {
     const u = urlaub();
@@ -30,7 +30,7 @@ const Stand = (props: { k: KontenDaten }) => {
   };
   return (
     <>
-      <dl class="grid grid-cols-2 gap-3 md:max-w-lg">
+      <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Wert name={m.konten_resturlaub()}>
           {(() => {
             const u = urlaub();
@@ -49,6 +49,7 @@ const Stand = (props: { k: KontenDaten }) => {
             return u.ok ? saldoText(u.saldoMinuten) : lueckeText(u);
           })()}
         </Wert>
+        {props.zusatz}
       </dl>
       <Show when={zeilen().length > 0}>
         <ul class="flex flex-col gap-1">
@@ -185,8 +186,10 @@ export const Konten = (props: {
         <Show when={k()}>
           {(stand) => (
             <>
-              <Stand k={stand()} />
-              <Show when={stand().nutzerId === props.ich}>{props.zusatz}</Show>
+              <Stand
+                k={stand()}
+                zusatz={<Show when={stand().nutzerId === props.ich}>{props.zusatz}</Show>}
+              />
               <Verlauf k={stand()} />
               <Show when={stand().rechte.pflegen}>
                 <Pflege k={stand()} onMeldung={setMeldung} />

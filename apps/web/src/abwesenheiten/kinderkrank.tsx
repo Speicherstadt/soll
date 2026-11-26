@@ -22,9 +22,7 @@ const zaehler = (k: KinderkrankErgebnis): string => {
 export const Kinderkrank = (props: { jahr: number; stand: KinderkrankErgebnis | null }) => (
   <Show when={props.stand}>
     {(stand) => (
-      <dl class="grid grid-cols-1 gap-3 md:max-w-lg">
-        <Wert name={m.abw_kinderkrank({ jahr: String(props.jahr) })}>{zaehler(stand())}</Wert>
-      </dl>
+      <Wert name={m.abw_kinderkrank({ jahr: String(props.jahr) })}>{zaehler(stand())}</Wert>
     )}
   </Show>
 );

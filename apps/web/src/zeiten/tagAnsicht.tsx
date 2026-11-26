@@ -49,7 +49,7 @@ export const TagAnsicht = (props: {
 }) => {
   const [korrektur, setKorrektur] = createSignal<Korrektur | null>(null);
   return (
-    <div class="flex max-w-2xl flex-col gap-5">
+    <div class="flex flex-col gap-5">
       <Summen stand={props.stand} sollMinuten={props.ansicht.sollMinuten} />
       <BefundListe befunde={props.stand.befunde} nichtHinterlegt={props.stand.nichtHinterlegt} />
       <LueckenKarte luecken={props.ansicht.luecken} />

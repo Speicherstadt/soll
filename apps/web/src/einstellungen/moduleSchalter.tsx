@@ -38,28 +38,30 @@ export const ModuleSchalter = () => {
     await sitzungNeu();
   };
   return (
-    <section class="flex max-w-lg flex-col gap-3">
+    <section class="flex flex-col gap-3">
       <h2 class="font-semibold">{m.module_titel()}</h2>
       <p class="text-muted-foreground">{darf() ? m.module_text() : m.module_nur_inhaber()}</p>
-      <For each={MODULE}>
-        {(modul) => (
-          <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
-            <input
-              type="checkbox"
-              class="mt-1"
-              checked={aktuellerBetrieb()?.module[modul] ?? false}
-              disabled={!darf()}
-              onChange={(event) =>
-                schalten(modul, event.currentTarget.checked, event.currentTarget)
-              }
-            />
-            <span class="flex flex-col">
-              <span class="font-medium">{MODUL_NAMEN[modul]()}</span>
-              <span class="text-muted-foreground">{MODUL_TEXTE[modul]()}</span>
-            </span>
-          </label>
-        )}
-      </For>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <For each={MODULE}>
+          {(modul) => (
+            <label class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5">
+              <input
+                type="checkbox"
+                class="mt-1"
+                checked={aktuellerBetrieb()?.module[modul] ?? false}
+                disabled={!darf()}
+                onChange={(event) =>
+                  schalten(modul, event.currentTarget.checked, event.currentTarget)
+                }
+              />
+              <span class="flex flex-col">
+                <span class="font-medium">{MODUL_NAMEN[modul]()}</span>
+                <span class="text-muted-foreground">{MODUL_TEXTE[modul]()}</span>
+              </span>
+            </label>
+          )}
+        </For>
+      </div>
       <Fehler text={fehler()} />
     </section>
   );

@@ -131,7 +131,7 @@ const MonatSeite = () => {
         <Show when={ansicht()}>
           {(a) => (
             <>
-              <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border p-4">
                 <Stand ansicht={a()} />
                 <Aktionen
                   ansicht={a()}

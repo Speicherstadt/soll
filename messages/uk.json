@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "Залишки на дату відліку",
   "umzug_salden_text": "Soll рахує рахунки з дати відліку; усе попереднє входить у залишок. Порівняйте зі старим інструментом.",
   "umzug_salden_stichtag": "Дата відліку",
-  "umzug_vorlage_salden": "Завантажити шаблон залишків"
+  "umzug_vorlage_salden": "Завантажити шаблон залишків",
+  "umzug_anleitung_toggl": "Експортуйте звіт Detailed у CSV у Toggl Track (формат дати РРРР-ММ-ДД або ДД.ММ.РРРР у профілі) або отримайте останні 89 днів через API-токен.",
+  "umzug_anleitung_clockify": "Експортуйте звіт Detailed у CSV у Clockify (формат дати РРРР-ММ-ДД або ДД.ММ.РРРР у профілі) або отримайте через API-ключ.",
+  "umzug_abruf_toggl_text": "Введіть API-токен з профілю Toggl Track. API повертає щонайбільше останні 89 днів; старіші записи завантажте як CSV-експорт.",
+  "umzug_abruf_clockify_text": "Введіть API-ключ з налаштувань профілю Clockify та виберіть регіон робочого простору.",
+  "umzug_abruf_region": "Регіон",
+  "umzug_region_global": "Глобальний (api.clockify.me)",
+  "umzug_region_eu": "ЄС (euc1)",
+  "umzug_region_usa": "США (use2)",
+  "umzug_region_uk": "Велика Британія (euw2)",
+  "umzug_region_au": "Австралія (apse2)",
+  "umzug_grund_kunde_fehlt": "Проєкт без клієнта (прив’яжіть до наявного замовлення або пропустіть)"
 }

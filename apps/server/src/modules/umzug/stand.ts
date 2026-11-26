@@ -82,7 +82,7 @@ const projektzeitVon = (db: Db, betriebId: string, quelle: string) => {
     kunden: new Set(kunden.map((k) => k.kundeId)),
     projekte: new Set(projekte.map((p) => p.projektId)),
     uebernommeneKunden: vonQuelle(kunden, (k) => k.kundeId),
-    uebernommeneProjekte: new Set(vonQuelle(projekte, (p) => p.projektId).keys()),
+    uebernommeneProjekte: vonQuelle(projekte, (p) => p.projektId),
     taetigkeiten: new Set(taetigkeiten.map((t) => t.taetigkeitId)),
     uebernommeneTaetigkeiten: vonQuelle(taetigkeiten, (t) => t.taetigkeitId),
   };

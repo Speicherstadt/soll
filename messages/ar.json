@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "الأرصدة في تاريخ البدء",
   "umzug_salden_text": "يحسب Soll الحسابات بدءًا من تاريخ البدء؛ وما قبله مضمَّن في الرصيد. يُرجى المقارنة مع الأداة القديمة.",
   "umzug_salden_stichtag": "تاريخ البدء",
-  "umzug_vorlage_salden": "تنزيل قالب الأرصدة"
+  "umzug_vorlage_salden": "تنزيل قالب الأرصدة",
+  "umzug_anleitung_toggl": "صدّر تقرير Detailed بصيغة CSV في Toggl Track (تنسيق التاريخ YYYY-MM-DD أو DD.MM.YYYY في الملف الشخصي) أو اجلب آخر 89 يومًا عبر رمز API.",
+  "umzug_anleitung_clockify": "صدّر تقرير Detailed بصيغة CSV في Clockify (تنسيق التاريخ YYYY-MM-DD أو DD.MM.YYYY في الملف الشخصي) أو اجلب عبر مفتاح API.",
+  "umzug_abruf_toggl_text": "أدخل رمز API من ملفك الشخصي في Toggl Track. يعيد API آخر 89 يومًا كحد أقصى؛ ارفع السجلات الأقدم عبر تصدير CSV.",
+  "umzug_abruf_clockify_text": "أدخل مفتاح API من إعدادات ملفك الشخصي في Clockify واختر منطقة مساحة العمل.",
+  "umzug_abruf_region": "المنطقة",
+  "umzug_region_global": "عالمي (api.clockify.me)",
+  "umzug_region_eu": "أوروبا (euc1)",
+  "umzug_region_usa": "أمريكا (use2)",
+  "umzug_region_uk": "بريطانيا (euw2)",
+  "umzug_region_au": "أستراليا (apse2)",
+  "umzug_grund_kunde_fehlt": "مشروع بلا عميل (اربطه بطلب قائم أو تخطّه)"
 }

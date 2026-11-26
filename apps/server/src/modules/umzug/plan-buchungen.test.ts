@@ -115,7 +115,7 @@ describe("bookings from the project and activity of a time (S-702)", () => {
           stempelungen: gespeichert("sandra", montage()),
           abwesenheiten: new Map(),
           kunden: new Map(),
-          projekte: new Set(),
+          projekte: new Map(),
           taetigkeiten: new Map(),
           buchungen: new Set(buchungen),
           salden: new Map(),

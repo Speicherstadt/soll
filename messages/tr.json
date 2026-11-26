@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "Kesim tarihindeki bakiyeler",
   "umzug_salden_text": "Soll hesapları kesim tarihinden itibaren hesaplar; öncesi bakiyede yer alır. Lütfen eski araçla karşılaştırın.",
   "umzug_salden_stichtag": "Kesim tarihi",
-  "umzug_vorlage_salden": "Bakiye şablonunu indir"
+  "umzug_vorlage_salden": "Bakiye şablonunu indir",
+  "umzug_anleitung_toggl": "Toggl Track içinde Reports → Detailed üzerinden CSV dışa aktarın (profilde tarih biçimi YYYY-AA-GG veya GG.AA.YYYY) veya son 89 günü API belirteciyle alın.",
+  "umzug_anleitung_clockify": "Clockify içinde Reports → Detailed üzerinden CSV dışa aktarın (profilde tarih biçimi YYYY-AA-GG veya GG.AA.YYYY) veya API anahtarıyla alın.",
+  "umzug_abruf_toggl_text": "Toggl Track profilinizdeki API belirtecini girin. API en fazla son 89 günü verir; daha eski kayıtları CSV dışa aktarımıyla yükleyin.",
+  "umzug_abruf_clockify_text": "Clockify profil ayarlarındaki API anahtarını girin ve çalışma alanı bölgesini seçin.",
+  "umzug_abruf_region": "Bölge",
+  "umzug_region_global": "Global (api.clockify.me)",
+  "umzug_region_eu": "AB (euc1)",
+  "umzug_region_usa": "ABD (use2)",
+  "umzug_region_uk": "Birleşik Krallık (euw2)",
+  "umzug_region_au": "Avustralya (apse2)",
+  "umzug_grund_kunde_fehlt": "Müşterisiz proje (mevcut bir siparişe eşleyin veya hariç tutun)"
 }

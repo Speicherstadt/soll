@@ -5,6 +5,7 @@ import { AbrufFormular } from "./abruf.tsx";
 import { KimaiAbrufFormular } from "./abruf-kimai.tsx";
 import { PersonioAbrufFormular } from "./abruf-personio.tsx";
 import { SchichtplanerAbrufFormular } from "./abruf-schichtplaner.tsx";
+import { ClockifyAbrufFormular, TogglAbrufFormular } from "./abruf-zeiterfasser.tsx";
 import { lesefehlerText } from "./texte.ts";
 import type { Abruf, Datei, Liste, Vorschau } from "./typen.ts";
 import { base64Von } from "./zustand.ts";
@@ -118,6 +119,12 @@ export const DateiSchritt = (props: {
                 abrufen={props.abrufen}
               />
             )}
+          </Match>
+          <Match when={props.quelle === "toggl"}>
+            <TogglAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
+          </Match>
+          <Match when={props.quelle === "clockify"}>
+            <ClockifyAbrufFormular arbeitet={props.arbeitet} abrufen={props.abrufen} />
           </Match>
         </Switch>
       </Show>

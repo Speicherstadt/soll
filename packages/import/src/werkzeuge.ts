@@ -75,4 +75,13 @@ export const WERKZEUGE: readonly Werkzeug[] = [
     endungen: [".jsonl"],
     vorlagen: [],
   })),
+  // solo time trackers (S-707): Detailed report CSV or the JSONL file of an API fetch
+  ...(["toggl", "clockify"] as const).map((id) => ({
+    id,
+    name: { toggl: "Toggl Track", clockify: "Clockify" }[id],
+    wege: ["datei", "api"] as const,
+    felder: [],
+    endungen: [".csv", ".jsonl"],
+    vorlagen: [],
+  })),
 ];

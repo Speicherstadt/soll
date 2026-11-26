@@ -50,6 +50,15 @@ const envSchema = betriebsSchema
       .url({ protocol: /^https?$/ })
       .optional()
       .transform((url) => url?.replace(/\/+$/, "")),
+    // stand-ins for Toggl Track and Clockify (S-707); set only in the e2e tests
+    SOLL_TOGGL_API: z
+      .url({ protocol: /^https?$/ })
+      .optional()
+      .transform((url) => url?.replace(/\/+$/, "")),
+    SOLL_CLOCKIFY_API: z
+      .url({ protocol: /^https?$/ })
+      .optional()
+      .transform((url) => url?.replace(/\/+$/, "")),
     // origins an import may call although http or private (S-705): a Kimai in the own network
     SOLL_IMPORT_ALLOWED_ORIGINS: z.string().optional(),
   })
@@ -76,6 +85,9 @@ export type Env = {
   personioApi: string | null;
   /** One stand-in for the shift planners' APIs, or null for their real addresses (S-706) */
   schichtplanerApi: string | null;
+  /** Stand-ins for Toggl Track and Clockify, or null for their real addresses (S-707) */
+  togglApi: string | null;
+  clockifyApi: string | null;
   /** Origins an import may call although http or private (S-705) */
   importErlaubt: ReadonlySet<string>;
 };
@@ -98,6 +110,8 @@ export const parseEnv = (source: Record<string, string | undefined>): Env => {
     clockodoApi: parsed.SOLL_CLOCKODO_API ?? null,
     personioApi: parsed.SOLL_PERSONIO_API ?? null,
     schichtplanerApi: parsed.SOLL_SCHICHTPLANER_API ?? null,
+    togglApi: parsed.SOLL_TOGGL_API ?? null,
+    clockifyApi: parsed.SOLL_CLOCKIFY_API ?? null,
     importErlaubt: erlaubteUrspruenge(parsed.SOLL_IMPORT_ALLOWED_ORIGINS),
   };
 };

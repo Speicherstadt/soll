@@ -34,6 +34,7 @@ export const PLAN_GRUENDE = [
   "ueberschneidung",
   "monat_abgeschlossen",
   "kunde_unbekannt",
+  "kunde_fehlt",
   "projekt_unbekannt",
   "kunde_ausgelassen",
   "taetigkeit_unbekannt",
@@ -165,7 +166,7 @@ export type Stand = {
     abwesenheiten: ReadonlyMap<string, GespeicherteAbwesenheit>;
     /** the customer created from an id, for its orders */
     kunden: ReadonlyMap<string, string>;
-    projekte: ReadonlySet<string>;
+    projekte: ReadonlyMap<string, string>;
     /** the activity created from an id (S-703, S-705) */
     taetigkeiten: ReadonlyMap<string, string>;
     /** the bookings made from times of this tool, by their id (S-702) */

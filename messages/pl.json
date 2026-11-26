@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "Salda na dzień graniczny",
   "umzug_salden_text": "Soll liczy konta od dnia granicznego; wcześniejsze dane są zawarte w saldzie. Porównaj z poprzednim narzędziem.",
   "umzug_salden_stichtag": "Dzień graniczny",
-  "umzug_vorlage_salden": "Pobierz szablon sald"
+  "umzug_vorlage_salden": "Pobierz szablon sald",
+  "umzug_anleitung_toggl": "Wyeksportuj raport Detailed jako CSV w Toggl Track (format daty RRRR-MM-DD lub DD.MM.RRRR w profilu) albo pobierz ostatnie 89 dni tokenem API.",
+  "umzug_anleitung_clockify": "Wyeksportuj raport Detailed jako CSV w Clockify (format daty RRRR-MM-DD lub DD.MM.RRRR w profilu) albo pobierz kluczem API.",
+  "umzug_abruf_toggl_text": "Wpisz token API z profilu w Toggl Track. API zwraca co najwyżej ostatnie 89 dni; starsze wpisy prześlij jako eksport CSV.",
+  "umzug_abruf_clockify_text": "Wpisz klucz API z ustawień profilu w Clockify i wybierz region przestrzeni roboczej.",
+  "umzug_abruf_region": "Region",
+  "umzug_region_global": "Globalny (api.clockify.me)",
+  "umzug_region_eu": "UE (euc1)",
+  "umzug_region_usa": "USA (use2)",
+  "umzug_region_uk": "UK (euw2)",
+  "umzug_region_au": "AU (apse2)",
+  "umzug_grund_kunde_fehlt": "Projekt bez klienta (przypisz do istniejącego zlecenia lub pomiń)"
 }

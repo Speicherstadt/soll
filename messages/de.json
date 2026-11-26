@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "Salden zum Stichtag",
   "umzug_salden_text": "Soll rechnet die Konten ab dem Stichtag; was davor lag, steckt im Saldo. Bitte mit dem alten Tool vergleichen.",
   "umzug_salden_stichtag": "Stichtag",
-  "umzug_vorlage_salden": "Vorlage für Salden herunterladen"
+  "umzug_vorlage_salden": "Vorlage für Salden herunterladen",
+  "umzug_anleitung_toggl": "In Toggl Track unter Reports → Detailed exportieren (CSV; Datumsformat JJJJ-MM-TT oder TT.MM.JJJJ im Profil) oder die letzten 89 Tage direkt per API-Token abrufen.",
+  "umzug_anleitung_clockify": "In Clockify unter Reports → Detailed als CSV exportieren (Datumsformat JJJJ-MM-TT oder TT.MM.JJJJ im Profil) oder per API-Schlüssel abrufen.",
+  "umzug_abruf_toggl_text": "Den API-Token aus dem Profil in Toggl Track eingeben. Die API liefert höchstens die letzten 89 Tage; ältere Zeiten lädst du als CSV-Export.",
+  "umzug_abruf_clockify_text": "Den API-Schlüssel aus den Profileinstellungen in Clockify eingeben und die Region des Arbeitsbereichs wählen.",
+  "umzug_abruf_region": "Region",
+  "umzug_region_global": "Global (api.clockify.me)",
+  "umzug_region_eu": "EU (euc1)",
+  "umzug_region_usa": "USA (use2)",
+  "umzug_region_uk": "UK (euw2)",
+  "umzug_region_au": "AU (apse2)",
+  "umzug_grund_kunde_fehlt": "Projekt ohne Kunden (einem bestehenden Auftrag zuordnen oder auslassen)"
 }

@@ -20,6 +20,7 @@ import {
   SCHICHTPLANER_ADRESSEN,
   type SchichtplanerAdressen,
   sicherHolen,
+  TOGGL_API,
 } from "./modules/umzug/index.ts";
 
 const lesen = () => {
@@ -91,6 +92,9 @@ export const serverStarten = () => {
     personio: { holen: sicherHolen(), basis: env.personioApi ?? PERSONIO_API },
     // Papershift, Planday and Crewmeister at their own addresses (S-706); a stand-in only in e2e
     schichtplaner: { holen: sicherHolen(), adressen: adressenVon(env.schichtplanerApi) },
+    // Toggl Track and Clockify at their fixed addresses (S-707); stand-ins only in e2e
+    toggl: { holen: sicherHolen(), basis: env.togglApi ?? TOGGL_API },
+    clockify: { holen: sicherHolen(), basis: env.clockifyApi },
   });
 
   // Reminders every minute; the loop reads stamps and never writes one (S-307)

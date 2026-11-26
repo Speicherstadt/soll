@@ -56,11 +56,15 @@ export const toolBuchungPlanen = (
   const nutzerId = personVon(satz, kontext.zuordnung, stand);
   if (typeof nutzerId !== "string") return nutzerId;
   if (stand.vorhanden.buchungen.has(satz.externalId)) return { art: "vorhanden" };
-  if (kontext.verworfen.has(satz.zeit)) return { art: "ausgelassen" };
+  if (satz.zeit && kontext.verworfen.has(satz.zeit)) return { art: "ausgelassen" };
   if (!stand.module.projektzeit) return { art: "abgelehnt", grund: "modul_aus" };
-  const projektId = ids.projekte.get(satz.projekt) ?? null;
-  const taetigkeitId = ids.taetigkeiten.get(satz.taetigkeit) ?? null;
-  if (projektId === null || taetigkeitId === null) return { art: "ausgelassen" };
+  const projektId = satz.projekt === undefined ? null : (ids.projekte.get(satz.projekt) ?? null);
+  if (satz.projekt !== undefined && projektId === null) return { art: "ausgelassen" };
+  const taetigkeitId =
+    satz.taetigkeit === undefined
+      ? (kontext.zuordnung.buchung?.taetigkeiten?.[""] ?? null)
+      : (ids.taetigkeiten.get(satz.taetigkeit) ?? null);
+  if (taetigkeitId === null) return { art: "ausgelassen" };
   if (satz.ende > stand.jetzt) return { art: "abgelehnt", grund: "zukunft" };
   const spanne = { beginn: satz.beginn, ende: satz.ende };
   const bisher = genommen.get(nutzerId) ?? [];

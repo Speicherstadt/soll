@@ -103,4 +103,55 @@ describe("bookings a tool kept itself", () => {
     const plan = planen(daten(MORGEN), { ...ZUORDNUNG, personen: {} }, null, stand());
     expect(plan.zahlen.buchungen.ausgelassen).toBe(1);
   });
+
+  it("handles S-707 projects without customer, internal bookings and ohne Taetigkeit", () => {
+    const ohneKunde = {
+      ...leer(),
+      projekte: [
+        { externalId: '["","Akquise"]', zeile: 2, kunde: "", name: "Akquise", nummer: "" },
+      ],
+      buchungen: [
+        {
+          externalId: "e-1",
+          zeile: 3,
+          person: "Sandra Kühn",
+          tag: "2026-09-01",
+          beginn: um("2026-09-01T08:00:00+02:00"),
+          ende: um("2026-09-01T09:00:00+02:00"),
+        },
+      ],
+    };
+    const mitOhne = {
+      ...ZUORDNUNG,
+      buchung: { projekte: {}, taetigkeiten: { "": "fahrt" } },
+    };
+    const plan = planen(ohneKunde, mitOhne, null, stand());
+    expect(plan.abgelehnt).toEqual([
+      { art: "projekte", zeile: 2, externalId: '["","Akquise"]', grund: "kunde_fehlt" },
+    ]);
+    expect(plan.buchungen).toEqual([
+      {
+        nutzerId: "sandra",
+        projektId: null,
+        taetigkeitId: "fahrt",
+        beginn: um("2026-09-01T08:00:00+02:00"),
+        ende: um("2026-09-01T09:00:00+02:00"),
+        tag: "2026-09-01",
+        externId: "e-1",
+      },
+    ]);
+  });
+
+  it("resolves an already-imported project to its projektId for new bookings", () => {
+    const vorher = stand();
+    const s = stand({
+      vorhanden: {
+        ...vorher.vorhanden,
+        projekte: new Map([["p1", "soll-projekt-id"]]),
+      },
+    });
+    const plan = planen(daten(MORGEN), ZUORDNUNG, null, s);
+    expect(plan.zahlen.projekte.vorhanden).toBe(1);
+    expect(plan.buchungen[0]?.projektId).toBe("soll-projekt-id");
+  });
 });

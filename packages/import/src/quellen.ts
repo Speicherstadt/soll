@@ -7,6 +7,7 @@ import { type Spaltenwahl, sollCsvLesen } from "./soll-csv.ts";
 import { tabelleLesen } from "./tabelle.ts";
 import { ohneBom, textAusBytes } from "./text.ts";
 import { WERKZEUGE, type Werkzeug } from "./werkzeuge.ts";
+import { clockifyLesen, togglLesen } from "./zeiterfasser/index.ts";
 
 /*
  * The tools Soll imports from (BAULISTE.md S-701) with their readers into the common model: each
@@ -45,6 +46,8 @@ const LESER: Record<string, Quelle["lesen"]> = {
   papershift: schichtplanerLesen("papershift"),
   planday: schichtplanerLesen("planday"),
   crewmeister: schichtplanerLesen("crewmeister"),
+  toggl: (bytes) => togglLesen(bytes),
+  clockify: (bytes) => clockifyLesen(bytes),
 };
 
 export const QUELLEN: readonly Quelle[] = WERKZEUGE.map((werkzeug) => ({

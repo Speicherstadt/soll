@@ -1,0 +1,253 @@
+{
+  "user": {
+    "id": "64b0f0a1c2d3e4f5a6b7c801",
+    "email": "lina@petersen-design.test",
+    "name": "Lina Petersen",
+    "activeWorkspace": "64b0f0a1c2d3e4f5a6b7c900",
+    "defaultWorkspace": "64b0f0a1c2d3e4f5a6b7c900",
+    "profilePicture": "https://img.clockify.test/no-user-image.png",
+    "status": "ACTIVE",
+    "settings": { "timeZone": "Europe/Berlin", "weekStart": "MONDAY", "timeFormat": "HOUR24" }
+  },
+  "clients": [
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7ca01",
+      "name": "Café Elbblick",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": false,
+      "address": "Elbchaussee 1",
+      "email": "mia@elbblick.test",
+      "note": ""
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7ca02",
+      "name": "Elbhof Immobilien",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": false,
+      "address": "",
+      "email": "",
+      "note": ""
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7ca03",
+      "name": "Altkunde Hafen",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": true,
+      "address": "",
+      "email": "",
+      "note": ""
+    }
+  ],
+  "projects": [
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cb01",
+      "name": "Speisekarte",
+      "clientId": "64b0f0a1c2d3e4f5a6b7ca01",
+      "clientName": "Café Elbblick",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": false,
+      "billable": true,
+      "hourlyRate": { "amount": 6000, "currency": "EUR" },
+      "color": "#03A9F4",
+      "note": ""
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cb02",
+      "name": "Exposé Bad Elbhof",
+      "clientId": "64b0f0a1c2d3e4f5a6b7ca02",
+      "clientName": "Elbhof Immobilien",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": false,
+      "billable": true,
+      "hourlyRate": { "amount": 6000, "currency": "EUR" },
+      "color": "#4CAF50",
+      "note": ""
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cb03",
+      "name": "Akquise",
+      "clientId": "",
+      "clientName": "",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": false,
+      "billable": false,
+      "hourlyRate": null,
+      "color": "#9C27B0",
+      "note": ""
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cb04",
+      "name": "Hafenfest 2025",
+      "clientId": "64b0f0a1c2d3e4f5a6b7ca03",
+      "clientName": "Altkunde Hafen",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "archived": true,
+      "billable": true,
+      "hourlyRate": { "amount": 5500, "currency": "EUR" },
+      "color": "#FF5722",
+      "note": ""
+    }
+  ],
+  "tasks": {
+    "64b0f0a1c2d3e4f5a6b7cb01": [
+      {
+        "id": "64b0f0a1c2d3e4f5a6b7cc01",
+        "name": "Entwurf",
+        "projectId": "64b0f0a1c2d3e4f5a6b7cb01",
+        "assigneeIds": [],
+        "estimate": "PT10H",
+        "status": "ACTIVE",
+        "billable": true
+      }
+    ]
+  },
+  "timeEntries": [
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd01",
+      "description": "Erste Skizzen",
+      "tagIds": ["64b0f0a1c2d3e4f5a6b7ce01"],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": true,
+      "taskId": "64b0f0a1c2d3e4f5a6b7cc01",
+      "projectId": "64b0f0a1c2d3e4f5a6b7cb01",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-01T07:00:00Z",
+        "end": "2026-09-01T09:30:00Z",
+        "duration": "PT2H30M",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": { "amount": 6000, "currency": "EUR" }
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd02",
+      "description": "Feinschliff, Farben",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": true,
+      "taskId": "64b0f0a1c2d3e4f5a6b7cc01",
+      "projectId": "64b0f0a1c2d3e4f5a6b7cb01",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-01T09:30:00Z",
+        "end": "2026-09-01T10:15:20Z",
+        "duration": "PT45M20S",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": { "amount": 6000, "currency": "EUR" }
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd09",
+      "description": "Mittag",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": false,
+      "taskId": null,
+      "projectId": null,
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-01T10:15:00Z",
+        "end": "2026-09-01T10:45:00Z",
+        "duration": "PT30M",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "BREAK",
+      "isLocked": false,
+      "hourlyRate": null
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd03",
+      "description": "Fotos sichten",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": true,
+      "taskId": null,
+      "projectId": "64b0f0a1c2d3e4f5a6b7cb02",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-02T11:00:00Z",
+        "end": "2026-09-02T14:00:00Z",
+        "duration": "PT3H",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": { "amount": 6000, "currency": "EUR" }
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd04",
+      "description": "Website",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": false,
+      "taskId": null,
+      "projectId": "64b0f0a1c2d3e4f5a6b7cb03",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-03T06:00:00Z",
+        "end": "2026-09-03T07:00:00Z",
+        "duration": "PT1H",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": null
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd05",
+      "description": "Buchhaltung",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": false,
+      "taskId": null,
+      "projectId": null,
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-03T21:30:00Z",
+        "end": "2026-09-03T22:30:00Z",
+        "duration": "PT1H",
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": 7200
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": null
+    },
+    {
+      "id": "64b0f0a1c2d3e4f5a6b7cd06",
+      "description": "Läuft noch",
+      "tagIds": [],
+      "userId": "64b0f0a1c2d3e4f5a6b7c801",
+      "billable": true,
+      "taskId": null,
+      "projectId": "64b0f0a1c2d3e4f5a6b7cb01",
+      "workspaceId": "64b0f0a1c2d3e4f5a6b7c900",
+      "timeInterval": {
+        "start": "2026-09-04T07:00:00Z",
+        "end": null,
+        "duration": null,
+        "timeZone": "Europe/Berlin",
+        "offsetStart": 7200,
+        "offsetEnd": null
+      },
+      "type": "REGULAR",
+      "isLocked": false,
+      "hourlyRate": null
+    }
+  ]
+}

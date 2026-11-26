@@ -1299,5 +1299,16 @@
   "umzug_salden_titel": "Balances on the cut-off date",
   "umzug_salden_text": "Soll computes the accounts from the cut-off date on; what came before is in the balance. Please compare with the old tool.",
   "umzug_salden_stichtag": "Cut-off date",
-  "umzug_vorlage_salden": "Download template for balances"
+  "umzug_vorlage_salden": "Download template for balances",
+  "umzug_anleitung_toggl": "Export the Detailed report as CSV in Toggl Track (date format YYYY-MM-DD or DD.MM.YYYY in your profile) or fetch the last 89 days via API token.",
+  "umzug_anleitung_clockify": "Export the Detailed report as CSV in Clockify (date format YYYY-MM-DD or DD.MM.YYYY in your profile) or fetch via API key.",
+  "umzug_abruf_toggl_text": "Enter your Toggl Track profile API token. The API returns at most the last 89 days; upload older entries as a CSV export.",
+  "umzug_abruf_clockify_text": "Enter your Clockify profile API key and select the workspace region.",
+  "umzug_abruf_region": "Region",
+  "umzug_region_global": "Global (api.clockify.me)",
+  "umzug_region_eu": "EU (euc1)",
+  "umzug_region_usa": "USA (use2)",
+  "umzug_region_uk": "UK (euw2)",
+  "umzug_region_au": "AU (apse2)",
+  "umzug_grund_kunde_fehlt": "Project without client (match to an existing order or leave out)"
 }

@@ -1,13 +1,16 @@
 import { render } from "@solidjs/web";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { createHashHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { abfrageCache } from "./abfragen/client.ts";
 import { applyLocale } from "./i18n.ts";
 import { liesThema, wendeThemaAn } from "./rahmen/theme.ts";
 import { routeTree } from "./routeTree.gen.ts";
 import "./styles.css";
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  ...(import.meta.env.VITE_DEMO === "1" ? { history: createHashHistory() } : {}),
+});
 
 declare module "@tanstack/solid-router" {
   interface Register {
@@ -34,6 +37,6 @@ if (root)
     root,
   );
 
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
+if (import.meta.env.PROD && import.meta.env.VITE_DEMO !== "1" && "serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sw.js");
 }

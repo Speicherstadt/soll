@@ -14,6 +14,8 @@ Browser, am Handy und am Tablet, Prüfung nach Arbeitszeitgesetz mit Paragraph, 
 Krankmeldung, Monatsabschluss mit Prüfwert und Lohndaten für DATEV. Open Source, ohne Kosten pro
 Kopf.
 
+**[Live-Demo im Browser ausprobieren](https://soll.work/demo/)** (Musterbetrieb *Weber Haustechnik*, läuft komplett im Browser)
+
 ![Soll – Heute auf dem Desktop](assets/screenshots/heute-light-desktop.png)
 
 ## Was Soll besonders macht

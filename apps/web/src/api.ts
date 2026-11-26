@@ -1,3 +1,5 @@
+import { demoAntwort } from "./demo/demoApi.ts";
+
 /**
  * Calls of the API under the app's own origin (Vite forwards /api in development, the server serves
  * both in production). Errors come back as values (CLAUDE.md): status 0 means no answer at all.
@@ -11,6 +13,7 @@ export const api = async <T>(
   pfad: string,
   init: { method?: string; body?: unknown; headers?: Record<string, string> } = {},
 ): Promise<Antwort<T>> => {
+  if (import.meta.env.VITE_DEMO === "1") return demoAntwort<T>(pfad, init);
   let antwort: Response;
   try {
     antwort = await fetch(pfad, {

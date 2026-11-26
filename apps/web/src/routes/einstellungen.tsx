@@ -20,6 +20,24 @@ import { abgemeldet, aktuellerBetrieb, sitzungNeu } from "../sitzung/sitzung.ts"
 import { istInhaber } from "../sitzung/ziel.ts";
 import { Zugaenge } from "../zugaenge/zugaenge.tsx";
 
+const TAB_SPEICHER = "soll.einstellungen.tab";
+
+const tabLesen = (): string | undefined => {
+  try {
+    return sessionStorage.getItem(TAB_SPEICHER) ?? undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const tabSchreiben = (id: string) => {
+  try {
+    sessionStorage.setItem(TAB_SPEICHER, id);
+  } catch {
+    // storage may be blocked in private/restricted browsers
+  }
+};
+
 const Karte = (props: { children: JSX.Element }) => (
   <div class="rounded-xl border border-border bg-background p-5">{props.children}</div>
 );
@@ -178,7 +196,12 @@ const Einstellungen = () => {
 
   return (
     <Seite titel={m.nav_einstellungen()}>
-      <Tabs label={m.nav_einstellungen()} tabs={tabs()} />
+      <Tabs
+        label={m.nav_einstellungen()}
+        tabs={tabs()}
+        start={tabLesen()}
+        onWechsel={tabSchreiben}
+      />
     </Seite>
   );
 };

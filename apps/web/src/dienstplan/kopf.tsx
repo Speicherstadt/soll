@@ -131,11 +131,11 @@ export const PlanKopf = (props: {
         </Button>
         <Button variant="outline" onClick={() => props.onDrucken()}>
           <Icon icon={Printer} />
-          <span class="max-sm:hidden">{m.plan_drucken()}</span>
+          <span class="max-sm:sr-only">{m.plan_drucken()}</span>
         </Button>
         <Button variant="outline" onClick={() => props.onVollbild()}>
           <Icon icon={props.vollbild ? Minimize2 : Maximize2} />
-          <span class="max-sm:hidden">
+          <span class="max-sm:sr-only">
             {props.vollbild ? m.plan_vollbild_beenden() : m.plan_vollbild()}
           </span>
         </Button>

@@ -176,7 +176,7 @@ export const TagesAnsicht = (props: {
                               </span>
                               <BefundIcon befunde={befunde()} />
                             </span>
-                            <span class="truncate text-[11px] text-muted-foreground">
+                            <span class="truncate text-[11px] text-foreground/85">
                               {blockText(schicht(), props.vorlagen)}
                             </span>
                           </>

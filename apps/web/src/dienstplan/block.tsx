@@ -48,7 +48,7 @@ const Inhalt = (props: {
       </span>
       <BefundIcon befunde={props.befunde} />
     </span>
-    <span class="truncate text-[12px] text-muted-foreground">
+    <span class="truncate text-[12px] text-foreground/85">
       {blockText(props.schicht, props.vorlagen)}
     </span>
     <Show when={props.befunde.length > 0}>

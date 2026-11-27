@@ -40,10 +40,12 @@ export const MonatsAnsicht = (props: {
     }),
   );
 
+  const aktiveWochen = () => wochenAbfragen.slice(0, kalender().montage.length);
+
   const personenMap = createMemo(() => {
     const map = new Map<string, string>();
     for (const p of props.personen) map.set(p.nutzerId, p.name);
-    for (const q of wochenAbfragen) {
+    for (const q of aktiveWochen()) {
       for (const p of daten(q.data)?.personen ?? []) map.set(p.nutzerId, p.name);
     }
     return map;
@@ -53,7 +55,7 @@ export const MonatsAnsicht = (props: {
     const gesehen = new Set<string>();
     const nachTag = new Map<Tag, Schicht[]>();
     const gewaehlt = filterPerson();
-    for (const q of wochenAbfragen) {
+    for (const q of aktiveWochen()) {
       const w = daten(q.data);
       if (!w) continue;
       for (const s of w.schichten) {
@@ -123,7 +125,7 @@ export const MonatsAnsicht = (props: {
                     class={cn(
                       "flex min-h-[112px] flex-col gap-1 border-border border-e border-b p-1.5 last:border-e-0",
                       wochenende() && "bg-muted/35",
-                      !imMonat() && "opacity-45",
+                      !imMonat() && "bg-muted/25 text-muted-foreground",
                     )}
                   >
                     <div class="flex items-center justify-between">

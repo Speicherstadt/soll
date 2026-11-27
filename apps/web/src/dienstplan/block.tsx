@@ -151,6 +151,7 @@ export const Block = (props: {
         <Button
           variant="icon"
           size="sm"
+          data-print-hidden=""
           aria-label={props.griffName}
           aria-pressed={props.aufgenommen ? "true" : "false"}
           aria-describedby={GRIFF_HINWEIS}

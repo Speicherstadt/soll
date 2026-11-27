@@ -31,3 +31,25 @@ test("Dienstplan switches cleanly between Day, Week, Month and TV Fullscreen mod
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: t("plan_vollbild"), exact: true })).toBeVisible();
 });
+
+test("Dienstplan prints visibly with dark ink even from dark mode", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await betriebAnlegen(page);
+  await senden(page, "POST", "/api/v1/standorte", { name: "Elbe", land: "HH" });
+  await page.goto("/dienstplan");
+  await expect(page.locator("main table")).toBeVisible();
+
+  await page.emulateMedia({ media: "print" });
+  const printState = await page.evaluate(() => {
+    const h1 = document.querySelector("h1");
+    const tbl = document.querySelector("main table");
+    return {
+      h1Visibility: h1 ? getComputedStyle(h1).visibility : null,
+      h1Color: h1 ? getComputedStyle(h1).color : null,
+      tblVisibility: tbl ? getComputedStyle(tbl).visibility : null,
+    };
+  });
+  expect(printState.h1Visibility).toBe("visible");
+  expect(printState.tblVisibility).toBe("visible");
+  expect(printState.h1Color).toBe("rgb(9, 9, 11)");
+});

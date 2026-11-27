@@ -114,6 +114,32 @@ select:not([data-custom-select]) {
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+  :root,
+  :root[data-theme="dark"],
+  :root:not([data-theme="light"]) {
+    --background: #ffffff;
+    --muted: #fafafa;
+    --accent: #f4f4f5;
+    --border: #d4d4d8;
+    --foreground: #09090b;
+    --muted-foreground: #52525b;
+    --primary: #18181b;
+    --primary-foreground: #fafafa;
+    --success: #15803d;
+    --success-surface: #dcfce7;
+    --warning: #b45309;
+    --warning-surface: #fef3c7;
+    --danger: #b91c1c;
+    color-scheme: light;
+  }
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
   aside,
   nav,
   [data-print-hidden] {
@@ -122,5 +148,12 @@ select:not([data-custom-select]) {
   body {
     background: #ffffff;
     color: #09090b;
+  }
+  main {
+    padding: 0;
+  }
+  table {
+    min-width: 0;
+    width: 100%;
   }
 }

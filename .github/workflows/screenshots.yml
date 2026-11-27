@@ -5,7 +5,7 @@ name: Update screenshots
 # directory, starts the server there on a fixed clock and takes every screen of
 # scripts/screenshots/bildschirme.ts light and dark on desktop, phone and the terminal. Only by
 # hand: Actions → Update screenshots → Run workflow. Commits changed pictures directly to the
-# branch using the deploy key so CI and Docs run on the new commit.
+# branch using the deploy key so on: push workflows (Docs on main) run on the new commit.
 on:
   workflow_dispatch:
 

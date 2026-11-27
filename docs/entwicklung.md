@@ -118,7 +118,7 @@ Nach einer Änderung am Aussehen: **Actions → Update screenshots → Run workf
 `firsttris/workflows/.github/workflows/screenshots.yml@v1` im passenden Playwright-Image und
 committet geänderte Bilder unter `docs/assets/screenshots/` direkt auf den Branch (ohne Änderung
 keinen Commit). Der Push läuft über den Deploy Key (`BUMP_DEPLOY_KEY`), damit ein Ruleset auf
-`main` ihn durchlässt und CI sowie Doku danach automatisch starten.
+`main` ihn durchlässt und die Doku danach automatisch neu gebaut wird.
 
 ## Komponenten
 

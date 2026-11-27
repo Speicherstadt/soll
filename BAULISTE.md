@@ -1495,6 +1495,6 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
   `docs/loeschkonzept.md`)
 - [ ] Deploy Key mit Schreibrecht und Actions-Secret `BUMP_DEPLOY_KEY` im Repository hinterlegen
   (und bei einem Ruleset auf `main` in dessen Bypass-Liste aufnehmen), damit „Update screenshots“
-  geänderte Bilder direkt pusht und CI/Doku startet
+  geänderte Bilder direkt pusht und die Doku danach automatisch baut
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

@@ -141,4 +141,19 @@ describe("demoApi", () => {
       .filter(({ text }) => /[äöüßÄÖÜ]/.test(text));
     expect(umlautZeilen).toEqual([]);
   });
+
+  test("GET /api/v1/personen/:id/angaben returns valid Angaben shape without crashing AngabenDialog", async () => {
+    const antwort = await demoAntwort<{
+      geburtsdatum: string | null;
+      wechselschicht: boolean;
+      abruf: boolean;
+      mutterschutz: unknown[];
+    }>("/api/v1/personen/jonas/angaben");
+    expect(antwort.ok).toBe(true);
+    if (antwort.ok) {
+      expect(Array.isArray(antwort.daten.mutterschutz)).toBe(true);
+      expect(typeof antwort.daten.wechselschicht).toBe("boolean");
+      expect(typeof antwort.daten.abruf).toBe("boolean");
+    }
+  });
 });

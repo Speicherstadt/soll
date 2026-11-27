@@ -87,3 +87,71 @@ export const wocheDaten = (query: URLSearchParams, heuteTag: string) => {
     befunde: [],
   };
 };
+
+type DemoAngaben = {
+  geburtsdatum: string | null;
+  wechselschicht: boolean;
+  abruf: boolean;
+  mutterschutz: { von: string; bis: string | null }[];
+};
+
+const angabenSpeicher = new Map<string, DemoAngaben>();
+let kalenderAbo: { angelegtAm: number; sprache: string } | null = null;
+
+export const angabenLesen = (nutzerId: string): DemoAngaben =>
+  angabenSpeicher.get(nutzerId) ?? {
+    geburtsdatum: null,
+    wechselschicht: false,
+    abruf: false,
+    mutterschutz: [],
+  };
+
+export const angabenSpeichern = (nutzerId: string, body: Record<string, unknown>): DemoAngaben => {
+  const wert: DemoAngaben = {
+    geburtsdatum: typeof body.geburtsdatum === "string" ? body.geburtsdatum : null,
+    wechselschicht: Boolean(body.wechselschicht),
+    abruf: Boolean(body.abruf),
+    mutterschutz: Array.isArray(body.mutterschutz)
+      ? (body.mutterschutz as DemoAngaben["mutterschutz"])
+      : [],
+  };
+  angabenSpeicher.set(nutzerId, wert);
+  return wert;
+};
+
+export const kalenderLesen = () => ({ abo: kalenderAbo });
+
+export const kalenderSchreiben = (methode: string, body: Record<string, unknown>) => {
+  if (methode === "DELETE") {
+    kalenderAbo = null;
+    return { ok: true };
+  }
+  kalenderAbo = {
+    angelegtAm: Date.now(),
+    sprache: typeof body.sprache === "string" ? body.sprache : "de",
+  };
+  return { abo: kalenderAbo, url: "https://soll.work/demo/kalender-demo.ics" };
+};
+
+export const demoDienstplanGet = (pfad: string, query: URLSearchParams, heute: string): unknown => {
+  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query, heute);
+  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
+  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
+  if (pfad === "/api/v1/dienstplan/kalender") return kalenderLesen();
+  if (pfad === "/api/v1/dienstplan/tausch")
+    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+  const angabenMatch = /^\/api\/v1\/personen\/([^/]+)\/angaben$/.exec(pfad);
+  if (angabenMatch?.[1]) return angabenLesen(decodeURIComponent(angabenMatch[1]));
+  return undefined;
+};
+
+export const demoDienstplanWrite = (
+  pfad: string,
+  body: Record<string, unknown>,
+  methode: string,
+): unknown => {
+  if (pfad === "/api/v1/dienstplan/kalender") return kalenderSchreiben(methode, body);
+  const angabenMatch = /^\/api\/v1\/personen\/([^/]+)\/angaben$/.exec(pfad);
+  if (angabenMatch?.[1]) return angabenSpeichern(decodeURIComponent(angabenMatch[1]), body);
+  return undefined;
+};

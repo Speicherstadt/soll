@@ -141,4 +141,74 @@ describe("demoApi", () => {
       .filter(({ text }) => /[äöüßÄÖÜ]/.test(text));
     expect(umlautZeilen).toEqual([]);
   });
+
+  test("GET /api/v1/personen/:id/angaben returns valid Angaben shape without crashing AngabenDialog", async () => {
+    const antwort = await demoAntwort<{
+      geburtsdatum: string | null;
+      wechselschicht: boolean;
+      abruf: boolean;
+      mutterschutz: unknown[];
+    }>("/api/v1/personen/jonas/angaben");
+    expect(antwort.ok).toBe(true);
+    if (antwort.ok) {
+      expect(Array.isArray(antwort.daten.mutterschutz)).toBe(true);
+      expect(typeof antwort.daten.wechselschicht).toBe("boolean");
+      expect(typeof antwort.daten.abruf).toBe("boolean");
+    }
+  });
+
+  // tdd-review finding: `demoApi.ts` does not handle `PUT /api/v1/personen/:id/angaben` in
+  // `schreiben()`, so saving in `AngabenDialog` returns `{ ok: true }` and the invalidated
+  // `GET /api/v1/personen/:id/angaben` immediately resets the form to empty defaults.
+  test("PUT /api/v1/personen/:id/angaben persists and returns the saved Angaben", async () => {
+    const gespeichert = {
+      geburtsdatum: "2009-06-01",
+      wechselschicht: true,
+      abruf: false,
+      mutterschutz: [{ von: "2026-11-01", bis: null }],
+    };
+    const put = await demoAntwort<typeof gespeichert>("/api/v1/personen/jonas/angaben", {
+      method: "PUT",
+      body: gespeichert,
+    });
+    expect(put.ok).toBe(true);
+    if (put.ok) expect(put.daten).toEqual(gespeichert);
+
+    const get = await demoAntwort<typeof gespeichert>("/api/v1/personen/jonas/angaben");
+    expect(get.ok).toBe(true);
+    if (get.ok) expect(get.daten).toEqual(gespeichert);
+  });
+
+  // tdd-review finding: `demoApi.ts` does not handle `POST` / `DELETE /api/v1/dienstplan/kalender`
+  // in `schreiben()`. `KalenderDialog` expects `{ abo: { angelegtAm, sprache }, url: string }` on
+  // POST and passes `url` to `webcalVon(url)` (`url.replace(...)`), crashing with TypeError when
+  // `{ ok: true }` is returned.
+  test("POST and DELETE /api/v1/dienstplan/kalender issue and revoke a calendar feed link", async () => {
+    const post = await demoAntwort<{
+      abo?: { angelegtAm: number; sprache: string };
+      url?: string;
+    }>("/api/v1/dienstplan/kalender", {
+      method: "POST",
+      body: { sprache: "de" },
+    });
+    expect(post.ok).toBe(true);
+    if (post.ok) {
+      expect(typeof post.daten.url).toBe("string");
+      expect(post.daten.url).toMatch(/^https?:\/\/.+\.ics$/);
+      expect(typeof post.daten.abo?.angelegtAm).toBe("number");
+    }
+
+    const aktiv = await demoAntwort<{ abo: { angelegtAm: number } | null }>(
+      "/api/v1/dienstplan/kalender",
+    );
+    expect(aktiv.ok).toBe(true);
+    if (aktiv.ok) expect(aktiv.daten.abo).not.toBeNull();
+
+    const del = await demoAntwort("/api/v1/dienstplan/kalender", { method: "DELETE" });
+    expect(del.ok).toBe(true);
+
+    const nachher = await demoAntwort<{ abo: unknown }>("/api/v1/dienstplan/kalender");
+    expect(nachher.ok).toBe(true);
+    if (nachher.ok) expect(nachher.daten.abo).toBeNull();
+  });
 });

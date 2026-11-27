@@ -9,7 +9,7 @@ import {
   demoStartzustand,
   heuteTag,
 } from "./demoDaten.ts";
-import { DEMO_VORLAGEN, wocheDaten } from "./demoDienstplan.ts";
+import { demoDienstplanGet, demoDienstplanWrite } from "./demoDienstplan.ts";
 
 const zustand = demoStartzustand();
 
@@ -44,24 +44,24 @@ const tagDaten = (tag: string) => {
 };
 
 const MONAT_MUSTER: readonly [string, number, string, string, string, string][] = [
-  ["02", 468, "07:05", "12:00", "12:32", "15:18"],
-  ["03", 468, "07:01", "12:00", "12:34", "15:24"],
-  ["04", 468, "07:10", "12:05", "12:38", "15:52"],
-  ["05", 468, "06:55", "12:00", "12:30", "15:35"],
-  ["06", 468, "07:15", "12:00", "12:30", "14:55"],
-  ["09", 468, "07:02", "12:00", "12:35", "15:40"],
-  ["10", 468, "07:00", "12:10", "12:40", "15:20"],
-  ["11", 468, "07:08", "12:00", "12:30", "16:05"],
-  ["12", 468, "07:04", "12:00", "12:32", "15:22"],
-  ["13", 468, "07:12", "12:00", "12:30", "14:48"],
-  ["16", 468, "06:58", "12:00", "12:30", "15:30"],
-  ["17", 468, "07:05", "12:00", "12:35", "15:45"],
-  ["18", 468, "07:00", "12:00", "12:30", "15:12"],
-  ["19", 468, "07:10", "12:05", "12:35", "15:55"],
-  ["20", 468, "07:00", "12:00", "12:30", "15:08"],
-  ["23", 468, "07:03", "12:00", "12:32", "15:28"],
-  ["24", 468, "06:55", "12:00", "12:30", "15:42"],
-  ["25", 468, "07:06", "12:00", "12:30", "15:19"],
+  ["01", 468, "07:05", "12:00", "12:32", "15:18"],
+  ["02", 468, "07:01", "12:00", "12:34", "15:24"],
+  ["05", 468, "07:10", "12:05", "12:38", "15:52"],
+  ["06", 468, "06:55", "12:00", "12:30", "15:35"],
+  ["07", 468, "07:15", "12:00", "12:30", "14:55"],
+  ["08", 468, "07:02", "12:00", "12:35", "15:40"],
+  ["09", 468, "07:00", "12:10", "12:40", "15:20"],
+  ["12", 468, "07:08", "12:00", "12:30", "16:05"],
+  ["13", 468, "07:04", "12:00", "12:32", "15:22"],
+  ["14", 468, "07:12", "12:00", "12:30", "14:48"],
+  ["15", 468, "06:58", "12:00", "12:30", "15:30"],
+  ["16", 468, "07:05", "12:00", "12:35", "15:45"],
+  ["19", 468, "07:00", "12:00", "12:30", "15:12"],
+  ["20", 468, "07:10", "12:05", "12:35", "15:55"],
+  ["21", 468, "07:00", "12:00", "12:30", "15:08"],
+  ["22", 468, "07:03", "12:00", "12:32", "15:28"],
+  ["23", 468, "06:55", "12:00", "12:30", "15:42"],
+  ["26", 468, "07:06", "12:00", "12:30", "15:19"],
 ];
 
 const monatDaten = (monat: string) => ({
@@ -141,11 +141,8 @@ const getProjektzeitAntwort = (pfad: string, query: URLSearchParams): unknown =>
 };
 
 const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query, heuteTag());
-  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
-  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
-  if (pfad === "/api/v1/dienstplan/tausch")
-    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+  const dienstplan = demoDienstplanGet(pfad, query, heuteTag());
+  if (dienstplan !== undefined) return dienstplan;
   const projektzeit = getProjektzeitAntwort(pfad, query);
   if (projektzeit !== undefined) return projektzeit;
   if (pfad === "/api/v1/projektzeit/auslastung")
@@ -314,7 +311,7 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
   return getBereichAntwort(pfad, query);
 };
 
-const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
+const schreiben = (pfad: string, body: Record<string, unknown>, methode: string): unknown => {
   if (pfad === "/api/v1/arbeitszeit/stempelungen" || pfad === "/api/v1/arbeitszeit/stempel") {
     const art = (body.art as Stempelart) ?? "kommen";
     zustand.stempelungen = [
@@ -370,6 +367,8 @@ const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
     zustand.stoppuhr.laufend = null;
     return { ok: true };
   }
+  const dienstplan = demoDienstplanWrite(pfad, body, methode);
+  if (dienstplan !== undefined) return dienstplan;
   return { ok: true };
 };
 
@@ -385,5 +384,5 @@ export const demoAntwort = async <T>(
     string,
     unknown
   >;
-  return ok(schreiben(pfad ?? "", body) as T);
+  return ok(schreiben(pfad ?? "", body, methode) as T);
 };

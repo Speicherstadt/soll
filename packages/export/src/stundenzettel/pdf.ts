@@ -1,6 +1,13 @@
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import { befundText } from "../befunde.ts";
-import { druckbar, metadaten, type Schreiber, schreiber, schriften } from "../pdf/schreiber.ts";
+import {
+  druckbar,
+  metadaten,
+  type Schreiber,
+  type Schrift,
+  schreiber,
+  schriften,
+} from "../pdf/schreiber.ts";
 import {
   datumText,
   dauerText,
@@ -64,18 +71,38 @@ export type Stundenzettel = {
   pruefseite: string;
 };
 
-const SPALTEN = [
-  { titel: "Tag", x: 0 },
-  { titel: "Beginn", x: 62 },
-  { titel: "Ende", x: 104 },
-  { titel: "Pause", x: 146 },
-  { titel: "Dauer", x: 184 },
-  { titel: "Soll", x: 222 },
-  { titel: "Hinweis", x: 262 },
-] as const;
+const BREITE = 515.28;
+const FARBE = {
+  ink: rgb(0.04, 0.04, 0.05),
+  muted: rgb(0.44, 0.44, 0.48),
+  border: rgb(0.86, 0.86, 0.89),
+  borderStrong: rgb(0.74, 0.74, 0.78),
+  headBg: rgb(0.95, 0.95, 0.96),
+  zebraBg: rgb(0.985, 0.985, 0.99),
+  green: rgb(0.08, 0.5, 0.24),
+  red: rgb(0.73, 0.11, 0.11),
+} as const;
+
+const SPALTEN = {
+  tag: 6,
+  beginn: 92,
+  ende: 136,
+  pause: 178,
+  dauer: 222,
+  soll: 266,
+  saldo: 314,
+  hinweis: 326,
+} as const;
+
+const neueWoche = (vorher: string | undefined, aktuell: string): boolean => {
+  if (!vorher) return false;
+  return (
+    (Date.parse(`${aktuell}T12:00:00Z`) - Date.parse(`${vorher}T12:00:00Z`)) / 86_400_000 > 1.5
+  );
+};
 
 const kopf = (s: Schreiber, zettel: Stundenzettel) => {
-  s.text(`Stundenzettel ${monatText(zettel.monat)}`, 0, { fett: true, groesse: 14 });
+  s.text(`Stundenzettel ${monatText(zettel.monat)}`, 0, { fett: true, groesse: 15 });
   s.zeile(18);
   s.text(`${zettel.person} · ${zettel.betrieb}`, 0, { groesse: 10 });
   s.zeile(14);
@@ -97,37 +124,153 @@ const kopf = (s: Schreiber, zettel: Stundenzettel) => {
       grau: true,
     });
   }
-  s.zeile(8);
-};
-
-const tabelle = (s: Schreiber, zettel: Stundenzettel) => {
-  const titel = () => {
-    for (const spalte of SPALTEN) s.text(spalte.titel, spalte.x, { fett: true });
-    s.zeile();
-  };
-  titel();
-  for (const tag of zettel.tage) {
-    s.platz(1);
-    const werte = [
-      tagText(tag.tag),
-      tag.beginn === null ? "" : uhrzeitText(tag.beginn),
-      tag.ende === null ? "" : uhrzeitText(tag.ende),
-      tag.beginn === null ? "" : dauerText(tag.pauseMinuten),
-      tag.beginn === null ? "" : dauerText(tag.arbeitsMinuten),
-      tag.sollMinuten === null ? "–" : dauerText(tag.sollMinuten),
-      [tag.abwesenheit ?? "", ...tag.hinweise].filter((teil) => teil !== "").join(" · "),
-    ];
-    werte.forEach((wert, index) => {
-      const spalte = SPALTEN[index];
-      const naechste = SPALTEN[index + 1];
-      if (spalte) s.text(wert, spalte.x, naechste ? { breite: naechste.x - spalte.x - 4 } : {});
+  s.bereich(10, (seite, x, oben) => {
+    seite.drawLine({
+      start: { x, y: oben - 2 },
+      end: { x: x + BREITE, y: oben - 2 },
+      thickness: 0.7,
+      color: FARBE.border,
     });
-    s.zeile();
-  }
-  s.zeile(6);
+  });
 };
 
-const summen = (s: Schreiber, zettel: Stundenzettel) => {
+const rechts = (
+  seite: Parameters<Parameters<Schreiber["bereich"]>[1]>[0],
+  schrift: Schrift,
+  inhalt: string,
+  xRechts: number,
+  y: number,
+  opt: { fett?: boolean; farbe?: ReturnType<typeof rgb> } = {},
+) => {
+  const font = opt.fett ? schrift.fett : schrift.normal;
+  const sicher = druckbar(font, inhalt);
+  const b = font.widthOfTextAtSize(sicher, 8.5);
+  seite.drawText(sicher, { x: xRechts - b, y, size: 8.5, font, color: opt.farbe ?? FARBE.ink });
+};
+
+const tabelle = (s: Schreiber, schrift: Schrift, zettel: Stundenzettel) => {
+  const kopfZeile = () => {
+    s.bereich(20, (seite, x, oben) => {
+      seite.drawRectangle({
+        x,
+        y: oben - 18,
+        width: BREITE,
+        height: 18,
+        color: FARBE.headBg,
+        borderColor: FARBE.border,
+        borderWidth: 0.6,
+      });
+      const y = oben - 12;
+      seite.drawText("Tag", {
+        x: x + SPALTEN.tag,
+        y,
+        size: 8.5,
+        font: schrift.fett,
+        color: FARBE.muted,
+      });
+      rechts(seite, schrift, "Beginn", x + SPALTEN.beginn, y, { fett: true, farbe: FARBE.muted });
+      rechts(seite, schrift, "Ende", x + SPALTEN.ende, y, { fett: true, farbe: FARBE.muted });
+      rechts(seite, schrift, "Pause", x + SPALTEN.pause, y, { fett: true, farbe: FARBE.muted });
+      rechts(seite, schrift, "Dauer", x + SPALTEN.dauer, y, { fett: true, farbe: FARBE.muted });
+      rechts(seite, schrift, "Soll", x + SPALTEN.soll, y, { fett: true, farbe: FARBE.muted });
+      rechts(seite, schrift, "Saldo", x + SPALTEN.saldo, y, { fett: true, farbe: FARBE.muted });
+      seite.drawText("Hinweis", {
+        x: x + SPALTEN.hinweis,
+        y,
+        size: 8.5,
+        font: schrift.fett,
+        color: FARBE.muted,
+      });
+    });
+  };
+  kopfZeile();
+  zettel.tage.forEach((tag, index) => {
+    const wochenStart = index > 0 && neueWoche(zettel.tage[index - 1]?.tag, tag.tag);
+    const zeilenHoehe = 15;
+    s.bereich(zeilenHoehe, (seite, x, oben) => {
+      if (index % 2 === 1) {
+        seite.drawRectangle({
+          x,
+          y: oben - zeilenHoehe,
+          width: BREITE,
+          height: zeilenHoehe,
+          color: FARBE.zebraBg,
+        });
+      }
+      seite.drawLine({
+        start: { x, y: oben },
+        end: { x: x + BREITE, y: oben },
+        thickness: wochenStart ? 0.9 : 0.4,
+        color: wochenStart ? FARBE.borderStrong : FARBE.border,
+      });
+      const y = oben - 10.5;
+      const hatZeit = tag.beginn !== null;
+      const diff =
+        hatZeit && tag.sollMinuten !== null ? tag.arbeitsMinuten - tag.sollMinuten : null;
+      const diffFarbe =
+        diff === null ? FARBE.muted : diff > 0 ? FARBE.green : diff < 0 ? FARBE.red : FARBE.muted;
+      seite.drawText(druckbar(schrift.fett, tagText(tag.tag)), {
+        x: x + SPALTEN.tag,
+        y,
+        size: 8.5,
+        font: schrift.fett,
+        color: FARBE.ink,
+      });
+      if (hatZeit && tag.beginn !== null)
+        rechts(seite, schrift, uhrzeitText(tag.beginn), x + SPALTEN.beginn, y, {
+          farbe: FARBE.muted,
+        });
+      if (hatZeit && tag.ende !== null)
+        rechts(seite, schrift, uhrzeitText(tag.ende), x + SPALTEN.ende, y, { farbe: FARBE.muted });
+      if (hatZeit) {
+        rechts(seite, schrift, dauerText(tag.pauseMinuten), x + SPALTEN.pause, y, {
+          farbe: FARBE.muted,
+        });
+        rechts(seite, schrift, dauerText(tag.arbeitsMinuten), x + SPALTEN.dauer, y, { fett: true });
+      }
+      rechts(
+        seite,
+        schrift,
+        tag.sollMinuten === null ? "–" : dauerText(tag.sollMinuten),
+        x + SPALTEN.soll,
+        y,
+        {
+          farbe: FARBE.muted,
+        },
+      );
+      rechts(seite, schrift, diff === null ? "–" : dauerText(diff, true), x + SPALTEN.saldo, y, {
+        fett: diff !== null,
+        farbe: diffFarbe,
+      });
+      const hinweis = [tag.abwesenheit ?? "", ...tag.hinweise]
+        .filter((teil) => teil !== "")
+        .join(" · ");
+      if (hinweis) {
+        let sicher = druckbar(schrift.normal, hinweis);
+        const maxB = BREITE - SPALTEN.hinweis - 4;
+        while (sicher.length > 1 && schrift.normal.widthOfTextAtSize(sicher, 8) > maxB)
+          sicher = `${sicher.slice(0, -2)}…`;
+        seite.drawText(sicher, {
+          x: x + SPALTEN.hinweis,
+          y,
+          size: 8,
+          font: schrift.normal,
+          color: FARBE.muted,
+        });
+      }
+    });
+  });
+  s.bereich(8, (seite, x, oben) => {
+    seite.drawLine({
+      start: { x, y: oben },
+      end: { x: x + BREITE, y: oben },
+      thickness: 0.7,
+      color: FARBE.border,
+    });
+  });
+};
+
+const summen = (s: Schreiber, schrift: Schrift, zettel: Stundenzettel) => {
   s.platz(3);
   if (zettel.summen === null) {
     s.absatz(
@@ -137,13 +280,27 @@ const summen = (s: Schreiber, zettel: Stundenzettel) => {
   } else {
     const { sollMinuten, istMinuten, saldoMinuten, gutschriftMinuten, pausenabzugMinuten } =
       zettel.summen;
-    s.text(
+    const text =
       `Soll ${dauerText(sollMinuten)} · Ist ${dauerText(istMinuten)} · Saldo ${dauerText(saldoMinuten, true)}` +
-        (gutschriftMinuten > 0 ? ` · davon Gutschrift ${dauerText(gutschriftMinuten)}` : ""),
-      0,
-      { fett: true },
-    );
-    s.zeile();
+      (gutschriftMinuten > 0 ? ` · davon Gutschrift ${dauerText(gutschriftMinuten)}` : "");
+    s.bereich(24, (seite, x, oben) => {
+      seite.drawRectangle({
+        x,
+        y: oben - 20,
+        width: BREITE,
+        height: 20,
+        color: FARBE.headBg,
+        borderColor: FARBE.border,
+        borderWidth: 0.6,
+      });
+      seite.drawText(druckbar(schrift.fett, text), {
+        x: x + 8,
+        y: oben - 13,
+        size: 9,
+        font: schrift.fett,
+        color: FARBE.ink,
+      });
+    });
     if ((pausenabzugMinuten ?? 0) > 0) {
       s.text(`Automatischer Pausenabzug: ${dauerText(pausenabzugMinuten ?? 0)} (§ 4 ArbZG)`, 0, {
         grau: true,
@@ -221,8 +378,8 @@ export const stundenzettelPdf = async (zettel: Stundenzettel): Promise<Uint8Arra
   });
   const s = schreiber(doc, schrift);
   kopf(s, zettel);
-  tabelle(s, zettel);
-  summen(s, zettel);
+  tabelle(s, schrift, zettel);
+  summen(s, schrift, zettel);
   befunde(s, zettel);
   gegeneintraege(s, zettel);
   startsalden(s, zettel);

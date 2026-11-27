@@ -90,18 +90,30 @@ export const WochenRaster = (props: RasterProps) => {
               {m.plan_person()}
             </th>
             <For each={props.woche.tage}>
-              {(tag, spalte) => (
-                <th
-                  scope="col"
-                  class={cn(
-                    "px-2 py-2.5 text-start font-semibold",
-                    WOCHENENDE.has(spalte()) && "bg-muted",
-                  )}
-                >
-                  <span>{wochentagKurz(tag)}</span>{" "}
-                  <span class="font-normal text-muted-foreground">{tagDerZahl(tag)}</span>
-                </th>
-              )}
+              {(tag, spalte) => {
+                const anzahl = () => props.woche.schichten.filter((s) => s.tag === tag).length;
+                return (
+                  <th
+                    scope="col"
+                    class={cn(
+                      "px-2 py-2.5 text-start font-semibold",
+                      WOCHENENDE.has(spalte()) && "bg-muted",
+                    )}
+                  >
+                    <div class="flex items-center justify-between gap-1">
+                      <span>
+                        <span>{wochentagKurz(tag)}</span>{" "}
+                        <span class="font-normal text-muted-foreground">{tagDerZahl(tag)}</span>
+                      </span>
+                      <Show when={anzahl() > 0}>
+                        <span class="rounded-full bg-muted px-1.5 font-mono font-normal text-[11px] text-muted-foreground tabular-nums">
+                          {anzahl()}
+                        </span>
+                      </Show>
+                    </div>
+                  </th>
+                );
+              }}
             </For>
           </tr>
         </thead>

@@ -1327,5 +1327,14 @@
   "einstellungen_tab_betrieb": "الشركة",
   "einstellungen_tab_terminal": "الجهاز",
   "einstellungen_tab_export": "التصدير والنقل",
-  "einstellungen_tab_konto": "الحساب"
+  "einstellungen_tab_konto": "الحساب",
+  "plan_ansicht": "العرض",
+  "plan_ansicht_tag": "يوم",
+  "plan_ansicht_woche": "أسبوع",
+  "plan_ansicht_monat": "شهر",
+  "plan_alle_personen": "الجميع",
+  "plan_filter_person": "تصفية حسب الشخص",
+  "plan_drucken": "طباعة",
+  "plan_vollbild": "ملء الشاشة",
+  "plan_vollbild_beenden": "إنهاء ملء الشاشة"
 }

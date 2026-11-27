@@ -112,3 +112,15 @@ select:not([data-custom-select]) {
 [dir="rtl"] select:not([data-custom-select]) {
   background-position: left 0.75rem center;
 }
+
+@media print {
+  aside,
+  nav,
+  [data-print-hidden] {
+    display: none;
+  }
+  body {
+    background: #ffffff;
+    color: #09090b;
+  }
+}

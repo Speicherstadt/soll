@@ -1327,5 +1327,14 @@
   "einstellungen_tab_betrieb": "İşletme",
   "einstellungen_tab_terminal": "Terminal",
   "einstellungen_tab_export": "Dışa aktarma",
-  "einstellungen_tab_konto": "Hesap"
+  "einstellungen_tab_konto": "Hesap",
+  "plan_ansicht": "Görünüm",
+  "plan_ansicht_tag": "Gün",
+  "plan_ansicht_woche": "Hafta",
+  "plan_ansicht_monat": "Ay",
+  "plan_alle_personen": "Tüm kişiler",
+  "plan_filter_person": "Kişi filtrele",
+  "plan_drucken": "Yazdır",
+  "plan_vollbild": "Tam ekran",
+  "plan_vollbild_beenden": "Tam ekrandan çık"
 }

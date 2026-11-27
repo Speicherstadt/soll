@@ -1327,5 +1327,14 @@
   "einstellungen_tab_betrieb": "Betrieb",
   "einstellungen_tab_terminal": "Terminal",
   "einstellungen_tab_export": "Export & Umzug",
-  "einstellungen_tab_konto": "Konto"
+  "einstellungen_tab_konto": "Konto",
+  "plan_ansicht": "Ansicht",
+  "plan_ansicht_tag": "Tag",
+  "plan_ansicht_woche": "Woche",
+  "plan_ansicht_monat": "Monat",
+  "plan_alle_personen": "Alle Personen",
+  "plan_filter_person": "Person filtern",
+  "plan_drucken": "Drucken",
+  "plan_vollbild": "Vollbild",
+  "plan_vollbild_beenden": "Vollbild beenden"
 }

@@ -1327,5 +1327,14 @@
   "einstellungen_tab_betrieb": "Підприємство",
   "einstellungen_tab_terminal": "Термінал",
   "einstellungen_tab_export": "Експорт і переїзд",
-  "einstellungen_tab_konto": "Обліковий запис"
+  "einstellungen_tab_konto": "Обліковий запис",
+  "plan_ansicht": "Вигляд",
+  "plan_ansicht_tag": "День",
+  "plan_ansicht_woche": "Тиждень",
+  "plan_ansicht_monat": "Місяць",
+  "plan_alle_personen": "Усі працівники",
+  "plan_filter_person": "Фільтр за особою",
+  "plan_drucken": "Друк",
+  "plan_vollbild": "На весь екран",
+  "plan_vollbild_beenden": "Вийти з повного екрана"
 }

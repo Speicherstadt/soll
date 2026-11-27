@@ -1,5 +1,6 @@
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { createMemo, createSignal, Show, untrack } from "solid-js";
+import { cn } from "@soll/ui";
+import { createMemo, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
 import { m } from "../paraglide/messages.js";
@@ -7,6 +8,7 @@ import { Fehler } from "../rahmen/karte.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
 import { istInhaber } from "../sitzung/ziel.ts";
 import { type OffenerDialog, PlanDialoge } from "./dialoge.tsx";
+import { type PlanAnsicht, plusMonatTag } from "./farben.ts";
 import { PlanInhalt } from "./inhalt.tsx";
 import { PlanKopf } from "./kopf.tsx";
 import { ausVorlage, bleibt, PLAN_AENDERT, verschieben } from "./quelle.ts";
@@ -30,20 +32,28 @@ const istInhaberHier = () => {
 type Ablage = { was: Abgelegt; ziel: Ziel; standortId: string };
 
 /**
- * The plan of the sites of a business: the week of the site chosen (the first at the start), its
- * templates for whoever plans, the dialogs, the shift swap (S-504); read under the page's
- * `<Loading>`
+ * The plan of the sites of a business: Day/Week/Month views, color-coded shifts, Print & TV
+ * Fullscreen mode, templates for planners, dialogs, and shift swap (S-504).
  */
 export const Plan = (props: { standorte: Standort[]; tag?: string | undefined }) => {
   const [standortId, setStandortId] = createSignal(() => props.standorte[0]?.standortId ?? "");
-  // the week a link names, else this week; the plan's own arrows change it from there
   const [tag, setTag] = createSignal(untrack(() => props.tag) ?? tagInBerlin(Date.now()));
+  const [ansicht, setAnsicht] = createSignal<PlanAnsicht>("woche");
+  const [vollbild, setVollbild] = createSignal(false);
   const [offen, setOffen] = createSignal<OffenerDialog>(null);
   const [ansage, setAnsage] = createSignal("");
   const [fehler, setFehler] = createSignal("");
+
+  const esc = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && vollbild()) setVollbild(false);
+  };
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", esc);
+    onCleanup(() => window.removeEventListener("keydown", esc));
+  }
+
   const woche = abfrage<Woche>(() => ressourcen.woche({ standortId: standortId(), tag: tag() }));
   const geladen = () => daten(woche.data);
-  // the templates are the planners' alone; everyone else is not asked for them
   const vorlagenAbfrage = abfrage<{ vorlagen: Vorlage[] }>(() =>
     istPlaner() ? ressourcen.vorlagen() : null,
   );
@@ -55,7 +65,6 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
         .filter(Boolean),
     ),
   ]);
-  // the week loads again after a drop, whether the server took it or not
   const ablage = aenderung(
     ({ was, ziel, standortId: ort }: Ablage) =>
       "schicht" in was ? verschieben(was.schicht, ziel) : ausVorlage(was.vorlage, ort, ziel),
@@ -75,16 +84,35 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
           : m.fehler_speichern(),
     );
   };
+  const schritt = (delta: -1 | 1) => {
+    if (ansicht() === "tag") setTag((alt) => plusTage(alt, delta));
+    else if (ansicht() === "monat") setTag((alt) => plusMonatTag(alt, delta));
+    else setTag((alt) => plusTage(alt, 7 * delta));
+  };
   return (
-    <>
+    <div
+      class={cn(
+        "flex flex-col gap-5",
+        vollbild() && "fixed inset-0 z-50 overflow-auto bg-background p-6",
+      )}
+    >
+      <Show when={vollbild()}>
+        <h2 class="font-semibold text-[22px] tracking-tight">{m.nav_dienstplan()}</h2>
+      </Show>
       <PlanKopf
         woche={geladen() ?? null}
+        tag={tag()}
+        ansicht={ansicht()}
+        vollbild={vollbild()}
         standorte={props.standorte}
         standortId={standortId()}
         planer={istPlaner()}
         inhaber={istInhaberHier()}
-        onWoche={(schritt) => setTag((alt) => plusTage(alt, 7 * schritt))}
+        onAnsicht={setAnsicht}
+        onSchritt={schritt}
         onStandort={setStandortId}
+        onDrucken={() => window.print()}
+        onVollbild={() => setVollbild((v) => !v)}
         onVorlagen={() => setOffen({ art: "vorlagen" })}
         onBedarf={() => setOffen({ art: "bedarf" })}
         onAngaben={() => setOffen({ art: "angaben" })}
@@ -103,7 +131,14 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
             vorlagen={vorlagen()}
             planer={istPlaner()}
             tag={tag()}
+            ansicht={ansicht()}
+            standortId={standortId()}
+            vollbild={vollbild()}
             onTag={setTag}
+            onTagAnsicht={(zielTag) => {
+              setTag(zielTag);
+              setAnsicht("tag");
+            }}
             onOeffnen={(schicht) =>
               setOffen({ art: "schicht", modus: { art: "bearbeiten", schicht } })
             }
@@ -113,10 +148,14 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
           />
         )}
       </Show>
-      <TauschBereich
-        ich={{ nutzerId: aktuellerBetrieb()?.nutzerId ?? "", planer: istPlaner() }}
-        inhaber={istInhaberHier()}
-      />
+      <Show when={!vollbild()}>
+        <div data-print-hidden="">
+          <TauschBereich
+            ich={{ nutzerId: aktuellerBetrieb()?.nutzerId ?? "", planer: istPlaner() }}
+            inhaber={istInhaberHier()}
+          />
+        </div>
+      </Show>
       <p class="sr-only" aria-live="polite">
         {ansage()}
       </p>
@@ -128,6 +167,6 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
         rollen={rollen()}
         onSchliessen={() => setOffen(null)}
       />
-    </>
+    </div>
   );
 };

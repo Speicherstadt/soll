@@ -68,7 +68,10 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
   const wahl = wahlen(props.quelle, true);
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
     const cent = centAus(String(daten.get("betrag")));
-    if (cent === null) return setFehler("ungueltig");
+    if (cent === null) {
+      setFehler("ungueltig");
+      return false;
+    }
     const projektId = leerAlsNull(daten.get("projekt"));
     const ok = await aktionen.anlegen({
       // an order brings its customer: a rate names one of them
@@ -79,9 +82,10 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
       gueltigAb: String(daten.get("ab")),
       centProStunde: cent,
     });
-    if (!ok) return;
+    if (!ok) return false;
     form.reset();
     setMitAuftrag(false);
+    return true;
   };
   const abId = createUniqueId();
   return (

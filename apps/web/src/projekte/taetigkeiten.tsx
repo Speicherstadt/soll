@@ -81,6 +81,7 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
       abrechenbar: daten.get("abrechenbar") === "ja",
     });
     if (ok) form.reset();
+    return ok;
   };
   return (
     <div class="flex flex-col gap-4">
@@ -90,7 +91,6 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
           knopf={m.taetigkeit_anlegen()}
           fehler={fehler()}
           arbeitet={aktionen.arbeitet()}
-          zeile
           onSubmit={anlegen}
         >
           <Input
@@ -98,13 +98,13 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
             name="name"
             required
             maxlength={100}
-            class="min-w-0 flex-1"
+            class="sm:col-span-2"
           />
           <Checkbox
             name="abrechenbar"
             value="ja"
             defaultChecked
-            class="flex h-9 shrink-0 items-center rounded-md border border-border px-3"
+            class="flex h-9 items-center rounded-md border border-border px-3 sm:col-span-2"
           >
             {m.taetigkeit_abrechenbar()}
           </Checkbox>

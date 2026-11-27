@@ -60,11 +60,26 @@ export const Stoppuhr = () => {
   return (
     <section
       aria-labelledby={`${id}-titel`}
-      class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5"
+      class="flex h-full min-w-0 flex-col gap-5 rounded-xl border border-border bg-background p-6"
     >
-      <h2 id={`${id}-titel`} class="font-semibold text-[17px] leading-7">
-        {m.stoppuhr_titel()}
-      </h2>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id={`${id}-titel`} class="font-semibold text-[16px] leading-6">
+          {m.stoppuhr_titel()}
+        </h2>
+        <Button
+          variant="outline"
+          class="h-8 px-3 text-[13px]"
+          onClick={() =>
+            setBearbeiten({
+              modus: "nachtragen",
+              tag: latest(tag) ?? tagInBerlin(quelle.jetzt()),
+            })
+          }
+        >
+          <Icon icon={Plus} size={14} />
+          {m.buchung_nachtragen()}
+        </Button>
+      </div>
       <Loading>
         <Show
           when={quelle.ansicht()}
@@ -89,47 +104,33 @@ export const Stoppuhr = () => {
                 onStarten={(wahl) => nach(aktionen.starten(wahl))}
               />
               <Fehler text={fehler()} />
-              <div class="flex flex-wrap items-end justify-between gap-3">
-                <div class="flex flex-col gap-1.5">
-                  <label for={`${id}-tag`} class="font-medium">
-                    {m.stoppuhr_tag()}
-                  </label>
-                  <DatePicker
-                    id={`${id}-tag`}
-                    value={ansicht().tag}
-                    onValue={(wert) => setTag(wert || undefined)}
-                  />
+              <div class="flex flex-col gap-4 border-border border-t pt-4">
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                  <div class="flex flex-col gap-1.5">
+                    <label for={`${id}-tag`} class="font-medium text-[13px]">
+                      {m.stoppuhr_tag()}
+                    </label>
+                    <DatePicker
+                      id={`${id}-tag`}
+                      value={ansicht().tag}
+                      onValue={(wert) => setTag(wert || undefined)}
+                    />
+                  </div>
                 </div>
+                <HinweisKarte tag={ansicht()} />
+                <Show
+                  when={ansicht().buchungen.length > 0}
+                  fallback={<p class="text-muted-foreground">{m.stoppuhr_leer()}</p>}
+                >
+                  <BuchungListe
+                    quelle={quelle}
+                    buchungen={ansicht().buchungen}
+                    mitSchicht={ansicht().gestempeltMinuten !== null}
+                    onAendern={(buchung) => setBearbeiten({ modus: "aendern", buchung })}
+                    onEntfernen={(buchung) => nach(aktionen.entfernen(buchung.buchungId))}
+                  />
+                </Show>
               </div>
-              <HinweisKarte tag={ansicht()} />
-              <Show
-                when={ansicht().buchungen.length > 0}
-                fallback={<p class="text-muted-foreground">{m.stoppuhr_leer()}</p>}
-              >
-                <BuchungListe
-                  quelle={quelle}
-                  buchungen={ansicht().buchungen}
-                  mitSchicht={ansicht().gestempeltMinuten !== null}
-                  onAendern={(buchung) => setBearbeiten({ modus: "aendern", buchung })}
-                  onEntfernen={(buchung) => nach(aktionen.entfernen(buchung.buchungId))}
-                />
-              </Show>
-              <Button
-                variant="outline"
-                class="self-start"
-                // the day chosen, even while its bookings still load: tag() still reads the day before
-                // until the new day's answer lands (Solid 2 holds the write), latest() the day chosen.
-                // No day chosen is today by the stopwatch's clock: the day shown is held as well
-                onClick={() =>
-                  setBearbeiten({
-                    modus: "nachtragen",
-                    tag: latest(tag) ?? tagInBerlin(quelle.jetzt()),
-                  })
-                }
-              >
-                <Icon icon={Plus} />
-                {m.buchung_nachtragen()}
-              </Button>
             </>
           )}
         </Show>

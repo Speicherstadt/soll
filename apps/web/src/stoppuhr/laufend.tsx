@@ -38,7 +38,7 @@ export const LaufendKarte = (props: {
   };
 
   return (
-    <div class="flex flex-col gap-3 rounded-xl border border-border bg-background p-5">
+    <div class="flex flex-col gap-3">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex min-w-0 flex-col gap-1.5">
           <div class="inline-flex w-fit items-center gap-2 rounded-full bg-muted px-2.5 py-1 text-[13px]">
@@ -58,7 +58,7 @@ export const LaufendKarte = (props: {
             </Show>
           </div>
           <p
-            class={`font-mono font-semibold text-[36px] tabular-nums leading-none tracking-tight ${
+            class={`font-mono font-semibold text-[42px] tabular-nums leading-none tracking-tight ${
               props.laufend ? "text-foreground" : "text-muted-foreground"
             }`}
           >
@@ -98,8 +98,8 @@ const gleich = (a: Wahl, b: Wahl | null) =>
   b !== null && a.projektId === b.projektId && a.taetigkeitId === b.taetigkeitId;
 
 /**
- * The switch in one tap: recent orders/activities as compact chips, and an inline single-row form
- * to start or switch cleanly without wasted vertical space.
+ * The switch in one tap: an inline single-row form in a subtle surface strip followed by recent
+ * quick-start chips.
  */
 export const Wechsel = (props: {
   quelle: StoppuhrQuelle;
@@ -117,7 +117,7 @@ export const Wechsel = (props: {
     <div class="flex flex-col gap-3">
       <form
         aria-label={m.stoppuhr_neu()}
-        class="grid grid-cols-1 gap-3 rounded-xl border border-border bg-background p-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+        class="grid grid-cols-1 gap-3 rounded-lg bg-muted/25 p-3.5 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           props.onStarten(wahlAus(new FormData(event.currentTarget)));

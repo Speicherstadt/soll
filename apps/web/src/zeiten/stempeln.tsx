@@ -37,8 +37,24 @@ export const Stempeln = () => {
         fallback={<Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />}
       >
         {(ansicht) => (
-          <div class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5">
-            <h2 class="font-semibold text-[17px] leading-7">{tagText(ansicht().tag)}</h2>
+          <div class="flex h-full min-w-0 flex-col gap-5 rounded-xl border border-border bg-background p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h2 class="font-semibold text-[16px] leading-6">{tagText(ansicht().tag)}</h2>
+              <Button
+                variant="outline"
+                class="h-8 px-3 text-[13px]"
+                onClick={() =>
+                  setKorrektur({
+                    modus: "nachtragen",
+                    tag: ansicht().tag,
+                    nutzerId: ansicht().nutzerId,
+                  })
+                }
+              >
+                <Icon icon={Plus} size={14} />
+                {m.nachtragen()}
+              </Button>
+            </div>
             <WartendKarte
               anzahl={schlange.wartende().length}
               ohneNetz={quelle.ohneNetz() || schlange.ohneNetz()}
@@ -48,6 +64,7 @@ export const Stempeln = () => {
               {(stand) => (
                 <>
                   <LaufenderTag
+                    eingebettet
                     stand={stand()}
                     sollMinuten={ansicht().sollMinuten}
                     aktionen={
@@ -96,26 +113,14 @@ export const Stempeln = () => {
             </Show>
             <Fehler text={fehler()} />
             <AbgelehntListe eintraege={schlange.abgelehnte()} />
-            <StempelListe
-              stempelungen={ansicht().stempelungen}
-              darfKorrigieren
-              onAendern={(stempel) => setKorrektur({ modus: "aendern", stempel })}
-              onEntfernen={(stempel) => setKorrektur({ modus: "entfernen", stempel })}
-            />
-            <Button
-              variant="outline"
-              class="self-start"
-              onClick={() =>
-                setKorrektur({
-                  modus: "nachtragen",
-                  tag: ansicht().tag,
-                  nutzerId: ansicht().nutzerId,
-                })
-              }
-            >
-              <Icon icon={Plus} />
-              {m.nachtragen()}
-            </Button>
+            <div class="border-border border-t pt-4">
+              <StempelListe
+                stempelungen={ansicht().stempelungen}
+                darfKorrigieren
+                onAendern={(stempel) => setKorrektur({ modus: "aendern", stempel })}
+                onEntfernen={(stempel) => setKorrektur({ modus: "entfernen", stempel })}
+              />
+            </div>
             <AenderungListe aenderungen={ansicht().aenderungen} />
             <Show when={korrektur()}>
               {(aktuell) => (

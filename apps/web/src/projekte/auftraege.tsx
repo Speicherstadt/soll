@@ -34,7 +34,10 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
   const anlegen = async (daten: FormData, form: HTMLFormElement) => {
     const minuten = optional(String(daten.get("stunden")), budgetMinutenAus);
     const cent = optional(String(daten.get("euro")), centAus);
-    if (minuten.ungueltig || cent.ungueltig) return setFehler("ungueltig");
+    if (minuten.ungueltig || cent.ungueltig) {
+      setFehler("ungueltig");
+      return false;
+    }
     const nummer = String(daten.get("nummer")).trim();
     const ok = await aktionen.anlegen({
       kundeId: String(daten.get("kunde")),
@@ -45,6 +48,7 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
       warnungProzent: Number(daten.get("warnung")),
     });
     if (ok) form.reset();
+    return ok;
   };
   return (
     <Show

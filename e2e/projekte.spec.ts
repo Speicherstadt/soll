@@ -12,8 +12,6 @@ const t = (key: string, werte: Record<string, string> = {}) =>
     de[key] ?? key,
   );
 
-const feld = (page: Page, key: string) => page.getByLabel(t(key), { exact: true });
-
 const tab = (page: Page, key: string) => page.getByRole("tab", { name: t(key) }).click();
 
 test("the owner keeps customers, orders with a budget, activities and rates @phone", async ({
@@ -24,17 +22,23 @@ test("the owner keeps customers, orders with a budget, activities and rates @pho
   await expect(page.getByRole("heading", { level: 1, name: t("nav_projekte") })).toBeVisible();
 
   await tab(page, "projekte_tab_kunden");
-  await feld(page, "kunde_name").fill("Elbhof");
-  await feld(page, "kunde_nummer").fill("K-1001");
   await page.getByRole("button", { name: t("kunde_anlegen") }).click();
+  let dialog = page.getByRole("dialog");
+  await dialog.getByLabel(t("kunde_name"), { exact: true }).fill("Elbhof");
+  await dialog.getByLabel(t("kunde_nummer"), { exact: true }).fill("K-1001");
+  await dialog.getByRole("button", { name: t("kunde_anlegen") }).click();
+  await expect(dialog).toBeHidden();
   await expect(page.getByRole("cell", { name: "Elbhof", exact: true })).toBeVisible();
 
   await tab(page, "projekte_tab_auftraege");
-  await feld(page, "auftrag_kunde").selectOption({ label: "Elbhof" });
-  await feld(page, "auftrag_name").fill("Bad Elbhof");
-  await feld(page, "auftrag_budget_stunden").fill("40");
-  await feld(page, "auftrag_budget_euro").fill("4.000");
   await page.getByRole("button", { name: t("auftrag_anlegen") }).click();
+  dialog = page.getByRole("dialog");
+  await dialog.getByLabel(t("auftrag_kunde"), { exact: true }).selectOption({ label: "Elbhof" });
+  await dialog.getByLabel(t("auftrag_name"), { exact: true }).fill("Bad Elbhof");
+  await dialog.getByLabel(t("auftrag_budget_stunden"), { exact: true }).fill("40");
+  await dialog.getByLabel(t("auftrag_budget_euro"), { exact: true }).fill("4.000");
+  await dialog.getByRole("button", { name: t("auftrag_anlegen") }).click();
+  await expect(dialog).toBeHidden();
   const auftrag = page.getByRole("row", { name: /Bad Elbhof/ });
   await expect(auftrag).toContainText("40:00");
   await expect(auftrag).toContainText("4.000,00");
@@ -51,15 +55,21 @@ test("the owner keeps customers, orders with a budget, activities and rates @pho
     await expect(zeile).toContainText(t("taetigkeit_intern"));
     await expect(zeile.getByRole("button")).toHaveCount(0);
   }
-  await feld(page, "taetigkeit_name").fill("Montage");
   await page.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
+  dialog = page.getByRole("dialog");
+  await dialog.getByLabel(t("taetigkeit_name"), { exact: true }).fill("Montage");
+  await dialog.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
+  await expect(dialog).toBeHidden();
   await expect(page.getByRole("cell", { name: "Montage", exact: true })).toBeVisible();
 
   await tab(page, "projekte_tab_saetze");
   await expect(page.getByText(t("saetze_leer"))).toBeVisible();
-  await feld(page, "satz_taetigkeit").selectOption({ label: "Montage" });
-  await feld(page, "satz_betrag").fill("85,00");
   await page.getByRole("button", { name: t("satz_anlegen") }).click();
+  dialog = page.getByRole("dialog");
+  await dialog.getByLabel(t("satz_taetigkeit"), { exact: true }).selectOption({ label: "Montage" });
+  await dialog.getByLabel(t("satz_betrag"), { exact: true }).fill("85,00");
+  await dialog.getByRole("button", { name: t("satz_anlegen") }).click();
+  await expect(dialog).toBeHidden();
   const satz = page.getByRole("row", { name: /Montage/ });
   await expect(satz).toContainText("85,00");
 
@@ -121,11 +131,17 @@ test("the new-activity billable checkbox stays checked after creating an activit
   await betriebAnlegen(page);
   await page.goto("/projekte");
   await tab(page, "projekte_tab_taetigkeiten");
-  const formular = page.getByRole("form", { name: t("taetigkeit_anlegen") });
-  const abrechenbar = formular.getByRole("checkbox", { name: t("taetigkeit_abrechenbar") });
-  await expect(abrechenbar).toBeChecked();
-  await feld(page, "taetigkeit_name").fill("Montage");
   await page.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
-  await expect(page.getByRole("cell", { name: "Montage", exact: true })).toBeVisible();
+  const dialog = page.getByRole("dialog");
+  const abrechenbar = dialog.getByRole("checkbox", { name: t("taetigkeit_abrechenbar") });
   await expect(abrechenbar).toBeChecked();
+  await dialog.getByLabel(t("taetigkeit_name"), { exact: true }).fill("Montage");
+  await dialog.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("cell", { name: "Montage", exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: t("taetigkeit_anlegen") }).click();
+  await expect(
+    page.getByRole("dialog").getByRole("checkbox", { name: t("taetigkeit_abrechenbar") }),
+  ).toBeChecked();
 });

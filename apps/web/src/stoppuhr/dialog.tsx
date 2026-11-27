@@ -1,5 +1,5 @@
 import { eingabeInBerlin, minuteInBerlin, plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { Button, Dialog } from "@soll/ui";
+import { Button, DatePicker, Dialog, TimePicker } from "@soll/ui";
 import { createSignal, createUniqueId, Show } from "solid-js";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
@@ -86,19 +86,17 @@ export const BuchungDialog = (props: {
           <label for={`${id}-datum`} class="font-medium">
             {m.buchung_datum()}
           </label>
-          <input id={`${id}-datum`} name="datum" type="date" class={feld} value={tag()} required />
+          <DatePicker id={`${id}-datum`} name="datum" defaultValue={tag()} required />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
             <label for={`${id}-beginn`} class="font-medium">
               {m.buchung_beginn()}
             </label>
-            <input
+            <TimePicker
               id={`${id}-beginn`}
               name="beginn"
-              type="time"
-              class={feld}
-              value={(() => {
+              defaultValue={(() => {
                 const b = buchung();
                 return b ? uhrzeitFeld(b.beginn) : "";
               })()}
@@ -110,12 +108,10 @@ export const BuchungDialog = (props: {
               <label for={`${id}-ende`} class="font-medium">
                 {m.buchung_ende()}
               </label>
-              <input
+              <TimePicker
                 id={`${id}-ende`}
                 name="ende"
-                type="time"
-                class={feld}
-                value={(() => {
+                defaultValue={(() => {
                   const ende = buchung()?.ende;
                   return ende == null ? "" : uhrzeitFeld(ende);
                 })()}

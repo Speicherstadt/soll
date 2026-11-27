@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dialog } from "@soll/ui";
+import { Button, Checkbox, DatePicker, Dialog } from "@soll/ui";
 import { createSignal, For, Loading, untrack } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
@@ -24,15 +24,7 @@ const LEER: Angaben = { geburtsdatum: null, wechselschicht: false, abruf: false,
 const DatumFeld = (props: { label: string; wert: string; onWert: (wert: string) => void }) => (
   <Feld
     label={props.label}
-    kind={(id) => (
-      <input
-        id={id}
-        type="date"
-        class={feld}
-        value={props.wert}
-        onChange={(event) => props.onWert(event.currentTarget.value)}
-      />
-    )}
+    kind={(id) => <DatePicker id={id} value={props.wert} onValue={props.onWert} />}
   />
 );
 

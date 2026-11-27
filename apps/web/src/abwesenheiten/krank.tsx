@@ -1,4 +1,4 @@
-import { Button } from "@soll/ui";
+import { Button, DatePicker } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
@@ -73,11 +73,9 @@ const Laufend = (props: { a: Abwesenheit; quelle: AbwesenheitQuelle }) => {
           <label for={`${id}-bis`} class="font-medium">
             {m.abw_beenden_label()}
           </label>
-          <input
+          <DatePicker
             id={`${id}-bis`}
             name="bis"
-            type="date"
-            class={feld}
             defaultValue={props.a.bis ?? ""}
             min={props.a.von}
             required
@@ -152,7 +150,7 @@ export const Krank = (props: {
           <label for={`${id}-bis`} class="font-medium">
             {m.abw_krank_bis()}
           </label>
-          <input id={`${id}-bis`} name="bis" type="date" class={feld} min={props.heute} />
+          <DatePicker id={`${id}-bis`} name="bis" min={props.heute} />
         </div>
         <div>
           <Button type="submit" variant="outline" disabled={props.quelle.arbeitet()}>

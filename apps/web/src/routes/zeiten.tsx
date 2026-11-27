@@ -1,5 +1,5 @@
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
-import { Button, Icon } from "@soll/ui";
+import { Button, DatePicker, Icon } from "@soll/ui";
 import { createFileRoute } from "@tanstack/solid-router";
 import { ChevronLeft, ChevronRight } from "lucide";
 import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
@@ -71,12 +71,10 @@ const Zeiten = () => {
             >
               <Icon icon={ChevronLeft} class="rtl:rotate-180" />
             </Button>
-            <input
+            <DatePicker
               id={`${id}-datum`}
-              type="date"
-              class={feld}
               value={datum()}
-              onChange={(event) => event.currentTarget.value && setDatum(event.currentTarget.value)}
+              onValue={(wert) => wert && setDatum(wert)}
             />
             <Button
               variant="icon"

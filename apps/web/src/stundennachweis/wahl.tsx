@@ -1,4 +1,5 @@
 import type { JSX } from "@solidjs/web";
+import { DatePicker } from "@soll/ui";
 import { createUniqueId, For, Show } from "solid-js";
 import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
@@ -43,21 +44,17 @@ export const NachweisWahlFelder = (props: {
         </select>
       </Feld>
       <Feld id={`${id}-start`} label={m.nachweis_von()}>
-        <input
+        <DatePicker
           id={`${id}-start`}
-          type="date"
-          class={feld}
           value={props.werte.von}
-          onChange={(event) => props.onAendern({ von: event.currentTarget.value })}
+          onValue={(wert) => props.onAendern({ von: wert })}
         />
       </Feld>
       <Feld id={`${id}-ende`} label={m.nachweis_bis()}>
-        <input
+        <DatePicker
           id={`${id}-ende`}
-          type="date"
-          class={feld}
           value={props.werte.bis}
-          onChange={(event) => props.onAendern({ bis: event.currentTarget.value })}
+          onValue={(wert) => props.onAendern({ bis: wert })}
         />
       </Feld>
       <Show when={props.verwalten}>

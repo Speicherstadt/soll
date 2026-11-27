@@ -1,4 +1,4 @@
-import { Button, Checkbox } from "@soll/ui";
+import { Button, Checkbox, DatePicker } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
 import { api } from "../api.ts";
 import { feld } from "../einrichtung/stil.ts";
@@ -57,27 +57,13 @@ export const Antrag = (props: { quelle: AbwesenheitQuelle; heute: string }) => {
             <label for={`${id}-start`} class="font-medium">
               {m.abw_von()}
             </label>
-            <input
-              id={`${id}-start`}
-              name="start"
-              type="date"
-              class={feld}
-              defaultValue={props.heute}
-              required
-            />
+            <DatePicker id={`${id}-start`} name="start" defaultValue={props.heute} required />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for={`${id}-end`} class="font-medium">
               {m.abw_bis()}
             </label>
-            <input
-              id={`${id}-end`}
-              name="end"
-              type="date"
-              class={feld}
-              defaultValue={props.heute}
-              required
-            />
+            <DatePicker id={`${id}-end`} name="end" defaultValue={props.heute} required />
           </div>
         </div>
         <div class="flex flex-wrap gap-x-5 gap-y-2">

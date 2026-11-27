@@ -17,8 +17,8 @@ die Schritte für Menschen am Ende erledigt sind.
 5. **Unabhängiges Review** durch einen eigenen Sub-Agenten (`tdd-review`): ein Befund braucht einen
    fehlschlagenden Test. Befunde fixen, bis keine mehr kommen.
 6. **CI grün → selbst mergen** (Squash), den Punkt hier im selben Pull Request abhaken. Der Loop
-   wartet nie auf einen Menschen. Offene Fragen entscheidet er nach dem Projektplan
-   („Entscheidungen“); eine neue Entscheidung schreibt er dort mit Grund hinein.
+   wartet nie auf einen Menschen. Offene Fragen entscheidet er nach den bestehenden Themenseiten in
+   `docs/`; eine neue Entscheidung schreibt er dort mit Grund hinein.
 7. **Nicht hängen bleiben**: Scheitert ein Punkt dreimal, trägt der Loop ihn mit Grund unter
    „Zurückgestellt“ ein und macht mit dem nächsten Punkt weiter, der nicht davon abhängt. Am Ende
    kommt er auf die zurückgestellten Punkte zurück. Was nur ein Mensch erledigen kann, steht unten
@@ -1425,8 +1425,8 @@ Alle Punkte: nach S-305.
 Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streichen.
 
 **Angefangene Punkte (Entwurf, ungetestet):** Weiterbauen auf dem Branch des Pull Requests, nicht
-neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe CLAUDE.md, „Pull
-requests“).
+neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe [Entwicklung,
+„Datenbank“](https://soll.work/entwicklung.html#datenbank)).
 
 - S-505 Rufbereitschaft: [Speicherstadt/soll#73](https://github.com/Speicherstadt/soll/pull/73),
   Branch `claude/s-505-rufbereitschaft` (Migration `0030`, neu erzeugen); siehe „Zurückgestellt“

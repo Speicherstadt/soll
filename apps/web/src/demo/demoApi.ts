@@ -9,7 +9,7 @@ import {
   demoStartzustand,
   heuteTag,
 } from "./demoDaten.ts";
-import { DEMO_VORLAGEN, wocheDaten } from "./demoDienstplan.ts";
+import { demoDienstplanGet, demoDienstplanWrite } from "./demoDienstplan.ts";
 
 const zustand = demoStartzustand();
 
@@ -141,14 +141,8 @@ const getProjektzeitAntwort = (pfad: string, query: URLSearchParams): unknown =>
 };
 
 const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query, heuteTag());
-  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
-  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
-  if (pfad === "/api/v1/dienstplan/kalender") return { abo: null };
-  if (pfad === "/api/v1/dienstplan/tausch")
-    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
-  if (/^\/api\/v1\/personen\/[^/]+\/angaben$/.test(pfad))
-    return { geburtsdatum: null, wechselschicht: false, abruf: false, mutterschutz: [] };
+  const dienstplan = demoDienstplanGet(pfad, query, heuteTag());
+  if (dienstplan !== undefined) return dienstplan;
   const projektzeit = getProjektzeitAntwort(pfad, query);
   if (projektzeit !== undefined) return projektzeit;
   if (pfad === "/api/v1/projektzeit/auslastung")
@@ -317,7 +311,7 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
   return getBereichAntwort(pfad, query);
 };
 
-const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
+const schreiben = (pfad: string, body: Record<string, unknown>, methode: string): unknown => {
   if (pfad === "/api/v1/arbeitszeit/stempelungen" || pfad === "/api/v1/arbeitszeit/stempel") {
     const art = (body.art as Stempelart) ?? "kommen";
     zustand.stempelungen = [
@@ -373,6 +367,8 @@ const schreiben = (pfad: string, body: Record<string, unknown>): unknown => {
     zustand.stoppuhr.laufend = null;
     return { ok: true };
   }
+  const dienstplan = demoDienstplanWrite(pfad, body, methode);
+  if (dienstplan !== undefined) return dienstplan;
   return { ok: true };
 };
 
@@ -388,5 +384,5 @@ export const demoAntwort = async <T>(
     string,
     unknown
   >;
-  return ok(schreiben(pfad ?? "", body) as T);
+  return ok(schreiben(pfad ?? "", body, methode) as T);
 };

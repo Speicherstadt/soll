@@ -160,17 +160,89 @@ const summenZeichnen = (b: string[], s: NonNullable<MonatAnsicht["inhalt"]["summ
   const gap = 10;
   const kw = (INHALT - gap * 2) / 3;
   const karten = [
-    { label: "SOLL", wert: dauer(s.sollMinuten), farbe: C.ink },
-    { label: "IST", wert: dauer(s.istMinuten), farbe: C.ink },
-    { label: "SALDO", wert: saldoText(s.saldoMinuten), farbe: saldoFarbe(s.saldoMinuten) },
+    { titel: "SOLL", wert: dauer(s.sollMinuten), farbe: C.ink },
+    { titel: "IST", wert: dauer(s.istMinuten), farbe: C.ink },
+    { titel: "SALDO", wert: saldoText(s.saldoMinuten), farbe: saldoFarbe(s.saldoMinuten) },
   ];
   karten.forEach((k, i) => {
     const kx = RAND + i * (kw + gap);
     b.push(rechteck(kx, y, kw, 46, C.cardBg, C.border, 0.7));
-    b.push(zeile(kx + 12, y + 31, 7.5, "F2", C.muted, k.label));
+    b.push(zeile(kx + 12, y + 31, 7.5, "F2", C.muted, k.titel));
     b.push(zeile(kx + 12, y + 11, 15, "F2", k.farbe, k.wert));
   });
   return y - 20;
+};
+
+const tabelleZeileZeichnen = (
+  b: string[],
+  ry: number,
+  rowH: number,
+  z: Zeile,
+  i: number,
+  wochenStart: boolean,
+) => {
+  if (i % 2 === 1) b.push(rechteck(RAND, ry, INHALT, rowH, C.zebraBg));
+  b.push(
+    linie(
+      RAND,
+      ry + rowH,
+      RECHTS,
+      ry + rowH,
+      wochenStart ? C.borderStrong : C.border,
+      wochenStart ? 0.9 : 0.4,
+    ),
+  );
+  const cy = ry + (rowH - 6) / 2;
+  const hatZeit = z.beginn !== null;
+  const diff = hatZeit && z.sollMinuten !== null ? z.arbeitsMinuten - z.sollMinuten : null;
+  b.push(zeile(SPALTEN.tag, cy, 8.5, "F2", C.ink, kurzerTag(z.tag)));
+  b.push(
+    rechtsText(
+      SPALTEN.beginn,
+      cy,
+      8.5,
+      "F1",
+      C.muted,
+      hatZeit && z.beginn !== null ? uhr.format(z.beginn) : "-",
+    ),
+  );
+  b.push(
+    rechtsText(
+      SPALTEN.ende,
+      cy,
+      8.5,
+      "F1",
+      C.muted,
+      hatZeit && z.ende !== null ? uhr.format(z.ende) : "-",
+    ),
+  );
+  b.push(rechtsText(SPALTEN.pause, cy, 8.5, "F1", C.muted, hatZeit ? dauer(z.pauseMinuten) : "-"));
+  b.push(rechtsText(SPALTEN.ist, cy, 8.5, "F2", C.ink, hatZeit ? dauer(z.arbeitsMinuten) : "-"));
+  b.push(
+    rechtsText(
+      SPALTEN.soll,
+      cy,
+      8.5,
+      "F1",
+      C.muted,
+      z.sollMinuten === null ? "-" : dauer(z.sollMinuten),
+    ),
+  );
+  b.push(
+    rechtsText(
+      SPALTEN.saldo,
+      cy,
+      8.5,
+      "F2",
+      diff === null ? C.muted : saldoFarbe(diff),
+      diff === null ? "-" : saldoText(diff),
+    ),
+  );
+  if (z.abwesenheiten.length > 0) {
+    b.push(
+      zeile(SPALTEN.hinweis, cy, 8, "F1", C.muted, z.abwesenheiten.map((a) => a.art).join(", ")),
+    );
+  }
 };
 
 const tabelleZeichnen = (
@@ -192,78 +264,13 @@ const tabelleZeichnen = (
   b.push(rechtsText(SPALTEN.saldo, ty, 8.5, "F2", C.muted, "Saldo"));
   b.push(zeile(SPALTEN.hinweis, ty, 8.5, "F2", C.muted, "Hinweis"));
 
-  const rowH = 19;
+  const rowH = zeilen.length > 22 ? 14.5 : 19;
   let ry = headY;
-  const maxZeilen = Math.min(zeilen.length, 24);
-  for (let i = 0; i < maxZeilen; i++) {
+  for (let i = 0; i < zeilen.length; i++) {
     const z = zeilen[i];
     if (!z) continue;
-    const wochenStart = i > 0 && neueWoche(zeilen[i - 1]?.tag, z.tag);
     ry -= rowH;
-    if (i % 2 === 1) b.push(rechteck(RAND, ry, INHALT, rowH, C.zebraBg));
-    b.push(
-      linie(
-        RAND,
-        ry + rowH,
-        RECHTS,
-        ry + rowH,
-        wochenStart ? C.borderStrong : C.border,
-        wochenStart ? 0.9 : 0.4,
-      ),
-    );
-    const cy = ry + 6.5;
-    const hatZeit = z.beginn !== null;
-    const diff = hatZeit && z.sollMinuten !== null ? z.arbeitsMinuten - z.sollMinuten : null;
-    b.push(zeile(SPALTEN.tag, cy, 8.5, "F2", C.ink, kurzerTag(z.tag)));
-    b.push(
-      rechtsText(
-        SPALTEN.beginn,
-        cy,
-        8.5,
-        "F1",
-        C.muted,
-        hatZeit && z.beginn !== null ? uhr.format(z.beginn) : "-",
-      ),
-    );
-    b.push(
-      rechtsText(
-        SPALTEN.ende,
-        cy,
-        8.5,
-        "F1",
-        C.muted,
-        hatZeit && z.ende !== null ? uhr.format(z.ende) : "-",
-      ),
-    );
-    b.push(
-      rechtsText(SPALTEN.pause, cy, 8.5, "F1", C.muted, hatZeit ? dauer(z.pauseMinuten) : "-"),
-    );
-    b.push(rechtsText(SPALTEN.ist, cy, 8.5, "F2", C.ink, hatZeit ? dauer(z.arbeitsMinuten) : "-"));
-    b.push(
-      rechtsText(
-        SPALTEN.soll,
-        cy,
-        8.5,
-        "F1",
-        C.muted,
-        z.sollMinuten === null ? "-" : dauer(z.sollMinuten),
-      ),
-    );
-    b.push(
-      rechtsText(
-        SPALTEN.saldo,
-        cy,
-        8.5,
-        "F2",
-        diff === null ? C.muted : saldoFarbe(diff),
-        diff === null ? "-" : saldoText(diff),
-      ),
-    );
-    if (z.abwesenheiten.length > 0) {
-      b.push(
-        zeile(SPALTEN.hinweis, cy, 8, "F1", C.muted, z.abwesenheiten.map((a) => a.art).join(", ")),
-      );
-    }
+    tabelleZeileZeichnen(b, ry, rowH, z, i, i > 0 && neueWoche(zeilen[i - 1]?.tag, z.tag));
   }
   if (s) {
     ry -= 22;
@@ -288,15 +295,15 @@ const tabelleZeichnen = (
 };
 
 const fussZeichnen = (b: string[], ry: number) => {
-  const sigY = Math.min(ry - 44, 108);
+  const sigY = Math.max(76, Math.min(ry - 40, 108));
   const sigW = (INHALT - 32) / 2;
   b.push(linie(RAND, sigY, RAND + sigW, sigY, C.borderStrong, 0.7));
   b.push(zeile(RAND, sigY - 12, 8, "F1", C.muted, "Datum, Unterschrift Mitarbeitende"));
   b.push(linie(RECHTS - sigW, sigY, RECHTS, sigY, C.borderStrong, 0.7));
   b.push(zeile(RECHTS - sigW, sigY - 12, 8, "F1", C.muted, "Datum, Unterschrift Betrieb"));
   b.push(linie(RAND, 54, RECHTS, 54, C.border, 0.5));
-  b.push(zeile(RAND, 40, 7.5, "F1", C.subtle, "Erstellt mit Soll \u00b7 soll.work"));
-  b.push(rechtsText(RECHTS, 40, 7.5, "F1", C.subtle, "Seite 1 von 1"));
+  b.push(zeile(RAND, 40, 7.5, "F1", C.subtle, "Soll \u00b7 soll.work"));
+  b.push(rechtsText(RECHTS, 40, 7.5, "F1", C.subtle, "1 / 1"));
 };
 
 const pdfBauen = (stream: string): Blob => {

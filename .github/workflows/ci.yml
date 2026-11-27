@@ -100,7 +100,7 @@ jobs:
   # The container image (Containerfile, BAULISTE.md S-905): built for amd64 with the same build
   # cache as the release, then started on an empty volume with a key made for this run, asked for
   # /health, and backed up and restored inside (scripts/image-test.sh). arm64 builds only in the
-  # release, on GitHub's ARM runner (docs/plan.md, "Entscheidungen").
+  # release, on GitHub's ARM runner (docs/installation.md, "Releases").
   image:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest

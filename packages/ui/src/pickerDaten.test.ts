@@ -2,8 +2,10 @@ import { describe, expect, test } from "vitest";
 import {
   datumGueltig,
   kalenderGitter,
+  minuteDrehen,
   monatVerschieben,
   popoverPosition,
+  stundeDrehen,
   wochentagKuerzel,
   zeitFormatieren,
   zeitTeilen,
@@ -59,5 +61,12 @@ describe("pickerDaten", () => {
   test("produces 7 distinct weekday headers in de and ar", () => {
     expect(new Set(wochentagKuerzel("de")).size).toBe(7);
     expect(new Set(wochentagKuerzel("ar")).size).toBe(7);
+  });
+
+  test("wraps hour and minute steppers at 0/23 and 0/59", () => {
+    expect(stundeDrehen(23, 1)).toBe(0);
+    expect(stundeDrehen(0, -1)).toBe(23);
+    expect(minuteDrehen(59, 1)).toBe(0);
+    expect(minuteDrehen(0, -1)).toBe(59);
   });
 });

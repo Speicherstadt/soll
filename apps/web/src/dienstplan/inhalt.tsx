@@ -56,10 +56,10 @@ export const PlanInhalt = (
         />
       </Match>
       <Match when={props.ansicht === "woche"}>
-        <div class="max-md:hidden">
+        <div class="max-md:hidden print:block!">
           <WochenRaster {...props} planer={props.planer && !props.vollbild} />
         </div>
-        <div class="md:hidden">
+        <div class="md:hidden print:hidden!">
           <TagListe
             woche={props.woche}
             vorlagen={props.vorlagen}

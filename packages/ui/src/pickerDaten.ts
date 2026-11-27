@@ -61,8 +61,12 @@ export const zeitTeilen = (wert: string): { stunde: number; minute: number } | n
 export const zeitFormatieren = (stunde: number, minute: number): string =>
   `${pad2(Math.max(0, Math.min(23, stunde)))}:${pad2(Math.max(0, Math.min(59, minute)))}`;
 
-export const STUNDEN = Array.from({ length: 24 }, (_, i) => i);
-export const MINUTEN = Array.from({ length: 12 }, (_, i) => i * 5);
+export const VIERTEL_MINUTEN = [0, 15, 30, 45] as const;
+
+export const stundeDrehen = (stunde: number, schritt: -1 | 1): number =>
+  (stunde + schritt + 24) % 24;
+export const minuteDrehen = (minute: number, schritt: -1 | 1): number =>
+  (minute + schritt + 60) % 60;
 
 export type PopoverRect = { top: number; bottom: number; left: number; right: number };
 

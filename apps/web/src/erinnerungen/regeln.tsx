@@ -50,37 +50,39 @@ export const RegelnFormular = (props: { regeln: Regeln }) => {
     setMeldung(antwort.ok ? m.erinnerungen_regeln_gespeichert() : "");
   };
   return (
-    <form class="flex flex-col gap-3" onSubmit={speichern}>
+    <form class="flex flex-col gap-3 border-border border-t pt-4" onSubmit={speichern}>
       <h3 class="font-medium">{m.erinnerungen_regeln_titel()}</h3>
-      <Input
-        label={m.erinnerungen_regeln_gehen()}
-        hinweis={m.erinnerungen_regeln_gehen_hinweis()}
-        inputmode="numeric"
-        value={stunden()}
-        onInput={(event) => setStunden(event.currentTarget.value)}
-      />
-      <Input
-        label={m.erinnerungen_regeln_pause()}
-        hinweis={m.erinnerungen_regeln_pause_hinweis()}
-        inputmode="numeric"
-        value={vorlauf()}
-        onInput={(event) => setVorlauf(event.currentTarget.value)}
-      />
-      <Input
-        label={m.erinnerungen_regeln_monat()}
-        hinweis={m.erinnerungen_regeln_monat_hinweis()}
-        inputmode="numeric"
-        value={tag()}
-        onInput={(event) => setTag(event.currentTarget.value)}
-      />
-      <div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Input
+          label={m.erinnerungen_regeln_gehen()}
+          hinweis={m.erinnerungen_regeln_gehen_hinweis()}
+          inputmode="numeric"
+          value={stunden()}
+          onInput={(event) => setStunden(event.currentTarget.value)}
+        />
+        <Input
+          label={m.erinnerungen_regeln_pause()}
+          hinweis={m.erinnerungen_regeln_pause_hinweis()}
+          inputmode="numeric"
+          value={vorlauf()}
+          onInput={(event) => setVorlauf(event.currentTarget.value)}
+        />
+        <Input
+          label={m.erinnerungen_regeln_monat()}
+          hinweis={m.erinnerungen_regeln_monat_hinweis()}
+          inputmode="numeric"
+          value={tag()}
+          onInput={(event) => setTag(event.currentTarget.value)}
+        />
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
         <Button type="submit" variant="outline">
           {m.erinnerungen_regeln_speichern()}
         </Button>
+        <p role="status" class="text-muted-foreground">
+          {meldung()}
+        </p>
       </div>
-      <p role="status" class="text-muted-foreground">
-        {meldung()}
-      </p>
       <Fehler text={fehler()} />
     </form>
   );

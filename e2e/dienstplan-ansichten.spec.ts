@@ -39,6 +39,7 @@ test("Dienstplan prints visibly with dark ink even from dark mode", async ({ pag
   await page.goto("/dienstplan");
   await expect(page.locator("main table")).toBeVisible();
 
+  await page.setViewportSize({ width: 700, height: 1000 });
   await page.emulateMedia({ media: "print" });
   const printState = await page.evaluate(() => {
     const h1 = document.querySelector("h1");
@@ -47,10 +48,12 @@ test("Dienstplan prints visibly with dark ink even from dark mode", async ({ pag
       h1Visibility: h1 ? getComputedStyle(h1).visibility : null,
       h1Color: h1 ? getComputedStyle(h1).color : null,
       tblVisibility: tbl ? getComputedStyle(tbl).visibility : null,
+      tblDisplay: tbl ? getComputedStyle(tbl).display : null,
     };
   });
   expect(printState.h1Visibility).toBe("visible");
   expect(printState.tblVisibility).toBe("visible");
+  expect(printState.tblDisplay).toBe("table");
   expect(printState.h1Color).toBe("rgb(9, 9, 11)");
 });
 

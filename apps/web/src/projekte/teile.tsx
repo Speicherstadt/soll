@@ -63,7 +63,12 @@ export const NeuFormular = (props: {
   const [offen, setOffen] = createSignal(false);
   return (
     <>
-      <div class="flex justify-end">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <Show when={!offen()}>
+            <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
+          </Show>
+        </div>
         <Button variant="primary" onClick={() => setOffen(true)}>
           <Icon icon={Plus} size={15} />
           {props.knopf}

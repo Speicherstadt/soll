@@ -185,7 +185,7 @@ export const TimePicker = (props: TimePickerProps) => {
       <button
         type="button"
         disabled={props.disabled}
-        aria-label="Time"
+        aria-label={aktuell() || "00:00"}
         aria-expanded={offen() ? "true" : "false"}
         class="absolute end-1 top-1 inline-flex size-7 cursor-pointer items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
         onClick={() => oeffnen()}

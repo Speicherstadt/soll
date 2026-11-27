@@ -36,6 +36,8 @@ const aktuelleSprache = () =>
 const KalenderPopover = (props: {
   pos: { top: number; left: number };
   titel: string;
+  vorTitel: string;
+  nachTitel: string;
   wochentage: readonly string[];
   zellen: readonly KalenderZelle[];
   aktuell: string;
@@ -51,7 +53,7 @@ const KalenderPopover = (props: {
     <div class="mb-2.5 flex items-center justify-between gap-1">
       <button
         type="button"
-        aria-label="Previous month"
+        aria-label={props.vorTitel}
         class="inline-flex size-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={() => props.onSchritt(-1)}
       >
@@ -60,7 +62,7 @@ const KalenderPopover = (props: {
       <span class="font-medium text-[13px]">{props.titel}</span>
       <button
         type="button"
-        aria-label="Next month"
+        aria-label={props.nachTitel}
         class="inline-flex size-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={() => props.onSchritt(1)}
       >
@@ -206,13 +208,22 @@ export const DatePicker = (props: DatePickerProps) => {
     setOffen(naechst);
   };
 
-  const monatTitel = createMemo(() =>
+  const monatName = (jahr: number, monat: number) =>
     new Intl.DateTimeFormat(aktuelleSprache(), {
       month: "long",
       year: "numeric",
       timeZone: "UTC",
-    }).format(new Date(Date.UTC(ansicht().jahr, ansicht().monat, 1, 12))),
-  );
+    }).format(new Date(Date.UTC(jahr, monat, 1, 12)));
+
+  const monatTitel = createMemo(() => monatName(ansicht().jahr, ansicht().monat));
+  const vorTitel = createMemo(() => {
+    const m = monatVerschieben(ansicht().jahr, ansicht().monat, -1);
+    return monatName(m.jahr, m.monat);
+  });
+  const nachTitel = createMemo(() => {
+    const m = monatVerschieben(ansicht().jahr, ansicht().monat, 1);
+    return monatName(m.jahr, m.monat);
+  });
   const wochentage = createMemo(() => wochentagKuerzel(aktuelleSprache()));
   const zellen = createMemo(() =>
     kalenderGitter(ansicht().jahr, ansicht().monat, props.min, props.max),
@@ -251,7 +262,7 @@ export const DatePicker = (props: DatePickerProps) => {
       <button
         type="button"
         disabled={props.disabled}
-        aria-label="Calendar"
+        aria-label={monatTitel()}
         aria-expanded={offen() ? "true" : "false"}
         class="absolute end-1 top-1 inline-flex size-7 cursor-pointer items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
         onClick={() => oeffnen()}
@@ -263,6 +274,8 @@ export const DatePicker = (props: DatePickerProps) => {
         <KalenderPopover
           pos={pos()}
           titel={monatTitel()}
+          vorTitel={vorTitel()}
+          nachTitel={nachTitel()}
           wochentage={wochentage()}
           zellen={zellen()}
           aktuell={aktuell()}

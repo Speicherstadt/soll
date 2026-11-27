@@ -63,7 +63,7 @@ test("review: Month view passes axe accessibility checks (including color-contra
   await page.goto("/dienstplan?tag=2026-11-23");
   const ansicht = page.getByRole("group", { name: t("plan_ansicht") });
   await ansicht.getByRole("button", { name: t("plan_ansicht_monat"), exact: true }).click();
-  await expect(page.getByText("07:00")).toBeVisible();
+  await expect(page.getByText("07:00").first()).toBeVisible();
 
   // Out-of-month day cells with opacity-45 fail WCAG 2 AA 4.5:1 contrast (3.18:1)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

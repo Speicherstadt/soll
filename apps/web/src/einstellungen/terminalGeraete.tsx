@@ -62,7 +62,7 @@ export const TerminalGeraete = () => {
   const entsperren = (geraet: Geraet) =>
     nach(() => api(`${geraetPfad(geraet)}/entsperren`, { body: {} }));
   return (
-    <section class="flex max-w-lg flex-col gap-3">
+    <section class="flex flex-col gap-3">
       <h2 class="font-semibold">{m.terminal_titel()}</h2>
       <p class="text-muted-foreground">{m.terminal_text()}</p>
       <form class="flex flex-wrap items-end gap-2" onSubmit={koppeln}>

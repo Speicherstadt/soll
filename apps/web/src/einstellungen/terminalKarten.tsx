@@ -43,7 +43,7 @@ export const TerminalKarten = () => {
     setFehler(antwort.ok ? "" : m.fehler_speichern());
   };
   return (
-    <section class="flex max-w-2xl flex-col items-start gap-3">
+    <section class="flex flex-col items-start gap-3">
       <h2 class="font-semibold">{m.terminal_karten_titel()}</h2>
       <p class="text-muted-foreground">{m.terminal_karten_text()}</p>
       <Show when={karten().length > 0} fallback={<p>{m.terminal_karten_keine()}</p>}>

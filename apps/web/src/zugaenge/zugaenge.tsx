@@ -143,7 +143,7 @@ export const Zugaenge = () => {
     <Loading>
       <Show when={liste()}>
         {(zugaenge) => (
-          <section class="flex max-w-3xl flex-col gap-3">
+          <section class="flex flex-col gap-3">
             <h2 class="font-semibold">{m.zugaenge_titel()}</h2>
             <p class="text-muted-foreground">{m.zugaenge_text()}</p>
             <p class="text-muted-foreground">

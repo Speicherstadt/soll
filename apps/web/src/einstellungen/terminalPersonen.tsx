@@ -102,7 +102,7 @@ export const TerminalPersonen = () => {
     setFehler(antwort.ok ? "" : m.fehler_speichern());
   };
   return (
-    <section class="flex max-w-2xl flex-col gap-3">
+    <section class="flex flex-col gap-3">
       <h2 class="font-semibold">{m.terminal_personen_titel()}</h2>
       <p class="text-muted-foreground">{m.terminal_personen_text()}</p>
       <Table beschriftung={m.terminal_personen_titel()}>

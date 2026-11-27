@@ -75,6 +75,9 @@ export const Stoppuhr = () => {
               <LaufendKarte
                 quelle={quelle}
                 laufend={ansicht().laufend}
+                gebuchtMinuten={ansicht().gebuchtMinuten}
+                gestempeltMinuten={ansicht().gestempeltMinuten}
+                summe={summeText(ansicht())}
                 arbeitet={aktionen.arbeitet()}
                 onStoppen={() => nach(aktionen.stoppen())}
               />
@@ -97,7 +100,6 @@ export const Stoppuhr = () => {
                     onValue={(wert) => setTag(wert || undefined)}
                   />
                 </div>
-                <p class="text-[13px] text-muted-foreground">{summeText(ansicht())}</p>
               </div>
               <HinweisKarte tag={ansicht()} />
               <Show

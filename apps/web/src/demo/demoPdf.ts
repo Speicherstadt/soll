@@ -1,8 +1,32 @@
-import { dauerText } from "../einrichtung/werte.ts";
-import { kurzerTag, monatText } from "../monat/text.ts";
 import type { MonatAnsicht } from "../monat/typen.ts";
 import { saldoText, zeilenDesMonats } from "../monat/zeilen.ts";
-import { uhrzeitText } from "../zeiten/text.ts";
+
+const dauer = (minuten: number): string => {
+  const abs = Math.abs(Math.round(minuten));
+  return `${Math.floor(abs / 60)}:${String(abs % 60).padStart(2, "0")}`;
+};
+
+const uhr = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "Europe/Berlin",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+const tagFmt = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "UTC",
+  weekday: "short",
+  day: "2-digit",
+  month: "2-digit",
+});
+
+const monatFmt = new Intl.DateTimeFormat("de-DE", {
+  timeZone: "UTC",
+  month: "long",
+  year: "numeric",
+});
+
+const kurzerTag = (tag: string): string => tagFmt.format(new Date(`${tag}T12:00:00Z`));
+const monatLabel = (monat: string): string => monatFmt.format(new Date(`${monat}-01T12:00:00Z`));
 
 const pdfText = (text: string): string =>
   text
@@ -36,7 +60,7 @@ export const demoStundenzettelPdf = (ansicht: MonatAnsicht): Blob => {
   ).filter((z) => z.beginn !== null || z.abwesenheiten.length > 0);
 
   const befehle: string[] = [];
-  befehle.push(zeile(48, 790, 16, "F1", `Stundenzettel ${monatText(ansicht.monat)}`));
+  befehle.push(zeile(48, 790, 16, "F1", `Stundenzettel ${monatLabel(ansicht.monat)}`));
   befehle.push(zeile(48, 770, 10, "F1", `${ansicht.name} | Weber Haustechnik (Demo)`));
 
   const s = ansicht.inhalt.summen;
@@ -47,7 +71,7 @@ export const demoStundenzettelPdf = (ansicht: MonatAnsicht): Blob => {
         742,
         10,
         "F2",
-        `Soll: ${dauerText(s.sollMinuten)}   Ist: ${dauerText(s.istMinuten)}   Saldo: ${saldoText(s.saldoMinuten)}`,
+        `Soll: ${dauer(s.sollMinuten)}   Ist: ${dauer(s.istMinuten)}   Saldo: ${saldoText(s.saldoMinuten)}`,
       ),
     );
   }
@@ -70,11 +94,11 @@ export const demoStundenzettelPdf = (ansicht: MonatAnsicht): Blob => {
     const diff = hatZeit && z.sollMinuten !== null ? z.arbeitsMinuten - z.sollMinuten : null;
     const text = [
       kurzerTag(z.tag).padEnd(12),
-      (z.beginn === null ? "-" : uhrzeitText(z.beginn)).padEnd(8),
-      (z.ende === null ? "-" : uhrzeitText(z.ende)).padEnd(8),
-      (hatZeit ? dauerText(z.pauseMinuten) : "-").padEnd(7),
-      (hatZeit ? dauerText(z.arbeitsMinuten) : "-").padEnd(7),
-      (z.sollMinuten === null ? "-" : dauerText(z.sollMinuten)).padEnd(7),
+      (z.beginn === null ? "-" : uhr.format(z.beginn)).padEnd(8),
+      (z.ende === null ? "-" : uhr.format(z.ende)).padEnd(8),
+      (hatZeit ? dauer(z.pauseMinuten) : "-").padEnd(7),
+      (hatZeit ? dauer(z.arbeitsMinuten) : "-").padEnd(7),
+      (z.sollMinuten === null ? "-" : dauer(z.sollMinuten)).padEnd(7),
       diff === null ? "-" : saldoText(diff),
     ].join(" ");
     befehle.push(zeile(48, y, 9, "F2", text));

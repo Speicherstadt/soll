@@ -1,16 +1,16 @@
 @import "@soll/ui/styles.css";
 @source "../../../packages/ui/src";
 
-/* Printing a QR card (S-801): only the card with `data-druck` is on the page */
+/* Printing a QR card (S-801): when a `data-druck` card dialog is open, only that card is on the page */
 @media print {
-  body * {
+  body:has(dialog[open] [data-druck]) * {
     visibility: hidden;
   }
-  [data-druck],
-  [data-druck] * {
+  body:has(dialog[open] [data-druck]) dialog[open] [data-druck],
+  body:has(dialog[open] [data-druck]) dialog[open] [data-druck] * {
     visibility: visible;
   }
-  [data-druck] {
+  body:has(dialog[open] [data-druck]) dialog[open] [data-druck] {
     position: fixed;
     inset-block-start: 0;
     inset-inline-start: 0;

@@ -117,7 +117,7 @@ export const KorrekturDialog = (props: { korrektur: Korrektur; onSchliessen: () 
               <label for={`${id}-datum`} class="font-medium">
                 {m.korrektur_datum()}
               </label>
-              <DatePicker id={`${id}-datum`} name="datum" value={anfangTag()} required />
+              <DatePicker id={`${id}-datum`} name="datum" defaultValue={anfangTag()} required />
             </div>
             <div class="flex flex-col gap-1.5">
               <label for={`${id}-uhrzeit`} class="font-medium">
@@ -126,7 +126,7 @@ export const KorrekturDialog = (props: { korrektur: Korrektur; onSchliessen: () 
               <TimePicker
                 id={`${id}-uhrzeit`}
                 name="uhrzeit"
-                value={(() => {
+                defaultValue={(() => {
                   const s = stempel();
                   return s ? uhrzeitFeld(s.zeitpunkt) : "";
                 })()}

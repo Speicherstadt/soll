@@ -1,8 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
+  datumGueltig,
   kalenderGitter,
   monatVerschieben,
   popoverPosition,
+  wochentagKuerzel,
   zeitFormatieren,
   zeitTeilen,
 } from "./pickerDaten.ts";
@@ -43,5 +45,19 @@ describe("pickerDaten", () => {
       top: 340,
       left: 1004,
     });
+  });
+
+  test("validates YYYY-MM-DD format, calendar existence, and min/max bounds", () => {
+    expect(datumGueltig("")).toBe("");
+    expect(datumGueltig("2026-11-15", "2026-11-01", "2026-11-30")).toBe("");
+    expect(datumGueltig("not-a-date")).toBe("format");
+    expect(datumGueltig("2026-02-30")).toBe("format");
+    expect(datumGueltig("2020-01-01", "2026-01-01")).toBe("min");
+    expect(datumGueltig("2027-01-01", undefined, "2026-12-31")).toBe("max");
+  });
+
+  test("produces 7 distinct weekday headers in de and ar", () => {
+    expect(new Set(wochentagKuerzel("de")).size).toBe(7);
+    expect(new Set(wochentagKuerzel("ar")).size).toBe(7);
   });
 });

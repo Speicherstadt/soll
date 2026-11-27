@@ -83,3 +83,27 @@ export const popoverPosition = (
   const left = Math.max(8, Math.min(anker.left, viewW - breite - 8));
   return { top, left };
 };
+
+/** Returns empty string if value is empty or a valid YYYY-MM-DD within [min, max], else an error key */
+export const datumGueltig = (wert: string, min?: string, max?: string): string => {
+  if (wert === "") return "";
+  if (!ISO_DATUM.test(wert)) return "format";
+  const [j, m, t] = wert.split("-").map(Number);
+  const d = new Date(Date.UTC(j ?? 0, (m ?? 1) - 1, t ?? 1, 12));
+  if (d.toISOString().slice(0, 10) !== wert) return "format";
+  if (min && ISO_DATUM.test(min) && wert < min) return "min";
+  if (max && ISO_DATUM.test(max) && wert > max) return "max";
+  return "";
+};
+
+/** Returns 7 distinct localized Mon-Sun weekday headers (narrow for Arabic, short otherwise) */
+export const wochentagKuerzel = (sprache: string): string[] => {
+  const fmt = new Intl.DateTimeFormat(sprache, {
+    weekday: sprache.toLowerCase().startsWith("ar") ? "narrow" : "short",
+    timeZone: "UTC",
+  });
+  // 2026-11-23 is a Monday
+  return Array.from({ length: 7 }, (_, i) =>
+    fmt.format(new Date(Date.UTC(2026, 10, 23 + i, 12))).replace(/\.$/, ""),
+  );
+};

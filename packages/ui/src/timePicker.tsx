@@ -1,5 +1,5 @@
 import { Clock } from "lucide";
-import { createSignal, For, onCleanup, Show, untrack } from "solid-js";
+import { createEffect, createSignal, For, onSettled, Show, untrack } from "solid-js";
 import { cn } from "./cn.ts";
 import { Icon } from "./icon.tsx";
 import { MINUTEN, popoverPosition, STUNDEN, zeitFormatieren, zeitTeilen } from "./pickerDaten.ts";
@@ -18,6 +18,62 @@ export type TimePickerProps = {
 
 const POPOVER_BREITE = 196;
 const POPOVER_HOEHE = 224;
+
+const ZeitPopover = (props: {
+  pos: { top: number; left: number };
+  teile: { stunde: number; minute: number } | null;
+  onStunde: (h: number) => void;
+  onMinute: (min: number) => void;
+}) => (
+  <div
+    data-picker-popover="time"
+    style={{ top: `${props.pos.top}px`, left: `${props.pos.left}px` }}
+    class="fixed z-50 grid w-[196px] grid-cols-2 gap-1.5 rounded-xl border border-border bg-background p-2 shadow-lg"
+  >
+    <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto pe-1">
+      <For each={STUNDEN}>
+        {(h) => {
+          const aktiv = () => props.teile?.stunde === h;
+          return (
+            <button
+              type="button"
+              class={cn(
+                "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
+                aktiv()
+                  ? "bg-foreground font-semibold text-background"
+                  : "text-foreground hover:bg-muted",
+              )}
+              onClick={() => props.onStunde(h)}
+            >
+              {String(h).padStart(2, "0")}
+            </button>
+          );
+        }}
+      </For>
+    </div>
+    <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto border-border border-s ps-1.5">
+      <For each={MINUTEN}>
+        {(min) => {
+          const aktiv = () => props.teile?.minute === min;
+          return (
+            <button
+              type="button"
+              class={cn(
+                "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
+                aktiv()
+                  ? "bg-foreground font-semibold text-background"
+                  : "text-foreground hover:bg-muted",
+              )}
+              onClick={() => props.onMinute(min)}
+            >
+              {String(min).padStart(2, "0")}
+            </button>
+          );
+        }}
+      </For>
+    </div>
+  </div>
+);
 
 /**
  * Shadcn-style TimePicker: clean monospace HH:MM input paired with a 2-column hour/minute popover
@@ -46,38 +102,51 @@ export const TimePicker = (props: TimePickerProps) => {
     );
   };
 
-  const schliessenBeiKlick = (e: MouseEvent) => {
-    if (offen() && huelleRef && !huelleRef.contains(e.target as Node)) setOffen(false);
-  };
-  const schliessenBeiEsc = (e: KeyboardEvent) => {
-    if (!offen() || e.key !== "Escape") return;
-    e.preventDefault();
-    e.stopPropagation();
-    setOffen(false);
-  };
-  const beiVersatz = () => {
-    if (offen()) positionMessen();
-  };
-  if (typeof document !== "undefined") {
+  onSettled(() => {
+    const schliessenBeiKlick = (e: MouseEvent) => {
+      if (offen() && huelleRef && !huelleRef.contains(e.target as Node)) setOffen(false);
+    };
+    const schliessenBeiEsc = (e: KeyboardEvent) => {
+      if (!offen() || e.key !== "Escape") return;
+      e.preventDefault();
+      e.stopPropagation();
+      setOffen(false);
+    };
+    const beiVersatz = () => {
+      if (offen()) positionMessen();
+    };
     document.addEventListener("mousedown", schliessenBeiKlick);
     document.addEventListener("keydown", schliessenBeiEsc, true);
     window.addEventListener("resize", beiVersatz);
     window.addEventListener("scroll", beiVersatz, true);
-    onCleanup(() => {
+
+    const formular = inputRef?.form;
+    const beiReset = () => {
+      const standard = props.defaultValue ?? "";
+      setIntern(standard);
+      if (inputRef && props.value === undefined) inputRef.defaultValue = standard;
+    };
+    formular?.addEventListener("reset", beiReset);
+
+    return () => {
       document.removeEventListener("mousedown", schliessenBeiKlick);
       document.removeEventListener("keydown", schliessenBeiEsc, true);
       window.removeEventListener("resize", beiVersatz);
       window.removeEventListener("scroll", beiVersatz, true);
-    });
-  }
+      formular?.removeEventListener("reset", beiReset);
+    };
+  });
+
+  createEffect(
+    () => props.defaultValue,
+    (standard) => {
+      if (inputRef && props.value === undefined) inputRef.defaultValue = standard ?? "";
+    },
+  );
 
   const uebernehmen = (neu: string) => {
     setIntern(neu);
-    if (inputRef && inputRef.value !== neu) {
-      inputRef.value = neu;
-      inputRef.dispatchEvent(new Event("input", { bubbles: true }));
-      inputRef.dispatchEvent(new Event("change", { bubbles: true }));
-    }
+    if (inputRef) inputRef.value = neu;
     props.onValue?.(neu);
   };
 
@@ -93,11 +162,7 @@ export const TimePicker = (props: TimePickerProps) => {
       <input
         ref={(el) => {
           inputRef = el;
-          const formular = el.form;
-          if (!formular) return;
-          const beiReset = () => setIntern(props.defaultValue ?? "");
-          formular.addEventListener("reset", beiReset);
-          onCleanup(() => formular.removeEventListener("reset", beiReset));
+          if (props.value === undefined) el.defaultValue = props.defaultValue ?? "";
         }}
         id={props.id}
         name={props.name}
@@ -111,11 +176,6 @@ export const TimePicker = (props: TimePickerProps) => {
         dir="ltr"
         class="h-9 w-full rounded-md border border-border bg-background ps-3 pe-9 font-mono text-[13px] tabular-nums outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
         onInput={(e) => {
-          const wert = e.currentTarget.value;
-          setIntern(wert);
-          props.onValue?.(wert);
-        }}
-        onChange={(e) => {
           const wert = e.currentTarget.value;
           setIntern(wert);
           props.onValue?.(wert);
@@ -134,57 +194,15 @@ export const TimePicker = (props: TimePickerProps) => {
       </button>
 
       <Show when={offen()}>
-        <div
-          data-picker-popover="time"
-          style={{ top: `${pos().top}px`, left: `${pos().left}px` }}
-          class="fixed z-50 grid w-[196px] grid-cols-2 gap-1.5 rounded-xl border border-border bg-background p-2 shadow-lg"
-        >
-          <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto pe-1">
-            <For each={STUNDEN}>
-              {(h) => {
-                const aktiv = () => teile()?.stunde === h;
-                return (
-                  <button
-                    type="button"
-                    class={cn(
-                      "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
-                      aktiv()
-                        ? "bg-foreground font-semibold text-background"
-                        : "text-foreground hover:bg-muted",
-                    )}
-                    onClick={() => uebernehmen(zeitFormatieren(h, teile()?.minute ?? 0))}
-                  >
-                    {String(h).padStart(2, "0")}
-                  </button>
-                );
-              }}
-            </For>
-          </div>
-          <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto border-border border-s ps-1.5">
-            <For each={MINUTEN}>
-              {(min) => {
-                const aktiv = () => teile()?.minute === min;
-                return (
-                  <button
-                    type="button"
-                    class={cn(
-                      "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
-                      aktiv()
-                        ? "bg-foreground font-semibold text-background"
-                        : "text-foreground hover:bg-muted",
-                    )}
-                    onClick={() => {
-                      uebernehmen(zeitFormatieren(teile()?.stunde ?? 8, min));
-                      setOffen(false);
-                    }}
-                  >
-                    {String(min).padStart(2, "0")}
-                  </button>
-                );
-              }}
-            </For>
-          </div>
-        </div>
+        <ZeitPopover
+          pos={pos()}
+          teile={teile()}
+          onStunde={(h) => uebernehmen(zeitFormatieren(h, teile()?.minute ?? 0))}
+          onMinute={(min) => {
+            uebernehmen(zeitFormatieren(teile()?.stunde ?? 8, min));
+            setOffen(false);
+          }}
+        />
       </Show>
     </div>
   );

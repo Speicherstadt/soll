@@ -86,7 +86,7 @@ export const BuchungDialog = (props: {
           <label for={`${id}-datum`} class="font-medium">
             {m.buchung_datum()}
           </label>
-          <DatePicker id={`${id}-datum`} name="datum" value={tag()} required />
+          <DatePicker id={`${id}-datum`} name="datum" defaultValue={tag()} required />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div class="flex flex-col gap-1.5">
@@ -96,7 +96,7 @@ export const BuchungDialog = (props: {
             <TimePicker
               id={`${id}-beginn`}
               name="beginn"
-              value={(() => {
+              defaultValue={(() => {
                 const b = buchung();
                 return b ? uhrzeitFeld(b.beginn) : "";
               })()}
@@ -111,7 +111,7 @@ export const BuchungDialog = (props: {
               <TimePicker
                 id={`${id}-ende`}
                 name="ende"
-                value={(() => {
+                defaultValue={(() => {
                   const ende = buchung()?.ende;
                   return ende == null ? "" : uhrzeitFeld(ende);
                 })()}

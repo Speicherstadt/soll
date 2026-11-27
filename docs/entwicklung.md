@@ -317,7 +317,7 @@ Verhalten.
   Stundenzettel jeder Person, nicht der Server: Wer den Server betreibt, kann seine Datenbank
   ändern, aber nicht den Prüfwert, den eine Person schon in der Hand hat.
 
-### Zeit, Geld und Geheimnisse { #zeit }
+### Zeit und Geheimnisse { #zeit }
 
 - Zeitpunkte als UTC-Millisekunden in einer Ganzzahl-Spalte, Kalendertage als Text `YYYY-MM-DD` in
   `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem die Schicht beginnt. Zeitumstellungen werden

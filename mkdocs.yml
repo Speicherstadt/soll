@@ -92,6 +92,7 @@ nav:
   - Feiertage: feiertage.md
   - Entwicklung:
       - Aufbau und Befehle: entwicklung.md
+      - Mitwirken: mitwirken.md
       - Demo-Daten: demo.md
       - Audit-Kette und Prüfwert: audit-kette.md
       - Gesetzeswächter: gesetzeswaechter.md

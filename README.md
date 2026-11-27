@@ -145,7 +145,7 @@ Alles im Detail, mit Suche: **https://soll.work/**.
 [![SolidJS](https://img.shields.io/badge/Solid%202-2c4f7c?logo=solid&logoColor=white)](https://www.solidjs.com)
 [![SQLite](https://img.shields.io/badge/SQLite-Drizzle-003b57?logo=sqlite&logoColor=white)](https://orm.drizzle.team)
 
-Hinweise für Mitwirkende und Agenten stehen in [CLAUDE.md](CLAUDE.md), offene Punkte in [BAULISTE.md](BAULISTE.md), Aufbau und Befehle unter [Entwicklung](https://soll.work/entwicklung.html).
+Wie du mitwirkst, steht unter [Mitwirken](https://soll.work/mitwirken.html), Hinweise für Agenten in [AGENTS.md](AGENTS.md), offene Punkte in [BAULISTE.md](BAULISTE.md), Aufbau und Befehle unter [Entwicklung](https://soll.work/entwicklung.html).
 
 ```sh
 bun install

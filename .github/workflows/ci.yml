@@ -25,25 +25,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          # The whole history: `checks pr` compares the branch with its base
-          fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run lint
-      # Solid 1.x forms (CLAUDE.md, "Solid 2.0"; docs/solid-2.0/MIGRATION.md)
+      # Solid 1.x forms (docs/entwicklung.md, "Solid 2.0"; docs/solid-2.0/MIGRATION.md)
       - run: bun run solid2
-      # The shared rule checks of firsttris/workflows (checks.json: files past 400 lines, functions past 80,
-      # rings of imports between packages, every text translated and used, every page in the axe spec).
+      # The shared rule checks of firsttris/workflows (checks.json: files past 400 lines, rings of imports
+      # between packages, every text translated and used, every page in the axe spec).
       # Installed without saving: the agents' environment cannot fetch GitHub tarballs, so package.json
       # cannot name it without breaking `bun install` there.
       - run: bun add --dev --no-save "github:firsttris/workflows#v1"
+      # Hints on the branch (functions past 80 lines, code without docs, fix without test): pr-regeln.yml
       - run: bunx checks
-      - if: github.event_name == 'pull_request'
-        run: bunx checks pr
       - run: bun run test
       - run: bun run build
       # The compiled binary starts on its own and answers /health
@@ -104,7 +100,7 @@ jobs:
   # The container image (Containerfile, BAULISTE.md S-905): built for amd64 with the same build
   # cache as the release, then started on an empty volume with a key made for this run, asked for
   # /health, and backed up and restored inside (scripts/image-test.sh). arm64 builds only in the
-  # release, on GitHub's ARM runner (docs/plan.md, "Entscheidungen").
+  # release, on GitHub's ARM runner (docs/installation.md, "Releases").
   image:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest

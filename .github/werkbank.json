@@ -1,0 +1,16 @@
+{
+  "$kommentar": "Einstellungen für die Werkbank (https://github.com/Speicherstadt/werkbank); Standards in werkzeug/konfiguration.ts",
+  "board": null,
+  "anleitung": "https://soll.work/mitwirken.html#wenn-eine-pruefung-anschlaegt",
+  "uebernehmen": "https://soll.work/mitwirken.html#etwas-uebernehmen",
+  "konventionen": "docs/entwicklung.md, Konventionen",
+  "erzeugt": ["\\.gen\\.ts$"],
+  "heikel": [
+    "^apps/server/drizzle/",
+    "^apps/server/src/modules/audit/",
+    "^apps/server/src/modules/geheim/",
+    "^apps/server/src/modules/arbeitszeit/(abschluss|monatsabschluss|aussonderung[^/]*|aufbewahrung)\\.ts$",
+    "^packages/arbeitszeit/src/(pruefung[^/]*|planpruefung|jahreswerte)/",
+    "^packages/export/src/datev/"
+  ]
+}

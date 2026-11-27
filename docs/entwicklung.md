@@ -7,9 +7,12 @@ description: >-
 
 # Entwicklung
 
-Soll ist ein Monorepo mit Bun-Workspaces. Was ein Agent oder Mitwirkender beachten muss, steht in
-[CLAUDE.md](https://github.com/Speicherstadt/soll/blob/main/CLAUDE.md), was als Nächstes gebaut
-wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md).
+Soll ist ein Monorepo mit Bun-Workspaces. Wie ein Beitrag entsteht, steht unter
+[Mitwirken](mitwirken.md), was Agenten zusätzlich beachten, in
+[AGENTS.md](https://github.com/Speicherstadt/soll/blob/main/AGENTS.md), was als Nächstes gebaut
+wird, in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md). Wie gebaut
+wird, steht unten unter [Konventionen](#konventionen), worauf sich Details stützen, unter
+[Quellen](#quellen).
 
 ## Aufbau
 
@@ -140,10 +143,43 @@ Gerät) und Sprache; beides merkt sich der Browser. Die Routen liegen in `apps/w
 Routenbaum `routeTree.gen.ts` entsteht beim Build oder im Entwicklungsserver neu und ist
 eingecheckt, damit der Typcheck ihn kennt. Jede Seite steht in `e2e/accessibility.spec.ts`.
 
-Der Client ist Solid 2.0, dessen API sich stark von 1.x unterscheidet; die Referenz liegt in
-`docs/solid-2.0/` (vor allem `MIGRATION.md` und `CHEATSHEET.md`). `bun run solid2`
-(`scripts/solid2.ts`, Teil von `bun run check` und der CI) schlägt bei Formen aus 1.x fehl, etwa
-`createResource`, `Suspense`, `onMount`, `createEffect` mit einer Funktion oder `classList`.
+### Solid 2.0 { #solid-2-0 }
+
+Der Client ist Solid 2.0 (stabil seit 11/2026). Seine API unterscheidet sich stark von 1.x, und das
+meiste, was ein Agent im Gedächtnis hat, ist 1.x. Jede Änderung an Solid-Code stützt sich deshalb
+auf die kopierte Referenz in `docs/solid-2.0/`, nicht auf das Gedächtnis: vorher vor allem
+`MIGRATION.md` und `CHEATSHEET.md` lesen, die RFCs (`01-…` bis `12-…`) erklären die Einzelheiten.
+Im Zweifel dort nachschlagen, nicht raten. Daten vom Server gehen durch `@tanstack/solid-query`
+([Daten laden](#daten-laden)).
+
+`bun run solid2` (`scripts/solid2.ts`, Teil von `bun run check` und der CI) schlägt bei den
+verbotenen Formen aus 1.x fehl:
+
+| 1.x (verboten) | 2.0 |
+| --- | --- |
+| `createResource` | async `createMemo` (oder eine Abfrage) unter `<Loading>`; `refresh()` statt `refetch` |
+| `Suspense`, `SuspenseList`, `ErrorBoundary` | `Loading`, `Reveal`, `Errored` |
+| `createEffect(fn)` mit einer Funktion, `on(...)`, `createComputed` | `createEffect(source, fn)` (erst berechnen, dann anwenden; gibt das Aufräumen zurück), `createMemo`, `createSignal(fn)` |
+| `onMount` | `onSettled` (darf das Aufräumen zurückgeben) |
+| `onCleanup` in einem Ref-Callback | Refs haben keinen Owner: `onSettled` im Rumpf oder eine Ref-Direktive als Fabrik |
+| `batch` | nichts (Schreiben wird gebündelt); `flush()` nur in Tests oder imperativer Anbindung |
+| ein Signal gleich nach dem Setzen lesen und den neuen Wert erwarten | Werte ändern sich nach dem Flush der Microtask |
+| `classList`, Namensräume `class:`/`style:` | `class` / `style` mit Objekt oder Array |
+| Direktiven `use:`, `attr:`, `bool:`, `on:`, `oncapture:`, kleines `onclick` | Ref-Direktiven als Fabrik, schlichte Attribute, `onClick` in camelCase |
+| `/*@once*/` | reaktives JSX, `defaultValue` oder `untrack` in JavaScript |
+| `Index`, `indexArray` | `<For keyed={false}>`, `mapArray(…, { keyed: false })` |
+| `mergeProps`, `splitProps` | `merge`, `omit` (ein Wert `undefined` überschreibt) |
+| `unwrap`, `produce`, Pfad-Setter, `createMutable` | `snapshot`, Entwurfs-Setter (`setStore(s => { … })`), `createStore` |
+| `startTransition`, `useTransition`, eigene Flags für Laden und Optimismus | eingebaute Transitions, `isPending`, `action`, `createOptimistic`/`createOptimisticStore` |
+| `Context.Provider`, Hilfs-Hooks, die nur `undefined` ausschließen | `<Context value>`; `useContext` auf einem Kontext ohne Standard gibt `T` |
+| `createSelector`, `createDeferred` (Bedeutung aus 1.x), `catchError`/`onError` | `createProjection`, das neue `createDeferred`, `Errored` oder die Option `error` des Effekts |
+| `<Dynamic component>`, `createDynamic` | Fabrik `dynamic(source)` |
+| Importe aus `solid-js/web`, `solid-js/store`, `solid-js/jsx-runtime` | `@solidjs/web`, `solid-js`, `jsxImportSource: "@solidjs/web"` |
+
+Außerdem in 2.0: Props oder Signale auf oberster Ebene eines Komponentenrumpfs zu lesen warnt (in
+JSX, einem Memo oder einem Handler lesen); ein Signal in der Berechnung eines Memos oder Effekts zu
+schreiben wirft; ein verschachteltes `createRoot` wird mit seinem Elternteil verworfen; eingebaute
+Attribute sind Attribute (klein geschrieben, Boolesche durch ihr Vorhandensein).
 
 ### Daten laden
 
@@ -207,7 +243,14 @@ Adresse (etwa der Token eines Kalender-Feeds) steht nur als `?…` darin, Header
 Das Schema steht in `apps/server/src/db/schema.ts`, größere Bereiche in Dateien unter
 `apps/server/src/db/schema/`, die `schema.ts` weitergibt. Nach einer Änderung erzeugt
 `bun run db:generate` die Migration und die Datei, die sie ins Programm einbettet; eine schon
-eingecheckte Migration wird nie geändert. Tests laufen gegen SQLite in einer temporären Datei:
+eingecheckte Migration wird nie geändert.
+
+Laufen Pull Requests nebeneinander, stoßen die Nummern der Migrationen zusammen. Dann bleiben
+`drizzle/` und `drizzle/meta/` von `main` unverändert; die eigene Migration des Branches und ihr
+Snapshot werden gelöscht und obendrauf neu erzeugt (in `apps/server`:
+`bunx drizzle-kit generate --name <name>`), danach `bun scripts/migrationen.ts`.
+
+Tests laufen gegen SQLite in einer temporären Datei:
 `testDatenbank()` legt sie in einem eigenen Verzeichnis unter dem temporären Verzeichnis des
 Systems an und löscht es nach dem Test wieder, auch wenn der Test scheitert oder in seine Zeitgrenze
 läuft; was ein `beforeAll` oder der Rumpf eines `describe` öffnet, verschwindet, wenn die Datei
@@ -218,3 +261,108 @@ fertig ist. Andere Tests holen sich ein temporäres Verzeichnis ebenso mit `temp
 
 Jeder Text steht in jeder Datei unter `messages/`; die App wählt die Sprache des Browsers, Arabisch
 von rechts nach links (`dir="rtl"`). Normen bleiben in jeder Sprache auf Deutsch.
+
+## Konventionen { #konventionen }
+
+### Technik { #technik }
+
+Die Technik folgt `tech-stack.md` in firsttris/workflows und dem Stack von Kennwort (ohne Tauri),
+mit zwei Abweichungen von `tech-stack.md`:
+
+- **Solid 2 statt React**, wie in Kennwort: ein Aussehen und eine Bauweise in der ganzen
+  Speicherstadt und ein kleines Bundle für Handys und das Tablet-Terminal.
+- **Kein TanStack Start, kein SSR, sondern ein Hono-Server und eine statische SPA/PWA**, wie in
+  Kennwort: Dieselbe API bedient die Web-App, die Offline-Warteschlange der PWA und das Terminal, die
+  REST-API und den MCP-Server, und der Service Worker hält den statischen Build ganz im Cache, damit
+  Stempeln offline geht.
+
+Server: Bun, Hono, Drizzle auf SQLite (WAL), Zod an jeder Grenze, Better Auth (Plugin
+„organization“ für mehrere Betriebe in einer Instanz, Passkeys, Einladungslinks),
+`bun build --compile`. Client: Solid 2 ([Solid 2.0](#solid-2-0)), `@tanstack/solid-router` (v2) und
+`@tanstack/solid-query` (v6), beide für Solid 2, Paraglide, Tailwind 4. Oberfläche im Stil von
+shadcn ohne Komponentenbibliothek: natives `<dialog>`, die Popover-API, CSS Anchor Positioning,
+eigene `cn()` und `variants()`, Icons von lucide (die Daten aus `lucide` über `Icon` in
+`packages/ui`, weil `lucide-solid` nur Solid 1 kennt), Geist, Zinc-Farben. PDFs (Stundenzettel,
+Prüfexport, Arbeitsnachweise) mit `pdf-lib`.
+
+### Code { #code }
+
+Clean Code, funktional geschrieben: klare Namen, kleine Funktionen, die eine Sache tun,
+Abhängigkeiten werden übergeben, keine Doppelungen, kein toter Code, Kommentare sagen warum. Die
+Ideen hinter SOLID und den Entwurfsmustern sind willkommen, als Funktionen, Daten und Closures, nicht
+als Klassen, Vererbung oder Klassenhierarchien.
+
+Funktional, nicht objektorientiert: reine Funktionen, die Daten nehmen und Daten zurückgeben,
+Seiteneffekte am Rand; Funktionskomponenten, keine Klassen; Fehler als Werte. Eine Datei tut eine
+Sache: über ~400 Zeilen wird sie geteilt, eine Funktion über ~80. Ein Refactor ändert kein
+Verhalten.
+
+### Aufbau des Servers { #aufbau-des-servers }
+
+- Module je Betrieb: Arbeitszeit (mit Abwesenheiten), Dienstplan, Projektzeit, Terminal. Eine Route
+  eines abgeschalteten Moduls lehnt der Server ab, sie ist nicht nur versteckt; die Arbeitszeit lässt
+  sich nicht abschalten, solange der Betrieb Beschäftigte hat.
+- Routen in `apps/server` bleiben dünn: Anmeldung, Zod, dann ein Aufruf in
+  `apps/server/src/modules/`; ein Modul erreicht ein anderes nur über dessen `index.ts`.
+- Jede Tabelle von Soll trägt `betrieb_id`, jede Abfrage filtert danach; ein Test je Endpunkt
+  zeigt, dass kein Betrieb die Daten eines anderen sieht. Die Tabellen von Better Auth (Nutzer,
+  Sitzungen, Konten, Organisationen, Mitglieder) gehören Better Auth und sind ausgenommen;
+  Änderungen an Mitgliedschaft und Rolle schreiben die Hooks von Better Auth in die Audit-Kette.
+- Schreiben in die Tabellen von Soll geht durch eine Funktion, die in derselben Transaktion an die
+  Audit-Kette anhängt (Akteur, Tabelle, Zeile, Hash des Inhalts, Hash des vorigen Glieds); einen
+  anderen Weg zu schreiben gibt es nicht. Ein abgeschlossener Monat sperrt seine Zeilen. Die Kette
+  hasht den Hash des Inhalts, nicht den Inhalt, damit sich Inhalte nach ihrer Aufbewahrungsfrist
+  löschen lassen, ohne die Prüfung zu brechen ([Audit-Kette und Prüfwert](audit-kette.md)).
+- Der Schutz gegen Änderungen durch den Betrieb selbst ist der Prüfwert auf dem monatlichen
+  Stundenzettel jeder Person, nicht der Server: Wer den Server betreibt, kann seine Datenbank
+  ändern, aber nicht den Prüfwert, den eine Person schon in der Hand hat.
+
+### Zeit und Geheimnisse { #zeit }
+
+- Zeitpunkte als UTC-Millisekunden in einer Ganzzahl-Spalte, Kalendertage als Text `YYYY-MM-DD` in
+  `Europe/Berlin`; ein Arbeitstag ist der Tag, an dem die Schicht beginnt. Zeitumstellungen werden
+  getestet, nicht angenommen.
+- Verschlüsselte Spalten nutzen den Schlüssel aus `SOLL_SECRET_KEY` (32 Bytes, Base64); ohne ihn
+  startet der Server nicht. API-Tokens und PINs werden als Hash gespeichert, nicht verschlüsselt.
+  Die Schlüssel für Web Push (VAPID) erzeugt die Instanz bei ihrem ersten Start.
+
+### Tests und Testdaten { #testdaten }
+
+- Was der Browser oder die Außenwelt liefert, wird in Tests ersetzt: `NDEFReader` für Web NFC, der
+  Push-Dienst, ein SMTP-Testserver für Mail, ein Ersatz für die API von Haben und für jede
+  Import-API, gebaut nach deren Dokumentation.
+- Testdaten: „Weber Haustechnik“ (SHK, Hamburg: Jonas Weber, Inhaber; Anna, Büro; Sandra und Max,
+  Monteure; Leon, Auszubildender, 17) und „Café Elbblick“ (Hamburg: Mia, Inhaberin; Tom, Lea und
+  Yusuf in Schichten; Olena und Piotr im Minijob). Adressen unter `.test`.
+- Bildschirmgrößen: Desktop ab `md` (768 px), Handys ein Bildschirm nach dem anderen mit Tab-Leiste,
+  das Terminal auf einem Tablet quer (1280 × 800).
+- Die Übersetzungen nach `tr`, `pl`, `uk` und `ar` schreibt der Loop selbst; Muttersprachler prüfen
+  sie später (Bauliste, „Schritte für Menschen“).
+
+## Quellen { #quellen }
+
+Details stützen sich auf die Quellen, nicht auf das Gedächtnis. Repositorys flach
+(`git clone --depth 1`) in ein temporäres Verzeichnis klonen und die Quelle in Kommentaren, Tests
+und Commit-Nachrichten nennen, wo sie ein Detail entscheidet. Das Gesetz geht der Doku eines
+Herstellers vor.
+
+- **Gesetz**: ArbZG, ArbSchG, MiLoG, SchwarzArbG § 2a, JArbSchG, MuSchG, TzBfG, BUrlG, EntgFG,
+  SGB IV § 109, SGB V § 45, SGB IX § 208, BEEG § 17, EStG § 3b, BetrVG § 87, AO § 147, EStG § 41,
+  LStDV § 4, DSGVO, alle auf gesetze-im-internet.de; BAG 1 ABR 22/21; EuGH C-55/18 (CCOO),
+  C-151/02 (Jaeger), C-518/15 (Matzak).
+- **GoBD**: BMF-Schreiben vom 28.11.2019 (GoBD), Rz. 107 ff. (Unveränderbarkeit) und 151 ff.
+  (Verfahrensdokumentation). `packages/gobd-kern` in `firsttris/haben` ist eine Quelle zum
+  Abschreiben: der Prüfwert (`pruefwert.ts`), die Texte der Verfahrensdokumentation
+  (`verfahrensdoku/`), der inhaltsadressierte Dateispeicher (`dateispeicher.ts`). Abgeschriebener
+  Code nennt seine Quelle; keine Abhängigkeit davon, vorerst kein gemeinsames Paket.
+- **Kennwort**: `Speicherstadt/kennwort` für denselben Stack in der Praxis (Solid 2, Hono, Better
+  Auth, Paraglide, das UI-Paket, CI und Doku).
+- **Haben**: `firsttris/haben`, `docs/api.md` für `POST /api/v1/leistungen`, `docs/lohn.md` für die
+  Lohnabrechnung und der Gesetzeswächter in `scripts/jahreswerte/`.
+- **DATEV**: die veröffentlichte Schnittstellenbeschreibung für den Import von Bewegungsdaten in
+  LODAS und Lohn und Gehalt (ASCII-Import) auf developer.datev.de; ist sie nicht erreichbar, steht
+  das im Pull Request, und gebaut wird nach dem Format, wie DATEV es in anderen öffentlichen Quellen
+  beschreibt, im Code genannt.
+- **Feiertage**: die Feiertagsgesetze der 16 Länder; Ostern nach Gauß (Formel von Lichtenberg).
+- **Kalender**: RFC 5545 (iCalendar). **Web NFC**: der Entwurf des W3C und die Hinweise zur
+  Umsetzung in Chrome.

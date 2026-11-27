@@ -72,3 +72,16 @@ jobs:
     permissions:
       contents: write
       packages: write
+
+  # A finished version closes the issues merged with `Umgesetzt #…` since the previous one
+  # (Speicherstadt/werkbank); a release candidate closes nothing, a run by hand on main neither
+  issues-schliessen:
+    needs: docker
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/v') && needs.docker.result == 'success' }}
+    uses: Speicherstadt/werkbank/.github/workflows/issues-schliessen.yml@main
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+    with:
+      tag: ${{ github.ref_name }}

@@ -34,7 +34,7 @@ ab dem 1. Januar 2026. Grundlage sind die Gesetzestexte auf gesetze-im-internet.
 | Begriff | Bedeutung in Soll | Quelle |
 | --- | --- | --- |
 | Arbeitszeit | Zeit vom Beginn bis zum Ende der Arbeit ohne die Ruhepausen, bei mehreren Arbeitgebern zusammengerechnet | § 2 Abs. 1 ArbZG |
-| Arbeitstag | der Kalendertag in `Europe/Berlin`, an dem die Schicht beginnt | CLAUDE.md, „Time“ |
+| Arbeitstag | der Kalendertag in `Europe/Berlin`, an dem die Schicht beginnt | [Entwicklung, Konventionen](entwicklung.md#zeit) |
 | Schicht | Arbeit von „Kommen“ bis „Gehen“ samt Unterbrechungen; eine Unterbrechung ab 9 h beendet sie (kürzeste Ruhezeit, die das Gesetz überhaupt zulässt), und sie reicht nie 24 h über ihren Beginn hinaus | § 5 Abs. 1, § 7 Abs. 1 Nr. 3 ArbZG; R-01 |
 | Werktag | jeder Tag außer Sonntag und gesetzlichem Feiertag, also auch der Samstag | § 3 ArbZG; § 3 Abs. 2 BUrlG |
 | Ruhepause | eine im Voraus feststehende Unterbrechung von mindestens 15 Minuten (Jugendliche ebenso) | § 4 Satz 2 ArbZG; § 11 Abs. 1 Satz 3 JArbSchG |
@@ -49,7 +49,7 @@ ab dem 1. Januar 2026. Grundlage sind die Gesetzestexte auf gesetze-im-internet.
 | Nachtarbeit (Steuer) | 20 bis 6 Uhr, für die steuerfreien Zuschläge; nicht die Nachtzeit des ArbZG | § 3b Abs. 2 Satz 2 EStG |
 | Grundlohn | laufender Arbeitslohn bei der regelmäßigen Arbeitszeit des Lohnzahlungszeitraums, umgerechnet in einen Stundenlohn (beim Monatslohn durch die Wochenstunden × 4,35), für die Steuerfreiheit höchstens 50 € je Stunde | § 3b Abs. 2 Satz 1 EStG; R 3b Abs. 2 LStR |
 
-Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäftigten (CLAUDE.md).
+Dauern rechnet Soll in ganzen Minuten. Gerundet wird nie zulasten der Beschäftigten (AGENTS.md, „Nie“).
 
 ## Übersicht
 
@@ -140,7 +140,7 @@ Jede beobachtete Norm hat eine Regel im Regelwerk:
   eine Nachtschicht. Dasselbe gilt für eine Pause ohne Ende. Spätestens 24 h nach Beginn ist es
   ein Befund, auch wenn Mitternacht später liegt (Tag der Zeitumstellung im Oktober): Danach kann
   keine Stempelung die Schicht mehr beenden.
-- **Ausnahmen**: keine. Soll stempelt nie selbst aus (CLAUDE.md), es erinnert nur (S-307).
+- **Ausnahmen**: keine. Soll stempelt nie selbst aus (AGENTS.md, „Nie“), es erinnert nur (S-307).
 - **Schwere**: Hinweis an die Person und den Betrieb; zum Monatsabschluss sperrt ein unvollständiger
   Tag die Bestätigung, bis er nachgetragen ist.
 
@@ -164,14 +164,14 @@ Jede beobachtete Norm hat eine Regel im Regelwerk:
 | 24 h, Zeitumstellung | So 25.10.2026 0:30 MESZ Kommen, kein Gehen, So 23:30 MEZ | Hinweis „Gehen fehlt“ für So (24 h nach Beginn, vor Mitternacht) | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | 9 h, Gehen | Mo 8:00 Kommen, 12:00 Gehen, Di 7:30 Gehen | Mo 4:00 Arbeitszeit, vollständig; Hinweis „Kommen fehlt“ für Di | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
 | 9 h, Pause | Mo 8:00 Kommen, 12:00 Pause, Di 7:00 Kommen, 15:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo (4:00 gezählt), Di 8:00 Arbeitszeit | Grundbegriff „Schicht“; § 3 Abs. 2 Nr. 1 ArbSchG |
-| 24 h, Sekunden | Mo 8:00:30 Kommen, Di 8:00:30 Gehen und Kommen, 12:00 Gehen | Mo 24:00, Di 4:00 Arbeitszeit: die Minute ab 8:00 zählt einmal, bei Di | Grundbegriff „Schicht“; CLAUDE.md (nie zulasten der Beschäftigten) |
+| 24 h, Sekunden | Mo 8:00:30 Kommen, Di 8:00:30 Gehen und Kommen, 12:00 Gehen | Mo 24:00, Di 4:00 Arbeitszeit: die Minute ab 8:00 zählt einmal, bei Di | Grundbegriff „Schicht“; AGENTS.md, „Nie“ (nie zulasten der Beschäftigten) |
 | ungeordnet | dieselben Stempelungen in anderer Reihenfolge | dasselbe Ergebnis | Regel dieser Seite |
 | doppelter Tipp | Mo 8:00:05 und 8:00:40 Kommen, 16:00 Gehen | kein Befund, 8:00 Arbeitszeit | Regel dieser Seite |
 | doppelter Tipp, 9 h | Mo 7:00 Kommen, 16:00:05 und 16:00:50 Gehen, Di 1:00:20 Kommen, 5:00 Gehen | zwei Schichten wie ohne den zweiten Tipp: Mo 9:01, Di 4:00 Arbeitszeit | Grundbegriff „Schicht“; Regel dieser Seite |
-| doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | CLAUDE.md (nie zulasten der Beschäftigten) |
+| doppelt | Mo 8:00 und 8:10 Kommen, 16:00 und 16:20 Gehen | Hinweis „doppelt“ je Wiederholung, 8:20 Arbeitszeit, Tag vollständig | AGENTS.md, „Nie“ (nie zulasten der Beschäftigten) |
 | Kommen fehlt | Mo 16:00 Gehen, sonst nichts | Hinweis „Kommen fehlt“ für Mo, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |
 | Pause-Ende fehlt | Mo 22:00 Kommen, 23:30 Pause, Di 6:00 Gehen | Hinweis „Pause-Ende fehlt“ für Mo, 1:30 Arbeitszeit, Tag unvollständig | § 3 Abs. 2 Nr. 1 ArbSchG |
-| Minuten | Mo 8:00:59 Kommen, 16:00:01 Gehen | 8:01 Arbeitszeit | CLAUDE.md (nie zulasten der Beschäftigten) |
+| Minuten | Mo 8:00:59 Kommen, 16:00:01 Gehen | 8:01 Arbeitszeit | AGENTS.md, „Nie“ (nie zulasten der Beschäftigten) |
 
 ### R-02 Höchstarbeitszeit am Tag
 
@@ -620,7 +620,7 @@ Pflicht.
   Zuschläge für Sonn- und Feiertagsarbeit zählen mit (BAG, 24.05.2017, 5 AZR 431/16; 17.01.2018,
   5 AZR 69/17), Nachtzuschläge nach § 6 Abs. 5 ArbZG nicht (Zahlung mit besonderer gesetzlicher
   Zweckbestimmung, BAG, 25.05.2016, 5 AZR 135/16). Fehlt der Mindestlohn des Jahres, heißt
-  das Ergebnis „nicht hinterlegt“, nie der Wert des Vorjahres (CLAUDE.md).
+  das Ergebnis „nicht hinterlegt“, nie der Wert des Vorjahres (AGENTS.md, „Nie“).
 - **Ausnahmen**: § 22 MiLoG (Auszubildende, Jugendliche ohne Berufsabschluss, bestimmte Praktika,
   Langzeitarbeitslose in den ersten sechs Monaten) als Merkmal am Mitarbeiter.
 - **Schwere**: Verstoß.
@@ -630,7 +630,7 @@ Pflicht.
 | erlaubt | 603,00 € für 43 h (Minijob) | 14,02 €/h, kein Befund | § 1 Abs. 1 MiLoG |
 | Grenze | 597,70 € für 43 h | genau 13,90 €/h, kein Befund | § 1 Abs. 1 MiLoG („mindestens“) |
 | Verstoß | 597,69 € für 43 h | Verstoß „unter dem Mindestlohn“ | § 1 Abs. 1 MiLoG |
-| nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+| nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | AGENTS.md, „Nie“ |
 | Stundenlohn | 43 h zu 13,90 € je Stunde | kein Befund | § 1 Abs. 1 MiLoG |
 | Stundenlohn darunter | 43 h zu 13,89 € je Stunde | Verstoß „unter dem Mindestlohn“, es fehlen 0,43 € | § 1 Abs. 1 MiLoG |
 | Sonntagszuschlag | 590,00 € und 7,70 € Sonntagszuschlag für 43 h | kein Befund | BAG, 24.05.2017, 5 AZR 431/16 |
@@ -925,7 +925,7 @@ Soll prüft deshalb vorsichtig: Mitteilung am Montag reicht für eine Schicht ab
 - **Regel**: Das Arbeitszeitmodell gibt den Urlaub in Arbeitstagen; Soll prüft, dass er umgerechnet
   nicht unter dem gesetzlichen Mindesturlaub liegt (24 Werktage bei 6 Tagen = 20 Arbeitstage bei 5,
   allgemein `24 × Arbeitstage je Woche ÷ 6`), und rechnet darunter mit dem Mindesturlaub
-  (§ 13 Abs. 1 Satz 1 BUrlG). Urlaub in halben Tagen (CLAUDE.md). Volle Monate zählen vom Tag des
+  (§ 13 Abs. 1 Satz 1 BUrlG). Urlaub in halben Tagen (AGENTS.md, „Nie“). Volle Monate zählen vom Tag des
   Eintritts an (§§ 187 Abs. 2, 188 Abs. 2 und 3 BGB), nicht nach Kalendermonaten; wechseln die
   Arbeitstage je Woche im Jahr, zählt jedes Modell mit seinen Tagen im Jahr (EuGH C-415/12, Brandes).
   Übertragener Urlaub verfällt nur, wenn der Betrieb die Person rechtzeitig auf den offenen Urlaub
@@ -1053,7 +1053,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   der Arbeitgeber ruft die eAU bei der Krankenkasse ab (§ 109 SGB IV).
 - **Regel**: Soll erinnert die Person am Tag, an dem die Bescheinigung fällig ist, und den Betrieb,
   die eAU über sein Lohnprogramm abzurufen. Gespeichert wird nur „Bescheinigung liegt vor“ (eAU oder
-  Papier im Büro), keine Diagnose und keine Datei (CLAUDE.md, Art. 9 DSGVO).
+  Papier im Büro), keine Diagnose und keine Datei (AGENTS.md, „Nie“; Art. 9 DSGVO).
 - **Grenzwerte**: Erster Krankheitstag ist Tag 1; dauert die Krankheit über Tag 3 hinaus, ist die
   Bescheinigung am nächsten Arbeitstag nach Tag 3 fällig (bei Krankheit ab Montag also Donnerstag).
   Der Betrieb kann „ab Tag 1“, „ab Tag 2“ oder „ab Tag 3“ einstellen; dann ist die Bescheinigung am
@@ -1141,9 +1141,9 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | 31.12. ab 14 Uhr | Do 31.12.2026 12:00 – 16:00 | bis 14 Uhr nichts, danach 125 % | § 3b Abs. 1 Nr. 3 EStG |
 | Jahreswechsel | Do 31.12.2026 22:00 – Fr 1.1.2027 6:00 | 150 %, 165 % von 0 bis 4 Uhr (40 % + 125 % Neujahr), 150 % von 4 bis 6 Uhr | § 3b Abs. 1 Nr. 3, Abs. 3 Nr. 1 EStG |
 | Grundlohn über 50 € | 80 € je Stunde, 1.5. 10:00 – 11:00, gezahlt 150 % | 75,00 € steuerfrei, 45,00 € steuerpflichtig | § 3b Abs. 2 Satz 1 EStG |
-| Rundung | 13,90 € je Stunde, Mi 22:00 – 22:07, gezahlt 25 % | 0,41 € gezahlt (aufgerundet), 0,40 € steuerfrei (abgerundet), 0,01 € steuerpflichtig | CLAUDE.md, „Never“; § 3b Abs. 1 EStG („nicht übersteigen“) |
+| Rundung | 13,90 € je Stunde, Mi 22:00 – 22:07, gezahlt 25 % | 0,41 € gezahlt (aufgerundet), 0,40 € steuerfrei (abgerundet), 0,01 € steuerpflichtig | AGENTS.md, „Nie“; § 3b Abs. 1 EStG („nicht übersteigen“) |
 | Rundung unter der Grenze | 13,90 € je Stunde, So 22:00 – 22:07, gezahlt 25 % Nacht; So 10:00 – 10:07, gezahlt 25 % Sonntag | je 0,41 € gezahlt und 0,41 € steuerfrei (Grenze 75 % bzw. 50 %) | § 3b Abs. 1 EStG („nicht übersteigen“) |
-| nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+| nicht hinterlegt | Arbeitstag 31.12.2025, vor der ersten Regelversion | „nicht hinterlegt“ | AGENTS.md, „Nie“ |
 
 ## Mitbestimmung und Datenschutz
 
@@ -1225,7 +1225,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | steuerfreier Zuschlag | 590,00 € und 20,00 € steuerfreier Sonntagszuschlag | kein Befund | § 1 Abs. 1 Satz 1 Nr. 1 SvEV |
 | steuerfreier Zuschlag über 25 € je Stunde | 20 h zu 30,00 € je Stunde und 120,00 € steuerfreier Sonntagszuschlag | Hinweis „gelegentlich überschritten“, 20,00 € des Zuschlags zählen | § 1 Abs. 1 Satz 1 Nr. 1 SvEV („soweit das Entgelt, auf dem sie berechnet werden, mehr als 25 Euro für jede Stunde beträgt“) |
 | Jahreswechsel | je 620,00 € im Dezember 2026 und im Januar 2027 (Grenze 633 €) | Hinweis „gelegentlich überschritten“ im Dezember, kein Befund im Januar | § 8 Abs. 1a SGB IV |
-| nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | CLAUDE.md, „Never“ |
+| nicht hinterlegt | Monat in einem Jahr ohne Jahreswert | „nicht hinterlegt“ | AGENTS.md, „Nie“ |
 
 ## Soll, Ist und Konten
 
@@ -1256,7 +1256,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | Eintritt | Eintritt Mi 18.11.2026 | Soll 72:00 (9 Arbeitstage ab 18.11.) | § 611a Abs. 1 BGB |
 | Urlaub | Urlaub Mo 9.11. – Fr 13.11.2026, sonst je 8:00 | 128:00 gearbeitet + 40:00 gutgeschrieben = Ist 168:00, 5 Urlaubstage | § 1 BUrlG |
 | Urlaub am Feiertag | Urlaub Mo 11.5. – Fr 15.5.2026 (Do 14.5. Christi Himmelfahrt) | 4 Urlaubstage, 32:00 gutgeschrieben | § 3 Abs. 2 BUrlG |
-| halber Tag | Modell Fr 7:15, halber Urlaubstag am Fr 27.11.2026 | 3:38 gutgeschrieben (aufgerundet), 0,5 Urlaubstage | CLAUDE.md, „Never“ (nie zulasten der Beschäftigten) |
+| halber Tag | Modell Fr 7:15, halber Urlaubstag am Fr 27.11.2026 | 3:38 gutgeschrieben (aufgerundet), 0,5 Urlaubstage | AGENTS.md, „Nie“ (nie zulasten der Beschäftigten) |
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
 | Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | [Konten](konten.md#abwesenheiten) |
 | Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | [Konten](konten.md) |

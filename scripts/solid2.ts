@@ -1,5 +1,5 @@
 /**
- * Fails on Solid 1.x forms in the client code (CLAUDE.md, "Solid 2.0"; source of every rule:
+ * Fails on Solid 1.x forms in the client code (docs/entwicklung.md, "Solid 2.0"; source of every rule:
  * docs/solid-2.0/MIGRATION.md). The compiler already rejects some of them on native elements
  * (classList, use:, on:, attr:, bool:); this check also catches them in .ts files, on components,
  * and the 1.x APIs that still type-check but behave as 1.x did.

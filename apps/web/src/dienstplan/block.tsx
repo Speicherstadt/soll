@@ -2,6 +2,7 @@ import { Button, cn, Icon, Tooltip } from "@soll/ui";
 import { CircleAlert, Move, TriangleAlert } from "lucide";
 import { Show } from "solid-js";
 import { befundKurz } from "./befunde.ts";
+import { schichtFarbe } from "./farben.ts";
 import { spanneText } from "./text.ts";
 import type { PlanBefund, Schicht, Vorlage } from "./typen.ts";
 import { SCHICHT_TYP } from "./ziehen.ts";
@@ -47,20 +48,27 @@ const Inhalt = (props: {
       </span>
       <BefundIcon befunde={props.befunde} />
     </span>
-    <span class="truncate text-[12px]">{blockText(props.schicht, props.vorlagen)}</span>
+    <span class="truncate text-[12px] text-muted-foreground">
+      {blockText(props.schicht, props.vorlagen)}
+    </span>
     <Show when={props.befunde.length > 0}>
       <span class="sr-only">{befundeText(props.befunde)}</span>
     </Show>
   </>
 );
 
-/** The border of a shift: dashed while open, red for a Verstoß, amber for a Hinweis */
-const rahmenVon = (schicht: Schicht, befunde: readonly PlanBefund[]) => {
-  if (schicht.nutzerId === null) return "border border-muted-foreground border-dashed";
+/** The border and color tint of a shift: dashed while open, red/amber for findings, role color otherwise */
+const rahmenVon = (
+  schicht: Schicht,
+  vorlagen: readonly Vorlage[],
+  befunde: readonly PlanBefund[],
+) => {
+  const farbe = schichtFarbe(schicht, vorlagen);
+  if (schicht.nutzerId === null) return farbe.karte;
   const schwere = befunde[0]?.schwere;
-  if (schwere === "verstoss") return "border border-danger bg-accent";
-  if (schwere === "hinweis") return "border border-warning bg-accent";
-  return "border border-transparent bg-accent";
+  if (schwere === "verstoss") return cn("border border-danger", farbe.karte);
+  if (schwere === "hinweis") return cn("border border-warning", farbe.karte);
+  return cn("border border-border/60", farbe.karte);
 };
 
 /** The button of a shift for whoever plans: opens it, and can be dragged */
@@ -106,8 +114,8 @@ export const Block = (props: {
 }) => {
   const rahmen = () =>
     cn(
-      "flex items-start gap-1 rounded-sm",
-      rahmenVon(props.schicht, props.befunde),
+      "flex items-start gap-1 rounded-sm transition-colors",
+      rahmenVon(props.schicht, props.vorlagen, props.befunde),
       props.aufgenommen && "outline-2 outline-foreground",
     );
   return (

@@ -77,6 +77,21 @@ export const wocheDaten = (query: URLSearchParams, heuteTag: string) => {
         veroeffentlichtAm: Date.now() - 86_400_000,
       })),
   );
+  const freitag = werkte[4];
+  if (freitag) {
+    schichten.push({
+      schichtId: `ds-${nummer}-offen`,
+      nutzerId: null as unknown as string,
+      tag: freitag,
+      beginn: zeitMs(freitag, 540),
+      ende: zeitMs(freitag, 1050),
+      pauseMinuten: 30,
+      rolle: "Service",
+      standortId: "st1",
+      vorlageId: DEMO_VORLAGEN[2]?.vorlageId ?? null,
+      veroeffentlichtAm: Date.now() - 86_400_000,
+    });
+  }
   return {
     standortId: "st1",
     tage,

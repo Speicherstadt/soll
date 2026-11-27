@@ -1,5 +1,5 @@
 import { tagInBerlin } from "@soll/arbeitszeit";
-import { Button, Icon, Input, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
+import { Button, DatePicker, Icon, Input, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
 import { Trash2 } from "lucide";
 import { createSignal, createUniqueId, For } from "solid-js";
 import { feld } from "../einrichtung/stil.ts";
@@ -83,6 +83,7 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
     form.reset();
     setMitAuftrag(false);
   };
+  const abId = createUniqueId();
   return (
     <NeuFormular
       label={m.satz_anlegen()}
@@ -106,14 +107,12 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
       />
       <Auswahl label={m.satz_person()} name="person" optionen={wahl.personen()} />
       <Input label={m.satz_betrag()} name="betrag" inputmode="decimal" required class="md:w-36" />
-      <Input
-        label={m.satz_gueltig_ab()}
-        name="ab"
-        type="date"
-        required
-        value={tagInBerlin(Date.now())}
-        class="md:w-44"
-      />
+      <div class="flex flex-col gap-1.5 md:w-44">
+        <label for={abId} class="font-medium">
+          {m.satz_gueltig_ab()}
+        </label>
+        <DatePicker id={abId} name="ab" required defaultValue={tagInBerlin(Date.now())} />
+      </div>
     </NeuFormular>
   );
 };

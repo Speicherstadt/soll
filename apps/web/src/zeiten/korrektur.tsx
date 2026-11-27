@@ -6,7 +6,7 @@ import {
   type Tag,
   tagInBerlin,
 } from "@soll/arbeitszeit";
-import { Button, Dialog } from "@soll/ui";
+import { Button, DatePicker, Dialog, TimePicker } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
 import { api } from "../api.ts";
@@ -117,24 +117,15 @@ export const KorrekturDialog = (props: { korrektur: Korrektur; onSchliessen: () 
               <label for={`${id}-datum`} class="font-medium">
                 {m.korrektur_datum()}
               </label>
-              <input
-                id={`${id}-datum`}
-                name="datum"
-                type="date"
-                class={feld}
-                value={anfangTag()}
-                required
-              />
+              <DatePicker id={`${id}-datum`} name="datum" value={anfangTag()} required />
             </div>
             <div class="flex flex-col gap-1.5">
               <label for={`${id}-uhrzeit`} class="font-medium">
                 {m.korrektur_uhrzeit()}
               </label>
-              <input
+              <TimePicker
                 id={`${id}-uhrzeit`}
                 name="uhrzeit"
-                type="time"
-                class={feld}
                 value={(() => {
                   const s = stempel();
                   return s ? uhrzeitFeld(s.zeitpunkt) : "";

@@ -1,5 +1,5 @@
 import { BRANCHEN, type Branche } from "@soll/arbeitszeit";
-import { Button } from "@soll/ui";
+import { Button, DatePicker } from "@soll/ui";
 import { createMemo, createSignal, For, Loading, Show } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { alle, PFAD, ressourcen } from "../abfragen/schluessel.ts";
@@ -133,14 +133,10 @@ export const PruefungEinstellungen = () => {
               <Feld
                 label={m.pruefung_beginn()}
                 kind={(id) => (
-                  <input
+                  <DatePicker
                     id={id}
-                    type="date"
-                    class={feld}
                     value={aktuell().ausgleichBeginn ?? ""}
-                    onChange={(event) =>
-                      setze({ ausgleichBeginn: event.currentTarget.value || null })
-                    }
+                    onValue={(wert) => setze({ ausgleichBeginn: wert || null })}
                   />
                 )}
               />

@@ -1,9 +1,8 @@
 import { tagInBerlin } from "@soll/arbeitszeit";
-import { Button, Icon } from "@soll/ui";
+import { Button, DatePicker, Icon } from "@soll/ui";
 import { CircleAlert, Plus } from "lucide";
 import { createSignal, createUniqueId, Loading, latest, Show } from "solid-js";
 import type { Antwort } from "../api.ts";
-import { feld } from "../einrichtung/stil.ts";
 import { dauerText } from "../einrichtung/werte.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
@@ -92,12 +91,10 @@ export const Stoppuhr = () => {
                   <label for={`${id}-tag`} class="font-medium">
                     {m.stoppuhr_tag()}
                   </label>
-                  <input
+                  <DatePicker
                     id={`${id}-tag`}
-                    type="date"
-                    class={feld}
                     value={ansicht().tag}
-                    onChange={(event) => setTag(event.currentTarget.value || undefined)}
+                    onValue={(wert) => setTag(wert || undefined)}
                   />
                 </div>
                 <p class="text-[13px] text-muted-foreground">{summeText(ansicht())}</p>

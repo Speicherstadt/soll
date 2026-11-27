@@ -1,4 +1,5 @@
 import type { JSX } from "@solidjs/web";
+import { TimePicker } from "@soll/ui";
 import { createUniqueId, For, Show } from "solid-js";
 import { feld } from "../einrichtung/stil.ts";
 import { minuteAus } from "../zeiten/aktionen.ts";
@@ -36,14 +37,12 @@ export const ZeitFeld = (props: {
   <Feld
     label={props.label}
     kind={(id) => (
-      <input
+      <TimePicker
         id={id}
-        type="time"
-        class={feld}
         required
         value={minutenText(props.minute)}
-        onChange={(event) => {
-          const minute = minuteAus(event.currentTarget.value);
+        onValue={(wert) => {
+          const minute = minuteAus(wert);
           if (minute !== null) props.onMinute(minute);
         }}
       />

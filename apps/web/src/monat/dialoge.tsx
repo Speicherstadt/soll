@@ -1,6 +1,6 @@
 import type { JSX } from "@solidjs/web";
 import { ersterTag, type Monat } from "@soll/arbeitszeit";
-import { Button, Dialog } from "@soll/ui";
+import { Button, DatePicker, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
 import type { Schluessel } from "../abfragen/schluessel.ts";
@@ -124,14 +124,7 @@ export const GegeneintragDialog = (props: {
           <label for={`${id}-tag`} class="font-medium">
             {m.monat_spalte_tag()}
           </label>
-          <input
-            id={`${id}-tag`}
-            name="tag"
-            type="date"
-            class={feld}
-            value={ersterTag(props.monat)}
-            required
-          />
+          <DatePicker id={`${id}-tag`} name="tag" defaultValue={ersterTag(props.monat)} required />
         </div>
         <div class="flex flex-col gap-1.5">
           <label for={`${id}-minuten`} class="font-medium">

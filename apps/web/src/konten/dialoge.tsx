@@ -1,5 +1,5 @@
 import { jahrVon } from "@soll/arbeitszeit";
-import { Button, Dialog } from "@soll/ui";
+import { Button, DatePicker, Dialog } from "@soll/ui";
 import { createSignal, createUniqueId, For, Show } from "solid-js";
 import { aenderung } from "../abfragen/abfrage.ts";
 import { alle, PFAD } from "../abfragen/schluessel.ts";
@@ -50,12 +50,10 @@ export const HinweisDialog = (props: {
           <label for={id} class="font-medium">
             {m.konten_hinweis_tag()}
           </label>
-          <input
+          <DatePicker
             id={id}
             name="tag"
-            type="date"
-            class={feld}
-            value={props.k.heute}
+            defaultValue={props.k.heute}
             max={props.k.heute}
             required
           />

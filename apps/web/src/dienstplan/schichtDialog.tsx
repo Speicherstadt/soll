@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@soll/ui";
+import { Button, DatePicker, Dialog } from "@soll/ui";
 import { createSignal, For, untrack } from "solid-js";
 import { schreiben } from "../abfragen/abfrage.ts";
 import type { Antwort } from "../api.ts";
@@ -74,15 +74,11 @@ const SchichtFelder = (props: Felder) => {
         <Feld
           label={m.plan_tag()}
           kind={(id) => (
-            <input
+            <DatePicker
               id={id}
-              type="date"
-              class={feld}
               required
               value={props.werte.tag}
-              onChange={(event) =>
-                event.currentTarget.value && props.setze({ tag: event.currentTarget.value })
-              }
+              onValue={(wert) => wert && props.setze({ tag: wert })}
             />
           )}
         />

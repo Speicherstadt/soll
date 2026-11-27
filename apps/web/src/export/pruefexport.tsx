@@ -1,4 +1,5 @@
 import type { Tag } from "@soll/arbeitszeit";
+import { DatePicker } from "@soll/ui";
 import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
 import { abfrage, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
@@ -12,13 +13,7 @@ const Datum = (props: { id: string; label: string; wert: Tag; onWert: (tag: Tag)
     <label for={props.id} class="font-medium">
       {props.label}
     </label>
-    <input
-      id={props.id}
-      type="date"
-      class={feld}
-      value={props.wert}
-      onChange={(event) => props.onWert(event.currentTarget.value)}
-    />
+    <DatePicker id={props.id} value={props.wert} onValue={props.onWert} />
   </div>
 );
 

@@ -114,7 +114,7 @@ export const Wechsel = (props: {
             {(wahl) => (
               <Button
                 variant="outline"
-                class="min-h-11 sm:min-h-8 sm:px-3 sm:text-[13px]"
+                class="min-h-11 px-3 text-[13px]"
                 aria-pressed={gleich(wahl, props.laufend) ? "true" : "false"}
                 aria-label={m.stoppuhr_wechseln_zu({ name: name(wahl) })}
                 disabled={props.arbeitet}

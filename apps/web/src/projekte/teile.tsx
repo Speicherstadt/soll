@@ -1,7 +1,7 @@
 import type { JSX } from "@solidjs/web";
-import { Badge, Button, Icon } from "@soll/ui";
-import { Archive, ArchiveRestore, Trash2 } from "lucide";
-import { Show } from "solid-js";
+import { Badge, Button, Dialog, Icon } from "@soll/ui";
+import { Archive, ArchiveRestore, Plus, Trash2 } from "lucide";
+import { createSignal, Show } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { fehlerText } from "./werte.ts";
@@ -51,52 +51,52 @@ export const Aktionen = (props: {
   </div>
 );
 
-/** A form to add a row: compact inline toolbar when `zeile` is set, or a full-width 3-column grid */
+/** Clean "+ Anlegen" trigger button opening a modal shadcn Dialog instead of a permanent form wall */
 export const NeuFormular = (props: {
   label: string;
   knopf: string;
   fehler: string;
   arbeitet: boolean;
-  zeile?: boolean;
-  onSubmit: (daten: FormData, form: HTMLFormElement) => void;
+  onSubmit: (daten: FormData, form: HTMLFormElement) => Promise<boolean> | boolean;
   children: JSX.Element;
-}) => (
-  <form
-    aria-label={props.label}
-    class="flex flex-col gap-4 rounded-xl border border-border bg-background p-5"
-    onSubmit={(event) => {
-      event.preventDefault();
-      const form = event.currentTarget;
-      props.onSubmit(new FormData(form), form);
-    }}
-  >
-    <h2 class="font-semibold text-[14px] text-foreground">{props.label}</h2>
-    <Show
-      when={props.zeile}
-      fallback={
-        <>
-          <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {props.children}
-          </div>
-          <div class="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4">
-            <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
-            <Button type="submit" variant="primary" disabled={props.arbeitet}>
-              {props.knopf}
-            </Button>
-          </div>
-        </>
-      }
-    >
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
-        {props.children}
-        <Button type="submit" variant="primary" class="h-9 shrink-0" disabled={props.arbeitet}>
+}) => {
+  const [offen, setOffen] = createSignal(false);
+  return (
+    <>
+      <div class="flex justify-end">
+        <Button variant="primary" onClick={() => setOffen(true)}>
+          <Icon icon={Plus} size={15} />
           {props.knopf}
         </Button>
       </div>
-      <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
-    </Show>
-  </form>
-);
+      <Show when={offen()}>
+        <Dialog offen={offen()} titel={props.label} onSchliessen={() => setOffen(false)}>
+          <form
+            aria-label={props.label}
+            class="flex flex-col gap-4"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const form = event.currentTarget;
+              const ok = await props.onSubmit(new FormData(form), form);
+              if (ok) setOffen(false);
+            }}
+          >
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">{props.children}</div>
+            <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
+            <div class="flex justify-end gap-2 border-border border-t pt-3">
+              <Button variant="outline" onClick={() => setOffen(false)}>
+                {m.abbrechen()}
+              </Button>
+              <Button type="submit" variant="primary" disabled={props.arbeitet}>
+                {props.knopf}
+              </Button>
+            </div>
+          </form>
+        </Dialog>
+      </Show>
+    </>
+  );
+};
 
 /** The text of the empty list, or nothing */
 export const LeerText = (props: { leer: boolean; text: string }) => (

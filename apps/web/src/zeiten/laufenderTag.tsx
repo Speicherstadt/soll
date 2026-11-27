@@ -29,6 +29,7 @@ export const LaufenderTag = (props: {
   stand: Tagesstand;
   sollMinuten: number | null;
   aktionen?: JSX.Element;
+  eingebettet?: boolean;
 }) => {
   const anteil = () => {
     const soll = props.sollMinuten;
@@ -44,7 +45,11 @@ export const LaufenderTag = (props: {
   return (
     <section
       aria-label={m.tag_laufend()}
-      class="flex flex-col gap-4 rounded-xl border border-border bg-background p-5"
+      class={
+        props.eingebettet
+          ? "flex flex-col gap-4"
+          : "flex flex-col gap-4 rounded-xl border border-border bg-background p-5"
+      }
     >
       <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div class="flex flex-col gap-2">

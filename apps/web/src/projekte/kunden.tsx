@@ -15,6 +15,7 @@ export const Kunden = (props: { quelle: ProjektQuelle }) => {
       ...(nummer ? { nummer } : {}),
     });
     if (ok) form.reset();
+    return ok;
   };
   return (
     <div class="flex flex-col gap-4">
@@ -23,11 +24,10 @@ export const Kunden = (props: { quelle: ProjektQuelle }) => {
         knopf={m.kunde_anlegen()}
         fehler={fehler()}
         arbeitet={aktionen.arbeitet()}
-        zeile
         onSubmit={anlegen}
       >
-        <Input label={m.kunde_name()} name="name" required maxlength={100} class="min-w-0 flex-1" />
-        <Input label={m.kunde_nummer()} name="nummer" maxlength={40} class="min-w-0 flex-1" />
+        <Input label={m.kunde_name()} name="name" required maxlength={100} class="sm:col-span-2" />
+        <Input label={m.kunde_nummer()} name="nummer" maxlength={40} class="sm:col-span-2" />
       </NeuFormular>
       <LeerText leer={props.quelle.kunden().length === 0} text={m.kunden_leer()} />
       <Table beschriftung={m.kunden_liste()}>

@@ -66,16 +66,16 @@ export const demoStundenzettelPdf = (ansicht: MonatAnsicht): Blob => {
 
   let y = 690;
   for (const z of zeilen.slice(0, 32)) {
-    const soll = z.sollMinuten ?? 0;
-    const diff = z.arbeitsMinuten - soll;
+    const hatZeit = z.beginn !== null;
+    const diff = hatZeit && z.sollMinuten !== null ? z.arbeitsMinuten - z.sollMinuten : null;
     const text = [
       kurzerTag(z.tag).padEnd(12),
       (z.beginn === null ? "-" : uhrzeitText(z.beginn)).padEnd(8),
       (z.ende === null ? "-" : uhrzeitText(z.ende)).padEnd(8),
-      dauerText(z.pauseMinuten).padEnd(7),
-      dauerText(z.arbeitsMinuten).padEnd(7),
+      (hatZeit ? dauerText(z.pauseMinuten) : "-").padEnd(7),
+      (hatZeit ? dauerText(z.arbeitsMinuten) : "-").padEnd(7),
       (z.sollMinuten === null ? "-" : dauerText(z.sollMinuten)).padEnd(7),
-      z.sollMinuten === null ? "-" : saldoText(diff),
+      diff === null ? "-" : saldoText(diff),
     ].join(" ");
     befehle.push(zeile(48, y, 9, "F2", text));
     y -= 16;

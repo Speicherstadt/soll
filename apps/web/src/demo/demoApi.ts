@@ -104,7 +104,7 @@ const monatDaten = (monat: string) => ({
 const DEMO_VORLAGEN = [
   {
     vorlageId: "v-frueh",
-    name: "Frühschicht",
+    name: "Tagschicht",
     beginnMinute: 420,
     endeMinute: 930,
     pauseMinuten: 30,
@@ -122,7 +122,7 @@ const DEMO_VORLAGEN = [
   },
   {
     vorlageId: "v-spaet",
-    name: "Spätschicht",
+    name: "Nachmittag",
     beginnMinute: 540,
     endeMinute: 1050,
     pauseMinuten: 30,
@@ -131,11 +131,15 @@ const DEMO_VORLAGEN = [
   },
 ];
 
-const montagDerWoche = (jahr: number, woche: number): Date => {
-  const jan4 = new Date(Date.UTC(jahr, 0, 4, 12));
-  const tag = jan4.getUTCDay() || 7;
-  const montagW1 = new Date(jan4.getTime() - (tag - 1) * 86_400_000);
-  return new Date(montagW1.getTime() + (woche - 1) * 7 * 86_400_000);
+const isoWocheVonTag = (tag: string): { montag: Date; jahr: number; nummer: number } => {
+  const basis = /^\d{4}-\d{2}-\d{2}$/.test(tag) ? new Date(`${tag}T12:00:00Z`) : new Date();
+  const wochentag = basis.getUTCDay() || 7;
+  const montag = new Date(basis.getTime() - (wochentag - 1) * 86_400_000);
+  const donnerstag = new Date(montag.getTime() + 3 * 86_400_000);
+  const jahr = donnerstag.getUTCFullYear();
+  const jan1 = new Date(Date.UTC(jahr, 0, 1, 12));
+  const nummer = Math.floor((donnerstag.getTime() - jan1.getTime()) / (7 * 86_400_000)) + 1;
+  return { montag, jahr, nummer };
 };
 
 const zeitMs = (tag: string, minuten: number): number => {
@@ -145,11 +149,9 @@ const zeitMs = (tag: string, minuten: number): number => {
 };
 
 const wocheDaten = (query: URLSearchParams) => {
-  const jahr = Number(query.get("jahr")) || 2026;
-  const nummer = Number(query.get("woche")) || 48;
-  const start = montagDerWoche(jahr, nummer);
+  const { montag, jahr, nummer } = isoWocheVonTag(query.get("tag") ?? heuteTag());
   const tage = Array.from({ length: 7 }, (_, i) =>
-    new Date(start.getTime() + i * 86_400_000).toISOString().slice(0, 10),
+    new Date(montag.getTime() + i * 86_400_000).toISOString().slice(0, 10),
   );
   const werkte = tage.slice(0, 5);
   const muster = [
@@ -186,12 +188,7 @@ const wocheDaten = (query: URLSearchParams) => {
   };
 };
 
-const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query);
-  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
-  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
-  if (pfad === "/api/v1/dienstplan/tausch")
-    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+const getProjektzeitAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/projektzeit/kunden") return { kunden: DEMO_KUNDEN };
   if (pfad === "/api/v1/projektzeit/projekte") return { projekte: DEMO_PROJEKTE };
   if (pfad === "/api/v1/projektzeit/taetigkeiten") return { taetigkeiten: DEMO_TAETIGKEITEN };
@@ -226,6 +223,17 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
       stand: "demo-stand",
     };
   }
+  return undefined;
+};
+
+const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
+  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query);
+  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
+  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
+  if (pfad === "/api/v1/dienstplan/tausch")
+    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+  const projektzeit = getProjektzeitAntwort(pfad, query);
+  if (projektzeit !== undefined) return projektzeit;
   if (pfad === "/api/v1/projektzeit/auslastung")
     return {
       monat: query.get("monat") ?? "2026-10",

@@ -134,26 +134,26 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                     <th scope="row" class="h-10 whitespace-nowrap px-3 text-start font-medium">
                       {kurzerTag(zeile.tag)}
                     </th>
-                    <Td class="text-end font-mono text-muted-foreground tabular-nums" dir="ltr">
-                      {zeit(zeile.beginn)}
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums">
+                      <span dir="ltr">{zeit(zeile.beginn)}</span>
                     </Td>
-                    <Td class="text-end font-mono text-muted-foreground tabular-nums" dir="ltr">
-                      {zeit(zeile.ende)}
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums">
+                      <span dir="ltr">{zeit(zeile.ende)}</span>
                     </Td>
-                    <Td
-                      class="text-end font-mono text-muted-foreground tabular-nums max-md:hidden"
-                      dir="ltr"
-                    >
-                      {zeile.beginn === null ? "–" : dauerText(zeile.pauseMinuten)}
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums max-md:hidden">
+                      <span dir="ltr">
+                        {zeile.beginn === null ? "–" : dauerText(zeile.pauseMinuten)}
+                      </span>
                     </Td>
-                    <Td class="text-end font-mono font-medium tabular-nums" dir="ltr">
-                      {zeile.beginn === null ? "–" : dauerText(zeile.arbeitsMinuten)}
+                    <Td class="text-end font-mono font-medium tabular-nums">
+                      <span dir="ltr">
+                        {zeile.beginn === null ? "–" : dauerText(zeile.arbeitsMinuten)}
+                      </span>
                     </Td>
-                    <Td
-                      class="text-end font-mono text-muted-foreground tabular-nums max-lg:hidden"
-                      dir="ltr"
-                    >
-                      {zeile.sollMinuten === null ? "–" : dauerText(zeile.sollMinuten)}
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums max-lg:hidden">
+                      <span dir="ltr">
+                        {zeile.sollMinuten === null ? "–" : dauerText(zeile.sollMinuten)}
+                      </span>
                     </Td>
                     <Td
                       class={`text-end font-mono tabular-nums max-md:hidden ${
@@ -163,9 +163,8 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                             ? "text-danger"
                             : "text-muted-foreground"
                       }`}
-                      dir="ltr"
                     >
-                      {diff() === null ? "–" : saldoText(diff() ?? 0)}
+                      <span dir="ltr">{diff() === null ? "–" : saldoText(diff() ?? 0)}</span>
                     </Td>
                     <Td>
                       <div class="flex flex-wrap items-center gap-1">

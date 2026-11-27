@@ -22,7 +22,7 @@ const Auswertungen = () => {
     <Seite titel={m.nav_auswertungen()}>
       <div class="grid grid-cols-1 gap-5 xl:grid-cols-12 xl:items-stretch">
         <Show when={mitAuslastung()}>
-          <div class={datev.data?.ok ? "min-w-0 xl:col-span-7" : "min-w-0 xl:col-span-12"}>
+          <div class="min-w-0 xl:col-span-7 only:xl:col-span-12">
             <AuslastungBereich />
           </div>
         </Show>

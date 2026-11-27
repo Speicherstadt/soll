@@ -40,7 +40,7 @@ const tabSchreiben = (id: string) => {
 
 const Karte = (props: { children: JSX.Element; voll?: boolean }) => (
   <div
-    class={`flex h-full min-w-0 flex-col rounded-xl border border-border bg-background p-5 ${
+    class={`flex min-w-0 flex-col rounded-xl border border-border bg-background p-5 ${
       props.voll ? "lg:col-span-2" : ""
     }`}
   >
@@ -85,25 +85,29 @@ const Einstellungen = () => {
     id: "betrieb",
     label: m.einstellungen_tab_betrieb(),
     inhalt: () => (
-      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
-        <Karte>
-          <ModuleSchalter />
-        </Karte>
-        <Show when={inhaber()}>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
+        <div class="flex min-w-0 flex-col gap-5">
           <Karte>
-            <PruefungEinstellungen />
+            <ModuleSchalter />
           </Karte>
-        </Show>
-        <Show when={inhaber() && arbeitszeit()}>
-          <Karte>
-            <BescheinigungEinstellung />
-          </Karte>
-        </Show>
-        <Show when={erinnerungenSichtbar()}>
-          <Karte>
-            <Erinnerungen />
-          </Karte>
-        </Show>
+          <Show when={inhaber()}>
+            <Karte>
+              <PruefungEinstellungen />
+            </Karte>
+          </Show>
+          <Show when={inhaber() && arbeitszeit()}>
+            <Karte>
+              <BescheinigungEinstellung />
+            </Karte>
+          </Show>
+        </div>
+        <div class="flex min-w-0 flex-col gap-5">
+          <Show when={erinnerungenSichtbar()}>
+            <Karte>
+              <Erinnerungen />
+            </Karte>
+          </Show>
+        </div>
       </div>
     ),
   };
@@ -112,7 +116,7 @@ const Einstellungen = () => {
     id: "terminal",
     label: m.einstellungen_tab_terminal(),
     inhalt: () => (
-      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <Karte>
           <TerminalGeraete />
         </Karte>
@@ -130,7 +134,7 @@ const Einstellungen = () => {
     id: "export",
     label: m.einstellungen_tab_export(),
     inhalt: () => (
-      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <Show when={datevSichtbar()}>
           <Karte voll>
             <DatevZuordnung />
@@ -163,12 +167,12 @@ const Einstellungen = () => {
     id: "konto",
     label: m.einstellungen_tab_konto(),
     inhalt: () => (
-      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <Karte voll>
           <Zugaenge />
         </Karte>
         <Karte>
-          <section class="flex max-w-sm flex-col gap-3">
+          <section class="flex flex-col gap-3">
             <h2 class="font-semibold">{m.darstellung_titel()}</h2>
             <Darstellung />
           </section>

@@ -21,10 +21,9 @@ test("[tdd-review] KorrekturDialog TimePicker keeps picked hour when minute is c
   const popover = dialog.locator('[data-picker-popover="time"]');
   await expect(popover).toBeVisible();
 
-  const spalten = popover.locator("> div");
-  await spalten.nth(0).getByRole("button", { name: "14", exact: true }).click();
-  await spalten.nth(1).getByRole("button", { name: "30", exact: true }).click();
-  await expect(uhrzeit).toHaveValue("14:30");
+  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: ":30", exact: true }).click();
+  await expect(uhrzeit).toHaveValue("09:30");
 });
 
 test("[tdd-review] BuchungDialog TimePicker keeps picked hour when minute is clicked (value vs defaultValue)", async ({
@@ -42,10 +41,9 @@ test("[tdd-review] BuchungDialog TimePicker keeps picked hour when minute is cli
   const popover = dialog.locator('[data-picker-popover="time"]');
   await expect(popover).toBeVisible();
 
-  const spalten = popover.locator("> div");
-  await spalten.nth(0).getByRole("button", { name: "14", exact: true }).click();
-  await spalten.nth(1).getByRole("button", { name: "30", exact: true }).click();
-  await expect(beginn).toHaveValue("14:30");
+  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: ":30", exact: true }).click();
+  await expect(beginn).toHaveValue("09:30");
 });
 
 test("[tdd-review] form.reset() restores DatePicker defaultValue instead of clearing the input", async ({

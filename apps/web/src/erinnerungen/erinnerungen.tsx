@@ -56,32 +56,36 @@ export const Erinnerungen = () => {
     <Loading>
       <Show when={ansicht()}>
         {(a) => (
-          <section class="flex max-w-lg flex-col gap-3">
-            <h2 class="font-semibold">{m.erinnerungen_titel()}</h2>
-            <p class="text-muted-foreground">{m.erinnerungen_text()}</p>
+          <section class="flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+              <h2 class="font-semibold">{m.erinnerungen_titel()}</h2>
+              <p class="text-muted-foreground">{m.erinnerungen_text()}</p>
+            </div>
             <GeraetSchalter vapidSchluessel={a().vapidSchluessel} onGeaendert={neuLaden} />
-            <For each={ARTEN}>
-              {(eintrag) => (
-                <Checkbox
-                  class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5"
-                  boxClass="mt-1"
-                  checked={a().wuensche[eintrag.art]}
-                  disabled={eintrag.art === "mail" && !a().mail}
-                  onChange={(event) =>
-                    setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
-                  }
-                >
-                  <span class="flex flex-col">
-                    <span class="font-medium">{eintrag.name()}</span>
-                    <span class="text-muted-foreground">
-                      {eintrag.art === "mail" && !a().mail
-                        ? m.erinnerungen_mail_keine()
-                        : eintrag.text()}
+            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <For each={ARTEN}>
+                {(eintrag) => (
+                  <Checkbox
+                    class="flex items-start gap-3 rounded-lg border border-border px-3 py-2.5"
+                    boxClass="mt-1"
+                    checked={a().wuensche[eintrag.art]}
+                    disabled={eintrag.art === "mail" && !a().mail}
+                    onChange={(event) =>
+                      setzen(eintrag.art, event.currentTarget.checked, event.currentTarget)
+                    }
+                  >
+                    <span class="flex flex-col">
+                      <span class="font-medium">{eintrag.name()}</span>
+                      <span class="text-[12px] text-muted-foreground">
+                        {eintrag.art === "mail" && !a().mail
+                          ? m.erinnerungen_mail_keine()
+                          : eintrag.text()}
+                      </span>
                     </span>
-                  </span>
-                </Checkbox>
-              )}
-            </For>
+                  </Checkbox>
+                )}
+              </For>
+            </div>
             <Fehler text={fehler()} />
             <Show when={inhaber()}>
               <RegelnFormular regeln={a().regeln} />

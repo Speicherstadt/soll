@@ -98,55 +98,59 @@ export const PruefungEinstellungen = () => {
     <Loading>
       <Show when={werte()}>
         {(aktuell) => (
-          <section class="flex max-w-lg flex-col gap-3">
+          <section class="flex flex-col gap-3">
             <h2 class="font-semibold">{m.pruefung_titel()}</h2>
             <p class="text-muted-foreground">{m.pruefung_text()}</p>
-            <form class="flex flex-col gap-3" onSubmit={speichern} novalidate>
-              <Auswahl
-                label={m.pruefung_branche()}
-                wert={aktuell().branche ?? ""}
-                optionen={[
-                  ["", m.pruefung_keine()],
-                  ...BRANCHEN.map((b) => [b, BRANCHEN_NAMEN[b]()] as const),
-                ]}
-                onWert={(wert) => setze({ branche: (wert || null) as Branche | null })}
-              />
-              <Auswahl
-                label={m.pruefung_sonntag()}
-                wert={String(aktuell().sonntagsausnahme ?? "")}
-                optionen={[
-                  ["", m.pruefung_keine()],
-                  ...NUMMERN.map((n) => [String(n), m.pruefung_nummer({ nummer: n })] as const),
-                ]}
-                onWert={(wert) => setze({ sonntagsausnahme: wert ? Number(wert) : null })}
-              />
-              <Auswahl
-                label={m.pruefung_ausgleich()}
-                wert={aktuell().ausgleichszeitraum ?? ""}
-                optionen={ZEITRAEUME.map(([wert, text]) => [wert, text()] as const)}
-                onWert={(wert) =>
-                  setze({
-                    ausgleichszeitraum: (wert || null) as Einstellungen["ausgleichszeitraum"],
-                  })
-                }
-              />
-              <Feld
-                label={m.pruefung_beginn()}
-                kind={(id) => (
-                  <DatePicker
-                    id={id}
-                    value={aktuell().ausgleichBeginn ?? ""}
-                    onValue={(wert) => setze({ ausgleichBeginn: wert || null })}
-                  />
-                )}
-              />
+            <form class="flex flex-col gap-4" onSubmit={speichern} novalidate>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Auswahl
+                  label={m.pruefung_branche()}
+                  wert={aktuell().branche ?? ""}
+                  optionen={[
+                    ["", m.pruefung_keine()],
+                    ...BRANCHEN.map((b) => [b, BRANCHEN_NAMEN[b]()] as const),
+                  ]}
+                  onWert={(wert) => setze({ branche: (wert || null) as Branche | null })}
+                />
+                <Auswahl
+                  label={m.pruefung_sonntag()}
+                  wert={String(aktuell().sonntagsausnahme ?? "")}
+                  optionen={[
+                    ["", m.pruefung_keine()],
+                    ...NUMMERN.map((n) => [String(n), m.pruefung_nummer({ nummer: n })] as const),
+                  ]}
+                  onWert={(wert) => setze({ sonntagsausnahme: wert ? Number(wert) : null })}
+                />
+                <Auswahl
+                  label={m.pruefung_ausgleich()}
+                  wert={aktuell().ausgleichszeitraum ?? ""}
+                  optionen={ZEITRAEUME.map(([wert, text]) => [wert, text()] as const)}
+                  onWert={(wert) =>
+                    setze({
+                      ausgleichszeitraum: (wert || null) as Einstellungen["ausgleichszeitraum"],
+                    })
+                  }
+                />
+                <Feld
+                  label={m.pruefung_beginn()}
+                  kind={(id) => (
+                    <DatePicker
+                      id={id}
+                      value={aktuell().ausgleichBeginn ?? ""}
+                      onValue={(wert) => setze({ ausgleichBeginn: wert || null })}
+                    />
+                  )}
+                />
+              </div>
               <Fehler text={fehler()} />
-              <p class="text-success" aria-live="polite">
-                {status()}
-              </p>
-              <Button type="submit" class="self-start" disabled={sichern.isPending}>
-                {m.pruefung_speichern()}
-              </Button>
+              <div class="flex flex-wrap items-center gap-3">
+                <Button type="submit" disabled={sichern.isPending}>
+                  {m.pruefung_speichern()}
+                </Button>
+                <p class="text-success" aria-live="polite">
+                  {status()}
+                </p>
+              </div>
             </form>
           </section>
         )}

@@ -59,12 +59,39 @@ test("TimePicker works inside a modal Dialog without clipping and Escape keeps t
   await expect(popover).toBeHidden();
   await expect(dialog).toBeVisible();
 
-  // Re-open and pick 09:30
+  // Re-open, verify 0 axe violations, step hour +1 (08->09) and pick :30
   await vonInput.click();
   await expect(popover).toBeVisible();
-  const spalten = popover.locator("> div");
-  await spalten.nth(0).getByRole("button", { name: "09", exact: true }).click();
-  await spalten.nth(1).getByRole("button", { name: "30", exact: true }).click();
-  await expect(popover).toBeHidden();
+  const axe = await new AxeBuilder({ page }).analyze();
+  expect(axe.violations).toEqual([]);
+  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: ":30", exact: true }).click();
   await expect(vonInput).toHaveValue("09:30");
+  await page.keyboard.press("Escape");
+  await expect(popover).toBeHidden();
+});
+
+test("Stoppuhr Starten and Stoppen cause zero vertical layout shift on Heute", async ({ page }) => {
+  await betriebAnlegen(page);
+  await page.goto("/");
+
+  const bereich = page.getByRole("region", { name: t("stoppuhr_titel") });
+  const form = bereich.getByRole("form", { name: t("stoppuhr_neu") });
+  await expect(form).toBeVisible();
+
+  const before = await form.boundingBox();
+  expect(before).not.toBeNull();
+
+  await form.getByRole("button", { name: t("stoppuhr_starten") }).click();
+  await expect(bereich.getByTestId("stoppuhr-laufend")).toBeVisible();
+
+  const afterStart = await form.boundingBox();
+  expect(afterStart).not.toBeNull();
+  expect(Math.abs((afterStart?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(1);
+
+  await bereich.getByRole("button", { name: t("stoppuhr_stoppen") }).click();
+  await expect(bereich.getByText(t("stoppuhr_steht"))).toBeVisible();
+
+  const afterStop = await form.boundingBox();
+  expect(Math.abs((afterStop?.y ?? 0) - (before?.y ?? 0))).toBeLessThanOrEqual(1);
 });

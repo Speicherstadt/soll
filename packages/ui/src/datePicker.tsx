@@ -27,15 +27,20 @@ export type DatePickerProps = {
   onValue?: (wert: string) => void;
 };
 
-const POPOVER_BREITE = 268;
-const POPOVER_HOEHE = 304;
+const POPOVER_BREITE = 280;
+const POPOVER_HOEHE = 312;
 
 const aktuelleSprache = () =>
   (typeof document !== "undefined" && document.documentElement.lang) || "de";
 
+const MONAT_INDIZES = Array.from({ length: 12 }, (_, i) => i);
+const JAHRE = Array.from({ length: 121 }, (_, i) => 1920 + i);
+
 const KalenderPopover = (props: {
   pos: { top: number; left: number };
-  titel: string;
+  jahr: number;
+  monat: number;
+  monatsNamen: readonly string[];
   vorTitel: string;
   nachTitel: string;
   wochentage: readonly string[];
@@ -43,34 +48,54 @@ const KalenderPopover = (props: {
   aktuell: string;
   heute: string;
   onSchritt: (delta: -1 | 1) => void;
+  onAnsicht: (jahr: number, monat: number) => void;
   onWaehlen: (tag: string) => void;
 }) => (
   <div
     data-picker-popover="date"
     style={{ top: `${props.pos.top}px`, left: `${props.pos.left}px` }}
-    class="fixed z-50 w-[268px] rounded-xl border border-border bg-background p-3 shadow-lg"
+    class="fixed z-50 w-[280px] rounded-xl border border-border bg-background p-3 shadow-xl"
   >
-    <div class="mb-2.5 flex items-center justify-between gap-1">
+    <div class="mb-3 flex items-center justify-between gap-1">
       <button
         type="button"
         aria-label={props.vorTitel}
-        class="inline-flex size-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+        class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         onClick={() => props.onSchritt(-1)}
       >
         <Icon icon={ChevronLeft} size={14} class="rtl:rotate-180" />
       </button>
-      <span class="font-medium text-[13px]">{props.titel}</span>
+      <div class="flex items-center gap-1">
+        <select
+          aria-label={props.monatsNamen[props.monat]}
+          value={String(props.monat)}
+          onChange={(e) => props.onAnsicht(props.jahr, Number(e.currentTarget.value))}
+          class="h-7 cursor-pointer rounded-md border border-border bg-background px-1.5 pe-6 font-medium text-[12px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+        >
+          <For each={MONAT_INDIZES}>
+            {(m) => <option value={String(m)}>{props.monatsNamen[m]}</option>}
+          </For>
+        </select>
+        <select
+          aria-label={String(props.jahr)}
+          value={String(props.jahr)}
+          onChange={(e) => props.onAnsicht(Number(e.currentTarget.value), props.monat)}
+          class="h-7 cursor-pointer rounded-md border border-border bg-background px-1.5 pe-6 font-medium font-mono text-[12px] text-foreground tabular-nums outline-hidden focus-visible:outline-2 focus-visible:outline-foreground"
+        >
+          <For each={JAHRE}>{(j) => <option value={String(j)}>{j}</option>}</For>
+        </select>
+      </div>
       <button
         type="button"
         aria-label={props.nachTitel}
-        class="inline-flex size-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+        class="inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         onClick={() => props.onSchritt(1)}
       >
         <Icon icon={ChevronRight} size={14} class="rtl:rotate-180" />
       </button>
     </div>
 
-    <div class="mb-1 grid grid-cols-7 text-center">
+    <div class="mb-1.5 grid grid-cols-7 text-center">
       <For each={props.wochentage}>
         {(wt) => <span class="py-1 font-medium text-[11px] text-muted-foreground">{wt}</span>}
       </For>
@@ -86,14 +111,15 @@ const KalenderPopover = (props: {
               type="button"
               disabled={z.deaktiviert}
               class={cn(
-                "inline-flex size-8 items-center justify-center rounded-md font-mono text-[12px] tabular-nums transition-colors",
+                "inline-flex size-8 items-center justify-center rounded-md text-[13px] tabular-nums transition-colors",
                 !z.deaktiviert && "cursor-pointer",
                 gewaehlt()
-                  ? "bg-foreground font-semibold text-background"
-                  : z.imMonat
-                    ? "text-foreground hover:bg-muted"
-                    : "text-muted-foreground hover:bg-muted",
-                istHeute() && !gewaehlt() && "border border-foreground/40 font-medium",
+                  ? "bg-foreground font-semibold text-background shadow-xs"
+                  : istHeute()
+                    ? "bg-muted font-semibold text-foreground hover:bg-muted/80"
+                    : z.imMonat
+                      ? "text-foreground hover:bg-muted"
+                      : "text-muted-foreground hover:bg-muted",
                 z.deaktiviert && "cursor-not-allowed opacity-35",
               )}
               onClick={() => props.onWaehlen(z.tag)}
@@ -224,6 +250,12 @@ export const DatePicker = (props: DatePickerProps) => {
     const m = monatVerschieben(ansicht().jahr, ansicht().monat, 1);
     return monatName(m.jahr, m.monat);
   });
+  const monatsNamen = createMemo(() => {
+    const fmt = new Intl.DateTimeFormat(aktuelleSprache(), { month: "short", timeZone: "UTC" });
+    return MONAT_INDIZES.map((m) =>
+      fmt.format(new Date(Date.UTC(2026, m, 1, 12))).replace(/\.$/, ""),
+    );
+  });
   const wochentage = createMemo(() => wochentagKuerzel(aktuelleSprache()));
   const zellen = createMemo(() =>
     kalenderGitter(ansicht().jahr, ansicht().monat, props.min, props.max),
@@ -247,7 +279,7 @@ export const DatePicker = (props: DatePickerProps) => {
         placeholder={props.placeholder ?? "YYYY-MM-DD"}
         value={aktuell()}
         dir="ltr"
-        class="h-9 w-full rounded-md border border-border bg-background ps-3 pe-9 font-mono text-[13px] tabular-nums outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
+        class="h-9 w-full rounded-md border border-border bg-background ps-3 pe-9 font-mono text-[13px] tabular-nums transition-colors hover:border-foreground/30 outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
         onInput={(e) => {
           const wert = e.currentTarget.value;
           setIntern(wert);
@@ -273,7 +305,9 @@ export const DatePicker = (props: DatePickerProps) => {
       <Show when={offen()}>
         <KalenderPopover
           pos={pos()}
-          titel={monatTitel()}
+          jahr={ansicht().jahr}
+          monat={ansicht().monat}
+          monatsNamen={monatsNamen()}
           vorTitel={vorTitel()}
           nachTitel={nachTitel()}
           wochentage={wochentage()}
@@ -281,6 +315,7 @@ export const DatePicker = (props: DatePickerProps) => {
           aktuell={aktuell()}
           heute={heute}
           onSchritt={(delta) => setAnsicht((a) => monatVerschieben(a.jahr, a.monat, delta))}
+          onAnsicht={(jahr, monat) => setAnsicht({ jahr, monat })}
           onWaehlen={(tag) => {
             uebernehmen(tag);
             setOffen(false);

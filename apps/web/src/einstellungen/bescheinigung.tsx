@@ -39,7 +39,7 @@ export const BescheinigungEinstellung = () => {
     <Loading>
       <Show when={stand()}>
         {(s) => (
-          <section class="flex max-w-sm flex-col gap-3">
+          <section class="flex flex-col gap-3">
             <h2 class="font-semibold">{m.abw_einstellung_titel()}</h2>
             <p class="text-muted-foreground">{m.abw_einstellung_text()}</p>
             <label for={id} class="font-medium">

@@ -1,8 +1,15 @@
-import { Clock } from "lucide";
+import { ChevronDown, ChevronUp, Clock } from "lucide";
 import { createEffect, createSignal, For, onSettled, Show, untrack } from "solid-js";
 import { cn } from "./cn.ts";
 import { Icon } from "./icon.tsx";
-import { MINUTEN, popoverPosition, STUNDEN, zeitFormatieren, zeitTeilen } from "./pickerDaten.ts";
+import {
+  minuteDrehen,
+  popoverPosition,
+  stundeDrehen,
+  VIERTEL_MINUTEN,
+  zeitFormatieren,
+  zeitTeilen,
+} from "./pickerDaten.ts";
 
 export type TimePickerProps = {
   id?: string;
@@ -16,68 +23,102 @@ export type TimePickerProps = {
   onValue?: (wert: string) => void;
 };
 
-const POPOVER_BREITE = 196;
-const POPOVER_HOEHE = 224;
+const POPOVER_BREITE = 204;
+const POPOVER_HOEHE = 176;
+
+const SCHRITT_KNOPF =
+  "inline-flex h-7 w-full cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground";
 
 const ZeitPopover = (props: {
   pos: { top: number; left: number };
   teile: { stunde: number; minute: number } | null;
-  onStunde: (h: number) => void;
-  onMinute: (min: number) => void;
-}) => (
-  <div
-    data-picker-popover="time"
-    style={{ top: `${props.pos.top}px`, left: `${props.pos.left}px` }}
-    class="fixed z-50 grid w-[196px] grid-cols-2 gap-1.5 rounded-xl border border-border bg-background p-2 shadow-lg"
-  >
-    <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto pe-1">
-      <For each={STUNDEN}>
-        {(h) => {
-          const aktiv = () => props.teile?.stunde === h;
-          return (
-            <button
-              type="button"
-              class={cn(
-                "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
-                aktiv()
-                  ? "bg-foreground font-semibold text-background"
-                  : "text-foreground hover:bg-muted",
-              )}
-              onClick={() => props.onStunde(h)}
-            >
-              {String(h).padStart(2, "0")}
-            </button>
-          );
-        }}
-      </For>
+  onZeit: (stunde: number, minute: number) => void;
+}) => {
+  const stunde = () => props.teile?.stunde ?? 8;
+  const minute = () => props.teile?.minute ?? 0;
+
+  return (
+    <div
+      data-picker-popover="time"
+      style={{ top: `${props.pos.top}px`, left: `${props.pos.left}px` }}
+      class="fixed z-50 w-[204px] rounded-xl border border-border bg-background p-3 shadow-xl"
+    >
+      <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+        <div class="flex flex-col items-center gap-1">
+          <button
+            type="button"
+            aria-label="+01:00"
+            class={SCHRITT_KNOPF}
+            onClick={() => props.onZeit(stundeDrehen(stunde(), 1), minute())}
+          >
+            <Icon icon={ChevronUp} size={15} />
+          </button>
+          <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
+            {String(stunde()).padStart(2, "0")}
+          </span>
+          <button
+            type="button"
+            aria-label="-01:00"
+            class={SCHRITT_KNOPF}
+            onClick={() => props.onZeit(stundeDrehen(stunde(), -1), minute())}
+          >
+            <Icon icon={ChevronDown} size={15} />
+          </button>
+        </div>
+
+        <span class="font-mono font-semibold text-[18px] text-muted-foreground">:</span>
+
+        <div class="flex flex-col items-center gap-1">
+          <button
+            type="button"
+            aria-label="+00:01"
+            class={SCHRITT_KNOPF}
+            onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), 1))}
+          >
+            <Icon icon={ChevronUp} size={15} />
+          </button>
+          <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
+            {String(minute()).padStart(2, "0")}
+          </span>
+          <button
+            type="button"
+            aria-label="-00:01"
+            class={SCHRITT_KNOPF}
+            onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), -1))}
+          >
+            <Icon icon={ChevronDown} size={15} />
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-2.5 grid grid-cols-4 gap-1 border-border border-t pt-2.5">
+        <For each={VIERTEL_MINUTEN}>
+          {(min) => {
+            const aktiv = () => props.teile?.minute === min;
+            return (
+              <button
+                type="button"
+                class={cn(
+                  "h-7 cursor-pointer rounded-md font-mono text-[12px] tabular-nums transition-colors",
+                  aktiv()
+                    ? "bg-foreground font-semibold text-background"
+                    : "border border-border text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+                onClick={() => props.onZeit(stunde(), min)}
+              >
+                :{String(min).padStart(2, "0")}
+              </button>
+            );
+          }}
+        </For>
+      </div>
     </div>
-    <div class="flex max-h-52 flex-col gap-0.5 overflow-y-auto border-border border-s ps-1.5">
-      <For each={MINUTEN}>
-        {(min) => {
-          const aktiv = () => props.teile?.minute === min;
-          return (
-            <button
-              type="button"
-              class={cn(
-                "cursor-pointer rounded-md px-2 py-1 text-center font-mono text-[12px] tabular-nums transition-colors",
-                aktiv()
-                  ? "bg-foreground font-semibold text-background"
-                  : "text-foreground hover:bg-muted",
-              )}
-              onClick={() => props.onMinute(min)}
-            >
-              {String(min).padStart(2, "0")}
-            </button>
-          );
-        }}
-      </For>
-    </div>
-  </div>
-);
+  );
+};
 
 /**
- * Shadcn-style TimePicker: clean monospace HH:MM input paired with a 2-column hour/minute popover
- * (00..23 × 00..55 in 5-min steps) plus direct keyboard typing for any exact minute.
+ * Shadcn-style TimePicker: clean monospace HH:MM input paired with a compact scrollbar-free
+ * hour/minute stepper popover (+ quarter-hour quick-pick pills) and direct keyboard typing.
  */
 export const TimePicker = (props: TimePickerProps) => {
   const [intern, setIntern] = createSignal(untrack(() => props.value ?? props.defaultValue ?? ""));
@@ -197,11 +238,7 @@ export const TimePicker = (props: TimePickerProps) => {
         <ZeitPopover
           pos={pos()}
           teile={teile()}
-          onStunde={(h) => uebernehmen(zeitFormatieren(h, teile()?.minute ?? 0))}
-          onMinute={(min) => {
-            uebernehmen(zeitFormatieren(teile()?.stunde ?? 8, min));
-            setOffen(false);
-          }}
+          onZeit={(h, min) => uebernehmen(zeitFormatieren(h, min))}
         />
       </Show>
     </div>

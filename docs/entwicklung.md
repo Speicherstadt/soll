@@ -114,12 +114,11 @@ jedes Bild, auf das README oder `docs/` verweisen, liegt vor und steht in der Li
 `#only-light` und `#only-dark`, in der README in `<picture>`.
 
 Nach einer Änderung am Aussehen: **Actions → Update screenshots → Run workflow**
-(`.github/workflows/screenshots.yml`). Der Workflow erzeugt alle Bilder, lädt sie als Artefakt
-`screenshots` hoch und öffnet, wenn sich ein Bild geändert hat, einen Pull Request
-`docs: update screenshots` auf einem Zweig `screenshots/<lauf>`; ohne Änderung keinen. Bilder
-ansehen, dann mergen. Einen mit `GITHUB_TOKEN` geöffneten Pull Request startet GitHub keine CI;
-schließen und wieder öffnen startet sie. In den Einstellungen des Repositorys muss „Allow GitHub
-Actions to create and approve pull requests“ an sein, sonst bleibt es beim Artefakt.
+(`.github/workflows/screenshots.yml`). Der Workflow läuft über den gemeinsamen Workflow
+`firsttris/workflows/.github/workflows/screenshots.yml@v1` im passenden Playwright-Image und
+committet geänderte Bilder unter `docs/assets/screenshots/` direkt auf den Branch (ohne Änderung
+keinen Commit). Der Push läuft über den Deploy Key (`BUMP_DEPLOY_KEY`), damit ein Ruleset auf
+`main` ihn durchlässt und die Doku danach automatisch neu gebaut wird.
 
 ## Komponenten
 

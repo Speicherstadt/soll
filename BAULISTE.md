@@ -1493,8 +1493,8 @@ Nicht auf dem Weg des Loops; alles erst nach der letzten Phase.
 - [ ] Vorlagen zum Datenschutz juristisch prüfen lassen: Betriebsvereinbarung, Infoblatt für
   Beschäftigte und Löschkonzept (`docs/betriebsvereinbarung.md`, `docs/infoblatt.md`,
   `docs/loeschkonzept.md`)
-- [ ] In den Repository-Einstellungen „Allow GitHub Actions to create and approve pull requests“
-  einschalten, damit „Update screenshots“ einen Pull Request öffnen kann (sonst nur das Artifact
-  und der Branch `screenshots/<run>`, der Lauf endet rot)
+- [ ] Deploy Key mit Schreibrecht und Actions-Secret `BUMP_DEPLOY_KEY` im Repository hinterlegen
+  (und bei einem Ruleset auf `main` in dessen Bypass-Liste aufnehmen), damit „Update screenshots“
+  geänderte Bilder direkt pusht und CI/Doku startet
 - [ ] Pilot in einem Schichtbetrieb und einem SHK-Betrieb, je ein Monat
 - [ ] Gehostete Variante und Partner (Steuerberatungen, IT-Dienstleister) aufsetzen

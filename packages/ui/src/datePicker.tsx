@@ -3,6 +3,7 @@ import { createEffect, createMemo, createSignal, For, onSettled, Show, untrack }
 import { cn } from "./cn.ts";
 import { Icon } from "./icon.tsx";
 import {
+  datumAnzeigen,
   datumGueltig,
   heuteIso,
   ISO_DATUM,
@@ -140,6 +141,7 @@ const KalenderPopover = (props: {
 export const DatePicker = (props: DatePickerProps) => {
   const [intern, setIntern] = createSignal(untrack(() => props.value ?? props.defaultValue ?? ""));
   const [offen, setOffen] = createSignal(false);
+  const [fokussiert, setFokussiert] = createSignal(false);
   const [pos, setPos] = createSignal({ top: 0, left: 0 });
   const aktuell = () => (props.value !== undefined ? props.value : intern());
 
@@ -289,8 +291,19 @@ export const DatePicker = (props: DatePickerProps) => {
           }
           props.onValue?.(wert);
         }}
+        onFocus={() => setFokussiert(true)}
+        onBlur={() => setFokussiert(false)}
         onClick={() => oeffnen(true)}
       />
+      <Show when={!fokussiert() && ISO_DATUM.test(aktuell())}>
+        <span
+          aria-hidden="true"
+          dir="ltr"
+          class="pointer-events-none absolute inset-y-[3px] start-[3px] end-9 flex items-center rounded-sm bg-background ps-2.5 font-mono text-[13px] text-foreground tabular-nums"
+        >
+          {datumAnzeigen(aktuell(), aktuelleSprache())}
+        </span>
+      </Show>
       <button
         type="button"
         disabled={props.disabled}
@@ -319,6 +332,7 @@ export const DatePicker = (props: DatePickerProps) => {
           onWaehlen={(tag) => {
             uebernehmen(tag);
             setOffen(false);
+            setFokussiert(false);
           }}
         />
       </Show>

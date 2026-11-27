@@ -90,10 +90,22 @@ export const Taetigkeiten = (props: { quelle: ProjektQuelle }) => {
           knopf={m.taetigkeit_anlegen()}
           fehler={fehler()}
           arbeitet={aktionen.arbeitet()}
+          zeile
           onSubmit={anlegen}
         >
-          <Input label={m.taetigkeit_name()} name="name" required maxlength={100} class="md:w-64" />
-          <Checkbox name="abrechenbar" value="ja" defaultChecked class="min-h-9">
+          <Input
+            label={m.taetigkeit_name()}
+            name="name"
+            required
+            maxlength={100}
+            class="min-w-0 flex-1"
+          />
+          <Checkbox
+            name="abrechenbar"
+            value="ja"
+            defaultChecked
+            class="flex h-9 shrink-0 items-center rounded-md border border-border px-3"
+          >
             {m.taetigkeit_abrechenbar()}
           </Checkbox>
         </NeuFormular>

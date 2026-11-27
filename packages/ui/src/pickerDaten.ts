@@ -111,3 +111,15 @@ export const wochentagKuerzel = (sprache: string): string[] => {
     fmt.format(new Date(Date.UTC(2026, 10, 23 + i, 12))).replace(/\.$/, ""),
   );
 };
+
+/** Formats an ISO YYYY-MM-DD date in the active locale (e.g. 27.11.2026 in de, 11/27/2026 in en) */
+export const datumAnzeigen = (wert: string, sprache: string): string => {
+  if (!ISO_DATUM.test(wert)) return wert;
+  const [j, m, t] = wert.split("-").map(Number);
+  return new Intl.DateTimeFormat(sprache, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(j ?? 0, (m ?? 1) - 1, t ?? 1, 12)));
+};

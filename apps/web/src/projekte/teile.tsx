@@ -51,34 +51,50 @@ export const Aktionen = (props: {
   </div>
 );
 
-/** A form to add a row: fields side by side on the desktop, one below the other on a phone */
+/** A form to add a row: compact inline toolbar when `zeile` is set, or a full-width 3-column grid */
 export const NeuFormular = (props: {
   label: string;
   knopf: string;
   fehler: string;
   arbeitet: boolean;
+  zeile?: boolean;
   onSubmit: (daten: FormData, form: HTMLFormElement) => void;
   children: JSX.Element;
 }) => (
   <form
     aria-label={props.label}
-    class="grid grid-cols-1 items-start gap-4 rounded-xl border border-border bg-background p-4 sm:grid-cols-2 lg:grid-cols-3"
+    class="flex flex-col gap-4 rounded-xl border border-border bg-background p-5"
     onSubmit={(event) => {
       event.preventDefault();
       const form = event.currentTarget;
       props.onSubmit(new FormData(form), form);
     }}
   >
-    <div class="sm:col-span-full">
-      <h2 class="font-semibold text-[13px] text-foreground">{props.label}</h2>
-    </div>
-    {props.children}
-    <div class="flex flex-col gap-2 sm:col-span-full">
-      <Button type="submit" variant="primary" class="self-start" disabled={props.arbeitet}>
-        {props.knopf}
-      </Button>
+    <h2 class="font-semibold text-[14px] text-foreground">{props.label}</h2>
+    <Show
+      when={props.zeile}
+      fallback={
+        <>
+          <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {props.children}
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-3 border-border border-t pt-4">
+            <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
+            <Button type="submit" variant="primary" disabled={props.arbeitet}>
+              {props.knopf}
+            </Button>
+          </div>
+        </>
+      }
+    >
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+        {props.children}
+        <Button type="submit" variant="primary" class="h-9 shrink-0" disabled={props.arbeitet}>
+          {props.knopf}
+        </Button>
+      </div>
       <Fehler text={props.fehler ? fehlerText(props.fehler) : ""} />
-    </div>
+    </Show>
   </form>
 );
 

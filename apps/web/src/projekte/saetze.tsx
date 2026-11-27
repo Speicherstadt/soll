@@ -24,7 +24,7 @@ const Auswahl = (props: {
 }) => {
   const id = createUniqueId();
   return (
-    <div class="flex flex-col gap-1.5 md:w-44">
+    <div class="flex flex-col gap-1.5">
       <label for={id} class="font-medium">
         {props.label}
       </label>
@@ -106,8 +106,8 @@ const NeuerSatz = (props: { quelle: ProjektQuelle }) => {
         disabled={mitAuftrag()}
       />
       <Auswahl label={m.satz_person()} name="person" optionen={wahl.personen()} />
-      <Input label={m.satz_betrag()} name="betrag" inputmode="decimal" required class="md:w-36" />
-      <div class="flex flex-col gap-1.5 md:w-44">
+      <Input label={m.satz_betrag()} name="betrag" inputmode="decimal" required />
+      <div class="flex flex-col gap-1.5">
         <label for={abId} class="font-medium">
           {m.satz_gueltig_ab()}
         </label>

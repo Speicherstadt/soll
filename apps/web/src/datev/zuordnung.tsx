@@ -41,7 +41,7 @@ export const DatevZuordnung = () => {
     <Loading>
       <Show when={ansicht()}>
         {(a) => (
-          <section aria-labelledby={`${id}-titel`} class="flex max-w-lg flex-col gap-3">
+          <section aria-labelledby={`${id}-titel`} class="flex flex-col gap-3">
             <h2 id={`${id}-titel`} class="font-semibold">
               {m.datev_titel()}
             </h2>

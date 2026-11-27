@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  datumAnzeigen,
   datumGueltig,
   kalenderGitter,
   minuteDrehen,
@@ -68,5 +69,11 @@ describe("pickerDaten", () => {
     expect(stundeDrehen(0, -1)).toBe(23);
     expect(minuteDrehen(59, 1)).toBe(0);
     expect(minuteDrehen(0, -1)).toBe(59);
+  });
+
+  test("formats ISO dates into the active locale", () => {
+    expect(datumAnzeigen("2026-11-27", "de")).toBe("27.11.2026");
+    expect(datumAnzeigen("2026-11-27", "en-US")).toBe("11/27/2026");
+    expect(datumAnzeigen("", "de")).toBe("");
   });
 });

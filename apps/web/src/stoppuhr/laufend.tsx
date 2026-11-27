@@ -17,6 +17,9 @@ import type { Buchung, Wahl } from "./typen.ts";
 export const LaufendKarte = (props: {
   quelle: StoppuhrQuelle;
   laufend: Buchung | null;
+  gebuchtMinuten: number;
+  gestempeltMinuten: number | null;
+  summe: string;
   arbeitet: boolean;
   onStoppen: () => void;
 }) => {
@@ -28,46 +31,65 @@ export const LaufendKarte = (props: {
     props.laufend
       ? wahlText(props.quelle.projekte(), props.quelle.taetigkeiten(), props.laufend)
       : "\u00A0";
+  const anteil = () => {
+    const ziel = props.gestempeltMinuten ?? 0;
+    if (ziel <= 0) return 0;
+    return Math.min(100, Math.round((props.gebuchtMinuten / ziel) * 100));
+  };
 
   return (
-    <div class="flex flex-col gap-3 rounded-xl border border-border bg-background p-5 sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex min-w-0 flex-col gap-1.5">
-        <div class="inline-flex w-fit items-center gap-2 rounded-full bg-muted px-2.5 py-1 text-[13px]">
-          <span
-            aria-hidden="true"
-            class={`size-2 rounded-full ${props.laufend ? "bg-success" : "bg-muted-foreground/50"}`}
-          />
-          <Show
-            when={props.laufend}
-            fallback={<span class="text-muted-foreground">{m.stoppuhr_steht()}</span>}
+    <div class="flex flex-col gap-3 rounded-xl border border-border bg-background p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex min-w-0 flex-col gap-1.5">
+          <div class="inline-flex w-fit items-center gap-2 rounded-full bg-muted px-2.5 py-1 text-[13px]">
+            <span
+              aria-hidden="true"
+              class={`size-2 rounded-full ${props.laufend ? "bg-success" : "bg-muted-foreground/50"}`}
+            />
+            <Show
+              when={props.laufend}
+              fallback={<span class="text-muted-foreground">{m.stoppuhr_steht()}</span>}
+            >
+              {(laufend) => (
+                <span data-testid="stoppuhr-laufend">
+                  {m.stoppuhr_laeuft({ uhrzeit: uhrzeitText(laufend().beginn) })}
+                </span>
+              )}
+            </Show>
+          </div>
+          <p
+            class={`font-mono font-semibold text-[36px] tabular-nums leading-none tracking-tight ${
+              props.laufend ? "text-foreground" : "text-muted-foreground"
+            }`}
           >
-            {(laufend) => (
-              <span data-testid="stoppuhr-laufend">
-                {m.stoppuhr_laeuft({ uhrzeit: uhrzeitText(laufend().beginn) })}
-              </span>
-            )}
-          </Show>
+            {dauer()}
+          </p>
+          <p class="truncate font-medium text-[13px] text-muted-foreground leading-5">
+            {beschreibung()}
+          </p>
         </div>
-        <p
-          class={`font-mono font-semibold text-[36px] tabular-nums leading-none tracking-tight ${
-            props.laufend ? "text-foreground" : "text-muted-foreground"
-          }`}
+        <Button
+          variant="outline"
+          class="h-11 w-full shrink-0 sm:w-auto sm:px-5"
+          disabled={!props.laufend || props.arbeitet}
+          onClick={() => props.onStoppen()}
         >
-          {dauer()}
-        </p>
-        <p class="truncate font-medium text-[13px] text-muted-foreground leading-5">
-          {beschreibung()}
-        </p>
+          <Icon icon={Square} size={16} />
+          {m.stoppuhr_stoppen()}
+        </Button>
       </div>
-      <Button
-        variant="outline"
-        class="h-11 w-full shrink-0 sm:w-auto sm:px-5"
-        disabled={!props.laufend || props.arbeitet}
-        onClick={() => props.onStoppen()}
-      >
-        <Icon icon={Square} size={16} />
-        {m.stoppuhr_stoppen()}
-      </Button>
+      <div class="h-1.5 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true">
+        <div
+          class="h-full rounded-full bg-foreground/80 transition-[width] duration-300"
+          style={{ width: `${anteil()}%` }}
+        />
+      </div>
+      <div class="flex items-center justify-between border-border border-t pt-2.5 text-[13px] text-muted-foreground">
+        <span class="font-mono tabular-nums">{props.summe}</span>
+        <Show when={props.gestempeltMinuten !== null && props.gestempeltMinuten > 0}>
+          <span class="font-mono font-medium text-foreground tabular-nums">{`${anteil()} %`}</span>
+        </Show>
+      </div>
     </div>
   );
 };

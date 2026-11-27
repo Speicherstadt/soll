@@ -117,15 +117,19 @@ const Einstellungen = () => {
     label: m.einstellungen_tab_terminal(),
     inhalt: () => (
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
-        <Karte>
-          <TerminalGeraete />
-        </Karte>
-        <Karte>
-          <TerminalPersonen />
-        </Karte>
-        <Karte voll>
-          <TerminalKarten />
-        </Karte>
+        <div class="flex min-w-0 flex-col gap-5">
+          <Karte>
+            <TerminalGeraete />
+          </Karte>
+          <Karte>
+            <TerminalKarten />
+          </Karte>
+        </div>
+        <div class="flex min-w-0 flex-col gap-5">
+          <Karte>
+            <TerminalPersonen />
+          </Karte>
+        </div>
       </div>
     ),
   };
@@ -136,28 +140,32 @@ const Einstellungen = () => {
     inhalt: () => (
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <Show when={datevSichtbar()}>
-          <Karte voll>
-            <DatevZuordnung />
-          </Karte>
+          <div class="flex min-w-0 flex-col gap-5">
+            <Karte>
+              <DatevZuordnung />
+            </Karte>
+          </div>
         </Show>
         <Show when={inhaber()}>
-          <Karte>
-            <section class="flex flex-col items-start gap-3">
-              <h2 class="font-semibold">{m.umzug_titel()}</h2>
-              <Link to="/umzug" class={knopfLink}>
-                {m.umzug_link()}
-              </Link>
-            </section>
-          </Karte>
-          <Karte>
-            <section class="flex flex-col items-start gap-3">
-              <h2 class="font-semibold">{m.verfahrensdoku_titel()}</h2>
-              <p class="text-muted-foreground">{m.verfahrensdoku_link_text()}</p>
-              <Link to="/verfahrensdoku" class={knopfLink}>
-                {m.verfahrensdoku_oeffnen()}
-              </Link>
-            </section>
-          </Karte>
+          <div class="flex min-w-0 flex-col gap-5">
+            <Karte>
+              <section class="flex flex-col items-start gap-3">
+                <h2 class="font-semibold">{m.umzug_titel()}</h2>
+                <Link to="/umzug" class={knopfLink}>
+                  {m.umzug_link()}
+                </Link>
+              </section>
+            </Karte>
+            <Karte>
+              <section class="flex flex-col items-start gap-3">
+                <h2 class="font-semibold">{m.verfahrensdoku_titel()}</h2>
+                <p class="text-muted-foreground">{m.verfahrensdoku_link_text()}</p>
+                <Link to="/verfahrensdoku" class={knopfLink}>
+                  {m.verfahrensdoku_oeffnen()}
+                </Link>
+              </section>
+            </Karte>
+          </div>
         </Show>
       </div>
     ),

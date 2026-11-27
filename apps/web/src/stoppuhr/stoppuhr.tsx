@@ -59,7 +59,10 @@ export const Stoppuhr = () => {
     setFehler(antwort.ok ? "" : buchungFehler(antwort.fehler));
   };
   return (
-    <section aria-labelledby={`${id}-titel`} class="flex min-w-0 flex-col gap-4">
+    <section
+      aria-labelledby={`${id}-titel`}
+      class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5"
+    >
       <h2 id={`${id}-titel`} class="font-semibold text-[17px] leading-7">
         {m.stoppuhr_titel()}
       </h2>

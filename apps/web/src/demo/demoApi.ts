@@ -9,6 +9,7 @@ import {
   demoStartzustand,
   heuteTag,
 } from "./demoDaten.ts";
+import { DEMO_VORLAGEN, wocheDaten } from "./demoDienstplan.ts";
 
 const zustand = demoStartzustand();
 
@@ -101,30 +102,7 @@ const monatDaten = (monat: string) => ({
   },
 });
 
-const wocheDaten = () => ({
-  standortId: "st1",
-  tage: [
-    "2026-11-23",
-    "2026-11-24",
-    "2026-11-25",
-    "2026-11-26",
-    "2026-11-27",
-    "2026-11-28",
-    "2026-11-29",
-  ],
-  kw: { jahr: 2026, woche: 48 },
-  personen: DEMO_PERSONEN.map((p) => ({ nutzerId: p.nutzerId, name: p.name })),
-  schichten: [],
-  deckung: [],
-  befunde: [],
-});
-
-const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten();
-  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: [] };
-  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
-  if (pfad === "/api/v1/dienstplan/tausch")
-    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+const getProjektzeitAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/projektzeit/kunden") return { kunden: DEMO_KUNDEN };
   if (pfad === "/api/v1/projektzeit/projekte") return { projekte: DEMO_PROJEKTE };
   if (pfad === "/api/v1/projektzeit/taetigkeiten") return { taetigkeiten: DEMO_TAETIGKEITEN };
@@ -159,6 +137,17 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
       stand: "demo-stand",
     };
   }
+  return undefined;
+};
+
+const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
+  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query, heuteTag());
+  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
+  if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
+  if (pfad === "/api/v1/dienstplan/tausch")
+    return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
+  const projektzeit = getProjektzeitAntwort(pfad, query);
+  if (projektzeit !== undefined) return projektzeit;
   if (pfad === "/api/v1/projektzeit/auslastung")
     return {
       monat: query.get("monat") ?? "2026-10",
@@ -170,6 +159,7 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
         abrechenbarMinuten: 17677,
         internMinuten: 2640,
         ohneBuchungMinuten: 14727,
+        abrechenbarProzent: 50,
       },
     };
   if (pfad === "/api/v1/projektzeit/auslastung/personen")

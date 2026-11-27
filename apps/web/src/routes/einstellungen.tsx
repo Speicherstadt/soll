@@ -38,8 +38,14 @@ const tabSchreiben = (id: string) => {
   }
 };
 
-const Karte = (props: { children: JSX.Element }) => (
-  <div class="rounded-xl border border-border bg-background p-5">{props.children}</div>
+const Karte = (props: { children: JSX.Element; voll?: boolean }) => (
+  <div
+    class={`flex h-full min-w-0 flex-col rounded-xl border border-border bg-background p-5 ${
+      props.voll ? "lg:col-span-2" : ""
+    }`}
+  >
+    {props.children}
+  </div>
 );
 
 const Einstellungen = () => {
@@ -79,7 +85,7 @@ const Einstellungen = () => {
     id: "betrieb",
     label: m.einstellungen_tab_betrieb(),
     inhalt: () => (
-      <div class="flex max-w-3xl flex-col gap-5">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
         <Karte>
           <ModuleSchalter />
         </Karte>
@@ -106,14 +112,14 @@ const Einstellungen = () => {
     id: "terminal",
     label: m.einstellungen_tab_terminal(),
     inhalt: () => (
-      <div class="flex max-w-3xl flex-col gap-5">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
         <Karte>
           <TerminalGeraete />
         </Karte>
         <Karte>
           <TerminalPersonen />
         </Karte>
-        <Karte>
+        <Karte voll>
           <TerminalKarten />
         </Karte>
       </div>
@@ -124,9 +130,9 @@ const Einstellungen = () => {
     id: "export",
     label: m.einstellungen_tab_export(),
     inhalt: () => (
-      <div class="flex max-w-3xl flex-col gap-5">
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
         <Show when={datevSichtbar()}>
-          <Karte>
+          <Karte voll>
             <DatevZuordnung />
           </Karte>
         </Show>
@@ -157,8 +163,8 @@ const Einstellungen = () => {
     id: "konto",
     label: m.einstellungen_tab_konto(),
     inhalt: () => (
-      <div class="flex max-w-3xl flex-col gap-5">
-        <Karte>
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-stretch">
+        <Karte voll>
           <Zugaenge />
         </Karte>
         <Karte>

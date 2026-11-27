@@ -86,7 +86,10 @@ export const AuslastungBereich = () => {
     plusMonate(tagInBerlin(Date.now()).slice(0, 7), -1),
   );
   return (
-    <section aria-labelledby={`${id}-titel`} class="flex max-w-3xl flex-col gap-4">
+    <section
+      aria-labelledby={`${id}-titel`}
+      class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5"
+    >
       <h2 id={`${id}-titel`} class="font-semibold">
         {m.auslastung_titel()}
       </h2>

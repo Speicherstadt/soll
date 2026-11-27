@@ -45,7 +45,15 @@ export const Tr = (props: Teil<HTMLTableRowElement>) => (
 );
 
 export const Th = (props: Teil<HTMLTableCellElement>) => (
-  <th scope="col" {...weitere(props)} class={cn("h-9 px-3 text-start font-medium", props.class)}>
+  <th
+    scope="col"
+    {...weitere(props)}
+    class={cn(
+      "h-9 px-3 font-medium",
+      !props.class?.match(/\btext-(start|end|left|right|center)\b/) && "text-start",
+      props.class,
+    )}
+  >
     {props.children}
   </th>
 );

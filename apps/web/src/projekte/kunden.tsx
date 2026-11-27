@@ -25,8 +25,8 @@ export const Kunden = (props: { quelle: ProjektQuelle }) => {
         arbeitet={aktionen.arbeitet()}
         onSubmit={anlegen}
       >
-        <Input label={m.kunde_name()} name="name" required maxlength={100} class="md:w-64" />
-        <Input label={m.kunde_nummer()} name="nummer" maxlength={40} class="md:w-40" />
+        <Input label={m.kunde_name()} name="name" required maxlength={100} />
+        <Input label={m.kunde_nummer()} name="nummer" maxlength={40} />
       </NeuFormular>
       <LeerText leer={props.quelle.kunden().length === 0} text={m.kunden_leer()} />
       <Table beschriftung={m.kunden_liste()}>

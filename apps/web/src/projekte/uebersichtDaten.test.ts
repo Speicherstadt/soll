@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { budgetProzent, projekteUebersichtDaten } from "./uebersichtDaten.ts";
 
 describe("projekteUebersichtDaten", () => {
-  it("zaehlt aktive Auftraege, Budget-Warnungen, Kunden und Taetigkeiten", () => {
+  it("zaehlt aktive Auftraege, Budget-Summen, Top-Kunden und Taetigkeiten", () => {
     const daten = projekteUebersichtDaten({
       projekte: [
         {
@@ -44,9 +44,15 @@ describe("projekteUebersichtDaten", () => {
     expect(daten).toEqual({
       aktiveAuftraege: 1,
       budgetWarnungen: 1,
+      budgetVerbrauchtMinuten: 500,
+      budgetGesamtMinuten: 600,
+      budgetAnteilProzent: 83,
       aktiveKunden: 1,
+      topKunden: [{ kundeId: "k1", name: "K1", auftraege: 1 }],
       aktiveTaetigkeiten: 2,
       abrechenbareTaetigkeiten: 1,
+      abrechenbarProzent: 50,
+      taetigkeitNamen: ["Montage", "Intern"],
     });
   });
 });

@@ -64,6 +64,7 @@ export const Darstellung = () => (
     <div class="relative flex h-8 items-center rounded-lg border border-border bg-background px-2.5 text-foreground focus-within:outline-2 focus-within:outline-foreground focus-within:outline-solid">
       <Icon icon={Globe} size={14} class="pointer-events-none shrink-0 text-muted-foreground" />
       <select
+        data-custom-select=""
         aria-label={m.sprache_label()}
         class="h-full w-full cursor-pointer appearance-none bg-transparent ps-2 pe-5 text-[13px] text-foreground outline-hidden"
         value={getLocale()}

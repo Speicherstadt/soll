@@ -1,15 +1,16 @@
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
 import { Button, Icon } from "@soll/ui";
-import { createFileRoute, Link } from "@tanstack/solid-router";
+import { createFileRoute } from "@tanstack/solid-router";
 import { ChevronLeft, ChevronRight } from "lucide";
 import { createSignal, createUniqueId, For, Loading, Show } from "solid-js";
 import { abfrage, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
-import { feld, knopfLink } from "../einrichtung/stil.ts";
+import { feld } from "../einrichtung/stil.ts";
 import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { ZeitenWechsler } from "../zeiten/ansichtWechsler.tsx";
 import { ModellWahl } from "../zeiten/modellWahl.tsx";
 import { tagQuelle } from "../zeiten/quelle.ts";
 import { TagAnsicht } from "../zeiten/tagAnsicht.tsx";
@@ -37,6 +38,7 @@ const Zeiten = () => {
   const darfKorrigieren = () => eigene() || hatRolle("inhaber", "planer");
   return (
     <Seite titel={m.nav_zeiten()}>
+      <ZeitenWechsler aktiv="tag" />
       <div class="flex flex-wrap items-end gap-3">
         <Loading>
           <Show when={personen().length > 0}>
@@ -97,14 +99,6 @@ const Zeiten = () => {
             )}
           </Show>
         </Loading>
-        <div class="flex flex-wrap items-center gap-2 lg:ms-auto">
-          <Link to="/monat" class={knopfLink}>
-            {m.monat_titel()}
-          </Link>
-          <Link to="/export" class={knopfLink}>
-            {m.pruefexport_titel()}
-          </Link>
-        </div>
       </div>
       <Loading>
         <Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />

@@ -115,4 +115,30 @@ describe("demoApi", () => {
       expect(typeof antwort.daten.auftrag.name).toBe("string");
     }
   });
+
+  // tdd-review finding: `ressourcen.woche` (apps/web/src/abfragen/schluessel.ts:98) queries
+  // `/api/v1/dienstplan/woche?standortId=...&tag=YYYY-MM-DD`, but `wocheDaten` in demoApi.ts:148-149
+  // reads `query.get("jahr")` and `query.get("woche")` instead of `tag`, always returning KW 48.
+  test("GET /api/v1/dienstplan/woche honors the tag query parameter", async () => {
+    const antwort = await demoAntwort<{
+      tage: string[];
+      kw: { jahr: number; nummer: number };
+    }>("/api/v1/dienstplan/woche?standortId=st1&tag=2026-12-07");
+    expect(antwort.ok).toBe(true);
+    if (antwort.ok) {
+      expect(antwort.daten.tage).toContain("2026-12-07");
+      expect(antwort.daten.kw).toEqual({ jahr: 2026, nummer: 50 });
+    }
+  });
+
+  // tdd-review finding: `demoApi.ts:107,125` introduces unlocalized German umlaut strings
+  // ("Frühschicht", "Spätschicht") which fail CI `bunx checks` i18n check.
+  test("demoApi.ts contains no unlocalized German umlaut strings flagged by checks i18n", () => {
+    const inhalt = readFileSync(resolve(import.meta.dirname, "demoApi.ts"), "utf-8");
+    const umlautZeilen = inhalt
+      .split("\n")
+      .map((zeile, index) => ({ zeile: index + 1, text: zeile }))
+      .filter(({ text }) => /[äöüßÄÖÜ]/.test(text));
+    expect(umlautZeilen).toEqual([]);
+  });
 });

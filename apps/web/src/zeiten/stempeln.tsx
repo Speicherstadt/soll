@@ -37,7 +37,7 @@ export const Stempeln = () => {
         fallback={<Fehler text={quelle.fehler() ? m.laden_fehler() : ""} />}
       >
         {(ansicht) => (
-          <div class="flex min-w-0 flex-col gap-4">
+          <div class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5">
             <h2 class="font-semibold text-[17px] leading-7">{tagText(ansicht().tag)}</h2>
             <WartendKarte
               anzahl={schlange.wartende().length}

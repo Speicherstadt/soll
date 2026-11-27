@@ -47,7 +47,10 @@ export const DatevExport = () => {
     );
   };
   return (
-    <section aria-labelledby={`${id}-titel`} class="flex max-w-3xl flex-col gap-3">
+    <section
+      aria-labelledby={`${id}-titel`}
+      class="flex h-full min-w-0 flex-col gap-4 rounded-xl border border-border bg-background p-5"
+    >
       <h2 id={`${id}-titel`} class="font-semibold">
         {m.datev_titel()}
       </h2>

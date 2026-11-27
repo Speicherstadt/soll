@@ -10,7 +10,7 @@ export const Karte = (props: { titel: string; children: JSX.Element }) => {
   return (
     <section
       aria-labelledby={id}
-      class="flex flex-col gap-3 rounded-xl border border-border bg-background p-4"
+      class="flex h-full flex-col gap-3 rounded-xl border border-border bg-background p-4"
     >
       <h2 id={id} class="font-semibold">
         {props.titel}

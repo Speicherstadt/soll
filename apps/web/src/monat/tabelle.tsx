@@ -1,4 +1,5 @@
-import { Badge, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
+import { Badge, Icon, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
+import { Clock, type IconNode, Target, TrendingUp } from "lucide";
 import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { dauerText } from "../einrichtung/werte.ts";
@@ -8,10 +9,27 @@ import { befundZeile, kurzerTag, tageText } from "./text.ts";
 import type { Gegeneintrag, Monatsinhalt } from "./typen.ts";
 import { saldoText, type Zeile } from "./zeilen.ts";
 
-const Wert = (props: { name: string; wert: string }) => (
-  <div class="flex flex-col gap-0.5 rounded-xl border border-border p-4">
-    <dt class="text-[12px] text-muted-foreground">{props.name}</dt>
-    <dd class="font-mono font-semibold text-[20px] tabular-nums" dir="ltr">
+const WERT_TON = {
+  default: "text-foreground",
+  success: "text-success",
+  danger: "text-danger",
+} as const;
+
+const Wert = (props: {
+  name: string;
+  wert: string;
+  icon: IconNode;
+  ton?: keyof typeof WERT_TON;
+}) => (
+  <div class="flex h-full flex-col gap-1.5 rounded-xl border border-border bg-background p-4">
+    <dt class="flex min-h-6 items-center gap-1.5 text-[12px] text-muted-foreground">
+      <Icon icon={props.icon} class="size-3.5 shrink-0 text-muted-foreground" />
+      <span>{props.name}</span>
+    </dt>
+    <dd
+      class={`font-mono font-semibold text-[22px] tabular-nums leading-tight ${WERT_TON[props.ton ?? "default"]}`}
+      dir="ltr"
+    >
       {props.wert}
     </dd>
   </div>
@@ -23,7 +41,7 @@ export const Summen = (props: { inhalt: Monatsinhalt }) => (
     <Show
       when={props.inhalt.summen}
       fallback={
-        <p class="rounded-xl border border-border p-4 text-muted-foreground">
+        <p class="rounded-xl border border-border bg-background p-4 text-muted-foreground">
           {m.monat_nicht_hinterlegt({ tage: tageText(props.inhalt.nichtHinterlegt) })}
         </p>
       }
@@ -31,9 +49,20 @@ export const Summen = (props: { inhalt: Monatsinhalt }) => (
       {(summen) => (
         <div class="flex flex-col gap-2">
           <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <Wert name={m.monat_soll()} wert={dauerText(summen().sollMinuten)} />
-            <Wert name={m.monat_ist()} wert={dauerText(summen().istMinuten)} />
-            <Wert name={m.monat_saldo()} wert={saldoText(summen().saldoMinuten)} />
+            <Wert name={m.monat_soll()} icon={Target} wert={dauerText(summen().sollMinuten)} />
+            <Wert name={m.monat_ist()} icon={Clock} wert={dauerText(summen().istMinuten)} />
+            <Wert
+              name={m.monat_saldo()}
+              icon={TrendingUp}
+              ton={
+                summen().saldoMinuten > 0
+                  ? "success"
+                  : summen().saldoMinuten < 0
+                    ? "danger"
+                    : "default"
+              }
+              wert={saldoText(summen().saldoMinuten)}
+            />
           </dl>
           <Show when={(summen().pausenabzugMinuten ?? 0) > 0}>
             <p class="text-[12px] text-muted-foreground">
@@ -48,12 +77,24 @@ export const Summen = (props: { inhalt: Monatsinhalt }) => (
   </section>
 );
 
-const zeit = (ms: number | null) => (ms === null ? "" : uhrzeitText(ms));
+const zeit = (ms: number | null) => (ms === null ? "–" : uhrzeitText(ms));
+
+const tagesDiff = (zeile: Zeile): number | null => {
+  if (zeile.beginn === null || zeile.sollMinuten === null) return null;
+  return zeile.arbeitsMinuten - zeile.sollMinuten;
+};
+
+const neueWoche = (vorher: Zeile | undefined, aktuell: Zeile): boolean => {
+  if (!vorher) return false;
+  const a = Date.parse(`${vorher.tag}T12:00:00Z`);
+  const b = Date.parse(`${aktuell.tag}T12:00:00Z`);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+  return (b - a) / 86_400_000 > 1.5;
+};
 
 /**
- * The days of the month with begin, end, break, duration and findings; changes by hand are marked
- * (DESIGN.md, "Monatsabschluss"). Days without work, absence and finding are left out, so a phone
- * shows what counts.
+ * The days of the month with begin, end, break, duration, target, daily balance and findings.
+ * Grouped visually by week with clean right-aligned monospace numbers for quick scanning.
  */
 export const TageTabelle = (props: { zeilen: Zeile[] }) => {
   const gezeigt = () =>
@@ -69,60 +110,91 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
       when={gezeigt().length > 0}
       fallback={<p class="text-muted-foreground">{m.monat_keine_tage()}</p>}
     >
-      <Table beschriftung={m.monat_tage()}>
-        <Thead>
-          <Tr>
-            <Th>{m.monat_spalte_tag()}</Th>
-            <Th>{m.monat_spalte_beginn()}</Th>
-            <Th>{m.monat_spalte_ende()}</Th>
-            <Th class="max-md:hidden">{m.monat_spalte_pause()}</Th>
-            <Th>{m.monat_spalte_dauer()}</Th>
-            <Th>{m.monat_spalte_hinweis()}</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <For each={gezeigt()}>
-            {(zeile) => (
-              <Tr>
-                <th scope="row" class="h-9 whitespace-nowrap px-3 text-start font-medium">
-                  {kurzerTag(zeile.tag)}
-                </th>
-                <Td class="font-mono" dir="ltr">
-                  {zeit(zeile.beginn)}
-                </Td>
-                <Td class="font-mono" dir="ltr">
-                  {zeit(zeile.ende)}
-                </Td>
-                <Td class="font-mono max-md:hidden" dir="ltr">
-                  {zeile.beginn === null ? "" : dauerText(zeile.pauseMinuten)}
-                </Td>
-                <Td class="font-mono" dir="ltr">
-                  {zeile.beginn === null ? "" : dauerText(zeile.arbeitsMinuten)}
-                </Td>
-                <Td>
-                  <div class="flex flex-col items-start gap-1">
-                    <Show when={zeile.geaendert}>
-                      <Badge>{m.monat_geaendert()}</Badge>
-                    </Show>
-                    <For each={zeile.abwesenheiten}>
-                      {(a) => (
-                        <span>{a.halb ? m.abw_halb({ art: ART[a.art]() }) : ART[a.art]()}</span>
-                      )}
-                    </For>
-                    <For each={zeile.befunde}>
-                      {(befund) => (
-                        <span class={befund.schwere === "verstoss" ? "text-danger" : ""}>
-                          {befundZeile(befund)}
-                        </span>
-                      )}
-                    </For>
-                  </div>
-                </Td>
-              </Tr>
-            )}
-          </For>
-        </Tbody>
-      </Table>
+      <div class="overflow-hidden rounded-xl border border-border bg-background">
+        <Table beschriftung={m.monat_tage()}>
+          <Thead>
+            <Tr>
+              <Th>{m.monat_spalte_tag()}</Th>
+              <Th class="text-end">{m.monat_spalte_beginn()}</Th>
+              <Th class="text-end">{m.monat_spalte_ende()}</Th>
+              <Th class="text-end max-md:hidden">{m.monat_spalte_pause()}</Th>
+              <Th class="text-end">{m.monat_spalte_dauer()}</Th>
+              <Th class="text-end max-lg:hidden">{m.monat_soll()}</Th>
+              <Th class="text-end max-md:hidden">{m.monat_saldo()}</Th>
+              <Th>{m.monat_spalte_hinweis()}</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <For each={gezeigt()}>
+              {(zeile, index) => {
+                const diff = () => tagesDiff(zeile);
+                const wochenStart = () => neueWoche(gezeigt()[index() - 1], zeile);
+                return (
+                  <Tr class={wochenStart() ? "border-t-2 border-border" : ""}>
+                    <th scope="row" class="h-10 whitespace-nowrap px-3 text-start font-medium">
+                      {kurzerTag(zeile.tag)}
+                    </th>
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums" dir="ltr">
+                      {zeit(zeile.beginn)}
+                    </Td>
+                    <Td class="text-end font-mono text-muted-foreground tabular-nums" dir="ltr">
+                      {zeit(zeile.ende)}
+                    </Td>
+                    <Td
+                      class="text-end font-mono text-muted-foreground tabular-nums max-md:hidden"
+                      dir="ltr"
+                    >
+                      {zeile.beginn === null ? "–" : dauerText(zeile.pauseMinuten)}
+                    </Td>
+                    <Td class="text-end font-mono font-medium tabular-nums" dir="ltr">
+                      {zeile.beginn === null ? "–" : dauerText(zeile.arbeitsMinuten)}
+                    </Td>
+                    <Td
+                      class="text-end font-mono text-muted-foreground tabular-nums max-lg:hidden"
+                      dir="ltr"
+                    >
+                      {zeile.sollMinuten === null ? "–" : dauerText(zeile.sollMinuten)}
+                    </Td>
+                    <Td
+                      class={`text-end font-mono tabular-nums max-md:hidden ${
+                        (diff() ?? 0) > 0
+                          ? "text-success"
+                          : (diff() ?? 0) < 0
+                            ? "text-danger"
+                            : "text-muted-foreground"
+                      }`}
+                      dir="ltr"
+                    >
+                      {diff() === null ? "–" : saldoText(diff() ?? 0)}
+                    </Td>
+                    <Td>
+                      <div class="flex flex-wrap items-center gap-1">
+                        <Show when={zeile.geaendert}>
+                          <Badge>{m.monat_geaendert()}</Badge>
+                        </Show>
+                        <For each={zeile.abwesenheiten}>
+                          {(a) => (
+                            <Badge>
+                              {a.halb ? m.abw_halb({ art: ART[a.art]() }) : ART[a.art]()}
+                            </Badge>
+                          )}
+                        </For>
+                        <For each={zeile.befunde}>
+                          {(befund) => (
+                            <span class={befund.schwere === "verstoss" ? "text-danger" : ""}>
+                              {befundZeile(befund)}
+                            </span>
+                          )}
+                        </For>
+                      </div>
+                    </Td>
+                  </Tr>
+                );
+              }}
+            </For>
+          </Tbody>
+        </Table>
+      </div>
     </Show>
   );
 };

@@ -2,6 +2,7 @@ import { Button } from "@soll/ui";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, Loading, Show } from "solid-js";
 import { daten } from "../abfragen/abfrage.ts";
+import { demoStundenzettelPdf } from "../demo/demoPdf.ts";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { Auswahl } from "../monat/auswahl.tsx";
 import { GegeneintragDialog, OhneBestaetigungDialog } from "../monat/dialoge.tsx";
@@ -18,12 +19,15 @@ import { m } from "../paraglide/messages.js";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
 import { aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { ZeitenWechsler } from "../zeiten/ansichtWechsler.tsx";
 
 const hatRolle = (...rollen: string[]) =>
   (aktuellerBetrieb()?.rolle ?? "").split(",").some((rolle) => rollen.includes(rolle.trim()));
 
 /** A month that has ended and is not closed yet (a removed month was closed, S-901) */
 const offen = (a: MonatAnsicht) => a.vorbei && a.abschluss === null && a.ausgesondert === null;
+
+const istDemo = import.meta.env.VITE_DEMO === "1";
 
 /**
  * The actions of a month: the time sheet, a counter-entry once closed, and the one main action,
@@ -38,12 +42,24 @@ const Aktionen = (props: {
 }) => {
   const bestaetigen = () =>
     offen(props.ansicht) && props.ansicht.eigen && !props.ansicht.bestaetigung?.gueltig;
+  const demoPdfLaden = (event: MouseEvent) => {
+    if (!istDemo) return;
+    event.preventDefault();
+    const blob = demoStundenzettelPdf(props.ansicht);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Stundenzettel_${props.ansicht.monat}_${props.ansicht.name.replace(/\s+/g, "_")}.pdf`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
   return (
     <div class="flex flex-wrap gap-2">
       <Show when={!props.ansicht.ausgesondert}>
         <a
           href={`/api/v1/arbeitszeit/monat/stundenzettel?${props.abfrage}`}
           download
+          onClick={demoPdfLaden}
           class={knopfLink}
         >
           {m.monat_stundenzettel()}
@@ -117,6 +133,7 @@ const MonatSeite = () => {
         </Loading>
       }
     >
+      <ZeitenWechsler aktiv="monat" />
       <Loading>
         <Auswahl
           personen={daten(q.personen.data)?.personen ?? []}

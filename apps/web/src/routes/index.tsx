@@ -20,7 +20,7 @@ const Heute = () => {
   const stoppuhr = () => aktuelleModule().projektzeit && buchtProjektzeit();
   return (
     <Seite titel={m.nav_heute()}>
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
         <Show
           when={aktuelleModule().arbeitszeit}
           fallback={<Leer text={m.heute_ohne_arbeitszeit()} />}

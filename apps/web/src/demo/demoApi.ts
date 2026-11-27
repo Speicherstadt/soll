@@ -101,27 +101,94 @@ const monatDaten = (monat: string) => ({
   },
 });
 
-const wocheDaten = () => ({
-  standortId: "st1",
-  tage: [
-    "2026-11-23",
-    "2026-11-24",
-    "2026-11-25",
-    "2026-11-26",
-    "2026-11-27",
-    "2026-11-28",
-    "2026-11-29",
-  ],
-  kw: { jahr: 2026, woche: 48 },
-  personen: DEMO_PERSONEN.map((p) => ({ nutzerId: p.nutzerId, name: p.name })),
-  schichten: [],
-  deckung: [],
-  befunde: [],
-});
+const DEMO_VORLAGEN = [
+  {
+    vorlageId: "v-frueh",
+    name: "Frühschicht",
+    beginnMinute: 420,
+    endeMinute: 930,
+    pauseMinuten: 30,
+    rolle: "Montage",
+    standortId: "st1",
+  },
+  {
+    vorlageId: "v-tag",
+    name: "Kundendienst",
+    beginnMinute: 480,
+    endeMinute: 990,
+    pauseMinuten: 30,
+    rolle: "Service",
+    standortId: "st1",
+  },
+  {
+    vorlageId: "v-spaet",
+    name: "Spätschicht",
+    beginnMinute: 540,
+    endeMinute: 1050,
+    pauseMinuten: 30,
+    rolle: "Montage",
+    standortId: "st1",
+  },
+];
+
+const montagDerWoche = (jahr: number, woche: number): Date => {
+  const jan4 = new Date(Date.UTC(jahr, 0, 4, 12));
+  const tag = jan4.getUTCDay() || 7;
+  const montagW1 = new Date(jan4.getTime() - (tag - 1) * 86_400_000);
+  return new Date(montagW1.getTime() + (woche - 1) * 7 * 86_400_000);
+};
+
+const zeitMs = (tag: string, minuten: number): number => {
+  const h = String(Math.floor(minuten / 60)).padStart(2, "0");
+  const m = String(minuten % 60).padStart(2, "0");
+  return Date.parse(`${tag}T${h}:${m}:00+01:00`);
+};
+
+const wocheDaten = (query: URLSearchParams) => {
+  const jahr = Number(query.get("jahr")) || 2026;
+  const nummer = Number(query.get("woche")) || 48;
+  const start = montagDerWoche(jahr, nummer);
+  const tage = Array.from({ length: 7 }, (_, i) =>
+    new Date(start.getTime() + i * 86_400_000).toISOString().slice(0, 10),
+  );
+  const werkte = tage.slice(0, 5);
+  const muster = [
+    { nutzerId: DEMO_PERSONEN[0]?.nutzerId ?? "jonas", vorlage: DEMO_VORLAGEN[0] },
+    { nutzerId: DEMO_PERSONEN[1]?.nutzerId ?? "anna", vorlage: DEMO_VORLAGEN[1] },
+    { nutzerId: DEMO_PERSONEN[2]?.nutzerId ?? "sandra", vorlage: DEMO_VORLAGEN[0] },
+    { nutzerId: DEMO_PERSONEN[3]?.nutzerId ?? "max", vorlage: DEMO_VORLAGEN[2] },
+    { nutzerId: DEMO_PERSONEN[4]?.nutzerId ?? "leon", vorlage: DEMO_VORLAGEN[1] },
+  ];
+  const schichten = werkte.flatMap((tag, ti) =>
+    muster
+      .filter((_, pi) => !(ti === 4 && pi === 3))
+      .map((m, pi) => ({
+        schichtId: `ds-${nummer}-${ti}-${pi}`,
+        nutzerId: m.nutzerId,
+        tag,
+        beginn: zeitMs(tag, m.vorlage?.beginnMinute ?? 420),
+        ende: zeitMs(tag, m.vorlage?.endeMinute ?? 930),
+        pauseMinuten: m.vorlage?.pauseMinuten ?? 30,
+        rolle: m.vorlage?.rolle ?? "Montage",
+        standortId: "st1",
+        vorlageId: m.vorlage?.vorlageId ?? null,
+        veroeffentlichtAm: Date.now() - 86_400_000,
+      })),
+  );
+  return {
+    standortId: "st1",
+    tage,
+    kw: { jahr, nummer },
+    personen: DEMO_PERSONEN.map((p) => ({ nutzerId: p.nutzerId, name: p.name })),
+    schichten,
+    deckung: [],
+    befunde: [],
+  };
+};
 
 const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
-  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten();
-  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: [] };
+  if (pfad === "/api/v1/dienstplan/woche") return wocheDaten(query);
+  if (pfad === "/api/v1/dienstplan/vorlagen") return { vorlagen: DEMO_VORLAGEN };
   if (pfad === "/api/v1/dienstplan/bedarf") return { bedarfe: [] };
   if (pfad === "/api/v1/dienstplan/tausch")
     return { tausche: [], anbietbar: [], kollegen: [], ohneFreigabe: false };
@@ -170,6 +237,7 @@ const getBereichAntwort = (pfad: string, query: URLSearchParams): unknown => {
         abrechenbarMinuten: 17677,
         internMinuten: 2640,
         ohneBuchungMinuten: 14727,
+        abrechenbarProzent: 50,
       },
     };
   if (pfad === "/api/v1/projektzeit/auslastung/personen")

@@ -24,7 +24,7 @@ export const prozentText = (prozent: number | null): string =>
  */
 export const AuslastungWerte = (props: { werte: Auslastung }) => {
   return (
-    <div class="flex max-w-xl flex-col gap-3">
+    <div class="flex flex-col gap-3">
       <dl class="flex flex-wrap gap-x-8 gap-y-2">
         <div class="flex flex-col">
           <dt class="text-[12px] text-muted-foreground">{m.auslastung_anwesend()}</dt>

@@ -30,20 +30,20 @@ export const Wert = (props: {
   fortschritt?: number | null;
   children: JSX.Element;
 }) => (
-  <div class="flex flex-col gap-1 rounded-xl border border-border bg-background p-4">
-    <dt class="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+  <div class="flex h-full flex-col gap-1.5 rounded-xl border border-border bg-background p-4">
+    <dt class="flex min-h-6 items-center gap-1.5 text-[12px] text-muted-foreground">
       <Show when={props.icon}>
         {(ic) => <Icon icon={ic()} class="size-3.5 shrink-0 text-muted-foreground" />}
       </Show>
       <span>{props.name}</span>
     </dt>
     <dd
-      class={`flex flex-col gap-2 font-semibold text-[20px] tabular-nums ${
+      class={`flex flex-1 flex-col justify-between gap-2 font-semibold text-[20px] tabular-nums leading-snug ${
         props.mono ? "font-mono" : ""
       } ${WERT_TON[props.ton ?? "default"]}`}
       dir={props.mono ? "ltr" : undefined}
     >
-      {props.children}
+      <span>{props.children}</span>
       <Show when={props.fortschritt !== undefined && props.fortschritt !== null}>
         <div aria-hidden="true" class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div

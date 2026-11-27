@@ -20,21 +20,29 @@ const Auswertungen = () => {
   const datev = abfrage<DatevAnsicht>(ressourcen.datev);
   return (
     <Seite titel={m.nav_auswertungen()}>
-      <Show when={mitAuslastung()}>
-        <AuslastungBereich />
-      </Show>
-      <Loading>
-        <Show
-          when={datev.data?.ok}
-          fallback={
-            <Show when={!mitAuslastung()}>
-              <Leer text={m.seite_leer()} />
-            </Show>
-          }
-        >
-          <DatevExport />
+      <div class="grid grid-cols-1 gap-5 xl:grid-cols-12 xl:items-stretch">
+        <Show when={mitAuslastung()}>
+          <div class={datev.data?.ok ? "min-w-0 xl:col-span-7" : "min-w-0 xl:col-span-12"}>
+            <AuslastungBereich />
+          </div>
         </Show>
-      </Loading>
+        <Loading>
+          <Show
+            when={datev.data?.ok}
+            fallback={
+              <Show when={!mitAuslastung()}>
+                <div class="xl:col-span-12">
+                  <Leer text={m.seite_leer()} />
+                </div>
+              </Show>
+            }
+          >
+            <div class={mitAuslastung() ? "min-w-0 xl:col-span-5" : "min-w-0 xl:col-span-12"}>
+              <DatevExport />
+            </div>
+          </Show>
+        </Loading>
+      </div>
     </Seite>
   );
 };

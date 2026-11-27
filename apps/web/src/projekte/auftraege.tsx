@@ -58,7 +58,7 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
         arbeitet={aktionen.arbeitet()}
         onSubmit={anlegen}
       >
-        <div class="flex flex-col gap-1.5 md:w-48">
+        <div class="flex flex-col gap-1.5">
           <label for={`${id}-kunde`} class="font-medium">
             {m.auftrag_kunde()}
           </label>
@@ -68,21 +68,19 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
             </For>
           </select>
         </div>
-        <Input label={m.auftrag_name()} name="name" required maxlength={100} class="md:w-56" />
-        <Input label={m.auftrag_nummer()} name="nummer" maxlength={40} class="md:w-36" />
+        <Input label={m.auftrag_name()} name="name" required maxlength={100} />
+        <Input label={m.auftrag_nummer()} name="nummer" maxlength={40} />
         <Input
           label={m.auftrag_budget_stunden()}
           hinweis={m.auftrag_budget_stunden_hinweis()}
           name="stunden"
           inputmode="numeric"
-          class="md:w-44"
         />
         <Input
           label={m.auftrag_budget_euro()}
           hinweis={m.auftrag_budget_euro_hinweis()}
           name="euro"
           inputmode="decimal"
-          class="md:w-44"
         />
         <Input
           label={m.auftrag_warnung()}
@@ -93,7 +91,6 @@ const NeuerAuftrag = (props: { quelle: ProjektQuelle }) => {
           step={1}
           value="80"
           required
-          class="md:w-32"
         />
       </NeuFormular>
     </Show>

@@ -90,6 +90,30 @@ export const sollquelleSetzen = (
 };
 
 /**
+ * The days in `tage` whose Soll comes from the plan, each with the person's published minutes
+ * (`SollGrundlagen.plan`); empty when no day is given or the business never uses the plan
+ */
+export const planSollFuerTage = (
+  db: Db,
+  betriebId: string,
+  nutzerId: string,
+  tage: readonly Tag[],
+): Map<Tag, number> => {
+  if (tage.length === 0) return new Map();
+  const quellen = sollquellenVon(db, betriebId);
+  if (!quellen.some((eintrag) => eintrag.quelle === "plan")) return new Map();
+  const eindeutig = [...new Set(tage)].sort();
+  const geplant: PlanSchicht[] = veroeffentlichteSchichten(
+    db,
+    betriebId,
+    nutzerId,
+    eindeutig[0] as Tag,
+    eindeutig.at(-1) as Tag,
+  );
+  return planSoll(eindeutig, quellen, geplant);
+};
+
+/**
  * The days of a month whose Soll comes from the plan, with the person's published minutes on each
  * (`SollGrundlagen.plan`); an empty map while the business takes its Soll from the model
  */
@@ -98,19 +122,7 @@ export const planSollImMonat = (
   betriebId: string,
   nutzerId: string,
   monat: Monat,
-): Map<Tag, number> => {
-  const quellen = sollquellenVon(db, betriebId);
-  if (!quellen.some((eintrag) => eintrag.quelle === "plan")) return new Map();
-  const tage = tageImMonat(monat);
-  const geplant: PlanSchicht[] = veroeffentlichteSchichten(
-    db,
-    betriebId,
-    nutzerId,
-    tage[0] ?? ersterTag(monat),
-    tage.at(-1) ?? ersterTag(monat),
-  );
-  return planSoll(tage, quellen, geplant);
-};
+): Map<Tag, number> => planSollFuerTage(db, betriebId, nutzerId, tageImMonat(monat));
 
 /**
  * A person's planned Soll on one day if the business takes its Soll from the plan on that day,

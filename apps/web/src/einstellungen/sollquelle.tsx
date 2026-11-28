@@ -44,7 +44,14 @@ export const SollquelleEinstellung = () => {
   const speichern = aenderung(
     (eingabe: { ab: string; quelle: Quelle }) =>
       api<Stand>(PFAD.sollquellen, { method: "PUT", body: eingabe }),
-    () => [alle(PFAD.sollquellen), alle(PFAD.monat), alle(PFAD.tag)],
+    () => [
+      alle(PFAD.sollquellen),
+      alle(PFAD.monat),
+      alle(PFAD.tag),
+      alle(PFAD.abwesenheiten),
+      alle(PFAD.abwesenheitenOffen),
+      alle(PFAD.konten),
+    ],
   );
   const absenden = async (event: SubmitEvent, s: Stand) => {
     event.preventDefault();

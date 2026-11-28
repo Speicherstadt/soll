@@ -60,7 +60,7 @@ describe("TDD review S-505: absences, leave account and R-27 use plan-based Soll
     expect(
       (
         await jonas.anfrage(
-          `/api/v1/arbeitszeit/abwesenheiten/${antragSa.abwesenheitId as string}/genehmigen`,
+          `/api/v1/arbeitszeit/abwesenheiten/${antragSa.abwesenheitId as string}/freigeben`,
           { body: {} },
         )
       ).status,
@@ -77,7 +77,7 @@ describe("TDD review S-505: absences, leave account and R-27 use plan-based Soll
     expect(
       (
         await jonas.anfrage(
-          `/api/v1/arbeitszeit/abwesenheiten/${antragDi.abwesenheitId as string}/genehmigen`,
+          `/api/v1/arbeitszeit/abwesenheiten/${antragDi.abwesenheitId as string}/freigeben`,
           { body: {} },
         )
       ).status,
@@ -98,7 +98,8 @@ describe("TDD review S-505: absences, leave account and R-27 use plan-based Soll
     const konten = await json(await sandra.anfrage("/api/v1/arbeitszeit/konten"));
     const urlaub = konten.urlaub as Json;
     expect(urlaub.ok).toBe(true);
-    expect((urlaub.konto as Json).genommenHalbtage).toBe(2);
+    const topf2026 = (urlaub.toepfe as Json[]).find((t) => t.jahr === 2026);
+    expect(topf2026?.genommenHalbtage).toBe(2);
   });
 
   it("computes urlaubHalbtage and kinderkrankstand for a person without a working-time model", async () => {

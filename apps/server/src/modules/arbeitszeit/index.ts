@@ -51,6 +51,7 @@ export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
   fruehesterSollquellenTag,
   planSollAmTag,
+  planSollFuerTage,
   planSollImMonat,
   type SollquelleErgebnis,
   schichtGesperrt,

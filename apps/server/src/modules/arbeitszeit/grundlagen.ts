@@ -13,6 +13,7 @@ import { modellzuordnungen, schichten, stempelungen } from "../../db/schema.ts";
 import { betriebLesen } from "../betrieb/index.ts";
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { standorteLesen } from "../standorte/index.ts";
+import { planSollFuerTage } from "./sollquellen.ts";
 import { modellabschnitte } from "./zuordnungen.ts";
 
 /*
@@ -74,16 +75,23 @@ export const beschaeftigungVon = (
   return eintritt === undefined ? null : { eintritt };
 };
 
-/** Place, employment and models of a person; null while place or employment is not known */
+/** Place, employment, models and (for `tage`) plan-based Soll of a person; null while unknown */
 export const sollGrundlagen = (
   db: Db,
   betriebId: string,
   nutzerId: string,
+  tage?: readonly Tag[],
 ): SollGrundlagen | null => {
   const standort = standortVon(db, betriebId);
   const beschaeftigung = beschaeftigungVon(db, betriebId, nutzerId);
   if (standort === null || beschaeftigung === null) return null;
-  return { standort, beschaeftigung, modelle: modellabschnitte(db, betriebId, nutzerId) };
+  const plan = tage ? planSollFuerTage(db, betriebId, nutzerId, tage) : undefined;
+  return {
+    standort,
+    beschaeftigung,
+    modelle: modellabschnitte(db, betriebId, nutzerId),
+    ...(plan && plan.size > 0 ? { plan } : {}),
+  };
 };
 
 /**

@@ -6,6 +6,8 @@ export type Betrieb = {
   betriebId: string;
   /** the person signed in */
   nutzerId: string;
+  /** display name of the signed-in person; absent in older offline caches */
+  nutzerName?: string;
   name: string;
   land: string | null;
   eingerichtet: boolean;

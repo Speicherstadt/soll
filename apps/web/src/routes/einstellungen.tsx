@@ -2,12 +2,12 @@ import type { JSX } from "@solidjs/web";
 import { Button, type Tab, Tabs } from "@soll/ui";
 import { createFileRoute, Link, useNavigate } from "@tanstack/solid-router";
 import { createMemo, createSignal, Show } from "solid-js";
-import { api } from "../api.ts";
 import { DatevZuordnung } from "../datev/zuordnung.tsx";
 import { knopfLink } from "../einrichtung/stil.ts";
 import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { PruefungEinstellungen } from "../einstellungen/pruefung.tsx";
+import { einstellungenTab, einstellungenTabSetzen } from "../einstellungen/tab.ts";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
 import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
 import { TerminalPersonen } from "../einstellungen/terminalPersonen.tsx";
@@ -16,27 +16,9 @@ import { m } from "../paraglide/messages.js";
 import { Darstellung } from "../rahmen/darstellung.tsx";
 import { Fehler } from "../rahmen/karte.tsx";
 import { Seite } from "../rahmen/seite.tsx";
-import { abgemeldet, aktuellerBetrieb, sitzungNeu } from "../sitzung/sitzung.ts";
+import { abmeldenAusfuehren, aktuellerBetrieb } from "../sitzung/sitzung.ts";
 import { istInhaber } from "../sitzung/ziel.ts";
 import { Zugaenge } from "../zugaenge/zugaenge.tsx";
-
-const TAB_SPEICHER = "soll.einstellungen.tab";
-
-const tabLesen = (): string | undefined => {
-  try {
-    return sessionStorage.getItem(TAB_SPEICHER) ?? undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-const tabSchreiben = (id: string) => {
-  try {
-    sessionStorage.setItem(TAB_SPEICHER, id);
-  } catch {
-    // storage may be blocked in private/restricted browsers
-  }
-};
 
 const Karte = (props: { children: JSX.Element; voll?: boolean }) => (
   <div
@@ -52,12 +34,9 @@ const Einstellungen = () => {
   const navigate = useNavigate();
   const [fehler, setFehler] = createSignal("");
   const abmelden = async () => {
-    const antwort = await api("/api/auth/sign-out", { body: {} });
-    // without an answer the session may still be alive: the sign-in page would only pretend
-    if (antwort.status === 0) return setFehler(m.fehler_netz());
-    // a refusal (or a second click after the first one ended it): the server says whether it lives
-    if (antwort.ok) abgemeldet();
-    else if ((await sitzungNeu()).art !== "abgemeldet") return setFehler(m.fehler_abmelden());
+    const grund = await abmeldenAusfuehren();
+    if (grund === "netz") return setFehler(m.fehler_netz());
+    if (grund === "fehler") return setFehler(m.fehler_abmelden());
     setFehler("");
     await navigate({ to: "/anmelden" });
   };
@@ -216,8 +195,8 @@ const Einstellungen = () => {
       <Tabs
         label={m.nav_einstellungen()}
         tabs={tabs()}
-        start={tabLesen()}
-        onWechsel={tabSchreiben}
+        start={einstellungenTab()}
+        onWechsel={einstellungenTabSetzen}
       />
     </Seite>
   );

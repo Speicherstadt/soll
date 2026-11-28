@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import { abfrageCache } from "../abfragen/client.ts";
 import { api } from "../api.ts";
 import { ALLE_MODULE } from "../rahmen/module.ts";
+import { type AbmeldenErgebnis, abmeldenAblauf } from "./abmelden.ts";
 import type { Betrieb, Zustand } from "./ziel.ts";
 
 /**
@@ -124,3 +125,11 @@ export const abgemeldet = (): void => {
   setze(neu);
   laufend = Promise.resolve(neu);
 };
+
+/** Signs out via Better Auth with network/retry safety shared by Settings and Sidebar */
+export const abmeldenAusfuehren = (): Promise<AbmeldenErgebnis> =>
+  abmeldenAblauf({
+    senden: () => api("/api/auth/sign-out", { body: {} }),
+    loeschen: abgemeldet,
+    pruefen: sitzungNeu,
+  });

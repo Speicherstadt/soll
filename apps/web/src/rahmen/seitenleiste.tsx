@@ -1,13 +1,66 @@
-import { Icon } from "@soll/ui";
-import { Link, useLocation } from "@tanstack/solid-router";
-import { For, Show } from "solid-js";
+import { Icon, Menu } from "@soll/ui";
+import { Link, useLocation, useNavigate } from "@tanstack/solid-router";
+import { User } from "lucide";
+import { createSignal, For, Show } from "solid-js";
+import { einstellungenTabSetzen } from "../einstellungen/tab.ts";
 import { m } from "../paraglide/messages.js";
-import { aktuelleModule, aktuellerBetrieb } from "../sitzung/sitzung.ts";
+import { abmeldenAusfuehren, aktuelleModule, aktuellerBetrieb } from "../sitzung/sitzung.ts";
 import { bereicheFuer } from "./bereiche.ts";
 import { Darstellung } from "./darstellung.tsx";
 import { aktiverBereich } from "./module.ts";
 
-/** The sidebar from md on: the app and the business, its areas, colours and language (DESIGN.md) */
+const KontoFuss = () => {
+  const navigate = useNavigate();
+  const [fehler, setFehler] = createSignal("");
+  const abmelden = async () => {
+    const grund = await abmeldenAusfuehren();
+    if (grund === "netz") return setFehler(m.fehler_netz());
+    if (grund === "fehler") return setFehler(m.fehler_abmelden());
+    setFehler("");
+    await navigate({ to: "/anmelden" });
+  };
+  return (
+    <Show when={aktuellerBetrieb()}>
+      {(betrieb) => {
+        const name = () => betrieb().nutzerName?.trim() || m.einstellungen_tab_konto();
+        return (
+          <div class="mb-2 flex flex-col gap-1">
+            <Menu
+              variant="ghost"
+              ausloeser={
+                <span class="flex w-full min-w-0 max-w-[172px] items-center gap-2 text-start">
+                  <Icon icon={User} size={15} class="shrink-0 text-muted-foreground" />
+                  <span class="truncate font-medium text-[13px] text-foreground">{name()}</span>
+                </span>
+              }
+              eintraege={[
+                {
+                  label: m.einstellungen_tab_konto(),
+                  onWaehlen: () => {
+                    einstellungenTabSetzen("konto");
+                    void navigate({ to: "/einstellungen" });
+                  },
+                },
+                {
+                  label: m.abmelden(),
+                  gefaehrlich: true,
+                  onWaehlen: () => void abmelden(),
+                },
+              ]}
+            />
+            <Show when={fehler()}>
+              <p role="alert" class="px-1 text-[11px] text-danger">
+                {fehler()}
+              </p>
+            </Show>
+          </div>
+        );
+      }}
+    </Show>
+  );
+};
+
+/** The sidebar from md on: the app and the business, its areas, account, colours and language (DESIGN.md) */
 export const Seitenleiste = () => {
   const ort = useLocation();
   const aktiv = () => aktiverBereich(ort().pathname, aktuelleModule());
@@ -48,6 +101,7 @@ export const Seitenleiste = () => {
         )}
       </For>
       <div class="mt-auto border-t border-border pt-3">
+        <KontoFuss />
         <Darstellung />
         <p class="mt-2.5 px-1 text-[11px] text-muted-foreground tabular-nums">v{__APP_VERSION__}</p>
       </div>

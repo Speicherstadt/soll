@@ -100,4 +100,16 @@ describe("pickerDaten", () => {
     expect(kalenderNachbar(0, "ArrowUp", false)).toBeUndefined();
     expect(kalenderNachbar(41, "ArrowRight", false)).toBeUndefined();
   });
+
+  test("never targets disabled min/max cells during keyboard calendar navigation (#119)", () => {
+    // Nov 2026: index 17 is Thu 2026-11-12 (min), index 23 is Wed 2026-11-18 (max)
+    const zellen = kalenderGitter(2026, 10, "2026-11-12", "2026-11-18");
+    const gesperrt = zellen.map((z) => z.deaktiviert);
+    expect(kalenderNachbar(18, "Home", false, gesperrt)).toBe(17);
+    expect(kalenderNachbar(21, "End", false, gesperrt)).toBe(23);
+    expect(kalenderNachbar(17, "ArrowLeft", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(17, "ArrowUp", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(23, "ArrowRight", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(17, "ArrowRight", true, gesperrt)).toBeUndefined();
+  });
 });

@@ -82,8 +82,8 @@ export const LaufenderTag = (props: {
       <Show when={anteil() !== null}>
         <div aria-hidden="true" class="h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <div
-            class={`h-full rounded-full transition-all ${balkenFarbe()}`}
-            style={{ width: `${anteil() ?? 0}%` }}
+            class={`h-full w-full [transform-origin:0_50%] rtl:[transform-origin:100%_50%] rounded-full transition-transform motion-reduce:transition-none ${balkenFarbe()}`}
+            style={{ transform: `scaleX(${(anteil() ?? 0) / 100})` }}
           />
         </div>
       </Show>

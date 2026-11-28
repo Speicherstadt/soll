@@ -1,5 +1,6 @@
 import { createSignal, createUniqueId, Show } from "solid-js";
 import uPlot from "uplot";
+import { saldoAchseText, stundenAchseText } from "../charts/achsen.ts";
 import { type ChartFarben, UPlotChart } from "../charts/uplotChart.tsx";
 import { dauerText } from "../einrichtung/werte.ts";
 import { m } from "../paraglide/messages.js";
@@ -52,8 +53,8 @@ const saldoOptionen = (
         font: ACHSEN_FONT,
         grid: { stroke: farben.border, width: 1 },
         ticks: { show: false },
-        size: 48,
-        values: (_u, vals) => vals.map((v) => `${v > 0 ? "+" : ""}${v} h`),
+        size: 52,
+        values: (_u, vals) => vals.map(saldoAchseText),
       },
     ],
     series: [
@@ -96,8 +97,8 @@ const tageOptionen = (
         font: ACHSEN_FONT,
         grid: { stroke: farben.border, width: 1 },
         ticks: { show: false },
-        size: 44,
-        values: (_u, vals) => vals.map((v) => `${v} h`),
+        size: 48,
+        values: (_u, vals) => vals.map(stundenAchseText),
       },
     ],
     series: [

@@ -19,8 +19,10 @@ export const Schrittfolge = (props: { namen: string[]; aktuell: number; beschrif
           <span
             aria-hidden="true"
             class={cn(
-              "flex size-5.5 items-center justify-center rounded-full bg-accent text-[12px] text-muted-foreground",
-              index() === props.aktuell && "bg-primary text-primary-foreground",
+              "flex size-5.5 items-center justify-center rounded-full text-[12px]",
+              index() === props.aktuell
+                ? "bg-primary text-primary-foreground"
+                : "bg-accent text-foreground",
             )}
           >
             {index() + 1}

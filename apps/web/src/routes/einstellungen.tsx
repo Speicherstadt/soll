@@ -7,6 +7,7 @@ import { knopfLink } from "../einrichtung/stil.ts";
 import { BescheinigungEinstellung } from "../einstellungen/bescheinigung.tsx";
 import { ModuleSchalter } from "../einstellungen/moduleSchalter.tsx";
 import { PruefungEinstellungen } from "../einstellungen/pruefung.tsx";
+import { SollquelleEinstellung } from "../einstellungen/sollquelle.tsx";
 import { einstellungenTab, einstellungenTabSetzen } from "../einstellungen/tab.ts";
 import { TerminalGeraete } from "../einstellungen/terminalGeraete.tsx";
 import { TerminalKarten } from "../einstellungen/terminalKarten.tsx";
@@ -81,6 +82,11 @@ const Einstellungen = () => {
           </Show>
         </div>
         <div class="flex min-w-0 flex-col gap-5">
+          <Show when={inhaber() && arbeitszeit()}>
+            <Karte>
+              <SollquelleEinstellung />
+            </Karte>
+          </Show>
           <Show when={erinnerungenSichtbar()}>
             <Karte>
               <Erinnerungen />

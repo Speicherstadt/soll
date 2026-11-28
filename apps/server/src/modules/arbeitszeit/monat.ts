@@ -32,6 +32,7 @@ import {
   monatsinhalt,
   type Summen,
 } from "./monatsinhalt.ts";
+import { planSollImMonat } from "./sollquellen.ts";
 import { stempelungenIn } from "./stempelungen.ts";
 import { modellAm, modellabschnitte, sollAm } from "./zuordnungen.ts";
 
@@ -83,6 +84,7 @@ export const aufzeichnungenJetzt = (
     (tag) => sollAm(db, betriebId, nutzerId, tag),
     abwesenheitenDesMonats(db, betriebId, nutzerId, monat, letzterTag(monat)),
     (tag) => modellAm(db, betriebId, nutzerId, tag)?.pausenabzug === true,
+    planSollImMonat(db, betriebId, nutzerId, monat),
   );
 
 /** The holidays at the place in the year of the month and the one before, for R-03 */
@@ -135,8 +137,12 @@ const summenDesMonats = (
   tage: readonly Arbeitstag[],
   aufzeichnung: readonly Aufzeichnung[],
   abwesenheiten: readonly Abwesenheit[],
+  plan: ReadonlyMap<Tag, number>,
 ): { summen: Summen | null; nichtHinterlegt: Tag[]; befunde: Befund[] } => {
-  const ohneModell = aufzeichnung.filter((tag) => tag.modellMinuten === null).map((t) => t.tag);
+  // a day of the plan needs no model: the plan is its Soll (S-505)
+  const ohneModell = aufzeichnung
+    .filter((tag) => tag.modellMinuten === null && tag.planMinuten === undefined)
+    .map((t) => t.tag);
   const standort = standortVon(db, betriebId);
   const beschaeftigung = beschaeftigungVon(db, betriebId, nutzerId);
   if (standort === null || beschaeftigung === null)
@@ -147,6 +153,7 @@ const summenDesMonats = (
     beschaeftigung,
     arbeitstage: tage,
     abwesenheiten,
+    plan,
   });
   if (!stand.ok)
     return {
@@ -239,16 +246,18 @@ export const monatJetzt = (
   const ergebnis = arbeitstage(stempel, jetzt);
   const alle = ergebnis.ok ? ergebnis.wert : [];
   const abwesenheiten = abwesenheitenDesMonats(db, betriebId, nutzerId, monat, tagInBerlin(jetzt));
+  const plan = planSollImMonat(db, betriebId, nutzerId, monat);
   const tage = aufzeichnungen(
     monat,
     stempel,
     (tag) => sollAm(db, betriebId, nutzerId, tag),
     abwesenheiten,
     (tag) => modellAm(db, betriebId, nutzerId, tag)?.pausenabzug === true,
+    plan,
   );
   const imMonat = alle.filter((tag) => monatVon(tag.tag) === monat);
   const gegeneintraege = gegeneintraegeVon(db, betriebId, nutzerId, { gebuchtIn: monat });
-  const stand = summenDesMonats(db, betriebId, nutzerId, monat, imMonat, tage, abwesenheiten);
+  const stand = summenDesMonats(db, betriebId, nutzerId, monat, imMonat, tage, abwesenheiten, plan);
   const feiertageAmOrt = feiertageUm(standortVon(db, betriebId), monat);
   return {
     inhalt: monatsinhalt({

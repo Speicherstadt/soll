@@ -77,6 +77,20 @@ const VollbildRahmen = (props: {
   );
 };
 
+const ablageFehler = (fehler: string | undefined): string =>
+  fehler === "zeit_gibt_es_nicht"
+    ? m.plan_fehler_zeit()
+    : fehler === "monat_abgeschlossen"
+      ? m.plan_fehler_abgeschlossen()
+      : m.fehler_speichern();
+
+const schrittTag = (ansicht: PlanAnsicht, alt: string, delta: -1 | 1): string =>
+  ansicht === "tag"
+    ? plusTage(alt, delta)
+    : ansicht === "monat"
+      ? plusMonatTag(alt, delta)
+      : plusTage(alt, 7 * delta);
+
 /**
  * The plan of the sites of a business: Day/Week/Month views, color-coded shifts, Print & TV
  * Fullscreen mode, templates for planners, dialogs, and shift swap (S-504).
@@ -114,19 +128,9 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
   const ablegen = async (was: Abgelegt, ziel: Ziel) => {
     if ("schicht" in was && bleibt(was.schicht, ziel)) return;
     const ergebnis = await ablage.mutate({ was, ziel, standortId: standortId() });
-    setFehler(
-      ergebnis.ok
-        ? ""
-        : ergebnis.fehler === "zeit_gibt_es_nicht"
-          ? m.plan_fehler_zeit()
-          : m.fehler_speichern(),
-    );
+    setFehler(ergebnis.ok ? "" : ablageFehler(ergebnis.fehler));
   };
-  const schritt = (delta: -1 | 1) => {
-    if (ansicht() === "tag") setTag((alt) => plusTage(alt, delta));
-    else if (ansicht() === "monat") setTag((alt) => plusMonatTag(alt, delta));
-    else setTag((alt) => plusTage(alt, 7 * delta));
-  };
+  const schritt = (delta: -1 | 1) => setTag((alt) => schrittTag(ansicht(), alt, delta));
   return (
     <VollbildRahmen aktiv={vollbild()} onBeenden={() => setVollbild(false)}>
       <PlanKopf

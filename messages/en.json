@@ -1346,5 +1346,16 @@
   "plan_filter_person": "Filter person",
   "plan_drucken": "Print",
   "plan_vollbild": "Fullscreen",
-  "plan_vollbild_beenden": "Exit fullscreen"
+  "plan_vollbild_beenden": "Exit fullscreen",
+  "target_source_title": "Daily target",
+  "target_source_text": "Choose whether daily target hours come from the working-time model or from published shifts in the shift plan.",
+  "target_source_model": "Working-time model",
+  "target_source_plan": "Published shift plan",
+  "target_source_from": "Effective from",
+  "target_source_now": "Current: {source} from {date}",
+  "target_source_saved": "Target source saved.",
+  "target_source_earliest": "Can only be changed from {date} (an earlier month is already closed).",
+  "target_source_needs_plan": "The Shift plan module must be enabled for this.",
+  "target_source_badge": "Plan",
+  "plan_fehler_abgeschlossen": "This month is already closed."
 }

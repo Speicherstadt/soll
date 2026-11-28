@@ -62,6 +62,8 @@ export const ABDECKUNG: Readonly<Record<string, string>> = {
   schichttausche:
     "schichttausche (angeboten, an dich gerichtet oder übernommen; Status, Zeiten, Grund einer Ablehnung, ohne die andere Person)",
   tauschregeln: "ausgenommen: ob ein Tausch eine Freigabe braucht, Einstellung des Betriebs",
+  sollquellen:
+    "ausgenommen: ob das Tagessoll aus dem Arbeitszeitmodell oder dem Dienstplan kommt, Einstellung des Betriebs",
   importe:
     "ausgenommen: Vorgang des Betriebs; jede übernommene Zeile der Person steht mit Import, Werkzeug und Kennung unter stempelungen und abwesenheiten, die Originaldatei enthält Daten anderer Personen (Art. 15 Abs. 4)",
   // Better Auth's tables (db/auth-schema.ts)
@@ -156,6 +158,7 @@ export const INHABERKOPIE: Readonly<Record<string, Freigabe>> = {
   verfahrensdoku_angaben: aus("keine Daten der Person (Angaben des Betriebs, S-902)"),
   schichttausche: frei("Tausche von Schichten, die Inhaber und Planer sehen und entscheiden"),
   tauschregeln: aus("keine Daten der Person (Einstellung des Betriebs zum Tausch)"),
+  sollquellen: aus("keine Daten der Person (Einstellung des Betriebs zur Sollquelle)"),
   importe: aus(
     "Vorgang des Betriebs; die übernommenen Zeilen stehen unter stempelungen und abwesenheiten",
   ),

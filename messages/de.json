@@ -1346,5 +1346,16 @@
   "plan_filter_person": "Person filtern",
   "plan_drucken": "Drucken",
   "plan_vollbild": "Vollbild",
-  "plan_vollbild_beenden": "Vollbild beenden"
+  "plan_vollbild_beenden": "Vollbild beenden",
+  "target_source_title": "Tagessoll",
+  "target_source_text": "Legt fest, ob das Tagessoll aus dem Arbeitszeitmodell oder aus den veröffentlichten Schichten im Dienstplan kommt.",
+  "target_source_model": "Arbeitszeitmodell",
+  "target_source_plan": "Veröffentlichter Dienstplan",
+  "target_source_from": "Gültig ab",
+  "target_source_now": "Aktuell: {source} ab {date}",
+  "target_source_saved": "Sollquelle gespeichert.",
+  "target_source_earliest": "Erst ab {date} änderbar (ein früherer Monat ist bereits abgeschlossen).",
+  "target_source_needs_plan": "Dafür muss das Modul Dienstplan eingeschaltet sein.",
+  "target_source_badge": "Plan",
+  "plan_fehler_abgeschlossen": "Der Monat ist bereits abgeschlossen."
 }

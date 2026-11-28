@@ -33,6 +33,7 @@ import {
   schichten,
   schichttausche,
   schichtvorlagen,
+  sollquellen,
   standorte,
   stempelungen,
   stundennachweisBuchungen,
@@ -95,6 +96,7 @@ export const kettenTabellen = {
   verfahrensdokuAngaben: { tabelle: verfahrensdokuAngaben, schluessel: ["betriebId"] },
   schichttausche: { tabelle: schichttausche, schluessel: ["tauschId"] },
   tauschregeln: { tabelle: tauschregeln, schluessel: ["betriebId"] },
+  sollquellen: { tabelle: sollquellen, schluessel: ["ab"] },
   importe: { tabelle: importe, schluessel: ["importId"] },
 } as const;
 

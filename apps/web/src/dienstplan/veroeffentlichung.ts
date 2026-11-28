@@ -17,7 +17,13 @@ export const veroeffentlichung = (setFehler: (text: string) => void) => {
   );
   const veroeffentlichen = async (woche: Woche) => {
     const antwort = await schreiben.mutate(woche);
-    setFehler(antwort.ok ? "" : m.fehler_speichern());
+    setFehler(
+      antwort.ok
+        ? ""
+        : antwort.fehler === "monat_abgeschlossen"
+          ? m.plan_fehler_abgeschlossen()
+          : m.fehler_speichern(),
+    );
     setBericht(
       antwort.ok
         ? {

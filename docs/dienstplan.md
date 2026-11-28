@@ -197,8 +197,7 @@ Soll prüft jede geplante Schicht mit denselben Regeln wie gestempelte Zeiten
 ([Regelwerk](regeln.md)), sobald sie im Plan steht: nach dem Arbeitszeitgesetz (R-02 bis R-09), dem
 Mindestlohn (R-14), dem Jugendarbeitsschutz (R-15 bis R-20), dem Mutterschutz (R-21), § 12 TzBfG für
 Arbeit auf Abruf (R-22) und der Minijob-Grenze (R-32). Nicht im Plan geprüft werden die Regeln, die
-nur Stempelungen betreffen (R-01, R-10, R-13), und Bereitschaft (R-11, R-12), die mit S-505 in den
-Plan kommt.
+nur Stempelungen betreffen (R-01, R-10, R-13), und Bereitschaft (R-11, R-12).
 
 - **Plan und Ist**: Tage vor heute kommen aus den Stempelungen, heute und später aus dem Plan.
   Geprüft wird, als wäre der Plan bis zum Ende seines letzten Tages gearbeitet; so zählt die
@@ -243,6 +242,23 @@ Eintrag gilt die strenge Vorgabe des Gesetzes.
 | Ausgleichszeitraum (§ 3 ArbZG) | keine Wahl: beide | sechs Kalendermonate oder 24 Wochen |
 | Beginn des Ausgleichszeitraums | 1. Januar 2026 | der erste Tag der Zeiträume |
 
+## Soll aus dem Plan
+
+Für Betriebe mit wechselnden Schichten kann der Inhaber unter **Einstellungen → Betrieb → Tagessoll**
+festlegen, dass das Tagessoll ab einem Stichtag nicht aus dem festen Arbeitszeitmodell, sondern aus
+den **veröffentlichten Schichten** im Dienstplan kommt (nur bei eingeschaltetem Modul Dienstplan):
+
+- **Veröffentlicht zählt, Entwurf nicht**: Für jeden Tag zählt die Summe der veröffentlichten
+  Schichten der Person (Arbeitszeit ohne Pause, am Tag des Beginns; eine Nachtschicht über die
+  Zeitumstellung mit 7 oder 9 Stunden). Ist keine Schicht veröffentlicht, ist das Soll 0:00.
+- **Heute, Monat und Stundenzettel**: Das geplante Soll erscheint auf Heute, im Monat (markiert mit
+  „Plan“) und auf dem Stundenzettel. Abwesenheiten an geplanten Tagen bekommen dieses Soll
+  gutgeschrieben (Ausfallprinzip, § 4 Abs. 1 EntgFG).
+- **Verlauf und Sperre**: Die Einstellung gilt ab einem Tag nach dem letzten abgeschlossenen Monat;
+  bereits abgeschlossene Monate behalten ihren Inhalt und ihren Prüfwert. Ist ein Monat mit Soll aus
+  dem Plan abgeschlossen, lassen sich veröffentlichte Schichten darin weder ändern noch entfernen,
+  und Entwürfe in diesen Monat lassen sich nicht mehr veröffentlichen (`409 monat_abgeschlossen`).
+
 Ein Link kann eine Woche öffnen: `/dienstplan?tag=JJJJ-MM-TT`.
 
 ## Schnittstelle
@@ -281,6 +297,7 @@ Außerhalb des Moduls, weil auch die Zeiterfassung sie braucht:
 | Methode und Pfad | Wer | Was |
 | --- | --- | --- |
 | `GET`, `PUT /api/v1/betrieb/pruefung` | lesen alle Beschäftigten, ändern der Inhaber | `branche`, `sonntagsausnahme` (1 bis 16), `ausgleichszeitraum` (`sechs_monate`, `24_wochen`), `ausgleichBeginn`; `null` ist die Vorgabe des Gesetzes |
+| `GET`, `PUT /api/v1/arbeitszeit/sollquellen` | lesen alle Beschäftigten, ändern der Inhaber | Verlauf (`quellen`: `{ ab, quelle }[]`) und frühester änderbarer Tag (`fruehestens`); `quelle` ist `modell` oder `plan` (`409 monat_gesperrt` im abgeschlossenen Monat, `409 dienstplan_aus` bei abgeschaltetem Modul Dienstplan) |
 | `GET`, `PUT /api/v1/personen/:id/angaben` | Inhaber | `geburtsdatum`, `wechselschicht`, `abruf`, `mutterschutz` (Liste von `{ von, bis }`, `bis` leer, solange er läuft); eine Person eines anderen Betriebs ergibt 404 |
  Ein Standort mit Schichten oder Bedarf lässt sich nicht entfernen (409
 `verplant`). Jede Änderung steht in der [Audit-Kette](audit-kette.md).

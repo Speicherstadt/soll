@@ -227,6 +227,7 @@ const getAntwort = (pfad: string, query: URLSearchParams): unknown => {
   if (pfad === "/api/v1/betrieb") return zustand.betrieb;
   if (pfad === "/api/v1/arbeitszeit/personen") return { personen: DEMO_PERSONEN };
   if (pfad === "/api/v1/arbeitszeit/modelle") return { modelle: DEMO_MODELLE };
+  if (pfad === "/api/v1/arbeitszeit/sollquellen") return { quellen: [], fruehestens: null };
   if (pfad === "/api/v1/arbeitszeit/tag") return tagDaten(query.get("datum") ?? heuteTag());
   if (pfad === "/api/v1/arbeitszeit/monat") return monatDaten(query.get("monat") ?? "2026-11");
   if (pfad === "/api/v1/arbeitszeit/abwesenheiten")

@@ -21,6 +21,7 @@ export type SchichtModus = { art: "neu"; ziel: Ziel } | { art: "bearbeiten"; sch
 const FEHLER: Record<string, () => string> = {
   zeit_gibt_es_nicht: () => m.plan_fehler_zeit(),
   pause_zu_lang: () => m.plan_fehler_pause(),
+  monat_abgeschlossen: () => m.plan_fehler_abgeschlossen(),
   ungueltig: () => m.plan_fehler_eingabe(),
 };
 

@@ -69,7 +69,7 @@ export const stundenzettelAus = (
         ende: tag?.ende ?? null,
         pauseMinuten: (tag?.pausenMinuten ?? 0) + abzug,
         arbeitsMinuten: (tag?.arbeitsMinuten ?? 0) - abzug,
-        sollMinuten: aufzeichnung.modellMinuten,
+        sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
         abwesenheit: abwesenheitText(aufzeichnung.abwesenheiten, gesundheit),
         hinweise: [
           ...(abzug > 0 ? [`Pausenabzug ${abzug} min`] : []),

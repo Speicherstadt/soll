@@ -536,8 +536,17 @@ Alle Punkte: nach S-306.
   anderen Person; ein Test je neuem Endpunkt, dass kein Betrieb Daten eines anderen sieht oder
   ändert, und dass das abgeschaltete Modul abgelehnt wird; Playwright in `desktop` und `@phone`,
   axe grün in hell und dunkel; Texte in allen sechs Sprachen; Doku in `docs/dienstplan.md`, README.
-- [ ] **S-505 Rufbereitschaft und Soll aus dem Plan** – Rufbereitschaft im Plan, Einsätze als
-  Arbeitszeit, Soll aus dem Plan gegen Ist.
+- [x] **S-505 Soll aus dem Plan** – Tagessoll ab einem Stichtag aus den veröffentlichten Schichten
+  statt aus dem statischen Arbeitszeitmodell, gegen Ist im Monat, auf Heute und auf dem
+  Stundenzettel (Rufbereitschaft für 1.0 gestrichen; bei Bedarf erst nach den ersten Piloten).
+  Fertig, wenn: der Inhaber unter Einstellungen ab einem Tag nach dem letzten abgeschlossenen Monat
+  „Veröffentlichter Dienstplan“ als Sollquelle wählt (Verlauf in `sollquellen` über die Audit-Kette,
+  nur bei eingeschaltetem Modul Dienstplan), veröffentlichte Schichten als Tagessoll (ohne Pause,
+  am Tag des Beginns, 7/9 h über die Zeitumstellung) in Monat, Heute und Stundenzettel eingehen,
+  Entwürfe nicht zählen, Abwesenheiten das geplante Soll gutgeschrieben bekommen (Ausfallprinzip,
+  § 4 Abs. 1 EntgFG), abgeschlossene Monate ihren Inhalt, Prüfwert und ihre veröffentlichten
+  Schichten sperren (`409`), Tests Rollen, Mandanten, abgeschaltete Module, Auskunft, Löschkonzept
+  und OpenAPI abdecken und Playwright (Desktop und `@phone`, axe hell/dunkel) den Ablauf zeigt.
 
 ## Phase 6 – Projektzeit und Anbindungen
 
@@ -1424,13 +1433,6 @@ Alle Punkte: nach S-305.
 
 Stand für den nächsten Agenten, der den Loop aufnimmt. Erledigtes hier streichen.
 
-**Angefangene Punkte (Entwurf, ungetestet):** Weiterbauen auf dem Branch des Pull Requests, nicht
-neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (siehe [Entwicklung,
-„Datenbank“](https://soll.work/entwicklung.html#datenbank)).
-
-- S-505 Rufbereitschaft: [Speicherstadt/soll#73](https://github.com/Speicherstadt/soll/pull/73),
-  Branch `claude/s-505-rufbereitschaft` (Migration `0030`, neu erzeugen); siehe „Zurückgestellt“
-
 **Offene Nacharbeiten** (beim Bauen aufgefallen, noch ohne Pull Request):
 
 - [ ] SvEV § 1: Aufteilung bei 25 €/h auf drei Teile (nur ein Test liegt vor)
@@ -1463,16 +1465,8 @@ neu anfangen. Die Migrationen kollidieren mit `main` und werden neu erzeugt (sie
 
 Punkte, die dreimal gescheitert sind, mit Grund; der Loop kommt am Ende auf sie zurück.
 
-- **S-505 Rufbereitschaft und Soll aus dem Plan** – sieben Runden des unabhängigen Reviews, jede mit
-  Befunden derselben Art: Ein Einsatz wurde anders behandelt als dieselben Zeiten gestempelt (R-29).
-  Der Kern liest Einsätze inzwischen als Stempelpaare (Eigenschaftstests grün); offen ist die
-  Prüfung des Plans: Eine Rufbereitschaft ab heute gruppiert Ist und Plan gemeinsam und bringt R-07
-  eines vergangenen Sonntags an eine geplante Schicht, und eine alte Ist-Schicht ohne Gehen
-  zusammen mit einem Einsatz gibt der geplanten Schicht deren Tag, sodass ihre Befunde (auch R-04)
-  wegfallen. Die fehlschlagenden Tests liegen als `it.fails` auf dem Branch
-  (`packages/arbeitszeit/src/planpruefung/`). Ansatz für den nächsten Versuch: die Planprüfung
-  gruppiert vergangenes Ist (mit Einsätzen) und den Plan nie gemeinsam, auch nicht mit
-  Rufbereitschaft ab heute.
+Keine. (Rufbereitschaft aus dem früheren Entwurf S-505 wurde für 1.0 gestrichen; „Soll aus dem
+Plan“ ist umgesetzt.)
 
 ## Schritte für Menschen
 

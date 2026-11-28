@@ -1346,5 +1346,16 @@
   "plan_filter_person": "تصفية حسب الشخص",
   "plan_drucken": "طباعة",
   "plan_vollbild": "ملء الشاشة",
-  "plan_vollbild_beenden": "إنهاء ملء الشاشة"
+  "plan_vollbild_beenden": "إنهاء ملء الشاشة",
+  "target_source_title": "الهدف اليومي",
+  "target_source_text": "يحدد ما إذا كانت ساعات العمل المستهدفة يومياً تأتي من نموذج وقت العمل أو من المناوبات المنشورة في جدول المناوبات.",
+  "target_source_model": "نموذج وقت العمل",
+  "target_source_plan": "جدول المناوبات المنشور",
+  "target_source_from": "ساري اعتباراً من",
+  "target_source_now": "الحالي: {source} اعتباراً من {date}",
+  "target_source_saved": "تم حفظ مصدر الهدف اليومي.",
+  "target_source_earliest": "يمكن التغيير اعتباراً من {date} فقط (شهر سابق مغلق بالفعل).",
+  "target_source_needs_plan": "يجب تفعيل وحدة جدول المناوبات لهذا الغرض.",
+  "target_source_badge": "جدول",
+  "plan_fehler_abgeschlossen": "هذا الشهر مغلق بالفعل."
 }

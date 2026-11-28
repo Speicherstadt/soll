@@ -37,6 +37,8 @@ export type Aufzeichnung = {
   stempel: [Stempelart, number][];
   /** the model's minutes for the weekday; null without a model ("nicht hinterlegt") */
   modellMinuten: number | null;
+  /** only set on days whose Soll comes from the published plan (S-505), preserving earlier hashes */
+  planMinuten?: number;
   abwesenheiten?: Tagesabwesenheit[];
   /** only set when true, so months without automatic break deduction keep their hash unchanged */
   pausenabzug?: true;
@@ -120,6 +122,7 @@ export const aufzeichnungen = (
   modellMinuten: (tag: Tag) => number | null,
   abwesenheiten: readonly Abwesenheit[] = [],
   pausenabzug?: (tag: Tag) => boolean,
+  plan?: ReadonlyMap<Tag, number>,
 ): Aufzeichnung[] => {
   const sortiert = [...stempelungen].sort((a, b) => a.zeitpunkt - b.zeitpunkt);
   const tagVon = stempeltage(sortiert);
@@ -131,10 +134,12 @@ export const aufzeichnungen = (
   }
   return tageImMonat(monat).map((tag) => {
     const abwesend = amTag(abwesenheiten, tag);
+    const geplant = plan?.get(tag);
     return {
       tag,
       stempel: jeTag.get(tag) ?? [],
       modellMinuten: modellMinuten(tag),
+      ...(geplant === undefined ? {} : { planMinuten: geplant }),
       ...(abwesend.length > 0 ? { abwesenheiten: abwesend } : {}),
       ...(pausenabzug?.(tag) ? { pausenabzug: true as const } : {}),
     };

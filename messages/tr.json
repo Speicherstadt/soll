@@ -1346,5 +1346,16 @@
   "plan_filter_person": "Kişi filtrele",
   "plan_drucken": "Yazdır",
   "plan_vollbild": "Tam ekran",
-  "plan_vollbild_beenden": "Tam ekrandan çık"
+  "plan_vollbild_beenden": "Tam ekrandan çık",
+  "target_source_title": "Günlük hedef",
+  "target_source_text": "Günlük hedef saatlerin çalışma saati modelinden mi yoksa yayımlanan vardiya planından mı alınacağını belirler.",
+  "target_source_model": "Çalışma saati modeli",
+  "target_source_plan": "Yayımlanan vardiya planı",
+  "target_source_from": "Geçerlilik başlangıcı",
+  "target_source_now": "Güncel: {date} tarihinden itibaren {source}",
+  "target_source_saved": "Hedef kaynağı kaydedildi.",
+  "target_source_earliest": "Yalnızca {date} tarihinden itibaren değiştirilebilir (önceki bir ay kapatılmış).",
+  "target_source_needs_plan": "Bunun için Vardiya planı modülü açık olmalıdır.",
+  "target_source_badge": "Plan",
+  "plan_fehler_abgeschlossen": "Bu ay zaten kapatılmış."
 }

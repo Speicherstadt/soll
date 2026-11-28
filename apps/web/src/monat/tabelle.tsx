@@ -102,7 +102,8 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
         zeile.beginn !== null ||
         zeile.befunde.length > 0 ||
         zeile.geaendert ||
-        zeile.abwesenheiten.length > 0,
+        zeile.abwesenheiten.length > 0 ||
+        (zeile.sollAusPlan && (zeile.sollMinuten ?? 0) > 0),
     );
   return (
     <Show
@@ -167,6 +168,9 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                     </Td>
                     <Td>
                       <div class="flex flex-wrap items-center gap-1">
+                        <Show when={zeile.sollAusPlan}>
+                          <Badge>{m.target_source_badge()}</Badge>
+                        </Show>
                         <Show when={zeile.geaendert}>
                           <Badge>{m.monat_geaendert()}</Badge>
                         </Show>

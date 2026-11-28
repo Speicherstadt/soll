@@ -15,8 +15,8 @@ export type SchichtEingabe = {
   vorlageId?: string | null;
 };
 
-/** What a change to shifts or the need changes: the weeks of the plan */
-export const PLAN_AENDERT = [alle(PFAD.woche)];
+/** What a change to shifts or the need changes: the weeks of the plan, plus month/day Soll */
+export const PLAN_AENDERT = [alle(PFAD.woche), alle(PFAD.monat), alle(PFAD.tag)];
 
 export const schichtAnlegen = (eingabe: SchichtEingabe) =>
   api<Schicht>("/api/v1/dienstplan/schichten", { body: eingabe });

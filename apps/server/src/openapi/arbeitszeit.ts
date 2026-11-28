@@ -4,6 +4,7 @@ import * as modelle from "../routes/modelle.ts";
 import * as monat from "../routes/monat.ts";
 import * as offline from "../routes/offline.ts";
 import * as pruefexport from "../routes/pruefexport.ts";
+import * as sollquellen from "../routes/sollquellen.ts";
 import * as zeiten from "../routes/zeiten.ts";
 import type { Operation } from "./dokument.ts";
 
@@ -80,6 +81,18 @@ export const ARBEITSZEIT: readonly Operation[] = (
       methode: "delete",
       pfad: "/modelle/:modellId",
       zusammenfassung: "Ein Arbeitszeitmodell entfernen",
+    },
+    {
+      methode: "get",
+      pfad: "/sollquellen",
+      zusammenfassung:
+        "Woher das Tagessoll ab welchem Tag kommt (Arbeitszeitmodell oder Dienstplan)",
+    },
+    {
+      methode: "put",
+      pfad: "/sollquellen",
+      zusammenfassung: "Quelle des Tagessolls ab einem Tag festlegen (Inhaber)",
+      koerper: sollquellen.sollquelleSchema,
     },
     {
       methode: "get",

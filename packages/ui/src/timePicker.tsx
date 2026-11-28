@@ -33,6 +33,7 @@ const SCHRITT_KNOPF =
 const ZeitPopover = (props: {
   id: string;
   anker: string;
+  offen: boolean;
   sprache: string;
   teile: { stunde: number; minute: number } | null;
   ref: (el: HTMLDivElement) => void;
@@ -48,7 +49,7 @@ const ZeitPopover = (props: {
       id={props.id}
       ref={props.ref}
       popover="manual"
-      data-picker-popover="time"
+      data-picker-popover={props.offen ? "time" : undefined}
       style={verankert(props.anker)}
       class="w-[220px] overscroll-contain rounded-xl border border-border bg-background p-3 text-foreground shadow-xl md:w-[204px]"
     >
@@ -246,6 +247,7 @@ export const TimePicker = (props: TimePickerProps) => {
       <ZeitPopover
         id={popoverId}
         anker={anker}
+        offen={offen()}
         ref={(el) => {
           popoverRef = el;
         }}

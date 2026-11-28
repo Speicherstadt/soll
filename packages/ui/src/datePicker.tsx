@@ -59,6 +59,7 @@ const monatName = (sprache: string, jahr: number, monat: number) =>
 const KalenderPopover = (props: {
   id: string;
   anker: string;
+  offen: boolean;
   sprache: string;
   jahr: number;
   monat: number;
@@ -92,7 +93,7 @@ const KalenderPopover = (props: {
       id={props.id}
       ref={props.ref}
       popover="manual"
-      data-picker-popover="date"
+      data-picker-popover={props.offen ? "date" : undefined}
       style={verankert(props.anker)}
       class="w-[296px] overscroll-contain rounded-xl border border-border bg-background p-3 text-foreground shadow-xl md:w-[280px]"
     >
@@ -338,7 +339,7 @@ export const DatePicker = (props: DatePickerProps) => {
       <button
         type="button"
         disabled={props.disabled}
-        aria-label={einheitName("day", sprache())}
+        aria-label={`${einheitName("day", sprache())} / ${einheitName("month", sprache())} / ${einheitName("year", sprache())}`}
         aria-expanded={offen() ? "true" : "false"}
         aria-controls={popoverId}
         class="absolute end-1 top-1 inline-flex size-7 cursor-pointer items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"
@@ -349,6 +350,7 @@ export const DatePicker = (props: DatePickerProps) => {
       <KalenderPopover
         id={popoverId}
         anker={anker}
+        offen={offen()}
         ref={(el) => {
           popoverRef = el;
         }}

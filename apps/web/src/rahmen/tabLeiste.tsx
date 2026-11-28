@@ -1,13 +1,16 @@
 import { Icon } from "@soll/ui";
-import { Link } from "@tanstack/solid-router";
+import { Link, useLocation } from "@tanstack/solid-router";
 import { For } from "solid-js";
 import { m } from "../paraglide/messages.js";
 import { aktuelleModule } from "../sitzung/sitzung.ts";
 import { tabsFuer } from "./bereiche.ts";
+import { aktiverTab } from "./module.ts";
 
 /** The tab bar below md: targets of at least 44 px, reached by the thumb (DESIGN.md) */
 export const TabLeiste = () => {
+  const ort = useLocation();
   const tabs = () => tabsFuer(aktuelleModule());
+  const aktiv = () => aktiverTab(ort().pathname, aktuelleModule());
   return (
     <nav
       aria-label={m.nav_bereiche()}
@@ -19,7 +22,8 @@ export const TabLeiste = () => {
           <Link
             to={tab.pfad}
             activeOptions={{ exact: true }}
-            class="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[12px] text-muted-foreground aria-[current=page]:font-semibold aria-[current=page]:text-foreground"
+            aria-current={aktiv() === tab.pfad ? "page" : undefined}
+            class="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[12px] text-muted-foreground focus-visible:outline-2 focus-visible:outline-foreground aria-[current=page]:font-semibold aria-[current=page]:text-foreground"
           >
             <Icon icon={tab.icon} size={22} />
             {tab.name()}

@@ -36,8 +36,12 @@ const fakeDokument = () => {
   const head = {
     querySelector: (sel: string) => {
       if (sel.includes("data-soll-theme-color"))
-        return kinder.find((m) => m.name === "theme-color" && m.dataset.sollThemeColor !== undefined) ?? null;
-      if (sel.includes('name="theme-color"')) return kinder.find((m) => m.name === "theme-color") ?? null;
+        return (
+          kinder.find((m) => m.name === "theme-color" && m.dataset.sollThemeColor !== undefined) ??
+          null
+        );
+      if (sel.includes('name="theme-color"'))
+        return kinder.find((m) => m.name === "theme-color") ?? null;
       return null;
     },
     append: (node: FakeMeta) => void kinder.push(node),

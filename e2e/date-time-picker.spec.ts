@@ -26,7 +26,10 @@ test("DatePicker opens shadcn calendar popover, selects dates, and has 0 axe vio
   expect(axe.violations).toEqual([]);
 
   // Pick day 15 of the visible month and verify the input updates to YYYY-MM-15
-  await popover.getByRole("button", { name: /\b15\./ }).first().click();
+  await popover
+    .getByRole("button", { name: /\b15\./ })
+    .first()
+    .click();
   await expect(popover).toBeHidden();
   await expect(datumInput).toHaveValue(/^\d{4}-\d{2}-15$/);
 

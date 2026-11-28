@@ -1,5 +1,13 @@
 import { ChevronDown, ChevronUp, Clock } from "lucide";
-import { createEffect, createSignal, createUniqueId, For, onSettled, untrack } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  createUniqueId,
+  For,
+  onSettled,
+  Show,
+  untrack,
+} from "solid-js";
 import { cn } from "./cn.ts";
 import { Icon } from "./icon.tsx";
 import {
@@ -53,76 +61,78 @@ const ZeitPopover = (props: {
       style={verankert(props.anker)}
       class="w-[220px] overscroll-contain rounded-xl border border-border bg-background p-3 text-foreground shadow-xl md:w-[204px]"
     >
-      <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <div class="flex flex-col items-center gap-1">
-          <button
-            type="button"
-            aria-label={`${stundeLabel()} +1`}
-            class={SCHRITT_KNOPF}
-            onClick={() => props.onZeit(stundeDrehen(stunde(), 1), minute())}
-          >
-            <Icon icon={ChevronUp} size={15} />
-          </button>
-          <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
-            {String(stunde()).padStart(2, "0")}
-          </span>
-          <button
-            type="button"
-            aria-label={`${stundeLabel()} -1`}
-            class={SCHRITT_KNOPF}
-            onClick={() => props.onZeit(stundeDrehen(stunde(), -1), minute())}
-          >
-            <Icon icon={ChevronDown} size={15} />
-          </button>
+      <Show when={props.offen}>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div class="flex flex-col items-center gap-1">
+            <button
+              type="button"
+              aria-label={`${stundeLabel()} +1`}
+              class={SCHRITT_KNOPF}
+              onClick={() => props.onZeit(stundeDrehen(stunde(), 1), minute())}
+            >
+              <Icon icon={ChevronUp} size={15} />
+            </button>
+            <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
+              {String(stunde()).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              aria-label={`${stundeLabel()} -1`}
+              class={SCHRITT_KNOPF}
+              onClick={() => props.onZeit(stundeDrehen(stunde(), -1), minute())}
+            >
+              <Icon icon={ChevronDown} size={15} />
+            </button>
+          </div>
+
+          <span class="font-mono font-semibold text-[18px] text-muted-foreground">:</span>
+
+          <div class="flex flex-col items-center gap-1">
+            <button
+              type="button"
+              aria-label={`${minuteLabel()} +1`}
+              class={SCHRITT_KNOPF}
+              onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), 1))}
+            >
+              <Icon icon={ChevronUp} size={15} />
+            </button>
+            <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
+              {String(minute()).padStart(2, "0")}
+            </span>
+            <button
+              type="button"
+              aria-label={`${minuteLabel()} -1`}
+              class={SCHRITT_KNOPF}
+              onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), -1))}
+            >
+              <Icon icon={ChevronDown} size={15} />
+            </button>
+          </div>
         </div>
 
-        <span class="font-mono font-semibold text-[18px] text-muted-foreground">:</span>
-
-        <div class="flex flex-col items-center gap-1">
-          <button
-            type="button"
-            aria-label={`${minuteLabel()} +1`}
-            class={SCHRITT_KNOPF}
-            onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), 1))}
-          >
-            <Icon icon={ChevronUp} size={15} />
-          </button>
-          <span class="flex h-10 w-full items-center justify-center rounded-md border border-border bg-muted/40 font-mono font-semibold text-[18px] tabular-nums">
-            {String(minute()).padStart(2, "0")}
-          </span>
-          <button
-            type="button"
-            aria-label={`${minuteLabel()} -1`}
-            class={SCHRITT_KNOPF}
-            onClick={() => props.onZeit(stunde(), minuteDrehen(minute(), -1))}
-          >
-            <Icon icon={ChevronDown} size={15} />
-          </button>
+        <div class="mt-2.5 grid grid-cols-4 gap-1 border-border border-t pt-2.5">
+          <For each={VIERTEL_MINUTEN}>
+            {(min) => {
+              const aktiv = () => props.teile?.minute === min;
+              return (
+                <button
+                  type="button"
+                  aria-pressed={aktiv() ? "true" : "false"}
+                  class={cn(
+                    "h-10 cursor-pointer rounded-md font-mono text-[12px] tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-foreground md:h-7",
+                    aktiv()
+                      ? "bg-foreground font-semibold text-background"
+                      : "border border-control-border text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                  onClick={() => props.onZeit(stunde(), min)}
+                >
+                  :{String(min).padStart(2, "0")}
+                </button>
+              );
+            }}
+          </For>
         </div>
-      </div>
-
-      <div class="mt-2.5 grid grid-cols-4 gap-1 border-border border-t pt-2.5">
-        <For each={VIERTEL_MINUTEN}>
-          {(min) => {
-            const aktiv = () => props.teile?.minute === min;
-            return (
-              <button
-                type="button"
-                aria-pressed={aktiv() ? "true" : "false"}
-                class={cn(
-                  "h-10 cursor-pointer rounded-md font-mono text-[12px] tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-foreground md:h-7",
-                  aktiv()
-                    ? "bg-foreground font-semibold text-background"
-                    : "border border-control-border text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-                onClick={() => props.onZeit(stunde(), min)}
-              >
-                :{String(min).padStart(2, "0")}
-              </button>
-            );
-          }}
-        </For>
-      </div>
+      </Show>
     </div>
   );
 };

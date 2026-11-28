@@ -97,84 +97,86 @@ const KalenderPopover = (props: {
       style={verankert(props.anker)}
       class="w-[296px] overscroll-contain rounded-xl border border-border bg-background p-3 text-foreground shadow-xl md:w-[280px]"
     >
-      <div class="mb-3 flex items-center justify-between gap-1">
-        <button
-          type="button"
-          aria-label={props.vorTitel}
-          class={NAV_KNOPF}
-          onClick={() => props.onSchritt(-1)}
-        >
-          <Icon icon={ChevronLeft} size={14} class="rtl:rotate-180" />
-        </button>
-        <div class="flex items-center gap-1">
-          <select
-            aria-label={einheitName("month", props.sprache)}
-            value={String(props.monat)}
-            onChange={(e) => props.onAnsicht(props.jahr, Number(e.currentTarget.value))}
-            class="h-10 cursor-pointer rounded-md border border-control-border bg-background px-1.5 pe-6 font-medium text-[12px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-foreground md:h-7"
+      <Show when={props.offen}>
+        <div class="mb-3 flex items-center justify-between gap-1">
+          <button
+            type="button"
+            aria-label={props.vorTitel}
+            class={NAV_KNOPF}
+            onClick={() => props.onSchritt(-1)}
           >
-            <For each={MONAT_INDIZES}>
-              {(m) => <option value={String(m)}>{props.monatsNamen[m]}</option>}
-            </For>
-          </select>
-          <select
-            aria-label={einheitName("year", props.sprache)}
-            value={String(props.jahr)}
-            onChange={(e) => props.onAnsicht(Number(e.currentTarget.value), props.monat)}
-            class="h-10 cursor-pointer rounded-md border border-control-border bg-background px-1.5 pe-6 font-medium font-mono text-[12px] text-foreground tabular-nums outline-hidden focus-visible:outline-2 focus-visible:outline-foreground md:h-7"
+            <Icon icon={ChevronLeft} size={14} class="rtl:rotate-180" />
+          </button>
+          <div class="flex items-center gap-1">
+            <select
+              aria-label={einheitName("month", props.sprache)}
+              value={String(props.monat)}
+              onChange={(e) => props.onAnsicht(props.jahr, Number(e.currentTarget.value))}
+              class="h-10 cursor-pointer rounded-md border border-control-border bg-background px-1.5 pe-6 font-medium text-[12px] text-foreground outline-hidden focus-visible:outline-2 focus-visible:outline-foreground md:h-7"
+            >
+              <For each={MONAT_INDIZES}>
+                {(m) => <option value={String(m)}>{props.monatsNamen[m]}</option>}
+              </For>
+            </select>
+            <select
+              aria-label={einheitName("year", props.sprache)}
+              value={String(props.jahr)}
+              onChange={(e) => props.onAnsicht(Number(e.currentTarget.value), props.monat)}
+              class="h-10 cursor-pointer rounded-md border border-control-border bg-background px-1.5 pe-6 font-medium font-mono text-[12px] text-foreground tabular-nums outline-hidden focus-visible:outline-2 focus-visible:outline-foreground md:h-7"
+            >
+              <For each={JAHRE}>{(j) => <option value={String(j)}>{j}</option>}</For>
+            </select>
+          </div>
+          <button
+            type="button"
+            aria-label={props.nachTitel}
+            class={NAV_KNOPF}
+            onClick={() => props.onSchritt(1)}
           >
-            <For each={JAHRE}>{(j) => <option value={String(j)}>{j}</option>}</For>
-          </select>
+            <Icon icon={ChevronRight} size={14} class="rtl:rotate-180" />
+          </button>
         </div>
-        <button
-          type="button"
-          aria-label={props.nachTitel}
-          class={NAV_KNOPF}
-          onClick={() => props.onSchritt(1)}
-        >
-          <Icon icon={ChevronRight} size={14} class="rtl:rotate-180" />
-        </button>
-      </div>
 
-      <div class="mb-1.5 grid grid-cols-7 text-center">
-        <For each={props.wochentage}>
-          {(wt) => <span class="py-1 font-medium text-[11px] text-muted-foreground">{wt}</span>}
-        </For>
-      </div>
+        <div class="mb-1.5 grid grid-cols-7 text-center">
+          <For each={props.wochentage}>
+            {(wt) => <span class="py-1 font-medium text-[11px] text-muted-foreground">{wt}</span>}
+          </For>
+        </div>
 
-      <div ref={gitterRef} class="grid grid-cols-7 gap-0.5">
-        <For each={props.zellen}>
-          {(z, index) => {
-            const gewaehlt = () => z.tag === props.aktuell;
-            const istHeute = () => z.tag === props.heute;
-            return (
-              <button
-                type="button"
-                disabled={z.deaktiviert}
-                aria-label={datumLang(z.tag, props.sprache)}
-                aria-pressed={gewaehlt() ? "true" : "false"}
-                aria-current={istHeute() ? "date" : undefined}
-                class={cn(
-                  "inline-flex size-10 items-center justify-center rounded-md text-[13px] tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-foreground md:size-8",
-                  !z.deaktiviert && "cursor-pointer",
-                  gewaehlt()
-                    ? "bg-foreground font-semibold text-background shadow-xs"
-                    : istHeute()
-                      ? "bg-muted font-semibold text-foreground hover:bg-muted/80"
-                      : z.imMonat
-                        ? "text-foreground hover:bg-muted"
-                        : "text-muted-foreground hover:bg-muted",
-                  z.deaktiviert && "cursor-not-allowed opacity-35",
-                )}
-                onKeyDown={(e) => beiTaste(e, index())}
-                onClick={() => props.onWaehlen(z.tag)}
-              >
-                {z.nummer}
-              </button>
-            );
-          }}
-        </For>
-      </div>
+        <div ref={gitterRef} class="grid grid-cols-7 gap-0.5">
+          <For each={props.zellen}>
+            {(z, index) => {
+              const gewaehlt = () => z.tag === props.aktuell;
+              const istHeute = () => z.tag === props.heute;
+              return (
+                <button
+                  type="button"
+                  disabled={z.deaktiviert}
+                  aria-label={datumLang(z.tag, props.sprache)}
+                  aria-pressed={gewaehlt() ? "true" : "false"}
+                  aria-current={istHeute() ? "date" : undefined}
+                  class={cn(
+                    "inline-flex size-10 items-center justify-center rounded-md text-[13px] tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-foreground md:size-8",
+                    !z.deaktiviert && "cursor-pointer",
+                    gewaehlt()
+                      ? "bg-foreground font-semibold text-background shadow-xs"
+                      : istHeute()
+                        ? "bg-muted font-semibold text-foreground hover:bg-muted/80"
+                        : z.imMonat
+                          ? "text-foreground hover:bg-muted"
+                          : "text-muted-foreground hover:bg-muted",
+                    z.deaktiviert && "cursor-not-allowed opacity-35",
+                  )}
+                  onKeyDown={(e) => beiTaste(e, index())}
+                  onClick={() => props.onWaehlen(z.tag)}
+                >
+                  {z.nummer}
+                </button>
+              );
+            }}
+          </For>
+        </div>
+      </Show>
     </div>
   );
 };
@@ -211,6 +213,7 @@ const pickerEreignisse = (
 };
 
 const kalenderLabels = (sprache: () => string, ansicht: () => { jahr: number; monat: number }) => ({
+  monatTitel: createMemo(() => monatName(sprache(), ansicht().jahr, ansicht().monat)),
   vorTitel: createMemo(() => {
     const m = monatVerschieben(ansicht().jahr, ansicht().monat, -1);
     return monatName(sprache(), m.jahr, m.monat);
@@ -339,7 +342,7 @@ export const DatePicker = (props: DatePickerProps) => {
       <button
         type="button"
         disabled={props.disabled}
-        aria-label={`${einheitName("day", sprache())} / ${einheitName("month", sprache())} / ${einheitName("year", sprache())}`}
+        aria-label={labels.monatTitel()}
         aria-expanded={offen() ? "true" : "false"}
         aria-controls={popoverId}
         class="absolute end-1 top-1 inline-flex size-7 cursor-pointer items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-foreground disabled:opacity-50"

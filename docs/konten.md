@@ -16,17 +16,20 @@ und R-33.
 
 ## Soll eines Tages
 
-Das Soll eines Tages sind die Minuten, die das Arbeitszeitmodell für diesen Wochentag vorsieht. Es
-gilt das Modell, das der Person an diesem Tag zugeordnet ist; wechselt das Modell mitten im Monat
-(Teilzeit ab dem 16.), zählt jeder Tag mit seinem Modell.
+Das Soll eines Tages sind die Minuten, die das Arbeitszeitmodell für diesen Wochentag vorsieht –
+oder, wenn der Betrieb [Soll aus dem Plan](dienstplan.md#soll-aus-dem-plan) eingeschaltet hat, die
+veröffentlichten Schichten dieses Tages. Beim Arbeitszeitmodell gilt das Modell, das der Person an
+diesem Tag zugeordnet ist; wechselt das Modell mitten im Monat (Teilzeit ab dem 16.), zählt jeder
+Tag mit seinem Modell.
 
 | Tag | Soll |
 | --- | --- |
 | Arbeitstag im Modell | die Minuten des Modells |
-| gesetzlicher Feiertag am Standort | 0; die ausgefallenen Minuten werden genannt (§ 2 Abs. 1 EntgFG) |
+| Tag mit Soll aus dem Plan | Summe der veröffentlichten Schichten des Tages (auch an Feiertagen; ohne Schicht 0) |
+| gesetzlicher Feiertag am Standort (Modell) | 0; die ausgefallenen Minuten werden genannt (§ 2 Abs. 1 EntgFG) |
 | Feiertag an einem Tag, den das Modell frei hat | 0, nichts fällt aus |
 | vor dem Eintritt, nach dem Austritt, während das Arbeitsverhältnis ruht (volle Elternzeit) | 0 |
-| Tag der Beschäftigung ohne zugeordnetes Modell | „nicht hinterlegt“ |
+| Tag der Beschäftigung ohne zugeordnetes Modell (und ohne Soll aus dem Plan) | „nicht hinterlegt“ |
 
 Die Feiertage kommen aus dem [Feiertagskalender](feiertage.md) des Standorts der Person. In einem
 Jahr ohne Feiertagskalender ist ein Tag mit Minuten im Modell „nicht hinterlegt“.
@@ -68,8 +71,9 @@ Monatsabschluss geht er ins Überstundenkonto.
 | November 2026, Überstundenabbau am 6.11., sonst 8:00 | 168:00 | 160:00 | −8:00 |
 
 Ein Tag mit noch offener Schicht zählt nicht mit und wird genannt: seine Zeit steht erst mit dem
-„Gehen“ fest (R-01). Fehlt an einem Tag das Modell oder der Feiertagskalender, ist der ganze Monat
-„nicht hinterlegt“, mit den fehlenden Tagen; eine Summe mit Lücke wäre geschätzt.
+„Gehen“ fest (R-01). Fehlt an einem Tag das Modell oder der Feiertagskalender (außer an Tagen mit
+Soll aus dem Plan), ist der ganze Monat „nicht hinterlegt“, mit den fehlenden Tagen; eine Summe mit
+Lücke wäre geschätzt.
 
 ## Überstundenkonto
 
@@ -219,6 +223,7 @@ Alle Funktionen sind rein und liegen in `packages/arbeitszeit`:
 | --- | --- |
 | `tagesSoll(tag, grundlagen, abwesenheiten)` | Soll, Feiertag, Ausfall, Gutschrift, Urlaub und R-24 eines Tages |
 | `monatsstand(monat, eingaben)` | Soll, Ist, Saldo, Urlaubstage und offene Tage eines Monats |
+| `sollquelleAm(quellen, tag)`, `planMinutenJeTag(schichten)`, `planSoll(tage, quellen, schichten)` | Sollquelle am Tag und geplante Sollminuten je Tag aus veröffentlichten Schichten |
 | `ueberstundenkonto(abschluesse, anpassungen, bis)` | Saldo, Verlauf je Monat und Lücken |
 | `urlaubsanspruch(eingaben)` | Jahresurlaub mit Art (voll, Teilurlaub a, b, c), Zwölfteln, Zusatzurlaub, Kürzung und Befunden |
 | `urlaubskonto(eingaben)` | Urlaub je Jahr mit genommen, verfallen, Rest, Verfallstag und Befunden zum Verfall |

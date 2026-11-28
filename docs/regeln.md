@@ -1237,17 +1237,17 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   BUrlG (Urlaub nur an Arbeitstagen, die keine Feiertage sind).
 - **Regel**: Das Soll eines Tages sind die Minuten des Arbeitszeitmodells, das an diesem Tag gilt,
   für seinen Wochentag; ein Feiertag am Standort setzt es auf 0, vor dem Eintritt, nach dem Austritt
-  und während das Arbeitsverhältnis ruht (volle Elternzeit) ist es 0. Stellt der Betrieb unter
-  Einstellungen **Tagessoll aus dem veröffentlichten Dienstplan** ein (ab einem Tag nach dem letzten
-  abgeschlossenen Monat), tritt ab diesem Tag die Summe der veröffentlichten Schichten des Tages
-  (Arbeitszeit ohne Pause, am Tag des Beginns, in echten Minuten über die Zeitumstellung) an die
-  Stelle des Arbeitszeitmodells; Entwürfe zählen nicht, eine am Feiertag geplante Schicht zählt als
-  Soll, und Abwesenheiten bekommen das geplante Soll gutgeschrieben (Ausfallprinzip, § 4 Abs. 1
-  EntgFG). Ist sind die gearbeiteten
-  Minuten der geschlossenen Schichten (R-01) und die Gutschrift für Abwesenheiten: Urlaub, Krankheit,
-  Kind krank und Sonderurlaub bekommen das Soll des Tages gutgeschrieben, ein halber Tag die Hälfte,
-  aufgerundet; Überstundenabbau bekommt nichts. Das Überstundenkonto ist die Summe aus Ist minus Soll
-  der abgeschlossenen Monate und den Anpassungen von Hand (Startsaldo, Auszahlung, Korrektur).
+  und während das Arbeitsverhältnis ruht (volle Elternzeit) ist es 0. Wählt der Betrieb unter
+  **Einstellungen → Betrieb → Tagessoll** ab einem Tag nach dem letzten abgeschlossenen Monat
+  **Veröffentlichter Dienstplan** ([Dienstplan](dienstplan.md#soll-aus-dem-plan)), tritt ab diesem
+  Tag die Summe der veröffentlichten Schichten des Tages (Arbeitszeit ohne Pause, am Tag des Beginns,
+  in echten Minuten über die Zeitumstellung) an die Stelle des Arbeitszeitmodells; Entwürfe zählen
+  nicht, und eine am Feiertag geplante Schicht zählt als Soll. Ist sind die gearbeiteten Minuten der
+  geschlossenen Schichten (R-01) und die Gutschrift für Abwesenheiten: Urlaub, Krankheit, Kind krank
+  und Sonderurlaub bekommen das Soll des Tages gutgeschrieben (Ausfallprinzip bei Krankheit nach § 4
+  Abs. 1 EntgFG), ein halber Tag die Hälfte, aufgerundet; Überstundenabbau bekommt nichts. Das
+  Überstundenkonto ist die Summe aus Ist minus Soll der abgeschlossenen Monate und den Anpassungen
+  von Hand (Startsaldo, Auszahlung, Korrektur).
 - **Schwere**: kein Befund; eine Berechnung. Ein Tag der Beschäftigung ohne Arbeitszeitmodell (und
   ohne Soll aus dem Plan) oder ohne Feiertage macht den Monat „nicht hinterlegt“.
 

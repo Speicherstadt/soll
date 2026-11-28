@@ -472,8 +472,8 @@ Alle Punkte: nach S-306.
   als wäre der Plan gearbeitet (Vitest auch über Mitternacht und beide Zeitumstellungen); § 12 TzBfG
   (R-22) als reine Funktion mit den Fällen aus `docs/regeln.md`, Mitteilung ist die
   Veröffentlichung, im Entwurf der heutige Tag; angewendet werden R-02 bis R-09, R-14 bis R-22 und
-  R-32, nicht R-01, R-10 und R-13 (sie betreffen Stempelungen), R-11 und R-12 (Bereitschaft im Plan
-  kommt mit S-505) und die Berechnungen R-29 und R-33; jede angewendete Regel hat einen
+  R-32, nicht R-01, R-10 und R-13 (sie betreffen Stempelungen), R-11 und R-12 (Rufbereitschaft für
+  1.0 gestrichen) und die Berechnungen R-29 und R-33; jede angewendete Regel hat einen
   Playwright-Fall im Plan (desktop, einer auch am Handy); ein Befund warnt am Block (Icon, Text,
   Norm) und in der Liste „Hinweise zum Plan“ unter dem Plan und verhindert das Speichern nicht;
   Befunde sieht nur, wer plant; die Angaben, die eine Regel braucht (Geburtsdatum, Wechselschicht,

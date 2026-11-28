@@ -130,6 +130,7 @@ festgelegt; eine Änderung braucht die Zustimmung des Betriebsrats.
 | Schalter | Was er tut | Vereinbart |
 | --- | --- | --- |
 | Modul Dienstplan | Schichten planen, veröffentlichen, Prüfung beim Einplanen | [ ] an [ ] aus |
+| Tagessoll (Sollquelle) | ob das Tagessoll ab einem Stichtag aus dem Arbeitszeitmodell oder aus veröffentlichten Schichten im Dienstplan kommt | [ ] Arbeitszeitmodell [ ] veröffentlichter Dienstplan ab [Datum] |
 | Schichttausch ohne Freigabe | eine übernommene Schicht gilt sofort, wenn die Regeln für die übernehmende Person keinen Verstoß finden; sonst geben Inhaber oder Planer jeden Tausch frei | [ ] mit Freigabe [ ] ohne Freigabe |
 | Modul Projektzeit | Zeit auf Aufträge buchen, Stoppuhr, Stundennachweis mit Unterschrift des Kunden | [ ] an [ ] aus |
 | Auslastung des Teams | anwesend gegen gebucht als Summe über den ganzen Betrieb, nur für abgelaufene Monate, erst ab drei Personen | [ ] genutzt [ ] nicht genutzt |

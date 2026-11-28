@@ -42,7 +42,7 @@ Je Person und Monat ein Posten je Art, der vorkommt; Posten mit null fallen weg.
 | --- | --- | --- |
 | Stunden (Stundenlohn) | Stunden | gearbeitete Minuten der Tage mit einem Modell „je Stunde“, dazu die Gegeneinträge des Monats |
 | Stunden (Minijob mit Stundenlohn) | Stunden | ebenso für ein Minijob-Modell „je Stunde“ |
-| Feiertagsstunden | Stunden | für Stundenlohn das Soll des Modells an einem gesetzlichen Feiertag am Standort, abzüglich der an ihm gearbeiteten Minuten (§ 2 Abs. 1 EntgFG: bezahlt wird die Zeit, die „infolge eines gesetzlichen Feiertages ausfällt“) |
+| Feiertagsstunden | Stunden | für Stundenlohn das Soll des Modells an einem gesetzlichen Feiertag am Standort, abzüglich der an ihm gearbeiteten Minuten (§ 2 Abs. 1 EntgFG: bezahlt wird die Zeit, die „infolge eines gesetzlichen Feiertages ausfällt“; nicht an Tagen mit [Soll aus dem Plan](dienstplan.md#soll-aus-dem-plan)) |
 | Urlaub, Krank, Kind krank, Sonderurlaub | Stunden | die Gutschrift der Abwesenheit (siehe [Konten](konten.md)); folgt mit den Abwesenheiten (S-401) |
 | Ausgezahlte Überstunden | Stunden | eine Auszahlung aus dem Überstundenkonto; folgt mit den Anpassungen des Kontos |
 | Nachtzuschlag, steuerfrei und steuerpflichtig | Euro | [Zuschläge](zuschlaege.md) nach § 3b EStG |

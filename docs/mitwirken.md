@@ -18,7 +18,7 @@ Vor jedem Push dieselben Prüfungen wie in der CI; die Befehle stehen im Skill [
 - **Änderungen am Aussehen** mit Screenshots vorher und nachher in der Beschreibung; die Bilder für „vorher“ entstehen vor der ersten Änderung.
 - **Texte der App** in jeder Datei unter `messages/` (Paraglide), keiner im Code; Normen bleiben in jeder Sprache auf Deutsch ([Entwicklung, Sprachen](entwicklung.md#sprachen)).
 - **Regeln des Arbeitsrechts:** Eine Regel in `packages/arbeitszeit` kommt mit den Fällen aus dem [Regelwerk](regeln.md); jedes Detail nennt seine Norm ([Entwicklung, Quellen](entwicklung.md#quellen)).
-- **Bauliste:** Was für Soll 1.0 noch fehlt, steht in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md); ein Punkt je Pull Request, der Titel beginnt mit seiner Nummer (`S-505: Rufbereitschaft`).
+- **Bauliste:** Was für Soll 1.0 noch fehlt, steht in der [Bauliste](https://github.com/Speicherstadt/soll/blob/main/BAULISTE.md); ein Punkt je Pull Request, der Titel beginnt mit seiner Nummer (`S-505: Soll aus dem Plan`).
 
 ## Etwas übernehmen { #etwas-uebernehmen }
 

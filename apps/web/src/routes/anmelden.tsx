@@ -15,22 +15,38 @@ const anmelden = (kennung: string, passwort: string) =>
 const Anmelden = () => {
   const navigate = useNavigate();
   const [fehler, setFehler] = createSignal("");
+  const [laeuft, setLaeuft] = createSignal(false);
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
-    const daten = new FormData(event.currentTarget as HTMLFormElement);
-    const antwort = await anmelden(
-      String(daten.get("kennung")).trim(),
-      String(daten.get("passwort")),
-    );
-    if (!antwort.ok) return setFehler(antwort.status === 0 ? m.fehler_netz() : m.anmelden_fehler());
-    await sitzungNeu();
-    // the router leads on: to the setup, or to Heute
-    await navigate({ to: "/" });
+    if (laeuft()) return;
+    setLaeuft(true);
+    setFehler("");
+    try {
+      const daten = new FormData(event.currentTarget as HTMLFormElement);
+      const antwort = await anmelden(
+        String(daten.get("kennung")).trim(),
+        String(daten.get("passwort")),
+      );
+      if (!antwort.ok)
+        return setFehler(antwort.status === 0 ? m.fehler_netz() : m.anmelden_fehler());
+      await sitzungNeu();
+      // the router leads on: to the setup, or to Heute
+      await navigate({ to: "/" });
+    } finally {
+      setLaeuft(false);
+    }
   };
   return (
     <KartenSeite titel={m.anmelden_titel()}>
       <form class="flex flex-col gap-4" onSubmit={absenden}>
-        <Input label={m.anmelden_kennung()} name="kennung" autocomplete="username" required />
+        <Input
+          label={m.anmelden_kennung()}
+          name="kennung"
+          autocomplete="username"
+          spellcheck="false"
+          autocapitalize="off"
+          required
+        />
         <Input
           label={m.passwort_label()}
           name="passwort"
@@ -39,7 +55,7 @@ const Anmelden = () => {
           required
         />
         <Fehler text={fehler()} />
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" disabled={laeuft()}>
           {m.anmelden_knopf()}
         </Button>
       </form>

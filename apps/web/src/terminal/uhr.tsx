@@ -1,6 +1,7 @@
 import { Icon } from "@soll/ui";
-import { Nfc, QrCode } from "lucide";
+import { KeyRound, Nfc, QrCode } from "lucide";
 import { m } from "../paraglide/messages.js";
+import { type HinweisArt, hinweisArt } from "./hinweisArt.ts";
 import { NetzStand } from "./offline/ansichten.tsx";
 import { datumText, uhrText } from "./text.ts";
 
@@ -12,6 +13,12 @@ import { datumText, uhrText } from "./text.ts";
 const hinweis = (mitNfc: boolean, mitQr: boolean): string => {
   if (mitNfc) return mitQr ? m.kiosk_hinweis_karte_qr() : m.kiosk_hinweis_karte();
   return mitQr ? m.kiosk_hinweis() : m.kiosk_hinweis_pin();
+};
+
+const HINWEIS_ICON: Record<HinweisArt, typeof Nfc> = {
+  nfc: Nfc,
+  qr: QrCode,
+  pin: KeyRound,
 };
 
 export const Uhr = (props: {
@@ -43,7 +50,7 @@ export const Uhr = (props: {
       <span class="text-[24px] text-muted-foreground">{datumText(props.jetzt)}</span>
     </div>
     <div class="flex items-center gap-4 text-[22px]">
-      <Icon icon={props.mitNfc ? Nfc : QrCode} size={40} />
+      <Icon icon={HINWEIS_ICON[hinweisArt(props.mitNfc, props.mitQr)]} size={40} />
       <span>{hinweis(props.mitNfc, props.mitQr)}</span>
     </div>
   </section>

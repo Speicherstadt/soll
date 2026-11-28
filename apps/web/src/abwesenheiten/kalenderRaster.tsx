@@ -34,8 +34,11 @@ export const Raster = (props: { team: Team }) => {
   const frei = (tag: Tag) => wochenende(tag) || feiertag(tag) !== undefined;
   return (
     <Show when={k().zeilen.length > 0}>
-      <div class="overflow-x-auto">
-        <table class="w-full table-fixed border-collapse text-[12px]">
+      <div
+        tabindex={0}
+        class="overflow-x-auto focus-visible:outline-2 focus-visible:outline-foreground"
+      >
+        <table class="w-full min-w-[820px] table-fixed border-collapse text-[12px]">
           <caption class="sr-only">{m.abw_team_titel()}</caption>
           <thead>
             <tr>

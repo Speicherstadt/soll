@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 import type uPlot from "uplot";
+import { saldoAchseText } from "../charts/achsen.ts";
 import { type ChartFarben, UPlotChart } from "../charts/uplotChart.tsx";
 import { monatText } from "../monat/text.ts";
 import { saldoText } from "../monat/zeilen.ts";
@@ -65,8 +66,8 @@ export const UeberstundenChart = (props: { verlauf: UeberstundenVerlaufPunkt[] |
           font: MONO_FONT,
           grid: { stroke: farben.border, width: 1 },
           ticks: { show: false },
-          size: 48,
-          values: (_u, vals) => vals.map((v) => `${v > 0 ? "+" : ""}${v} h`),
+          size: 52,
+          values: (_u, vals) => vals.map(saldoAchseText),
         },
       ],
       series: [

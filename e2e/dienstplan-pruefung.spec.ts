@@ -9,6 +9,7 @@ import {
   heute,
   hinweise,
   modellMitLohn,
+  planAktion,
   planen,
   plus,
   t,
@@ -160,7 +161,7 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto(`/dienstplan?tag=${ab(1)}`);
     await expect(hinweise(page).locator("[data-regel]").first()).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-    await page.getByRole("button", { name: t("plan_angaben"), exact: true }).click();
+    await planAktion(page, t("plan_angaben"));
     await expect(page.getByRole("dialog", { name: t("plan_angaben") })).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

@@ -78,4 +78,12 @@ describe("dienstplan/farben", () => {
     expect(tagMinuten(Date.parse("2026-11-23T07:30:00+01:00"))).toBe(450);
     expect(tagMinuten(Date.parse("2026-07-15T16:15:00+02:00"))).toBe(975);
   });
+
+  test("never assigns red/rose/amber/yellow role hues that collide with danger/warning findings (#120)", () => {
+    for (let i = 0; i < 12; i++) {
+      const f = vorlageFarbe({ vorlageId: `v${i}`, rolle: `Rolle ${i}` }, i);
+      const alle = `${f.karte} ${f.pill} ${f.punkt}`;
+      expect(alle).not.toMatch(/\b(red|rose|amber|yellow)-/);
+    }
+  });
 });

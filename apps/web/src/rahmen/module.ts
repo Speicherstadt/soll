@@ -32,9 +32,30 @@ export const sichtbar = (module: Module, pfad: string): boolean => {
 /** The areas that may take a place in the tab bar, by how often a phone needs them */
 const TAB_KANDIDATEN = ["/dienstplan", "/abwesenheiten", "/projekte", "/zeiten"] as const;
 
+/** Sub-routes that belong to a sidebar area so navigation stays highlighted there (#118) */
+const HAUPTBEREICH: Readonly<Record<string, string>> = {
+  "/monat": "/zeiten",
+  "/export": "/zeiten",
+  "/umzug": "/einstellungen",
+  "/verfahrensdoku": "/einstellungen",
+};
+
+/** The sidebar area that owns `pfad` for a business's active modules */
+export const aktiverBereich = (pfad: string, module: Module): string => {
+  const segment = bereichVon(pfad);
+  if (segment === "/export" && !sichtbar(module, "/zeiten")) return "/einstellungen";
+  return HAUPTBEREICH[segment] ?? segment;
+};
+
 /** The tab bar on phones: Heute, the first two areas the business uses, and Mehr (DESIGN.md) */
 export const tabPfade = (module: Module): string[] => [
   "/",
   ...TAB_KANDIDATEN.filter((pfad) => sichtbar(module, pfad)).slice(0, 2),
   "/mehr",
 ];
+
+/** The phone tab that owns `pfad`: either its direct tab or Mehr for overflow areas (#118) */
+export const aktiverTab = (pfad: string, module: Module): string => {
+  const ziel = aktiverBereich(pfad, module);
+  return tabPfade(module).includes(ziel) ? ziel : "/mehr";
+};

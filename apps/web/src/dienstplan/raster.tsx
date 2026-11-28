@@ -73,7 +73,10 @@ export const WochenRaster = (props: RasterProps) => {
     );
   };
   return (
-    <div class="overflow-x-auto rounded-xl border border-border">
+    <div
+      tabindex={0}
+      class="overflow-x-auto rounded-xl border border-border focus-visible:outline-2 focus-visible:outline-foreground"
+    >
       <Show when={props.planer}>
         <p id={GRIFF_HINWEIS} class="sr-only">
           {m.plan_griff_hinweis()}
@@ -220,7 +223,7 @@ const Zeile = (props: {
                   variant="ghost"
                   size="sm"
                   aria-label={m.plan_hinzufuegen_fuer({ ort: props.ortText(zelle()) })}
-                  class="w-full opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+                  class="w-full [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-visible:opacity-100"
                   onClick={() => props.raster.onNeu(ziel())}
                 >
                   <Icon icon={Plus} />

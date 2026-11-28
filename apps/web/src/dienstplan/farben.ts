@@ -24,9 +24,9 @@ const PALETTE: readonly [SchichtFarbe, ...SchichtFarbe[]] = [
     punkt: "bg-emerald-500",
   },
   {
-    karte: "border-s-[3px] border-s-amber-500 bg-amber-500/10 hover:bg-amber-500/15",
-    pill: "border-s-2 border-s-amber-500 bg-amber-500/15 text-foreground hover:bg-amber-500/25",
-    punkt: "bg-amber-500",
+    karte: "border-s-[3px] border-s-indigo-500 bg-indigo-500/10 hover:bg-indigo-500/15",
+    pill: "border-s-2 border-s-indigo-500 bg-indigo-500/15 text-foreground hover:bg-indigo-500/25",
+    punkt: "bg-indigo-500",
   },
   {
     karte: "border-s-[3px] border-s-violet-500 bg-violet-500/10 hover:bg-violet-500/15",
@@ -39,16 +39,16 @@ const PALETTE: readonly [SchichtFarbe, ...SchichtFarbe[]] = [
     punkt: "bg-cyan-500",
   },
   {
-    karte: "border-s-[3px] border-s-rose-500 bg-rose-500/10 hover:bg-rose-500/15",
-    pill: "border-s-2 border-s-rose-500 bg-rose-500/15 text-foreground hover:bg-rose-500/25",
-    punkt: "bg-rose-500",
+    karte: "border-s-[3px] border-s-teal-500 bg-teal-500/10 hover:bg-teal-500/15",
+    pill: "border-s-2 border-s-teal-500 bg-teal-500/15 text-foreground hover:bg-teal-500/25",
+    punkt: "bg-teal-500",
   },
 ];
 
 const OFFEN_FARBE: SchichtFarbe = {
-  karte: "border border-dashed border-amber-500/70 bg-amber-500/5 hover:bg-amber-500/10",
-  pill: "border border-dashed border-amber-500/70 bg-amber-500/10 text-foreground hover:bg-amber-500/20",
-  punkt: "bg-amber-500",
+  karte: "border border-dashed border-muted-foreground/60 bg-muted/40 hover:bg-muted/70",
+  pill: "border border-dashed border-muted-foreground/60 bg-muted/40 text-foreground hover:bg-muted/70",
+  punkt: "bg-muted-foreground",
 };
 
 const hashIndex = (schluessel: string): number => {

@@ -8,6 +8,7 @@ export type Aufzeichnung = {
   tag: Tag;
   stempel: [Stempelart, number][];
   modellMinuten: number | null;
+  planMinuten?: number;
   abwesenheiten?: { art: SichtbareArt; halb?: boolean }[];
 };
 

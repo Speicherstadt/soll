@@ -27,6 +27,7 @@ export {
 } from "./schreiben.ts";
 export { abwesenheitGesperrt } from "./sperre.ts";
 export {
+  abwesenheitsTageVon,
   bescheinigungAbTagVon,
   bescheinigungVon,
   type Erinnerung,

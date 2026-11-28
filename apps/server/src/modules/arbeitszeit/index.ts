@@ -49,6 +49,16 @@ export type { Monatsinhalt, Tagesabwesenheit } from "./monatsinhalt.ts";
 export { pruefexportPerson } from "./pruefexport.ts";
 export { type Pruefung, pruefwertEinesMonats } from "./pruefseite.ts";
 export {
+  fruehesterSollquellenTag,
+  planSollAmTag,
+  planSollFuerTage,
+  planSollImMonat,
+  type SollquelleErgebnis,
+  schichtGesperrt,
+  sollquellenVon,
+  sollquelleSetzen,
+} from "./sollquellen.ts";
+export {
   type Dazu,
   hatStempelungen,
   nachtragen,

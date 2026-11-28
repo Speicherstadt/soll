@@ -14,6 +14,7 @@ import { darf } from "../auth/rollen.ts";
 import type { Db } from "../db/oeffnen.ts";
 import {
   abwesenheitenIn,
+  abwesenheitsTageVon,
   bescheinigungAbTagVon,
   bescheinigungVon,
   erinnerungenVon,
@@ -47,7 +48,7 @@ const liste = (db: Db, c: Context<Anfrage>, nutzerId: string, imJahr: number, he
     von: `${imJahr}-01-01`,
     bis: `${imJahr}-12-31`,
   });
-  const grundlagen = sollGrundlagen(db, betriebId, nutzerId);
+  const grundlagen = sollGrundlagen(db, betriebId, nutzerId, abwesenheitsTageVon(zeilen, heute));
   const zaehlend = zeilen.filter((z) => z.status === "genehmigt" || z.status === "beantragt");
   return {
     nutzerId,
@@ -187,7 +188,10 @@ export const abwesenheitLeseRouten = (db: Db, jetzt: () => number) =>
         antraege: antraege.map((zeile) => ({
           ...sicht(zeile, siehtGesundheit(c, zeile.nutzerId), heute),
           name: namen.get(zeile.nutzerId) ?? "",
-          urlaubHalbtage: urlaubstageVon(sollGrundlagen(db, betriebId, zeile.nutzerId), zeile),
+          urlaubHalbtage: urlaubstageVon(
+            sollGrundlagen(db, betriebId, zeile.nutzerId, abwesenheitsTageVon([zeile], heute)),
+            zeile,
+          ),
         })),
         erinnerungen: erinnerungen.map((e) => ({ ...e, name: namen.get(e.nutzerId) ?? "" })),
       });

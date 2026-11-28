@@ -6,6 +6,7 @@ import type { Db, SchreibDb } from "../db/oeffnen.ts";
 import {
   type AbwesenheitErgebnis,
   abwesenheitenIn,
+  abwesenheitsTageVon,
   antragMelden,
   beantragen,
   bescheinigungSetzen,
@@ -90,7 +91,6 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
       if (!ergebnis.ok) return fehlerAntwort(c, ergebnis);
       const { zeile } = ergebnis;
       await antragMelden(db, optionen.mail, zeile);
-      const grundlagen = sollGrundlagen(db, kontext.betriebId, nutzerId);
       const heute = tagInBerlin(kontext.jetzt);
       const jahr = jahrVon(zeile.von);
       const imJahr = abwesenheitenIn(db, kontext.betriebId, {
@@ -99,6 +99,12 @@ const meldeRouten = ({ db, schreibDb, jetzt, optionen }: Deps) => {
         bis: `${jahr}-12-31`,
         status: ["beantragt", "genehmigt"],
       });
+      const grundlagen = sollGrundlagen(
+        db,
+        kontext.betriebId,
+        nutzerId,
+        abwesenheitsTageVon([zeile, ...imJahr], heute),
+      );
       return c.json(
         {
           ...sicht(zeile, true, heute),

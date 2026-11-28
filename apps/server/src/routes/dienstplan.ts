@@ -112,6 +112,7 @@ const STATUS = {
   vorlage_unbekannt: 404,
   zeit_gibt_es_nicht: 422,
   pause_zu_lang: 400,
+  monat_abgeschlossen: 409,
 } as const;
 
 const schichtAntwort = (c: Context<Anfrage>, ergebnis: SchichtErgebnis, status: 200 | 201) =>
@@ -213,9 +214,9 @@ const schichtRouten = (
     })
     .delete("/:schichtId", async (c) => {
       const kontext = kontextVon(c, jetzt);
-      const meldungen = schichtEntfernen(db, schreibDb, kontext, c.req.param("schichtId"));
-      if (meldungen === null) return c.json({ fehler: "unbekannt" }, 404);
-      await planMelden(zustellung, kontext, meldungen);
+      const ergebnis = schichtEntfernen(db, schreibDb, kontext, c.req.param("schichtId"));
+      if (!ergebnis.ok) return c.json({ fehler: ergebnis.grund }, STATUS[ergebnis.grund]);
+      await planMelden(zustellung, kontext, ergebnis.meldungen);
       return c.body(null, 204);
     });
 
@@ -253,16 +254,17 @@ export const dienstplanRouten = (
       if (!standortVorhanden(db, c.get("betriebId"), eingabe.data.standortId))
         return c.json({ fehler: "standort_unbekannt" }, 404);
       const kontext = kontextVon(c, jetzt);
-      const { anzahl, meldungen } = wocheVeroeffentlichen(
+      const ergebnis = wocheVeroeffentlichen(
         db,
         schreibDb,
         kontext,
         eingabe.data.standortId,
         eingabe.data.tag,
       );
-      const gemeldet = await planMelden(deps.zustellung, kontext, meldungen);
+      if (!ergebnis.ok) return c.json({ fehler: ergebnis.grund }, 409);
+      const gemeldet = await planMelden(deps.zustellung, kontext, ergebnis.meldungen);
       return c.json({
-        anzahl,
+        anzahl: ergebnis.anzahl,
         benachrichtigt: gemeldet.filter((g) => g.kanal !== "keiner").length,
       });
     })

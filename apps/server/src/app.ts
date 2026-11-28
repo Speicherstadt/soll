@@ -51,6 +51,7 @@ import { projektRouten } from "./routes/projekte.ts";
 import { pruefRouten } from "./routes/pruefen.ts";
 import { pruefexportRouten } from "./routes/pruefexport.ts";
 import { satzRouten } from "./routes/saetze.ts";
+import { sollquellenRouten } from "./routes/sollquellen.ts";
 import { standortRouten } from "./routes/standorte.ts";
 import { stoppuhrRouten } from "./routes/stoppuhr.ts";
 import { stundennachweisRouten } from "./routes/stundennachweise.ts";
@@ -103,30 +104,98 @@ export type AppDeps = {
   clockify?: ClockifyDeps;
 };
 
-/** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
-export const createApp = ({
-  log,
-  now,
-  version,
+const modulGruppen = ({
   db,
   schreibDb,
-  auth,
+  now,
   url,
   mail,
   schichten,
   geheimerSchluessel,
   vapidOeffentlich,
-  webVerzeichnis = null,
   habenFetch = fetch,
   push = null,
-  dateien,
-  clockodo = { fetch, basis: CLOCKODO_API },
-  kimai = { holen: sicherHolen(), erlaubt: new Set() },
-  personio = { holen: sicherHolen(), basis: PERSONIO_API },
-  schichtplaner = { holen: sicherHolen(), adressen: SCHICHTPLANER_ADRESSEN },
-  toggl = { holen: sicherHolen(), basis: TOGGL_API },
-  clockify = { holen: sicherHolen(), basis: null },
-}: AppDeps) => {
+}: Pick<
+  AppDeps,
+  | "db"
+  | "schreibDb"
+  | "now"
+  | "url"
+  | "mail"
+  | "schichten"
+  | "geheimerSchluessel"
+  | "vapidOeffentlich"
+  | "habenFetch"
+  | "push"
+>) => {
+  const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
+  return modulRouten(db, {
+    arbeitszeit: {
+      "/modelle": modellRouten(db, schreibDb, now),
+      "/sollquellen": sollquellenRouten(db, schreibDb, now),
+      "/datev": datevRouten(db, schreibDb, now),
+      "/monat": monatRouten(db, schreibDb, now, { url, mail }),
+      "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
+        mail,
+        schichten: schichten ?? schichtquelle(db),
+      }),
+      "/konten": kontenRouten(db, schreibDb, now),
+      "/pruefexport": pruefexportRouten(db, now, { url }),
+      "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
+        geheimerSchluessel,
+        vapidOeffentlich,
+        mailKonfiguriert: mail !== null,
+      }),
+      "/": zeitRouten(db, schreibDb, now),
+    },
+    projektzeit: {
+      "/kunden": kundenRouten(db, schreibDb, now),
+      "/projekte": projektRouten(db, schreibDb, now),
+      "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
+      "/saetze": satzRouten(db, schreibDb, now),
+      "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
+      "/buchungen": buchungRouten(db, schreibDb, now),
+      "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
+      "/auslastung": auslastungRouten(db, schreibDb, now),
+      "/haben": habenRouten(db, schreibDb, now, {
+        schluessel: geheimerSchluessel,
+        holen: habenFetch,
+      }),
+    },
+    dienstplan: {
+      "/": dienstplanRouten(db, schreibDb, now, {
+        zustellung: { db, schreibDb, geheimerSchluessel, url, push, mail },
+        url,
+      }),
+    },
+    terminal: {
+      "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
+      "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),
+      "/": terminalRouten(db, schreibDb, now),
+    },
+  });
+};
+
+/** The HTTP app: routes stay thin and call into src/modules (CLAUDE.md) */
+export const createApp = (deps: AppDeps) => {
+  const {
+    log,
+    now,
+    version,
+    db,
+    schreibDb,
+    auth,
+    url,
+    geheimerSchluessel,
+    webVerzeichnis = null,
+    dateien,
+    clockodo = { fetch, basis: CLOCKODO_API },
+    kimai = { holen: sicherHolen(), erlaubt: new Set() },
+    personio = { holen: sicherHolen(), basis: PERSONIO_API },
+    schichtplaner = { holen: sicherHolen(), adressen: SCHICHTPLANER_ADRESSEN },
+    toggl = { holen: sicherHolen(), basis: TOGGL_API },
+    clockify = { holen: sicherHolen(), basis: null },
+  } = deps;
   const terminalSchluessel = terminalSchluesselAus(geheimerSchluessel);
   const app = new Hono();
 
@@ -182,53 +251,7 @@ export const createApp = ({
         clockify,
       }),
     )
-    .route(
-      "/",
-      modulRouten(db, {
-        arbeitszeit: {
-          "/modelle": modellRouten(db, schreibDb, now),
-          "/datev": datevRouten(db, schreibDb, now),
-          "/monat": monatRouten(db, schreibDb, now, { url, mail }),
-          "/abwesenheiten": abwesenheitRouten(db, schreibDb, now, {
-            mail,
-            schichten: schichten ?? schichtquelle(db),
-          }),
-          "/konten": kontenRouten(db, schreibDb, now),
-          "/pruefexport": pruefexportRouten(db, now, { url }),
-          "/erinnerungen": erinnerungRouten(db, schreibDb, now, {
-            geheimerSchluessel,
-            vapidOeffentlich,
-            mailKonfiguriert: mail !== null,
-          }),
-          "/": zeitRouten(db, schreibDb, now),
-        },
-        projektzeit: {
-          "/kunden": kundenRouten(db, schreibDb, now),
-          "/projekte": projektRouten(db, schreibDb, now),
-          "/taetigkeiten": taetigkeitRouten(db, schreibDb, now),
-          "/saetze": satzRouten(db, schreibDb, now),
-          "/stoppuhr": stoppuhrRouten(db, schreibDb, now),
-          "/buchungen": buchungRouten(db, schreibDb, now),
-          "/stundennachweise": stundennachweisRouten(db, schreibDb, now),
-          "/auslastung": auslastungRouten(db, schreibDb, now),
-          "/haben": habenRouten(db, schreibDb, now, {
-            schluessel: geheimerSchluessel,
-            holen: habenFetch,
-          }),
-        },
-        dienstplan: {
-          "/": dienstplanRouten(db, schreibDb, now, {
-            zustellung: { db, schreibDb, geheimerSchluessel, url, push, mail },
-            url,
-          }),
-        },
-        terminal: {
-          "/pins": pinRouten(db, schreibDb, now, terminalSchluessel.pin),
-          "/karten": kartenRouten(db, schreibDb, now, terminalSchluessel),
-          "/": terminalRouten(db, schreibDb, now),
-        },
-      }),
-    );
+    .route("/", modulGruppen(deps));
   app.route("/api/v1", v1);
   // Last, so every route of the API wins; unknown API paths stay 404 (src/web.ts)
   if (webVerzeichnis) app.get("*", webAuslieferung(webVerzeichnis));

@@ -232,6 +232,13 @@
       "when": 1795715234865,
       "tag": "0032_white_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "6",
+      "when": 1795856330336,
+      "tag": "0033_sollquellen",
+      "breakpoints": true
     }
   ]
 }

@@ -40,7 +40,7 @@ Kopf.
 | Stempeln & Zeiten | Kommen, Pause, Gehen im Web, als PWA offline und mit Korrekturgrund | [Stempeln](stempeln.md) |
 | Terminal am Eingang | Android-Tablet mit PIN, QR-Code oder NFC-Karte, auch ohne Netz | [Terminal](terminal.md) |
 | Abwesenheiten & Konten | Urlaub mit Verfallshinweis, Krankmeldung/eAU, Kinderkrankentage, Überstundenkonto | [Abwesenheiten](abwesenheiten.md) |
-| Dienstplan | Schichtvorlagen, Bedarf je Rolle, Arbeitszeitprüfung beim Planen, Schichttausch, iCal-Feed | [Dienstplan](dienstplan.md) |
+| Dienstplan | Schichtvorlagen, Bedarf je Rolle, Arbeitszeitprüfung beim Planen, Schichttausch, Soll aus dem Plan, iCal-Feed | [Dienstplan](dienstplan.md) |
 | Projektzeit | Kunden, Aufträge mit Budgetwarnung, Stoppuhr, Stundennachweis mit Unterschrift | [Projektzeit](projektzeit.md) |
 | Monatsabschluss & Export | Bestätigung, Abschluss, Stundenzettel-PDF, Prüfexport und GoBD-Verfahrensdokumentation | [Monatsabschluss](monatsabschluss.md) |
 | Lohn & Buchhaltung | DATEV-Lohnexport (LODAS / Lohn und Gehalt) mit Zuschlägen nach § 3b EStG | [DATEV-Lohnexport](datev.md) |

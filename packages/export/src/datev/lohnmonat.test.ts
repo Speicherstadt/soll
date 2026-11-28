@@ -145,6 +145,17 @@ describe("lohnmonat: holidays of an hourly wage (§ 2 Abs. 1 EntgFG)", () => {
     expect(ergebnis[0]).toMatchObject({ art: "feiertage", nutzerId: "sandra" });
     expect(ergebnis[0]?.tage).toHaveLength(22);
   });
+
+  it("skips model-based Feiertagsstunden on days whose Soll comes from the shift plan", () => {
+    const basis = sandra("2026-10", [{ tag: "2026-10-03", von: "10:00", bis: "16:00" }]);
+    const eingabe = {
+      ...basis,
+      tage: basis.tage.map((tag) =>
+        tag.tag === "2026-10-03" ? { ...tag, modellMinuten: 480, planMinuten: 360 } : tag,
+      ),
+    };
+    expect(posten(eingabe)).toEqual([{ art: "stunden", minuten: 360 }]);
+  });
 });
 
 describe("lohnmonat: surcharges (§ 3b EStG, S-207)", () => {

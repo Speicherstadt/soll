@@ -45,7 +45,9 @@ bildet, steht unter [Arbeitstag aus Stempelungen](arbeitstag.md).
 - der **Zustand** mit Uhrzeit („Eingestempelt seit 07:58“, „In Pause seit 12:00“),
 - die **gearbeitete Zeit** des Tages, groß, in Stunden und Minuten,
 - **Soll**, **Ist** und **Pause**. Das Soll kommt aus dem Arbeitszeitmodell der Person für den
-  Wochentag. Ist ihr keins zugeordnet, steht dort „nicht hinterlegt“, nie ein geschätzter Wert.
+  Wochentag oder – wenn eingeschaltet – aus dem [veröffentlichten Dienstplan](dienstplan.md#soll-aus-dem-plan).
+  Ist kein Modell zugeordnet (und kein Soll aus dem Plan aktiv), steht dort „nicht hinterlegt“, nie
+  ein geschätzter Wert.
 - der **nächste Befund** mit seiner Norm:
 
 | Was als Nächstes kommt | Beispiel | Norm |

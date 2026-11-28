@@ -7,6 +7,7 @@ export {
   type MonatsstandErgebnis,
   monatsstand,
 } from "./monat.ts";
+export { planMinutenJeTag, planSoll, type Sollquelle, sollquelleAm } from "./plan.ts";
 export {
   type KrankImUrlaubBefund,
   type SollGrundlagen,

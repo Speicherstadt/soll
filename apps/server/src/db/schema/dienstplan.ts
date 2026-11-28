@@ -102,3 +102,20 @@ export const kalenderAbos = sqliteTable(
   },
   (t) => [primaryKey({ columns: [t.betriebId, t.nutzerId] })],
 );
+
+/**
+ * Where the daily Soll of a business comes from from a day on (S-505): the working-time model, or
+ * the published shift plan. Stored as a history so already closed months keep the source they were
+ * closed with.
+ */
+export const sollquellen = sqliteTable(
+  "sollquellen",
+  {
+    betriebId: text("betrieb_id").notNull(),
+    ab: text("ab").notNull(),
+    quelle: text("quelle", { enum: ["modell", "plan"] }).notNull(),
+    angelegtVon: text("angelegt_von").notNull(),
+    angelegtAm: integer("angelegt_am").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.betriebId, t.ab] })],
+);

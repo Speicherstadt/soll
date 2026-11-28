@@ -197,8 +197,7 @@ Soll prüft jede geplante Schicht mit denselben Regeln wie gestempelte Zeiten
 ([Regelwerk](regeln.md)), sobald sie im Plan steht: nach dem Arbeitszeitgesetz (R-02 bis R-09), dem
 Mindestlohn (R-14), dem Jugendarbeitsschutz (R-15 bis R-20), dem Mutterschutz (R-21), § 12 TzBfG für
 Arbeit auf Abruf (R-22) und der Minijob-Grenze (R-32). Nicht im Plan geprüft werden die Regeln, die
-nur Stempelungen betreffen (R-01, R-10, R-13), und Bereitschaft (R-11, R-12), die mit S-505 in den
-Plan kommt.
+nur Stempelungen betreffen (R-01, R-10, R-13), und Bereitschaft (R-11, R-12).
 
 - **Plan und Ist**: Tage vor heute kommen aus den Stempelungen, heute und später aus dem Plan.
   Geprüft wird, als wäre der Plan bis zum Ende seines letzten Tages gearbeitet; so zählt die
@@ -245,6 +244,27 @@ Eintrag gilt die strenge Vorgabe des Gesetzes.
 
 Ein Link kann eine Woche öffnen: `/dienstplan?tag=JJJJ-MM-TT`.
 
+## Soll aus dem Plan
+
+Für Betriebe mit wechselnden Schichten kann der Inhaber unter **Einstellungen → Betrieb → Tagessoll**
+**Veröffentlichter Dienstplan** wählen, sodass das Tagessoll ab einem Stichtag nicht aus dem festen
+Arbeitszeitmodell, sondern aus den **veröffentlichten Schichten** im Dienstplan kommt (nur bei
+eingeschaltetem Modul Dienstplan):
+
+- **Veröffentlicht zählt, Entwurf nicht**: Für jeden Tag zählt die Summe der veröffentlichten
+  Schichten der Person (Arbeitszeit ohne Pause, am Tag des Beginns; eine Nachtschicht über die
+  Zeitumstellung mit 7 oder 9 Stunden). Ist keine Schicht veröffentlicht, ist das Soll 0:00.
+- **Heute, Monat, Abwesenheiten und Stundenzettel**: Das geplante Soll erscheint auf Heute, im Monat
+  (markiert mit „Plan“) und auf dem Stundenzettel. Abwesenheiten mit Gutschrift (Urlaub, Krankheit,
+  Kind krank, Sonderurlaub – nicht Überstundenabbau; siehe [Konten](konten.md#abwesenheiten))
+  bekommen dieses Soll gutgeschrieben (bei Krankheit nach dem Ausfallprinzip, § 4 Abs. 1 EntgFG);
+  Urlaubstage, Kinderkrankentage und die eAU-Frist nach § 5 Abs. 1 Satz 2 EntgFG richten sich
+  ebenfalls nach den geplanten Tagen.
+- **Verlauf und Sperre**: Die Einstellung gilt ab einem Tag nach dem letzten abgeschlossenen Monat;
+  bereits abgeschlossene Monate behalten ihren Inhalt und ihren Prüfwert. Ist ein Monat mit Soll aus
+  dem Plan abgeschlossen, lassen sich veröffentlichte Schichten darin weder ändern noch entfernen,
+  und Entwürfe in diesen Monat lassen sich nicht mehr veröffentlichen (`409 monat_abgeschlossen`).
+
 ## Schnittstelle
 
 Alle Pfade unter `/api/v1/dienstplan`, nur bei eingeschaltetem Modul; jeder Aufruf gilt dem Betrieb
@@ -276,11 +296,12 @@ Tausch 409 (`nicht_offen`, `hinfaellig`) und eine Schicht zur selben Zeit 409 (`
 Der Kalender selbst liegt außerhalb der Anmeldung, denn eine Kalender-App hat keine Sitzung:
 `GET /api/v1/ics/<token>.ics` antwortet mit `text/calendar`; das Token ist der einzige Schlüssel.
 
-Außerhalb des Moduls, weil auch die Zeiterfassung sie braucht:
+Außerhalb des Moduls Dienstplan, weil auch die Zeiterfassung sie braucht:
 
 | Methode und Pfad | Wer | Was |
 | --- | --- | --- |
 | `GET`, `PUT /api/v1/betrieb/pruefung` | lesen alle Beschäftigten, ändern der Inhaber | `branche`, `sonntagsausnahme` (1 bis 16), `ausgleichszeitraum` (`sechs_monate`, `24_wochen`), `ausgleichBeginn`; `null` ist die Vorgabe des Gesetzes |
+| `GET`, `PUT /api/v1/arbeitszeit/sollquellen` | lesen alle Beschäftigten, ändern der Inhaber (erfordert Modul Arbeitszeit) | `GET` liefert den Verlauf (`quellen`: `{ ab, quelle }[]`) und den frühesten änderbaren Tag (`fruehestens`); `PUT` nimmt `{ ab, quelle }` mit `modell` oder `plan` (`409 monat_gesperrt` für jeden Tag vor `fruehestens`, also in oder vor dem letzten abgeschlossenen Monat, `409 dienstplan_aus` bei abgeschaltetem Modul Dienstplan) |
 | `GET`, `PUT /api/v1/personen/:id/angaben` | Inhaber | `geburtsdatum`, `wechselschicht`, `abruf`, `mutterschutz` (Liste von `{ von, bis }`, `bis` leer, solange er läuft); eine Person eines anderen Betriebs ergibt 404 |
  Ein Standort mit Schichten oder Bedarf lässt sich nicht entfernen (409
 `verplant`). Jede Änderung steht in der [Audit-Kette](audit-kette.md).

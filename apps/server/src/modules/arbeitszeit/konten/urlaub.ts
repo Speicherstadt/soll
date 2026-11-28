@@ -17,6 +17,7 @@ import type { Db } from "../../../db/oeffnen.ts";
 import { abwesenheitenIn, tageDerAbwesenheiten } from "../abwesenheiten/lesen.ts";
 import { tageMitSoll } from "../abwesenheiten/stand.ts";
 import { sollGrundlagen } from "../grundlagen.ts";
+import { planSollFuerTage } from "../sollquellen.ts";
 import { type AnpassungZeile, anpassungenVon, ausgesondertAb, hinweiseVon } from "./lesen.ts";
 import { type Urlaubsbeginn, urlaubsbeginnVon } from "./stichtag.ts";
 
@@ -107,11 +108,16 @@ const genommenAb = (
     bis: "9999-12-31",
     status: ["genehmigt"],
   });
-  const tage = tageMitSoll(
-    grundlagen,
-    tageDerAbwesenheiten(zeilen, heute).filter((a) => a.tag >= ab),
+  const tage = tageDerAbwesenheiten(zeilen, heute).filter((a) => a.tag >= ab);
+  const plan = planSollFuerTage(
+    db,
+    wer.betriebId,
+    wer.nutzerId,
+    tage.map((a) => a.tag),
   );
-  return tage === null ? null : urlaubGenommen(tage);
+  const basis = plan.size > 0 ? { ...grundlagen, plan } : grundlagen;
+  const mitSoll = tageMitSoll(basis, tage);
+  return mitSoll === null ? null : urlaubGenommen(mitSoll);
 };
 
 /** What the leave account of a person on `heute` is computed from */

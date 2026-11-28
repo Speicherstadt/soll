@@ -15,6 +15,7 @@ const TERMINAL = "/api/v1/terminal";
 export const PFAD = {
   personen: `${AZ}/personen`,
   modelle: `${AZ}/modelle`,
+  sollquellen: `${AZ}/sollquellen`,
   tag: `${AZ}/tag`,
   monat: `${AZ}/monat`,
   erinnerungen: `${AZ}/erinnerungen`,
@@ -78,6 +79,7 @@ const einfach = (pfad: string): Ressource => ({ schluessel: [pfad], pfad });
 export const ressourcen = {
   personen: () => einfach(PFAD.personen),
   modelle: () => einfach(PFAD.modelle),
+  sollquellen: () => einfach(PFAD.sollquellen),
   tag: (parameter: { datum?: string | undefined; nutzerId?: string | undefined }) =>
     mitParametern(PFAD.tag, parameter),
   monat: (parameter: { monat: string; nutzerId?: string | undefined }) =>

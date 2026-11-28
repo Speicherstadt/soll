@@ -60,6 +60,10 @@ Der Server lehnt jede Schreiboperation ab, die den abgeschlossenen Monat der Per
   Abstand die Schichten des Monats anders schnitte (eine Schicht reicht höchstens 24 Stunden über
   ihren Beginn hinaus, gezählt ab dem Beginn der Kette),
 - eine Zuordnung eines Arbeitszeitmodells, die das Soll eines Tags im Monat ändern würde,
+- eine Änderung der Sollquelle ([Soll aus dem Plan](dienstplan.md#soll-aus-dem-plan)) für einen Tag
+  in oder vor dem letzten abgeschlossenen Monat (`409 monat_gesperrt`), sowie in einem mit Soll aus
+  dem Plan abgeschlossenen Monat das Ändern oder Entfernen veröffentlichter Schichten und das
+  Veröffentlichen von Entwürfen (`409 monat_abgeschlossen`),
 - eine [Abwesenheit](abwesenheiten.md#abgeschlossener-monat), die einen Tag im Monat ändern würde:
   ein Antrag, eine Freigabe, ein Storno, eine Bescheinigung für Krankheit im Urlaub oder ein neues
   Ende einer Krankheit.
@@ -87,10 +91,11 @@ Beim Abschluss schickt Soll den Stundenzettel per Mail an die Person, wenn die I
 eingerichtet hat und die Person eine E-Mail-Adresse hat (wer per Link ohne E-Mail eingeladen
 wurde, hat keine). Die App sagt dem Inhaber, ob die Mail rausging.
 
-Soll und Ist sind „nicht hinterlegt“, wenn an einem Tag der Beschäftigung kein Arbeitszeitmodell
-gilt oder der Betrieb weder Standort noch Bundesland hat; eine Summe mit Lücke wäre geschätzt. Den
-Monat abschließen kann der Betrieb trotzdem, denn die Aufzeichnung der Zeiten verlangt das Gesetz
-(§ 16 Abs. 2 ArbZG, § 17 MiLoG) unabhängig vom Soll.
+Soll und Ist sind „nicht hinterlegt“, wenn an einem Tag der Beschäftigung weder ein
+Arbeitszeitmodell noch [Soll aus dem Plan](dienstplan.md#soll-aus-dem-plan) gilt oder der Betrieb
+weder Standort noch Bundesland hat; eine Summe mit Lücke wäre geschätzt. Den Monat abschließen kann
+der Betrieb trotzdem, denn die Aufzeichnung der Zeiten verlangt das Gesetz (§ 16 Abs. 2 ArbZG, § 17
+MiLoG) unabhängig vom Soll.
 
 ## Prüfwert und Prüfseite
 
@@ -161,9 +166,10 @@ Person abgeschlossen wurde. Außerhalb des Servers aufbewahrt, auf dem Stundenze
 zeigt er später, ob das Protokoll bis zu diesem Eintrag nachträglich verändert wurde.
 
 **Inhalt des Abschlusses.** Der Eintrag schreibt eine Zeile mit dem Inhalt des Monats als
-kanonischem JSON (Stempelungen je Arbeitstag, Minuten des Arbeitszeitmodells je Tag, Soll und Ist,
-Befunde mit Norm, Gegeneinträge) und dessen SHA-256. Der Hash der Zeile steht im Eintrag, der Hash
-des Eintrags im Prüfwert; damit deckt der Prüfwert genau diesen Monat dieser Person.
+kanonischem JSON (Stempelungen je Arbeitstag, Minuten des Arbeitszeitmodells und bei Soll aus dem
+Plan `planMinuten` je Tag, Soll und Ist, Befunde mit Norm, Gegeneinträge) und dessen SHA-256. Der
+Hash der Zeile steht im Eintrag, der Hash des Eintrags im Prüfwert; damit deckt der Prüfwert genau
+diesen Monat dieser Person.
 
 **Prüfung.** Die Prüfseite rechnet die Kette bis zum Eintrag nach, vergleicht die Zeile des
 Abschlusses mit dem Hash im Eintrag und die Aufzeichnungen des Monats, wie sie die Datenbank heute
@@ -196,9 +202,11 @@ und Monat einen Abschluss zu. `korrekturen` hält die Gegeneinträge. Beide steh
 Audit-Kette und werden nur angefügt. Den Inhalt baut `monatsinhalt.ts` als reine Funktion, mit
 Testvektoren, das Fenster, aus dem ein Monat gelesen wird, `lesefenster()`; die Sperre prüft
 `aenderungGesperrt()` vor jeder Schreibfunktion für Stempelungen, `abwesenheitGesperrt()` vor jeder
-für Abwesenheiten. Ein Tag mit Abwesenheit trägt im Inhalt `abwesenheiten` (Art, halber Tag,
-Kind, an einem Tag mit Urlaub auch „Bescheinigung liegt vor“); ein Tag ohne hat den Schlüssel nicht, so behält ein Monat ohne
-Abwesenheit den Inhalt und den Prüfwert, die er vor S-401 hatte. Die Aussonderung (`aussonderung.ts`,
+für Abwesenheiten und `schichtGesperrt()` vor Änderungen und Veröffentlichungen von Schichten in
+Plan-Soll-Monaten. Ein Tag mit Abwesenheit trägt im Inhalt `abwesenheiten` (Art, halber Tag,
+Kind, an einem Tag mit Urlaub auch „Bescheinigung liegt vor“), ein Tag mit Soll aus dem Plan
+zusätzlich `planMinuten`; ein Tag ohne hat die jeweiligen Schlüssel nicht, so behalten frühere
+Monate ihren Inhalt und ihren Prüfwert. Die Aussonderung (`aussonderung.ts`,
 die Frist in `aufbewahrung.ts`) löscht über `aussondern` des Schreibers der Kette, der mit der Zeile
 die gespeicherten Inhalte ihrer Glieder entfernt, und schreibt `aussonderungen`.
 

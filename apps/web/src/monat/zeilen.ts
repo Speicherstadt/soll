@@ -17,6 +17,7 @@ export type Zeile = {
   pauseMinuten: number;
   arbeitsMinuten: number;
   sollMinuten: number | null;
+  sollAusPlan?: boolean;
   befunde: Blattbefund[];
   geaendert: boolean;
   /** the day's approved absences (S-401) */
@@ -46,7 +47,8 @@ export const zeilenDesMonats = (
       ende: tag?.ende ?? null,
       pauseMinuten: tag?.pausenMinuten ?? 0,
       arbeitsMinuten: tag?.arbeitsMinuten ?? 0,
-      sollMinuten: aufzeichnung.modellMinuten,
+      sollMinuten: aufzeichnung.planMinuten ?? aufzeichnung.modellMinuten,
+      sollAusPlan: aufzeichnung.planMinuten !== undefined,
       befunde: befunde.filter((befund) => befund.tage.includes(aufzeichnung.tag)),
       geaendert: geaendert.includes(aufzeichnung.tag),
       abwesenheiten: aufzeichnung.abwesenheiten ?? [],

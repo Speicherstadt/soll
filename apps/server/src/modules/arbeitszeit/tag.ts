@@ -11,6 +11,7 @@ import {
 } from "@soll/arbeitszeit";
 import type { Db } from "../../db/oeffnen.ts";
 import { type Aenderung, aenderungenIn } from "./aenderungen.ts";
+import { planSollAmTag } from "./sollquellen.ts";
 import { type Stempel, stempelungenIn } from "./stempelungen.ts";
 import { modellAm } from "./zuordnungen.ts";
 
@@ -81,10 +82,11 @@ export const tagLesen = (
       gehoertZumTag(aenderung.vorher) ||
       gehoertZumTag(aenderung.nachher),
   );
+  const planSoll = planSollAmTag(db, betriebId, nutzerId, tag);
   return {
     tag,
     jetzt,
-    sollMinuten: modell === null ? null : minutenAmWochentag(modell.sollMinuten, tag),
+    sollMinuten: planSoll ?? (modell === null ? null : minutenAmWochentag(modell.sollMinuten, tag)),
     pausenabzug,
     stand: stand.wert,
     stempelungen: amTag,

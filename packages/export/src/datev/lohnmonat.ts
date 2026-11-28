@@ -39,11 +39,12 @@ export type Lohnmodell = Modellabschnitt & {
   zuschlagssaetze: Zuschlagssaetze;
 };
 
-/** A day as the month was closed: its stamps in force and the minutes of the person's model */
+/** A day as the month was closed: its stamps in force and the minutes of the person's model or plan */
 export type LohnAufzeichnung = {
   tag: Tag;
   stempel: readonly (readonly [Stempelart, number])[];
   modellMinuten: number | null;
+  planMinuten?: number;
 };
 
 /** An absence credited with hours (docs/konten.md); taking off overtime is paid by the account */
@@ -148,7 +149,9 @@ const feiertagsstunden = (
 ): Lohnproblem[] => {
   const stuendlich = eingabe.tage.filter(
     (tag) =>
-      (tag.modellMinuten ?? 0) > 0 && modellAm(eingabe.modelle, tag.tag)?.lohnArt === "stunde",
+      tag.planMinuten === undefined &&
+      (tag.modellMinuten ?? 0) > 0 &&
+      modellAm(eingabe.modelle, tag.tag)?.lohnArt === "stunde",
   );
   if (stuendlich.length === 0) return [];
   const amOrt = feiertageVon(

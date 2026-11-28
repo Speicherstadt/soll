@@ -50,6 +50,7 @@ describe("zeilenDesMonats", () => {
       pauseMinuten: 30,
       arbeitsMinuten: 480,
       sollMinuten: 480,
+      sollAusPlan: false,
       befunde: [],
       geaendert: true,
       abwesenheiten: [],
@@ -58,10 +59,21 @@ describe("zeilenDesMonats", () => {
       beginn: null,
       ende: null,
       sollMinuten: null,
+      sollAusPlan: false,
       geaendert: false,
       abwesenheiten: [{ art: "urlaub", halb: true }],
     });
     expect(zeilen[2]).toMatchObject({ arbeitsMinuten: 480, befunde: [befund] });
+  });
+
+  it("prefers planMinuten over modellMinuten and marks sollAusPlan", () => {
+    const [zeile] = zeilenDesMonats(
+      [{ tag: "2026-10-10", stempel: [], modellMinuten: 0, planMinuten: 360 }],
+      [],
+      [],
+      ms("2026-11-20T09:00:00+01:00"),
+    );
+    expect(zeile).toMatchObject({ sollMinuten: 360, sollAusPlan: true });
   });
 });
 

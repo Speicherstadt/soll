@@ -7,12 +7,13 @@ import {
   tagInBerlin,
   wochentag,
 } from "@soll/arbeitszeit";
-import { and, eq, min } from "drizzle-orm";
+import { and, eq, isNotNull, min } from "drizzle-orm";
 import type { Db } from "../../db/oeffnen.ts";
-import { modellzuordnungen, stempelungen } from "../../db/schema.ts";
+import { modellzuordnungen, schichten, stempelungen } from "../../db/schema.ts";
 import { betriebLesen } from "../betrieb/index.ts";
 import { mitgliedschaftVon } from "../mitglieder/index.ts";
 import { standorteLesen } from "../standorte/index.ts";
+import { planSollFuerTage } from "./sollquellen.ts";
 import { modellabschnitte } from "./zuordnungen.ts";
 
 /*
@@ -32,8 +33,8 @@ export const standortVon = (db: Db, betriebId: string): Standort | null => {
 };
 
 /**
- * The employment as Soll knows it: from the first of joining the business, the first stamp and the
- * first model; Soll has no date of leaving yet (docs/plan.md, "Beschäftigung im Monatsabschluss")
+ * The employment as Soll knows it: from the first of joining the business, the first stamp, the
+ * first model and the first published shift; Soll has no date of leaving yet
  */
 export const beschaeftigungVon = (
   db: Db,
@@ -53,25 +54,44 @@ export const beschaeftigungVon = (
       and(eq(modellzuordnungen.betriebId, betriebId), eq(modellzuordnungen.nutzerId, nutzerId)),
     )
     .get()?.tag;
+  const ersteSchicht = db
+    .select({ tag: min(schichten.tag) })
+    .from(schichten)
+    .where(
+      and(
+        eq(schichten.betriebId, betriebId),
+        eq(schichten.nutzerId, nutzerId),
+        isNotNull(schichten.veroeffentlichtAm),
+      ),
+    )
+    .get()?.tag;
   const tage = [
     seit == null ? null : tagInBerlin(seit),
     ersterStempel == null ? null : tagInBerlin(ersterStempel),
     ersteZuordnung ?? null,
+    ersteSchicht ?? null,
   ].filter((tag): tag is Tag => tag !== null);
   const [eintritt] = tage.sort();
   return eintritt === undefined ? null : { eintritt };
 };
 
-/** Place, employment and models of a person; null while place or employment is not known */
+/** Place, employment, models and (for `tage`) plan-based Soll of a person; null while unknown */
 export const sollGrundlagen = (
   db: Db,
   betriebId: string,
   nutzerId: string,
+  tage?: readonly Tag[],
 ): SollGrundlagen | null => {
   const standort = standortVon(db, betriebId);
   const beschaeftigung = beschaeftigungVon(db, betriebId, nutzerId);
   if (standort === null || beschaeftigung === null) return null;
-  return { standort, beschaeftigung, modelle: modellabschnitte(db, betriebId, nutzerId) };
+  const plan = tage ? planSollFuerTage(db, betriebId, nutzerId, tage) : undefined;
+  return {
+    standort,
+    beschaeftigung,
+    modelle: modellabschnitte(db, betriebId, nutzerId),
+    ...(plan && plan.size > 0 ? { plan } : {}),
+  };
 };
 
 /**

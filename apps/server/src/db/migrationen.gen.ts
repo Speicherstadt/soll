@@ -131,5 +131,9 @@ export const migrationen: readonly { tag: string; sql: string }[] = [
   {
     "tag": "0032_white_spyke",
     "sql": "ALTER TABLE `arbeitszeitmodelle` ADD `pausenabzug` integer DEFAULT false NOT NULL;"
+  },
+  {
+    "tag": "0033_sollquellen",
+    "sql": "CREATE TABLE `sollquellen` (\n\t`betrieb_id` text NOT NULL,\n\t`ab` text NOT NULL,\n\t`quelle` text NOT NULL,\n\t`angelegt_von` text NOT NULL,\n\t`angelegt_am` integer NOT NULL,\n\tPRIMARY KEY(`betrieb_id`, `ab`)\n);\n"
   }
 ];

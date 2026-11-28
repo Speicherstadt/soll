@@ -2,6 +2,7 @@ import { type PlanSchicht, schichtZeiten, type Tag, uhrzeitenVon } from "@soll/a
 import { and, eq, gte, lte } from "drizzle-orm";
 import type { Db, SchreibDb } from "../../db/oeffnen.ts";
 import { schichten } from "../../db/schema.ts";
+import { schichtGesperrt } from "../arbeitszeit/index.ts";
 import { type Kontext, schreiben } from "../audit/index.ts";
 import { aenderungsMeldungen, type Meldung, unterscheidet } from "./meldungen.ts";
 import { offeneBeenden, offeneTauscheDer } from "./tauschdaten.ts";
@@ -24,7 +25,15 @@ export type SchichtAngaben = {
 /** `meldungen`: whom a change to a published shift has to be told (S-503) */
 export type SchichtErgebnis =
   | { ok: true; schicht: Schicht; meldungen: Meldung[] }
-  | { ok: false; grund: Verweisfehler | "unbekannt" | "zeit_gibt_es_nicht" | "pause_zu_lang" };
+  | {
+      ok: false;
+      grund:
+        | Verweisfehler
+        | "unbekannt"
+        | "zeit_gibt_es_nicht"
+        | "pause_zu_lang"
+        | "monat_abgeschlossen";
+    };
 
 const MINUTE = 60_000;
 
@@ -130,6 +139,12 @@ export const schichtAendern = (
   const neu = zeile(db, kontext.betriebId, angaben);
   if (!neu.ok) return neu;
   if (!unterscheidet(alt, neu.werte)) return { ok: true, schicht: alt, meldungen: [] };
+  if (
+    alt.veroeffentlichtAm !== null &&
+    (schichtGesperrt(db, kontext.betriebId, alt.nutzerId, alt.tag) ||
+      schichtGesperrt(db, kontext.betriebId, neu.werte.nutzerId, neu.werte.tag))
+  )
+    return { ok: false, grund: "monat_abgeschlossen" };
   const veroeffentlichtAm = alt.veroeffentlichtAm === null ? null : kontext.jetzt;
   const offene = offeneTauscheDer(db, kontext.betriebId, schichtId);
   const schicht = schreiben(schreibDb, kontext, (s) => {
@@ -139,22 +154,31 @@ export const schichtAendern = (
   return { ok: true, schicht, meldungen: aenderungsMeldungen(alt, schicht) };
 };
 
+export type EntfernenErgebnis =
+  | { ok: true; meldungen: Meldung[] }
+  | { ok: false; grund: "unbekannt" | "monat_abgeschlossen" };
+
 /**
- * Removes a shift; null when the business has no such shift, else whom its removal has to be told:
- * a published shift leaves the calendar of its person (S-503)
+ * Removes a shift; refused if removing a published shift would alter the plan-based Soll of a
+ * closed month (S-306, S-505). A published shift leaves the calendar of its person (S-503).
  */
 export const schichtEntfernen = (
   db: Db,
   schreibDb: SchreibDb,
   kontext: Kontext,
   schichtId: string,
-): Meldung[] | null => {
+): EntfernenErgebnis => {
   const alt = schichtLesen(db, kontext.betriebId, schichtId);
-  if (!alt) return null;
+  if (!alt) return { ok: false, grund: "unbekannt" };
+  if (
+    alt.veroeffentlichtAm !== null &&
+    schichtGesperrt(db, kontext.betriebId, alt.nutzerId, alt.tag)
+  )
+    return { ok: false, grund: "monat_abgeschlossen" };
   const offene = offeneTauscheDer(db, kontext.betriebId, schichtId);
   schreiben(schreibDb, kontext, (s) => {
     offeneBeenden(s, offene, kontext);
     s.loeschen("schichten", { schichtId });
   });
-  return aenderungsMeldungen(alt, null);
+  return { ok: true, meldungen: aenderungsMeldungen(alt, null) };
 };

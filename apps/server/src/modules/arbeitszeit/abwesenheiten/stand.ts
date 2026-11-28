@@ -6,6 +6,7 @@ import {
   type KinderkrankErgebnis,
   kinderkrankZaehlen,
   kindKrankTage,
+  plusTage,
   type SollGrundlagen,
   type Tag,
   type TagesSoll,
@@ -16,6 +17,7 @@ import {
 import type { Db } from "../../../db/oeffnen.ts";
 import { betriebLesen } from "../../betrieb/index.ts";
 import { arbeitstagVon, sollGrundlagen } from "../grundlagen.ts";
+import { planSollFuerTage } from "../sollquellen.ts";
 import {
   type AbwesenheitZeile,
   abwesenheitenIn,
@@ -138,9 +140,16 @@ export const kinderkrankstand = (
   return kinderkrankZaehlen(jahr, kindKrankTage(tage));
 };
 
+/** All calendar days covered by absence rows, for loading their plan-based Soll */
+export const abwesenheitsTageVon = (zeilen: readonly AbwesenheitZeile[], heute: Tag): Tag[] =>
+  zeilen.flatMap((z) => tageDesZeitraums(alsZeitraum(z), heute).map((a) => a.tag));
+
 /** The setting of the business: from which day of a sickness it wants the certificate */
 export const bescheinigungAbTagVon = (db: Db, betriebId: string): BescheinigungAbTag =>
   (betriebLesen(db, betriebId)?.bescheinigungAbTag ?? 4) as BescheinigungAbTag;
+
+/** Matches `SUCHE_TAGE` in packages/arbeitszeit/src/abwesenheit/bescheinigung.ts */
+const BESCHEINIGUNG_SUCHTAGE = 31;
 
 /** R-27 for a reported sickness of a person (own sickness only: § 5 EntgFG) */
 export const bescheinigungVon = (
@@ -148,17 +157,22 @@ export const bescheinigungVon = (
   zeile: AbwesenheitZeile,
   heute: Tag,
   grundlagen: SollGrundlagen | null = sollGrundlagen(db, zeile.betriebId, zeile.nutzerId),
-): BescheinigungsPruefung | null =>
-  zeile.art !== "krank" || zeile.status !== "genehmigt"
-    ? null
-    : bescheinigungPruefen(
-        { von: zeile.von, bis: zeile.bis, bescheinigung: zeile.bescheinigung !== null },
-        {
-          abTag: bescheinigungAbTagVon(db, zeile.betriebId),
-          arbeitstag: arbeitstagVon(grundlagen),
-          heute,
-        },
-      );
+): BescheinigungsPruefung | null => {
+  if (zeile.art !== "krank" || zeile.status !== "genehmigt") return null;
+  const abTag = bescheinigungAbTagVon(db, zeile.betriebId);
+  const stichtag = plusTage(zeile.von, abTag - 1);
+  const suchTage = Array.from({ length: BESCHEINIGUNG_SUCHTAGE }, (_, i) => plusTage(stichtag, i));
+  const plan = planSollFuerTage(db, zeile.betriebId, zeile.nutzerId, suchTage);
+  const basis = grundlagen && plan.size > 0 ? { ...grundlagen, plan } : grundlagen;
+  return bescheinigungPruefen(
+    { von: zeile.von, bis: zeile.bis, bescheinigung: zeile.bescheinigung !== null },
+    {
+      abTag,
+      arbeitstag: arbeitstagVon(basis),
+      heute,
+    },
+  );
+};
 
 /** A reminder to the business: fetch the eAU of a sickness through the payroll program (§ 109 SGB IV) */
 export type Erinnerung = {

@@ -1237,13 +1237,19 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
   BUrlG (Urlaub nur an Arbeitstagen, die keine Feiertage sind).
 - **Regel**: Das Soll eines Tages sind die Minuten des Arbeitszeitmodells, das an diesem Tag gilt,
   für seinen Wochentag; ein Feiertag am Standort setzt es auf 0, vor dem Eintritt, nach dem Austritt
-  und während das Arbeitsverhältnis ruht (volle Elternzeit) ist es 0. Ist sind die gearbeiteten
-  Minuten der geschlossenen Schichten (R-01) und die Gutschrift für Abwesenheiten: Urlaub, Krankheit,
-  Kind krank und Sonderurlaub bekommen das Soll des Tages gutgeschrieben, ein halber Tag die Hälfte,
-  aufgerundet; Überstundenabbau bekommt nichts. Das Überstundenkonto ist die Summe aus Ist minus Soll
-  der abgeschlossenen Monate und den Anpassungen von Hand (Startsaldo, Auszahlung, Korrektur).
-- **Schwere**: kein Befund; eine Berechnung. Ein Tag der Beschäftigung ohne Arbeitszeitmodell oder
-  ohne Feiertage macht den Monat „nicht hinterlegt“.
+  und während das Arbeitsverhältnis ruht (volle Elternzeit) ist es 0. Wählt der Betrieb unter
+  **Einstellungen → Betrieb → Tagessoll** ab einem Tag nach dem letzten abgeschlossenen Monat
+  **Veröffentlichter Dienstplan** ([Dienstplan](dienstplan.md#soll-aus-dem-plan)), tritt ab diesem
+  Tag die Summe der veröffentlichten Schichten des Tages (Arbeitszeit ohne Pause, am Tag des Beginns,
+  in echten Minuten über die Zeitumstellung) an die Stelle des Arbeitszeitmodells; Entwürfe zählen
+  nicht, und eine am Feiertag geplante Schicht zählt als Soll. Ist sind die gearbeiteten Minuten der
+  geschlossenen Schichten (R-01) und die Gutschrift für Abwesenheiten: Urlaub, Krankheit, Kind krank
+  und Sonderurlaub bekommen das Soll des Tages gutgeschrieben (Ausfallprinzip bei Krankheit nach § 4
+  Abs. 1 EntgFG), ein halber Tag die Hälfte, aufgerundet; Überstundenabbau bekommt nichts. Das
+  Überstundenkonto ist die Summe aus Ist minus Soll der abgeschlossenen Monate und den Anpassungen
+  von Hand (Startsaldo, Auszahlung, Korrektur).
+- **Schwere**: kein Befund; eine Berechnung. Ein Tag der Beschäftigung ohne Arbeitszeitmodell (und
+  ohne Soll aus dem Plan) oder ohne Feiertage macht den Monat „nicht hinterlegt“.
 
 | Fall | Lage (Hamburg, Modell Mo–Fr 8:00) | Erwartet | Quelle |
 | --- | --- | --- | --- |
@@ -1260,6 +1266,7 @@ Soll führt Urlaub in halben Tagen und rundet sie deshalb auf den nächsten halb
 | krank | krank Mo 2.11. – Mi 4.11.2026 | 24:00 gutgeschrieben | §§ 3 Abs. 1, 4 Abs. 1 EntgFG |
 | Überstundenabbau | Überstundenabbau Fr 6.11.2026 | 0:00 gutgeschrieben, Saldo −8:00 | [Konten](konten.md#abwesenheiten) |
 | Überstundenkonto | Startsaldo 10:00 zum 1.10.2026, Oktober +2:00, November −1:30, Auszahlung 5:00 im November | Saldo 5:30 | [Konten](konten.md) |
+| Soll aus dem Plan | ab 1.11.2026 Soll aus dem Plan; Sa 7.11. Schicht 10:00 – 16:00 veröffentlicht, Person krank | Soll 6:00, Gutschrift 6:00, Saldo 0:00 | § 4 Abs. 1 EntgFG (Ausfallprinzip) |
 
 ### R-34 Salden zum Stichtag
 

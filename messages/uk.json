@@ -1346,5 +1346,16 @@
   "plan_filter_person": "Фільтр за особою",
   "plan_drucken": "Друк",
   "plan_vollbild": "На весь екран",
-  "plan_vollbild_beenden": "Вийти з повного екрана"
+  "plan_vollbild_beenden": "Вийти з повного екрана",
+  "target_source_title": "Денна норма",
+  "target_source_text": "Визначає, чи береться денна норма з моделі робочого часу або з опублікованих змін у графіку.",
+  "target_source_model": "Модель робочого часу",
+  "target_source_plan": "Опублікований графік",
+  "target_source_from": "Діє з",
+  "target_source_now": "Зараз: {source} з {date}",
+  "target_source_saved": "Джерело норми збережено.",
+  "target_source_earliest": "Зміна можлива лише з {date} (попередній місяць уже закрито).",
+  "target_source_needs_plan": "Для цього потрібно увімкнути модуль Графік.",
+  "target_source_badge": "Графік",
+  "plan_fehler_abgeschlossen": "Цей місяць уже закрито."
 }

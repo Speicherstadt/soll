@@ -113,7 +113,7 @@ In `packages/arbeitszeit` (`src/pruefung-bereitschaft/`):
 
 - Eingaben sind Spannen in UTC-Millisekunden (`{ beginn, ende }`), ein Rufdienst mit
   `reaktionMinuten`. Beginne zählen ab der angefangenen Minute, Enden bis zur nächsten vollen.
-  `tage` sind Arbeitstage aus [Stempelungen](arbeitstag.md) oder geplante Schichten (S-505) in der
+  `tage` sind Arbeitstage aus [Stempelungen](arbeitstag.md) in der
   Form `PruefTag`; auch Tage von `bereitschaftstage` selbst gehen wieder hinein.
 - Jede Schicht trägt `bereitschaft` (die Stücke Bereitschaftsdienst und Rufbereitschaft, die ganz
   zählt), `bereitschaftsdienst` (davon nur Bereitschaftsdienst und Arbeitsbereitschaft, die einzigen,

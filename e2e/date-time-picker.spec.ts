@@ -26,7 +26,10 @@ test("DatePicker opens shadcn calendar popover, selects dates, and has 0 axe vio
   expect(axe.violations).toEqual([]);
 
   // Pick day 15 of the visible month and verify the input updates to YYYY-MM-15
-  await popover.getByRole("button", { name: "15", exact: true }).first().click();
+  await popover
+    .getByRole("button", { name: /\b15\./ })
+    .first()
+    .click();
   await expect(popover).toBeHidden();
   await expect(datumInput).toHaveValue(/^\d{4}-\d{2}-15$/);
 
@@ -64,7 +67,7 @@ test("TimePicker works inside a modal Dialog without clipping and Escape keeps t
   await expect(popover).toBeVisible();
   const axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
-  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: "Stunde +1", exact: true }).click();
   await popover.getByRole("button", { name: ":30", exact: true }).click();
   await expect(vonInput).toHaveValue("09:30");
   await page.keyboard.press("Escape");

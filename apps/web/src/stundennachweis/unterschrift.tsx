@@ -1,6 +1,6 @@
 import { aufFlaeche, FLAECHE, type Punkt, type Striche } from "@soll/arbeitszeit";
 import { Button } from "@soll/ui";
-import { createUniqueId } from "solid-js";
+import { createUniqueId, onSettled } from "solid-js";
 import { m } from "../paraglide/messages.js";
 
 /** Draws the strokes in the color of the text (light and dark), with round ends and joints */
@@ -43,6 +43,20 @@ export const UnterschriftFlaeche = (props: { onAendern: (striche: Striche) => vo
   const neu = () => {
     if (flaeche) zeichnen(flaeche, striche);
   };
+  onSettled(() => {
+    const beobachter = new MutationObserver(() => neu());
+    beobachter.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    const medien = window.matchMedia("(prefers-color-scheme: dark)");
+    const beiMedien = () => neu();
+    medien.addEventListener("change", beiMedien);
+    return () => {
+      beobachter.disconnect();
+      medien.removeEventListener("change", beiMedien);
+    };
+  });
   const beginnen = (event: PointerEvent) => {
     const p = punkt(event);
     if (!p || striche.length >= FLAECHE.striche) return;
@@ -86,11 +100,12 @@ export const UnterschriftFlaeche = (props: { onAendern: (striche: Striche) => vo
         aria-labelledby={`${id}-titel`}
         aria-describedby={`${id}-hinweis`}
         data-testid="unterschrift"
-        class="aspect-[3/1] w-full max-w-xl touch-none rounded-md border border-border bg-background text-foreground"
+        class="aspect-[3/1] w-full max-w-xl touch-none rounded-md border border-control-border bg-background text-foreground"
         onPointerDown={beginnen}
         onPointerMove={ziehen}
         onPointerUp={enden}
         onPointerCancel={enden}
+        onLostPointerCapture={enden}
       />
       <p id={`${id}-hinweis`} class="text-[12px] text-muted-foreground">
         {m.nachweis_unterschrift_hinweis()}

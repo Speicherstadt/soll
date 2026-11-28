@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet, redirect, useLocation } from "@tanstack/solid-router";
 import { Show } from "solid-js";
+import { m } from "../paraglide/messages.js";
 import { Seitenleiste } from "../rahmen/seitenleiste.tsx";
 import { TabLeiste } from "../rahmen/tabLeiste.tsx";
 import { sitzungLaden } from "../sitzung/sitzung.ts";
@@ -18,6 +19,12 @@ const Rahmen = () => {
   return (
     <Show when={!ohneRahmen(ort().pathname)} fallback={<Outlet />}>
       <div class="flex min-h-dvh">
+        <a
+          href="#main"
+          class="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:font-medium focus:text-primary-foreground focus:outline-2 focus:outline-foreground focus:outline-offset-2"
+        >
+          {m.nav_zum_inhalt()}
+        </a>
         <Seitenleiste />
         <Outlet />
         <TabLeiste />

@@ -28,7 +28,8 @@ Kennwort.
 | `--background` | `#ffffff` | `#09090b` | Fläche |
 | `--muted` | `#fafafa` | `#18181b` | Seitenleiste, Fußzeilen, freie Tage im Plan |
 | `--accent` | `#f4f4f5` | `#27272a` | gewählte Zeile, Wochenende im Plan |
-| `--border` | `#e4e4e7` | `#27272a` | Linien, Rahmen |
+| `--border` | `#e4e4e7` | `#27272a` | Linien, Kartenrahmen |
+| `--control-border` | `#878790` | `#71717a` | Rahmen interaktiver Felder, Checkboxen, Outline-Knöpfe (mindestens 3:1) |
 | `--foreground` | `#09090b` | `#fafafa` | Text |
 | `--muted-foreground` | `#71717a` | `#a1a1aa` | Nebentext (mindestens 4,5:1) |
 | `--primary` | `#18181b` | `#fafafa` | Hauptknopf |

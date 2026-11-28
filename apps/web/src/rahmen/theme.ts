@@ -24,8 +24,31 @@ export const speichereThema = (ablage: Ablage | undefined, thema: Thema): void =
   }
 };
 
-/** Sets data-theme on <html>, which packages/ui/src/styles.css reads; "system" removes it */
+/** Browser theme-color for an explicit theme choice, or null when the device decides */
+export const themeFarbe = (thema: Thema): string | null =>
+  thema === "dunkel" ? "#09090b" : thema === "hell" ? "#ffffff" : null;
+
+const THEME_META = 'meta[name="theme-color"][data-soll-theme-color]';
+
+/** Sets data-theme on <html> and syncs <meta name="theme-color"> for manual overrides */
 export const wendeThemaAn = (root: HTMLElement, thema: Thema): void => {
   if (thema === "system") delete root.dataset.theme;
   else root.dataset.theme = thema === "dunkel" ? "dark" : "light";
+  const doc = root.ownerDocument;
+  if (!doc?.head) return;
+  const farbe = themeFarbe(thema);
+  const vorhanden = doc.head.querySelector<HTMLMetaElement>(THEME_META);
+  if (!farbe) {
+    vorhanden?.remove();
+    return;
+  }
+  const meta = vorhanden ?? doc.createElement("meta");
+  meta.name = "theme-color";
+  meta.dataset.sollThemeColor = "";
+  meta.content = farbe;
+  if (!vorhanden) {
+    const erster = doc.head.querySelector('meta[name="theme-color"]');
+    if (erster) doc.head.insertBefore(meta, erster);
+    else doc.head.append(meta);
+  }
 };

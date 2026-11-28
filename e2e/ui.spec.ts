@@ -156,6 +156,22 @@ test("Combobox: axe finds nothing while the list shows no match", async ({ page 
   expect(results.violations).toEqual([]);
 });
 
+test("Combobox: secondary click does not select an option, primary click does", async ({
+  page,
+}) => {
+  await oeffnen(page);
+  const feld = page.getByRole("combobox", { name: "Person" });
+  await feld.fill("a");
+  const anna = page.getByRole("option", { name: "Anna" });
+  await expect(anna).toBeVisible();
+  await anna.click({ button: "right" });
+  await expect(page.getByTestId("combobox-wahl")).toHaveText("");
+  await expect(feld).toHaveAttribute("aria-expanded", "true");
+  await anna.click();
+  await expect(page.getByTestId("combobox-wahl")).toHaveText("anna");
+  await expect(feld).toHaveValue("Anna");
+});
+
 test("Tabs: one tab stop, arrows choose, the panel follows", async ({ page }) => {
   await oeffnen(page);
   const tag = page.getByRole("tab", { name: "Tag" });

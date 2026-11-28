@@ -42,7 +42,7 @@ export const Stempeln = () => {
               <h2 class="font-semibold text-[16px] leading-6">{tagText(ansicht().tag)}</h2>
               <Button
                 variant="outline"
-                class="h-8 px-3 text-[13px]"
+                class="min-h-11 px-3 text-[13px] md:h-8 md:min-h-8"
                 onClick={() =>
                   setKorrektur({
                     modus: "nachtragen",

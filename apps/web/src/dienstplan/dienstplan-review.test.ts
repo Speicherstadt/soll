@@ -49,7 +49,7 @@ describe("dienstplan (tdd-review #124)", () => {
       root: WEB_ROOT,
       configFile: false,
       logLevel: "silent",
-      server: { middlewareMode: true, hmr: false },
+      server: { middlewareMode: true, hmr: false, watch: null },
       appType: "custom",
       plugins: [
         paraglideVitePlugin({

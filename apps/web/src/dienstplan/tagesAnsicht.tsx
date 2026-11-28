@@ -120,10 +120,12 @@ export const TagesAnsicht = (props: {
     const von = Math.max(0, tagMinuten(schicht.beginn) - start * 60);
     const bisRoh = tagMinuten(schicht.ende);
     const bis = bisRoh <= tagMinuten(schicht.beginn) ? ende * 60 : bisRoh;
-    const dauer = Math.max(30, Math.min(gesamt - von, bis - start * 60 - von));
+    const dauer = Math.max(30, bis - start * 60 - von);
+    const links = Math.min(96, (von / gesamt) * 100);
+    const breite = Math.min(100 - links, (dauer / gesamt) * 100);
     return {
-      "inset-inline-start": `${(von / gesamt) * 100}%`,
-      width: `${(dauer / gesamt) * 100}%`,
+      "inset-inline-start": `${links}%`,
+      width: `${breite}%`,
     };
   };
 

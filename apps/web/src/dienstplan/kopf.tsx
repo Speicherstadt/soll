@@ -169,13 +169,13 @@ export const PlanKopf = (props: PlanKopfProps) => {
         >
           <Icon icon={ChevronRight} class="rtl:rotate-180" />
         </Button>
-        <Button variant="outline" class="hidden sm:inline-flex" onClick={() => props.onDrucken()}>
+        <Button variant="outline" class="max-sm:hidden" onClick={() => props.onDrucken()}>
           <Icon icon={Printer} />
           {m.plan_drucken()}
         </Button>
         <Button
           variant="outline"
-          class={props.vollbild ? "min-h-11 md:min-h-9" : "hidden sm:inline-flex"}
+          class={props.vollbild ? "min-h-11 md:min-h-9" : "max-sm:hidden"}
           onClick={() => props.onVollbild()}
         >
           <Icon icon={props.vollbild ? Minimize2 : Maximize2} />
@@ -187,27 +187,15 @@ export const PlanKopf = (props: PlanKopfProps) => {
             {m.plan_kalender()}
           </Button>
           <Show when={props.planer}>
-            <Button
-              variant="outline"
-              class="hidden sm:inline-flex"
-              onClick={() => props.onVorlagen()}
-            >
+            <Button variant="outline" class="max-sm:hidden" onClick={() => props.onVorlagen()}>
               {m.plan_vorlagen()}
             </Button>
-            <Button
-              variant="outline"
-              class="hidden sm:inline-flex"
-              onClick={() => props.onBedarf()}
-            >
+            <Button variant="outline" class="max-sm:hidden" onClick={() => props.onBedarf()}>
               {m.plan_bedarf()}
             </Button>
           </Show>
           <Show when={props.inhaber}>
-            <Button
-              variant="outline"
-              class="hidden sm:inline-flex"
-              onClick={() => props.onAngaben()}
-            >
+            <Button variant="outline" class="max-sm:hidden" onClick={() => props.onAngaben()}>
               {m.plan_angaben()}
             </Button>
           </Show>

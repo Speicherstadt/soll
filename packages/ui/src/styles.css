@@ -14,6 +14,7 @@
   --muted: #fafafa;
   --accent: #f4f4f5;
   --border: #e4e4e7;
+  --control-border: #878790;
   --foreground: #09090b;
   --muted-foreground: #71717a;
   --primary: #18181b;
@@ -32,6 +33,7 @@
     --muted: #18181b;
     --accent: #27272a;
     --border: #27272a;
+    --control-border: #71717a;
     --foreground: #fafafa;
     --muted-foreground: #a1a1aa;
     --primary: #fafafa;
@@ -50,6 +52,7 @@
   --muted: #18181b;
   --accent: #27272a;
   --border: #27272a;
+  --control-border: #71717a;
   --foreground: #fafafa;
   --muted-foreground: #a1a1aa;
   --primary: #fafafa;
@@ -67,6 +70,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-border: var(--border);
+  --color-control-border: var(--control-border);
   --color-foreground: var(--foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-primary: var(--primary);
@@ -93,10 +97,35 @@
     font-family: var(--font-sans);
     font-size: 15px;
   }
+  button,
+  a,
+  select,
+  input,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  select,
+  option {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
   @media (min-width: 768px) {
     body {
       font-size: 13px;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-property: color, background-color, border-color, opacity;
+    animation-iteration-count: 1;
   }
 }
 
@@ -113,6 +142,16 @@ select:not([data-custom-select]) {
   background-position: left 0.75rem center;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) select:not([data-custom-select]) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+}
+
+:root[data-theme="dark"] select:not([data-custom-select]) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+
 @media print {
   @page {
     size: landscape;
@@ -125,6 +164,7 @@ select:not([data-custom-select]) {
     --muted: #fafafa;
     --accent: #f4f4f5;
     --border: #d4d4d8;
+    --control-border: #71717a;
     --foreground: #09090b;
     --muted-foreground: #52525b;
     --primary: #18181b;

@@ -33,7 +33,7 @@ export const Checkbox = (props: CheckboxProps) => {
         />
         <span
           aria-hidden="true"
-          class="pointer-events-none flex size-4 items-center justify-center rounded-[4px] border border-border bg-background text-primary-foreground shadow-2xs transition-colors peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-foreground peer-focus-visible:outline-offset-2 peer-focus-visible:outline-solid peer-disabled:opacity-50 [&_svg]:opacity-0 peer-checked:[&_svg]:opacity-100"
+          class="pointer-events-none flex size-4 items-center justify-center rounded-[4px] border border-control-border bg-background text-primary-foreground shadow-2xs transition-colors peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-foreground peer-focus-visible:outline-offset-2 peer-focus-visible:outline-solid peer-disabled:opacity-50 [&_svg]:opacity-0 peer-checked:[&_svg]:opacity-100"
         >
           <Icon icon={Check} size={12} />
         </span>

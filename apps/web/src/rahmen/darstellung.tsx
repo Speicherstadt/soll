@@ -37,7 +37,7 @@ export const Darstellung = () => (
   <div class="flex flex-col gap-2">
     <fieldset
       aria-label={m.theme_label()}
-      class="grid grid-cols-3 gap-0.5 rounded-lg border border-border bg-background p-0.5"
+      class="grid grid-cols-3 gap-0.5 rounded-lg border border-control-border bg-background p-0.5"
     >
       <For each={THEMEN}>
         {(wert) => {
@@ -48,7 +48,7 @@ export const Darstellung = () => (
               aria-pressed={aktiv() ? "true" : "false"}
               aria-label={themaName(wert)}
               title={themaName(wert)}
-              class={`flex h-7 items-center justify-center rounded-md outline-hidden transition-colors focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-solid ${
+              class={`flex min-h-11 items-center justify-center rounded-md outline-hidden transition-colors focus-visible:outline-2 focus-visible:outline-foreground focus-visible:outline-solid md:min-h-7 ${
                 aktiv()
                   ? "bg-accent text-foreground shadow-2xs"
                   : "text-muted-foreground hover:text-foreground"
@@ -61,7 +61,7 @@ export const Darstellung = () => (
         }}
       </For>
     </fieldset>
-    <div class="relative flex h-8 items-center rounded-lg border border-border bg-background px-2.5 text-foreground focus-within:outline-2 focus-within:outline-foreground focus-within:outline-solid">
+    <div class="relative flex min-h-11 items-center rounded-lg border border-control-border bg-background px-2.5 text-foreground focus-within:outline-2 focus-within:outline-foreground focus-within:outline-solid md:min-h-8">
       <Icon icon={Globe} size={14} class="pointer-events-none shrink-0 text-muted-foreground" />
       <select
         data-custom-select=""

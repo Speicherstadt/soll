@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { liesThema, speichereThema } from "./theme.ts";
+import { liesThema, speichereThema, themeFarbe } from "./theme.ts";
 
 const ablage = () => {
   const werte = new Map<string, string>();
@@ -35,5 +35,11 @@ describe("theme", () => {
     };
     expect(liesThema(gesperrt)).toBe("system");
     expect(() => speichereThema(gesperrt, "hell")).not.toThrow();
+  });
+
+  it("maps manual themes to their browser theme-color and leaves system to media queries (#119)", () => {
+    expect(themeFarbe("hell")).toBe("#ffffff");
+    expect(themeFarbe("dunkel")).toBe("#09090b");
+    expect(themeFarbe("system")).toBeNull();
   });
 });

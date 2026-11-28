@@ -20,7 +20,7 @@ const Punkte = (props: { anzahl: number }) => (
       {(i) => (
         <span
           class={`size-[22px] rounded-full ${
-            i < props.anzahl ? "bg-foreground" : "border-2 border-border"
+            i < props.anzahl ? "bg-foreground" : "border-2 border-control-border"
           }`}
         />
       )}

@@ -55,7 +55,7 @@ export const Combobox = (props: ComboboxProps) => {
         aria-activedescendant={markiert() >= 0 ? `${id}-option-${markiert()}` : undefined}
         value={text()}
         style={{ "anchor-name": anker }}
-        class="h-9 rounded-md border border-border bg-background px-3 outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground"
+        class="h-9 rounded-md border border-control-border bg-background px-3 outline-hidden focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-foreground"
         onInput={(event) => {
           setText(event.currentTarget.value);
           setMarkiert(-1);
@@ -90,7 +90,7 @@ export const Combobox = (props: ComboboxProps) => {
         }}
         popover="manual"
         style={{ ...verankert(anker), "min-width": "anchor-size(width)" }}
-        class="max-h-64 overflow-y-auto rounded-lg border border-border bg-background p-1 text-foreground shadow-lg"
+        class="max-h-64 overflow-y-auto overscroll-contain rounded-lg border border-border bg-background p-1 text-foreground shadow-lg"
       >
         {/* a listbox may own options only, so the note for no match sits next to it (axe aria-required-children) */}
         <div id={`${id}-liste`} role="listbox" aria-label={props.label}>
@@ -102,11 +102,11 @@ export const Combobox = (props: ComboboxProps) => {
                 role="option"
                 aria-selected={markiert() === index() ? "true" : "false"}
                 class={[
-                  "flex h-8 items-center rounded-sm px-2",
+                  "flex min-h-11 items-center rounded-sm px-2 md:min-h-8",
                   { "bg-accent": markiert() === index() },
                 ]}
-                onMouseDown={(event) => {
-                  // keep focus in the field, so blur does not close the list before the choice
+                onPointerDown={(event) => {
+                  // keep focus in the field on mouse and touch so blur does not close the list before the choice
                   event.preventDefault();
                   waehlen(option);
                 }}

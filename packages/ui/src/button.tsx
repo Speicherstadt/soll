@@ -8,7 +8,7 @@ const knopf = variants({
   variants: {
     variant: {
       primary: "bg-primary text-primary-foreground hover:opacity-90",
-      outline: "border border-border bg-background hover:bg-accent",
+      outline: "border border-control-border bg-background hover:bg-accent",
       ghost: "hover:bg-accent",
       icon: "hover:bg-accent",
     },

@@ -123,3 +123,41 @@ export const datumAnzeigen = (wert: string, sprache: string): string => {
     timeZone: "UTC",
   }).format(new Date(Date.UTC(j ?? 0, (m ?? 1) - 1, t ?? 1, 12)));
 };
+
+export type ZeitFeld = "day" | "month" | "year" | "hour" | "minute";
+
+/** Localized field name from the browser's Intl.DisplayNames ("Monat", "Jahr", "Stunde", ...) */
+export const einheitName = (feld: ZeitFeld, sprache: string): string => {
+  try {
+    return new Intl.DisplayNames([sprache], { type: "dateTimeField" }).of(feld) ?? feld;
+  } catch {
+    return feld;
+  }
+};
+
+/** Full localized accessible date name (e.g. "Freitag, 27. November 2026") */
+export const datumLang = (wert: string, sprache: string): string => {
+  if (!ISO_DATUM.test(wert)) return wert;
+  const [j, m, t] = wert.split("-").map(Number);
+  return new Intl.DateTimeFormat(sprache, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(j ?? 0, (m ?? 1) - 1, t ?? 1, 12)));
+};
+
+/** Next cell index in the 42-cell (6 × 7) calendar grid for arrow/Home/End keys, RTL-aware */
+export const kalenderNachbar = (index: number, taste: string, rtl: boolean): number | undefined => {
+  const schritt = rtl ? -1 : 1;
+  let ziel: number | undefined;
+  if (taste === "ArrowRight") ziel = index + schritt;
+  else if (taste === "ArrowLeft") ziel = index - schritt;
+  else if (taste === "ArrowDown") ziel = index + 7;
+  else if (taste === "ArrowUp") ziel = index - 7;
+  else if (taste === "Home") ziel = index - (index % 7);
+  else if (taste === "End") ziel = index + (6 - (index % 7));
+  if (ziel === undefined || ziel < 0 || ziel >= 42) return undefined;
+  return ziel;
+};

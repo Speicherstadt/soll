@@ -52,7 +52,7 @@ const Registrieren = () => {
           name="email"
           type="email"
           autocomplete="email"
-          spellcheck={false}
+          spellcheck="false"
           autocapitalize="off"
           required
         />

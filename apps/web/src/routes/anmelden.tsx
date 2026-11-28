@@ -43,7 +43,7 @@ const Anmelden = () => {
           label={m.anmelden_kennung()}
           name="kennung"
           autocomplete="username"
-          spellcheck={false}
+          spellcheck="false"
           autocapitalize="off"
           required
         />

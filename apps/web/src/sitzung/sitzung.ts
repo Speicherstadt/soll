@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import { abfrageCache } from "../abfragen/client.ts";
 import { api } from "../api.ts";
 import { ALLE_MODULE } from "../rahmen/module.ts";
+import { type AbmeldenErgebnis, abmeldenAblauf } from "./abmelden.ts";
 import type { Betrieb, Zustand } from "./ziel.ts";
 
 /**
@@ -126,10 +127,9 @@ export const abgemeldet = (): void => {
 };
 
 /** Signs out via Better Auth with network/retry safety shared by Settings and Sidebar */
-export const abmeldenAusfuehren = async (): Promise<"" | "netz" | "fehler"> => {
-  const antwort = await api("/api/auth/sign-out", { body: {} });
-  if (antwort.status === 0) return "netz";
-  if (antwort.ok) abgemeldet();
-  else if ((await sitzungNeu()).art !== "abgemeldet") return "fehler";
-  return "";
-};
+export const abmeldenAusfuehren = (): Promise<AbmeldenErgebnis> =>
+  abmeldenAblauf({
+    senden: () => api("/api/auth/sign-out", { body: {} }),
+    loeschen: abgemeldet,
+    pruefen: sitzungNeu,
+  });

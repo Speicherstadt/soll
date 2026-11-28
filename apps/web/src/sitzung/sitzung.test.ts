@@ -1,71 +1,88 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { abmeldenAusfuehren, sitzung } from "./sitzung.ts";
+import { describe, expect, it, vi } from "vitest";
+import { abmeldenAblauf } from "./abmelden.ts";
+import type { Betrieb } from "./ziel.ts";
 
-describe("abmeldenAusfuehren", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
-  });
+const BETRIEB: Betrieb = {
+  betriebId: "b1",
+  name: "Weber Haustechnik",
+  land: "HH",
+  eingerichtet: true,
+  nutzerId: "u1",
+  nutzerName: "Jonas Weber",
+  rolle: "inhaber",
+  hinweis: null,
+  auswertungJePersonSeit: null,
+  module: {
+    arbeitszeit: true,
+    dienstplan: true,
+    projektzeit: true,
+    terminal: false,
+  },
+};
 
+describe("abmeldenAblauf", () => {
   it("clears the local session and returns empty string on successful sign-out", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => new Response(JSON.stringify({ ok: true }), { status: 200 })),
-    );
-    expect(await abmeldenAusfuehren()).toBe("");
-    expect(sitzung()).toEqual({ art: "abgemeldet" });
+    const loeschen = vi.fn();
+    const pruefen = vi.fn(async () => ({ art: "abgemeldet" as const }));
+    const ergebnis = await abmeldenAblauf({
+      senden: async () => ({ ok: true, status: 200, daten: { ok: true } }),
+      loeschen,
+      pruefen,
+    });
+    expect(ergebnis).toBe("");
+    expect(loeschen).toHaveBeenCalledTimes(1);
+    expect(pruefen).not.toHaveBeenCalled();
   });
 
-  it("returns netz when the sign-out request fails at the network layer", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async () => {
-        throw new TypeError("Failed to fetch");
-      }),
-    );
-    expect(await abmeldenAusfuehren()).toBe("netz");
+  it("returns netz without clearing local state when sign-out gets no network response", async () => {
+    const loeschen = vi.fn();
+    const pruefen = vi.fn(async () => ({ art: "abgemeldet" as const }));
+    const ergebnis = await abmeldenAblauf({
+      senden: async () => ({ ok: false, status: 0, fehler: "netz" }),
+      loeschen,
+      pruefen,
+    });
+    expect(ergebnis).toBe("netz");
+    expect(loeschen).not.toHaveBeenCalled();
+    expect(pruefen).not.toHaveBeenCalled();
   });
 
   it("succeeds if sign-out returned an error because the session was already gone", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (input: string | URL | Request) => {
-        const url = String(input);
-        if (url.includes("/api/auth/sign-out")) {
-          return new Response(JSON.stringify({ fehler: "already_signed_out" }), { status: 400 });
-        }
-        return new Response(JSON.stringify({ fehler: "nicht_angemeldet" }), { status: 401 });
-      }),
-    );
-    expect(await abmeldenAusfuehren()).toBe("");
-    expect(sitzung()).toEqual({ art: "abgemeldet" });
+    const loeschen = vi.fn();
+    const pruefen = vi.fn(async () => ({ art: "abgemeldet" as const }));
+    const ergebnis = await abmeldenAblauf({
+      senden: async () => ({ ok: false, status: 400, fehler: "already_signed_out" }),
+      loeschen,
+      pruefen,
+    });
+    expect(ergebnis).toBe("");
+    expect(loeschen).not.toHaveBeenCalled();
+    expect(pruefen).toHaveBeenCalledTimes(1);
   });
 
   it("returns fehler when sign-out fails and the session is still active", async () => {
-    const betrieb = {
-      betriebId: "b1",
-      name: "Weber Haustechnik",
-      nutzerId: "u1",
-      nutzerName: "Jonas Weber",
-      rolle: "inhaber",
-      module: {
-        arbeitszeit: true,
-        abwesenheiten: true,
-        dienstplan: true,
-        projektzeit: true,
-        terminal: false,
-      },
-    };
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(async (input: string | URL | Request) => {
-        const url = String(input);
-        if (url.includes("/api/auth/sign-out")) {
-          return new Response(JSON.stringify({ fehler: "server" }), { status: 500 });
-        }
-        return new Response(JSON.stringify(betrieb), { status: 200 });
-      }),
-    );
-    expect(await abmeldenAusfuehren()).toBe("fehler");
+    const loeschen = vi.fn();
+    const pruefen = vi.fn(async () => ({ art: "bereit" as const, betrieb: BETRIEB }));
+    const ergebnis = await abmeldenAblauf({
+      senden: async () => ({ ok: false, status: 500, fehler: "server" }),
+      loeschen,
+      pruefen,
+    });
+    expect(ergebnis).toBe("fehler");
+    expect(loeschen).not.toHaveBeenCalled();
+    expect(pruefen).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns fehler when sign-out fails and session re-check is offline", async () => {
+    const loeschen = vi.fn();
+    const pruefen = vi.fn(async () => ({ art: "offline" as const, betrieb: BETRIEB }));
+    const ergebnis = await abmeldenAblauf({
+      senden: async () => ({ ok: false, status: 500, fehler: "server" }),
+      loeschen,
+      pruefen,
+    });
+    expect(ergebnis).toBe("fehler");
+    expect(loeschen).not.toHaveBeenCalled();
+    expect(pruefen).toHaveBeenCalledTimes(1);
   });
 });

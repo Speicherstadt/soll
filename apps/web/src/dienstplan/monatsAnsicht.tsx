@@ -136,10 +136,17 @@ export const MonatsAnsicht = (props: {
       return montag ? ressourcen.woche({ standortId: props.standortId, tag: montag }) : null;
     }),
   );
-  const personenMap = createMemo(() => new Map(props.personen.map((p) => [p.nutzerId, p.name])));
+  const aktiveWochen = () => wochen.slice(0, kalender().montage.length);
+  const personenMap = createMemo(() => {
+    const map = new Map(props.personen.map((p) => [p.nutzerId, p.name]));
+    for (const w of aktiveWochen()) {
+      for (const p of daten(w.data)?.personen ?? []) map.set(p.nutzerId, p.name);
+    }
+    return map;
+  });
   const schichtenNachTag = createMemo(() => {
     const gesammelt = new Map<string, Schicht>();
-    for (const w of wochen) {
+    for (const w of aktiveWochen()) {
       const geladen = daten(w.data);
       if (!geladen) continue;
       for (const s of geladen.schichten) gesammelt.set(s.schichtId, s);
@@ -161,7 +168,7 @@ export const MonatsAnsicht = (props: {
   return (
     <div class="flex flex-col gap-3">
       <div class="flex flex-wrap items-center justify-between gap-2" data-print-hidden="">
-        <Show when={props.personen.length > 1}>
+        <Show when={props.personen.length > 0}>
           <div class="w-56">
             <Feld
               label={m.plan_filter_person()}

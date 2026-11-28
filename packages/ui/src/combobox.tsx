@@ -108,7 +108,7 @@ export const Combobox = (props: ComboboxProps) => {
                 ]}
                 onMouseDown={(event) => {
                   // keep focus in the field on mouse and touch taps so blur does not close the list before click
-                  if (event.button === 0) event.preventDefault();
+                  event.preventDefault();
                 }}
                 onClick={() => waehlen(option)}
               >

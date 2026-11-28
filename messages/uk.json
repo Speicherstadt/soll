@@ -2,6 +2,7 @@
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "start_title": "Soll",
   "nav_bereiche": "Розділи",
+  "nav_zum_inhalt": "Перейти до вмісту",
   "nav_heute": "Сьогодні",
   "nav_zeiten": "Час",
   "nav_abwesenheiten": "Відсутності",

@@ -21,7 +21,7 @@ test("[tdd-review] KorrekturDialog TimePicker keeps picked hour when minute is c
   const popover = dialog.locator('[data-picker-popover="time"]');
   await expect(popover).toBeVisible();
 
-  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: "Stunde +1", exact: true }).click();
   await popover.getByRole("button", { name: ":30", exact: true }).click();
   await expect(uhrzeit).toHaveValue("09:30");
 });
@@ -41,7 +41,7 @@ test("[tdd-review] BuchungDialog TimePicker keeps picked hour when minute is cli
   const popover = dialog.locator('[data-picker-popover="time"]');
   await expect(popover).toBeVisible();
 
-  await popover.getByRole("button", { name: "+01:00", exact: true }).click();
+  await popover.getByRole("button", { name: "Stunde +1", exact: true }).click();
   await popover.getByRole("button", { name: ":30", exact: true }).click();
   await expect(beginn).toHaveValue("09:30");
 });

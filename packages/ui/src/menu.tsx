@@ -48,7 +48,7 @@ export const Menu = (props: MenuProps) => {
         popover="auto"
         role="menu"
         style={verankert(anker)}
-        class="min-w-44 rounded-lg border border-border bg-background p-1 text-foreground shadow-lg"
+        class="min-w-44 overscroll-contain rounded-lg border border-border bg-background p-1 text-foreground shadow-lg"
         onToggle={(event) => {
           const auf = (event as ToggleEvent).newState === "open";
           setOffen(auf);
@@ -76,7 +76,7 @@ export const Menu = (props: MenuProps) => {
               role="menuitem"
               tabindex="-1"
               class={[
-                "flex h-8 w-full items-center rounded-sm px-2 text-start outline-hidden hover:bg-accent focus-visible:bg-accent",
+                "flex min-h-11 w-full items-center rounded-sm px-2 text-start outline-hidden hover:bg-accent focus-visible:bg-accent md:min-h-8",
                 { "text-danger": eintrag.gefaehrlich === true },
               ]}
               onClick={() => {

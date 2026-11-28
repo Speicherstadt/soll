@@ -2,7 +2,10 @@ import { describe, expect, test } from "vitest";
 import {
   datumAnzeigen,
   datumGueltig,
+  datumLang,
+  einheitName,
   kalenderGitter,
+  kalenderNachbar,
   minuteDrehen,
   monatVerschieben,
   popoverPosition,
@@ -75,5 +78,38 @@ describe("pickerDaten", () => {
     expect(datumAnzeigen("2026-11-27", "de")).toBe("27.11.2026");
     expect(datumAnzeigen("2026-11-27", "en-US")).toBe("11/27/2026");
     expect(datumAnzeigen("", "de")).toBe("");
+  });
+
+  test("returns localized date/time field names and full accessible date labels (#119)", () => {
+    expect(einheitName("month", "de")).toBe("Monat");
+    expect(einheitName("year", "en")).toBe("year");
+    expect(einheitName("hour", "de")).toBe("Stunde");
+    expect(datumLang("2026-11-27", "de")).toContain("2026");
+    expect(datumLang("2026-11-27", "de")).toContain("27");
+  });
+
+  test("moves across the 42-cell calendar grid with arrow keys in LTR and RTL (#119)", () => {
+    expect(kalenderNachbar(10, "ArrowRight", false)).toBe(11);
+    expect(kalenderNachbar(10, "ArrowLeft", false)).toBe(9);
+    expect(kalenderNachbar(10, "ArrowRight", true)).toBe(9);
+    expect(kalenderNachbar(10, "ArrowLeft", true)).toBe(11);
+    expect(kalenderNachbar(10, "ArrowDown", false)).toBe(17);
+    expect(kalenderNachbar(10, "ArrowUp", false)).toBe(3);
+    expect(kalenderNachbar(10, "Home", false)).toBe(7);
+    expect(kalenderNachbar(10, "End", false)).toBe(13);
+    expect(kalenderNachbar(0, "ArrowUp", false)).toBeUndefined();
+    expect(kalenderNachbar(41, "ArrowRight", false)).toBeUndefined();
+  });
+
+  test("never targets disabled min/max cells during keyboard calendar navigation (#119)", () => {
+    // Nov 2026: index 17 is Thu 2026-11-12 (min), index 23 is Wed 2026-11-18 (max)
+    const zellen = kalenderGitter(2026, 10, "2026-11-12", "2026-11-18");
+    const gesperrt = zellen.map((z) => z.deaktiviert);
+    expect(kalenderNachbar(18, "Home", false, gesperrt)).toBe(17);
+    expect(kalenderNachbar(21, "End", false, gesperrt)).toBe(23);
+    expect(kalenderNachbar(17, "ArrowLeft", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(17, "ArrowUp", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(23, "ArrowRight", false, gesperrt)).toBeUndefined();
+    expect(kalenderNachbar(17, "ArrowRight", true, gesperrt)).toBeUndefined();
   });
 });

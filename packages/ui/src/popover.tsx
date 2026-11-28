@@ -1,5 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { createUniqueId } from "solid-js";
+import { createSignal, createUniqueId } from "solid-js";
 import { Button } from "./button.tsx";
 
 /**
@@ -27,6 +27,7 @@ export const verankert = (anker: string): JSX.CSSProperties => ({
 export const Popover = (props: PopoverProps) => {
   const id = createUniqueId();
   const anker = `--popover-${id}`;
+  const [offen, setOffen] = createSignal(false);
   return (
     <>
       <Button
@@ -34,6 +35,8 @@ export const Popover = (props: PopoverProps) => {
           ? { variant: "icon" as const, "aria-label": props["aria-label"] }
           : { variant: props.variant ?? "outline", "aria-label": props["aria-label"] })}
         popovertarget={id}
+        aria-expanded={offen() ? "true" : "false"}
+        aria-controls={id}
         style={{ "anchor-name": anker }}
       >
         {props.ausloeser}
@@ -42,7 +45,10 @@ export const Popover = (props: PopoverProps) => {
         id={id}
         popover="auto"
         style={verankert(anker)}
-        class="min-w-48 rounded-lg border border-border bg-background p-3 text-foreground shadow-lg"
+        class="min-w-48 overscroll-contain rounded-lg border border-border bg-background p-3 text-foreground shadow-lg"
+        onToggle={(event) => {
+          setOffen((event as ToggleEvent).newState === "open");
+        }}
       >
         {props.children}
       </div>

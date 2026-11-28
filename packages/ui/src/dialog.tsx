@@ -42,7 +42,7 @@ export const Dialog = (props: DialogProps) => {
         if (aufHintergrund && event.target === element) element?.close();
         aufHintergrund = false;
       }}
-      class="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-lg border border-border bg-background p-0 text-foreground shadow-xl backdrop:bg-black/40"
+      class="m-auto max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-lg border border-border bg-background p-0 text-foreground shadow-xl backdrop:bg-black/40"
     >
       <div class="flex flex-col gap-4 p-5">
         <h2 id={id} class="font-semibold text-[15px]">

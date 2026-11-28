@@ -9,8 +9,12 @@ import { PflichtHinweis } from "./pflichtHinweis.tsx";
  * utilisation per person is switched on (S-604).
  */
 export const Seite = (props: { titel: JSX.Element; children: JSX.Element }) => (
-  <main class="flex min-w-0 flex-1 flex-col gap-5 px-4 pt-6 pb-24 md:px-8 md:pb-6">
-    <h1 class="break-words font-bold text-[28px] tracking-tight md:font-semibold md:text-[22px]">
+  <main
+    id="main"
+    tabindex={-1}
+    class="flex min-w-0 flex-1 flex-col gap-5 px-4 pt-6 pb-24 outline-hidden md:px-8 md:pb-6"
+  >
+    <h1 class="break-words text-balance font-bold text-[28px] tracking-tight md:font-semibold md:text-[22px]">
       {props.titel}
     </h1>
     <PflichtHinweis />

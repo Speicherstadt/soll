@@ -17,7 +17,7 @@ export type TabsProps = {
  */
 export const Tabs = (props: TabsProps) => {
   const id = createUniqueId();
-  const [aktiv, setAktiv] = createSignal<string | undefined>(props.start);
+  const [aktiv, setAktiv] = createSignal<string | undefined>(() => props.start);
   const gewaehlt = () =>
     props.tabs.some((tab) => tab.id === aktiv()) ? aktiv() : props.tabs[0]?.id;
   let leiste: HTMLDivElement | undefined;

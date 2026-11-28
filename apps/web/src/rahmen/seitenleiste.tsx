@@ -2,6 +2,7 @@ import { Icon, Menu } from "@soll/ui";
 import { Link, useNavigate } from "@tanstack/solid-router";
 import { User } from "lucide";
 import { createSignal, For, Show } from "solid-js";
+import { einstellungenTabSetzen } from "../einstellungen/tab.ts";
 import { m } from "../paraglide/messages.js";
 import { abmeldenAusfuehren, aktuelleModule, aktuellerBetrieb } from "../sitzung/sitzung.ts";
 import { bereicheFuer } from "./bereiche.ts";
@@ -18,37 +19,42 @@ const KontoFuss = () => {
     await navigate({ to: "/anmelden" });
   };
   return (
-    <Show when={aktuellerBetrieb()?.nutzerName}>
-      {(name) => (
-        <div class="mb-2 flex flex-col gap-1">
-          <Menu
-            variant="ghost"
-            aria-label={m.einstellungen_tab_konto()}
-            ausloeser={
-              <span class="flex w-full min-w-0 max-w-[172px] items-center gap-2 text-start">
-                <Icon icon={User} size={15} class="shrink-0 text-muted-foreground" />
-                <span class="truncate text-[13px] font-medium text-foreground">{name()}</span>
-              </span>
-            }
-            eintraege={[
-              {
-                label: m.einstellungen_tab_konto(),
-                onWaehlen: () => void navigate({ to: "/einstellungen" }),
-              },
-              {
-                label: m.abmelden(),
-                gefaehrlich: true,
-                onWaehlen: () => void abmelden(),
-              },
-            ]}
-          />
-          <Show when={fehler()}>
-            <p role="alert" class="px-1 text-[11px] text-danger">
-              {fehler()}
-            </p>
-          </Show>
-        </div>
-      )}
+    <Show when={aktuellerBetrieb()}>
+      {(betrieb) => {
+        const name = () => betrieb().nutzerName?.trim() || m.einstellungen_tab_konto();
+        return (
+          <div class="mb-2 flex flex-col gap-1">
+            <Menu
+              variant="ghost"
+              ausloeser={
+                <span class="flex w-full min-w-0 max-w-[172px] items-center gap-2 text-start">
+                  <Icon icon={User} size={15} class="shrink-0 text-muted-foreground" />
+                  <span class="truncate font-medium text-[13px] text-foreground">{name()}</span>
+                </span>
+              }
+              eintraege={[
+                {
+                  label: m.einstellungen_tab_konto(),
+                  onWaehlen: () => {
+                    einstellungenTabSetzen("konto");
+                    void navigate({ to: "/einstellungen" });
+                  },
+                },
+                {
+                  label: m.abmelden(),
+                  gefaehrlich: true,
+                  onWaehlen: () => void abmelden(),
+                },
+              ]}
+            />
+            <Show when={fehler()}>
+              <p role="alert" class="px-1 text-[11px] text-danger">
+                {fehler()}
+              </p>
+            </Show>
+          </div>
+        );
+      }}
     </Show>
   );
 };

@@ -11,6 +11,8 @@ import type { PlanBefund, Schicht, Vorlage, Woche, Ziel } from "./typen.ts";
 import { planzeilen } from "./zeilen.ts";
 
 const STUNDEN_STANDARD = { start: 6, ende: 22 };
+const SCROLL_RAHMEN =
+  "overflow-x-auto rounded-xl border border-border bg-background focus-visible:outline-2 focus-visible:outline-foreground";
 
 const BalkenInhalt = (props: {
   schicht: Schicht;
@@ -170,10 +172,7 @@ export const TagesAnsicht = (props: {
         </For>
       </fieldset>
 
-      <div
-        tabindex={0}
-        class="overflow-x-auto rounded-xl border border-border bg-background focus-visible:outline-2 focus-visible:outline-foreground"
-      >
+      <div tabindex={0} class={SCROLL_RAHMEN}>
         <div class="min-w-[780px]">
           <div class="grid grid-cols-[170px_1fr] border-border border-b bg-muted/40">
             <div class="px-3 py-2 font-semibold text-[12px] text-muted-foreground">

@@ -10,24 +10,32 @@ import { sitzungNeu } from "../sitzung/sitzung.ts";
 const Registrieren = () => {
   const navigate = useNavigate();
   const [fehler, setFehler] = createSignal("");
+  const [laeuft, setLaeuft] = createSignal(false);
   const absenden = async (event: SubmitEvent) => {
     event.preventDefault();
-    const daten = new FormData(event.currentTarget as HTMLFormElement);
-    const antwort = await api("/api/auth/sign-up/email", {
-      body: {
-        name: String(daten.get("name")).trim(),
-        email: String(daten.get("email")).trim(),
-        password: String(daten.get("passwort")),
-      },
-    });
-    if (!antwort.ok) {
-      if (antwort.status === 0) return setFehler(m.fehler_netz());
-      return setFehler(
-        /EXIST/i.test(antwort.fehler) ? m.registrieren_vergeben() : m.registrieren_fehler(),
-      );
+    if (laeuft()) return;
+    setLaeuft(true);
+    setFehler("");
+    try {
+      const daten = new FormData(event.currentTarget as HTMLFormElement);
+      const antwort = await api("/api/auth/sign-up/email", {
+        body: {
+          name: String(daten.get("name")).trim(),
+          email: String(daten.get("email")).trim(),
+          password: String(daten.get("passwort")),
+        },
+      });
+      if (!antwort.ok) {
+        if (antwort.status === 0) return setFehler(m.fehler_netz());
+        return setFehler(
+          /EXIST/i.test(antwort.fehler) ? m.registrieren_vergeben() : m.registrieren_fehler(),
+        );
+      }
+      await sitzungNeu();
+      await navigate({ to: "/einrichtung" });
+    } finally {
+      setLaeuft(false);
     }
-    await sitzungNeu();
-    await navigate({ to: "/einrichtung" });
   };
   return (
     <KartenSeite titel={m.registrieren_titel()}>
@@ -44,6 +52,8 @@ const Registrieren = () => {
           name="email"
           type="email"
           autocomplete="email"
+          spellcheck="false"
+          autocapitalize="off"
           required
         />
         <Input
@@ -57,7 +67,7 @@ const Registrieren = () => {
           maxlength={128}
         />
         <Fehler text={fehler()} />
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" disabled={laeuft()}>
           {m.registrieren_knopf()}
         </Button>
       </form>

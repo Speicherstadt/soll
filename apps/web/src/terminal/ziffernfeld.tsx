@@ -22,7 +22,7 @@ const FELDER: Feld[] = [
  * the keyboard works too (eingabe.ts, `tasteAus`). Digits stay left to right in Arabic as well.
  */
 export const Ziffernfeld = (props: { onTaste: (taste: Taste) => void; aus: boolean }) => (
-  <div dir="ltr" class="grid w-[432px] grid-cols-3 gap-4">
+  <div dir="ltr" class="grid w-full max-w-[432px] grid-cols-3 gap-4">
     <For each={FELDER}>
       {(feld) => (
         <button

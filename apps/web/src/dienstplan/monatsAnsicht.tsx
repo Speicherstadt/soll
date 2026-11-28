@@ -13,6 +13,8 @@ import { tagDerZahl, tagLang, wochentagKurz } from "./text.ts";
 import type { Planperson, Schicht, Vorlage, Woche } from "./typen.ts";
 
 const WOCHEN_SLOTS = [0, 1, 2, 3, 4, 5] as const;
+const SCROLL_RAHMEN =
+  "overflow-x-auto rounded-xl border border-border bg-background focus-visible:outline-2 focus-visible:outline-foreground";
 
 const MonatsZelle = (props: {
   tag: Tag;
@@ -190,10 +192,7 @@ export const MonatsAnsicht = (props: {
         </Show>
       </div>
       <Loading>
-        <div
-          tabindex={0}
-          class="overflow-x-auto rounded-xl border border-border bg-background focus-visible:outline-2 focus-visible:outline-foreground"
-        >
+        <div tabindex={0} class={SCROLL_RAHMEN}>
           <div class="grid min-w-[720px] grid-cols-7">
             <For each={wochentage()}>
               {(tag, idx) => (

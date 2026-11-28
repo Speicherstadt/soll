@@ -73,7 +73,10 @@ export const WochenRaster = (props: RasterProps) => {
     );
   };
   return (
-    <div class="overflow-x-auto rounded-xl border border-border">
+    <div
+      tabindex={0}
+      class="overflow-x-auto rounded-xl border border-border focus-visible:outline-2 focus-visible:outline-foreground"
+    >
       <Show when={props.planer}>
         <p id={GRIFF_HINWEIS} class="sr-only">
           {m.plan_griff_hinweis()}

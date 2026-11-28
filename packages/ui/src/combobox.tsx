@@ -97,6 +97,7 @@ export const Combobox = (props: ComboboxProps) => {
           <For each={treffer()}>
             {(option, index) => (
               // biome-ignore lint/a11y/useFocusableInteractive: focus stays in the field, aria-activedescendant points here (ARIA combobox pattern)
+              // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard choice runs via Enter on the combobox input (ARIA combobox pattern)
               <div
                 id={`${id}-option-${index()}`}
                 role="option"
@@ -105,11 +106,11 @@ export const Combobox = (props: ComboboxProps) => {
                   "flex min-h-11 items-center rounded-sm px-2 md:min-h-8",
                   { "bg-accent": markiert() === index() },
                 ]}
-                onPointerDown={(event) => {
-                  // keep focus in the field on mouse and touch so blur does not close the list before the choice
-                  event.preventDefault();
-                  waehlen(option);
+                onMouseDown={(event) => {
+                  // keep focus in the field on mouse and touch taps so blur does not close the list before click
+                  if (event.button === 0) event.preventDefault();
                 }}
+                onClick={() => waehlen(option)}
               >
                 {option.label}
               </div>

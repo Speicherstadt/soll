@@ -1,5 +1,5 @@
 import { Badge, Icon, Table, Tbody, Td, Th, Thead, Tr } from "@soll/ui";
-import { Clock, type IconNode, Target, TrendingUp } from "lucide";
+import { Clock, type IconNode, Scale, Target, TrendingDown, TrendingUp } from "lucide";
 import { createUniqueId, For, Show } from "solid-js";
 import { ART } from "../abwesenheiten/text.ts";
 import { dauerText } from "../einrichtung/werte.ts";
@@ -7,12 +7,11 @@ import { m } from "../paraglide/messages.js";
 import { uhrzeitText } from "../zeiten/text.ts";
 import { befundZeile, kurzerTag, tageText } from "./text.ts";
 import type { Gegeneintrag, Monatsinhalt } from "./typen.ts";
-import { saldoText, type Zeile } from "./zeilen.ts";
+import { saldoText, saldoTon, type Zeile } from "./zeilen.ts";
 
 const WERT_TON = {
   default: "text-foreground",
   success: "text-success",
-  danger: "text-danger",
 } as const;
 
 const Wert = (props: {
@@ -21,13 +20,13 @@ const Wert = (props: {
   icon: IconNode;
   ton?: keyof typeof WERT_TON;
 }) => (
-  <div class="flex h-full flex-col gap-1.5 rounded-xl border border-border bg-background p-4">
-    <dt class="flex min-h-6 items-center gap-1.5 text-[12px] text-muted-foreground">
+  <div class="flex h-full min-w-0 flex-col gap-1 rounded-xl border border-border bg-background p-3 sm:gap-1.5 sm:p-4">
+    <dt class="flex min-h-5 items-center gap-1.5 text-[12px] text-muted-foreground sm:min-h-6">
       <Icon icon={props.icon} class="size-3.5 shrink-0 text-muted-foreground" />
-      <span>{props.name}</span>
+      <span class="truncate">{props.name}</span>
     </dt>
     <dd
-      class={`font-mono font-semibold text-[22px] tabular-nums leading-tight ${WERT_TON[props.ton ?? "default"]}`}
+      class={`font-mono font-semibold text-[16px] tabular-nums leading-tight sm:text-[22px] ${WERT_TON[props.ton ?? "default"]}`}
       dir="ltr"
     >
       {props.wert}
@@ -48,19 +47,19 @@ export const Summen = (props: { inhalt: Monatsinhalt }) => (
     >
       {(summen) => (
         <div class="flex flex-col gap-2">
-          <dl class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <dl class="grid grid-cols-3 gap-2 sm:gap-3">
             <Wert name={m.monat_soll()} icon={Target} wert={dauerText(summen().sollMinuten)} />
             <Wert name={m.monat_ist()} icon={Clock} wert={dauerText(summen().istMinuten)} />
             <Wert
               name={m.monat_saldo()}
-              icon={TrendingUp}
-              ton={
+              icon={
                 summen().saldoMinuten > 0
-                  ? "success"
+                  ? TrendingUp
                   : summen().saldoMinuten < 0
-                    ? "danger"
-                    : "default"
+                    ? TrendingDown
+                    : Scale
               }
+              ton={saldoTon(summen().saldoMinuten)}
               wert={saldoText(summen().saldoMinuten)}
             />
           </dl>
@@ -160,7 +159,7 @@ export const TageTabelle = (props: { zeilen: Zeile[] }) => {
                         (diff() ?? 0) > 0
                           ? "text-success"
                           : (diff() ?? 0) < 0
-                            ? "text-danger"
+                            ? "text-foreground"
                             : "text-muted-foreground"
                       }`}
                     >

@@ -1,5 +1,5 @@
 import { tagInBerlin } from "@soll/arbeitszeit";
-import { Button, DatePicker, Icon } from "@soll/ui";
+import { Button, DatePicker, Dialog, Icon } from "@soll/ui";
 import { CircleAlert, Plus } from "lucide";
 import { createSignal, createUniqueId, Loading, latest, Show } from "solid-js";
 import type { Antwort } from "../api.ts";
@@ -10,8 +10,8 @@ import { type BuchungBearbeiten, BuchungDialog } from "./dialog.tsx";
 import { LaufendKarte, Wechsel } from "./laufend.tsx";
 import { BuchungListe } from "./liste.tsx";
 import { stoppuhrAktionen, stoppuhrQuelle } from "./quelle.ts";
-import { buchungFehler } from "./text.ts";
-import type { StoppuhrTag } from "./typen.ts";
+import { buchungFehler, wahlText } from "./text.ts";
+import type { Buchung, StoppuhrTag } from "./typen.ts";
 
 /** More project time than stamped working time on the day: a hint with both sums, never a block */
 const HinweisKarte = (props: { tag: StoppuhrTag }) => (
@@ -42,6 +42,47 @@ const summeText = (tag: StoppuhrTag) =>
         gestempelt: dauerText(tag.gestempeltMinuten),
       });
 
+const BuchungLoeschenDialog = (props: {
+  ziel: Buchung | null;
+  quelle: ReturnType<typeof stoppuhrQuelle>;
+  arbeitet: boolean;
+  onAbbrechen: () => void;
+  onBestaetigen: (buchungId: string) => void;
+}) => (
+  <Dialog
+    offen={props.ziel !== null}
+    titel={m.buchung_loeschen_titel()}
+    onSchliessen={props.onAbbrechen}
+    aktionen={
+      <>
+        <Button variant="outline" onClick={props.onAbbrechen}>
+          {m.abbrechen()}
+        </Button>
+        <Button
+          variant="outline"
+          class="text-danger"
+          disabled={props.arbeitet}
+          onClick={() => {
+            if (props.ziel) props.onBestaetigen(props.ziel.buchungId);
+          }}
+        >
+          {m.buchung_loeschen_knopf()}
+        </Button>
+      </>
+    }
+  >
+    <Show when={props.ziel}>
+      {(ziel) => (
+        <p class="text-muted-foreground">
+          {m.buchung_loeschen_text({
+            name: wahlText(props.quelle.projekte(), props.quelle.taetigkeiten(), ziel()),
+          })}
+        </p>
+      )}
+    </Show>
+  </Dialog>
+);
+
 /**
  * The stopwatch (S-602) on Heute: the running booking with Stoppen, the switch in one tap, and the
  * bookings of a day with their sums, the hint, changes and bookings by hand
@@ -51,6 +92,7 @@ export const Stoppuhr = () => {
   const [tag, setTag] = createSignal<string | undefined>(undefined);
   const [fehler, setFehler] = createSignal("");
   const [bearbeiten, setBearbeiten] = createSignal<BuchungBearbeiten | null>(null);
+  const [loeschen, setLoeschen] = createSignal<Buchung | null>(null);
   const quelle = stoppuhrQuelle(tag);
   const aktionen = stoppuhrAktionen();
   const nach = async (schreiben: Promise<Antwort<unknown>>) => {
@@ -68,7 +110,7 @@ export const Stoppuhr = () => {
         </h2>
         <Button
           variant="outline"
-          class="h-8 px-3 text-[13px]"
+          class="min-h-11 px-3 text-[13px] md:h-8 md:min-h-8"
           onClick={() =>
             setBearbeiten({
               modus: "nachtragen",
@@ -127,7 +169,7 @@ export const Stoppuhr = () => {
                     buchungen={ansicht().buchungen}
                     mitSchicht={ansicht().gestempeltMinuten !== null}
                     onAendern={(buchung) => setBearbeiten({ modus: "aendern", buchung })}
-                    onEntfernen={(buchung) => nach(aktionen.entfernen(buchung.buchungId))}
+                    onEntfernen={(buchung) => setLoeschen(buchung)}
                   />
                 </Show>
               </div>
@@ -145,6 +187,16 @@ export const Stoppuhr = () => {
           />
         )}
       </Show>
+      <BuchungLoeschenDialog
+        ziel={loeschen()}
+        quelle={quelle}
+        arbeitet={aktionen.arbeitet()}
+        onAbbrechen={() => setLoeschen(null)}
+        onBestaetigen={(buchungId) => {
+          setLoeschen(null);
+          void nach(aktionen.entfernen(buchungId));
+        }}
+      />
     </section>
   );
 };

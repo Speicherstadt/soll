@@ -109,43 +109,50 @@ export const Wechsel = (props: {
   onStarten: (wahl: Wahl) => void;
 }) => {
   const zuletzt = () =>
-    props.zuletzt.filter((wahl) =>
-      buchbar(props.quelle.projekte(), props.quelle.taetigkeiten(), wahl),
-    );
+    props.zuletzt
+      .filter((wahl) => buchbar(props.quelle.projekte(), props.quelle.taetigkeiten(), wahl))
+      .slice(0, 4);
   const name = (wahl: Wahl) => wahlText(props.quelle.projekte(), props.quelle.taetigkeiten(), wahl);
   return (
     <div class="flex flex-col gap-3">
       <form
         aria-label={m.stoppuhr_neu()}
-        class="grid grid-cols-1 gap-3 rounded-lg bg-muted/25 p-3.5 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+        class="grid grid-cols-1 gap-3 rounded-lg bg-muted/25 p-3.5 sm:grid-cols-2 sm:items-end"
         onSubmit={(event) => {
           event.preventDefault();
           props.onStarten(wahlAus(new FormData(event.currentTarget)));
         }}
       >
         <Auswahl projekte={props.quelle.projekte()} taetigkeiten={props.quelle.taetigkeiten()} />
-        <Button type="submit" class="h-9 w-full sm:w-auto sm:px-4" disabled={props.arbeitet}>
+        <Button
+          type="submit"
+          variant="outline"
+          class="min-h-11 w-full sm:col-span-2 sm:h-9 sm:min-h-9 sm:w-auto sm:justify-self-end sm:px-4"
+          disabled={props.arbeitet}
+        >
           <Icon icon={Play} size={15} />
           {props.laufend ? m.stoppuhr_wechseln() : m.stoppuhr_starten()}
         </Button>
       </form>
       <Show when={zuletzt().length > 0}>
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-col gap-1.5">
           <span class="font-medium text-[12px] text-muted-foreground">{m.stoppuhr_zuletzt()}</span>
-          <For each={zuletzt()}>
-            {(wahl) => (
-              <Button
-                variant="outline"
-                class="min-h-11 px-3 text-[13px]"
-                aria-pressed={gleich(wahl, props.laufend) ? "true" : "false"}
-                aria-label={m.stoppuhr_wechseln_zu({ name: name(wahl) })}
-                disabled={props.arbeitet}
-                onClick={() => props.onStarten(wahl)}
-              >
-                {name(wahl)}
-              </Button>
-            )}
-          </For>
+          <div class="flex flex-wrap items-center gap-2">
+            <For each={zuletzt()}>
+              {(wahl) => (
+                <Button
+                  variant="outline"
+                  class="min-h-11 px-3 text-[13px] md:min-h-8"
+                  aria-pressed={gleich(wahl, props.laufend) ? "true" : "false"}
+                  aria-label={m.stoppuhr_wechseln_zu({ name: name(wahl) })}
+                  disabled={props.arbeitet}
+                  onClick={() => props.onStarten(wahl)}
+                >
+                  {name(wahl)}
+                </Button>
+              )}
+            </For>
+          </div>
         </div>
       </Show>
     </div>

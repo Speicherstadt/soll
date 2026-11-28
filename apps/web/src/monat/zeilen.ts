@@ -63,3 +63,7 @@ export const saldoText = (minuten: number): string => {
   const text = `${Math.floor(betrag / 60)}:${String(betrag % 60).padStart(2, "0")}`;
   return minuten < 0 ? `-${text}` : `+${text}`;
 };
+
+/** Tone for a balance: positive is success, zero or negative flextime stays neutral (never danger) */
+export const saldoTon = (minuten: number): "default" | "success" =>
+  minuten > 0 ? "success" : "default";

@@ -13,6 +13,7 @@ import {
   pruefeinstellungenSetzen,
   pruefeinstellungenVon,
 } from "../modules/betrieb/index.ts";
+import { namenVon } from "../modules/mitglieder/index.ts";
 import { type Anfrage, recht } from "./kontext.ts";
 
 export const moduleSchema = z
@@ -42,10 +43,12 @@ export const betriebRouten = (db: Db, schreibDb: SchreibDb, jetzt: () => number)
     .get("/", recht("betrieb:lesen"), (c) => {
       const betrieb = betriebLesen(db, c.get("betriebId"));
       if (!betrieb) return c.json({ fehler: "kein_betrieb" }, 404);
+      const nutzerId = c.get("nutzerId");
       return c.json({
         betriebId: betrieb.betriebId,
         // the person signed in: what the device keeps offline belongs to one person (S-305)
-        nutzerId: c.get("nutzerId"),
+        nutzerId,
+        nutzerName: namenVon(db, [nutzerId]).get(nutzerId) ?? "",
         name: betrieb.name,
         land: betrieb.land,
         eingerichtet: betrieb.eingerichtetAm !== null,

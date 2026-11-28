@@ -77,6 +77,7 @@ export const demoStartzustand = (): DemoZustand => ({
   betrieb: {
     betriebId: "weber-demo",
     nutzerId: "jonas",
+    nutzerName: "Jonas Weber",
     name: "Weber Haustechnik",
     land: "DE-HH",
     eingerichtet: true,

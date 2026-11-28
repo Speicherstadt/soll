@@ -124,3 +124,12 @@ export const abgemeldet = (): void => {
   setze(neu);
   laufend = Promise.resolve(neu);
 };
+
+/** Signs out via Better Auth with network/retry safety shared by Settings and Sidebar */
+export const abmeldenAusfuehren = async (): Promise<"" | "netz" | "fehler"> => {
+  const antwort = await api("/api/auth/sign-out", { body: {} });
+  if (antwort.status === 0) return "netz";
+  if (antwort.ok) abgemeldet();
+  else if ((await sitzungNeu()).art !== "abgemeldet") return "fehler";
+  return "";
+};

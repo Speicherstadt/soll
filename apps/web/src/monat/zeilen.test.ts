@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { saldoText, vormonat, zeilenDesMonats } from "./zeilen.ts";
+import { saldoText, saldoTon, vormonat, zeilenDesMonats } from "./zeilen.ts";
 
 const ms = (text: string) => Date.parse(text);
 
@@ -76,5 +76,11 @@ describe("vormonat and saldoText", () => {
     expect(saldoText(208)).toBe("+3:28");
     expect(saldoText(-15)).toBe("-0:15");
     expect(saldoText(0)).toBe("+0:00");
+  });
+
+  it("keeps negative and zero flextime balances neutral instead of danger", () => {
+    expect(saldoTon(45)).toBe("success");
+    expect(saldoTon(0)).toBe("default");
+    expect(saldoTon(-30)).toBe("default");
   });
 });

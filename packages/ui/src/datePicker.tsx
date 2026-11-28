@@ -77,7 +77,12 @@ const KalenderPopover = (props: {
   let gitterRef: HTMLDivElement | undefined;
   const beiTaste = (event: KeyboardEvent, index: number) => {
     const rtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
-    const ziel = kalenderNachbar(index, event.key, rtl);
+    const ziel = kalenderNachbar(
+      index,
+      event.key,
+      rtl,
+      props.zellen.map((z) => z.deaktiviert),
+    );
     if (ziel === undefined) return;
     event.preventDefault();
     gitterRef?.querySelectorAll<HTMLButtonElement>("button")[ziel]?.focus();

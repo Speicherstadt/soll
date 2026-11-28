@@ -149,15 +149,28 @@ export const datumLang = (wert: string, sprache: string): string => {
 };
 
 /** Next cell index in the 42-cell (6 × 7) calendar grid for arrow/Home/End keys, RTL-aware */
-export const kalenderNachbar = (index: number, taste: string, rtl: boolean): number | undefined => {
+export const kalenderNachbar = (
+  index: number,
+  taste: string,
+  rtl: boolean,
+  gesperrt?: readonly boolean[],
+): number | undefined => {
   const schritt = rtl ? -1 : 1;
+  if (taste === "Home") {
+    const start = index - (index % 7);
+    for (let i = start; i <= index; i++) if (!gesperrt?.[i]) return i;
+    return undefined;
+  }
+  if (taste === "End") {
+    const ende = index + (6 - (index % 7));
+    for (let i = ende; i >= index; i--) if (!gesperrt?.[i]) return i;
+    return undefined;
+  }
   let ziel: number | undefined;
   if (taste === "ArrowRight") ziel = index + schritt;
   else if (taste === "ArrowLeft") ziel = index - schritt;
   else if (taste === "ArrowDown") ziel = index + 7;
   else if (taste === "ArrowUp") ziel = index - 7;
-  else if (taste === "Home") ziel = index - (index % 7);
-  else if (taste === "End") ziel = index + (6 - (index % 7));
-  if (ziel === undefined || ziel < 0 || ziel >= 42) return undefined;
+  if (ziel === undefined || ziel < 0 || ziel >= 42 || gesperrt?.[ziel]) return undefined;
   return ziel;
 };

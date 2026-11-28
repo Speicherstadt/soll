@@ -57,8 +57,8 @@ const Inhalt = (props: {
   </>
 );
 
-/** The border and color tint of a shift: dashed while open, red/amber for findings, role color otherwise */
-const rahmenVon = (
+/** The border and color tint of a shift: dashed while open, --accent + danger/warning border on findings (DESIGN.md:91), role color otherwise */
+export const rahmenVon = (
   schicht: Schicht,
   vorlagen: readonly Vorlage[],
   befunde: readonly PlanBefund[],
@@ -66,8 +66,8 @@ const rahmenVon = (
   const farbe = schichtFarbe(schicht, vorlagen);
   if (schicht.nutzerId === null) return farbe.karte;
   const schwere = befunde[0]?.schwere;
-  if (schwere === "verstoss") return cn("border border-danger", farbe.karte);
-  if (schwere === "hinweis") return cn("border border-warning", farbe.karte);
+  if (schwere === "verstoss") return "border border-danger bg-accent";
+  if (schwere === "hinweis") return "border border-warning bg-accent";
   return cn("border border-border/60", farbe.karte);
 };
 
@@ -114,7 +114,7 @@ export const Block = (props: {
 }) => {
   const rahmen = () =>
     cn(
-      "flex items-start gap-1 rounded-sm transition-colors",
+      "group/block flex items-start gap-1 rounded-sm transition-colors",
       rahmenVon(props.schicht, props.vorlagen, props.befunde),
       props.aufgenommen && "outline-2 outline-foreground",
     );
@@ -155,7 +155,7 @@ export const Block = (props: {
           aria-label={props.griffName}
           aria-pressed={props.aufgenommen ? "true" : "false"}
           aria-describedby={GRIFF_HINWEIS}
-          class="shrink-0"
+          class="shrink-0 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/block:opacity-100 focus-visible:opacity-100 aria-[pressed=true]:opacity-100"
           onClick={() => props.onGriff()}
           onKeyDown={(event) => props.onGriffTaste(event)}
           onBlur={(event) => {

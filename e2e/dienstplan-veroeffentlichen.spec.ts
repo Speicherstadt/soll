@@ -45,7 +45,7 @@ const veroeffentlichen = async (jonas: Page) => {
       .filter({ hasText: t("plan_veroeffentlicht", { anzahl: 1, personen: 0 }) }),
   ).toBeVisible();
   await expect(jonas.getByText(/ · Entwurf$/)).toHaveCount(0);
-  await expect(veroeffentlichenKnopf(jonas)).toBeDisabled();
+  await expect(veroeffentlichenKnopf(jonas)).toHaveCount(0);
 };
 
 /** Tom issues the link of his calendar in the dialog and reads it from the field */

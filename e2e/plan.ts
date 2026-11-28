@@ -124,3 +124,11 @@ export const befundZeigt = async (
   await expect(block.locator("button[draggable]").first()).toContainText(titel);
   return eintrag;
 };
+
+/** Triggers a secondary plan toolbar action directly on desktop or through the overflow menu on phone */
+export const planAktion = async (page: Page, name: string) => {
+  const direkt = page.getByRole("button", { name, exact: true });
+  if (await direkt.isVisible()) return direkt.click();
+  await page.getByRole("button", { name: t("plan_aktionen"), exact: true }).click();
+  await page.getByRole("menuitem", { name, exact: true }).click();
+};

@@ -223,7 +223,7 @@ const Zeile = (props: {
                   variant="ghost"
                   size="sm"
                   aria-label={m.plan_hinzufuegen_fuer({ ort: props.ortText(zelle()) })}
-                  class="w-full opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+                  class="w-full [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-visible:opacity-100"
                   onClick={() => props.raster.onNeu(ziel())}
                 >
                   <Icon icon={Plus} />

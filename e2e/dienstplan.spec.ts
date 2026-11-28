@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { type Browser, expect, type Page, test } from "@playwright/test";
 import { betriebAnlegen, einladungAnnehmen, senden, zweiterBrowser } from "./betrieb.ts";
 import { messagesOf } from "./locales.ts";
+import { planAktion } from "./plan.ts";
 
 test.use({ locale: "de" });
 const de = messagesOf("de");
@@ -231,7 +232,7 @@ for (const theme of ["light", "dark"] as const) {
     await page.goto("/dienstplan");
     await expect(deckung(page)).toBeVisible();
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-    await page.getByRole("button", { name: t("plan_bedarf"), exact: true }).click();
+    await planAktion(page, t("plan_bedarf"));
     await expect(page.getByRole("dialog").getByRole("listitem")).toHaveCount(1);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

@@ -1,6 +1,7 @@
+import type { JSX } from "@solidjs/web";
 import { plusTage, tagInBerlin } from "@soll/arbeitszeit";
 import { cn } from "@soll/ui";
-import { createMemo, createSignal, onCleanup, Show, untrack } from "solid-js";
+import { createEffect, createMemo, createSignal, Show, untrack } from "solid-js";
 import { abfrage, aenderung, daten } from "../abfragen/abfrage.ts";
 import { ressourcen } from "../abfragen/schluessel.ts";
 import { m } from "../paraglide/messages.js";
@@ -31,6 +32,51 @@ const istInhaberHier = () => {
 
 type Ablage = { was: Abgelegt; ziel: Ziel; standortId: string };
 
+/** Wraps the plan and locks surrounding app navigation inert while TV Fullscreen overlays the viewport */
+const VollbildRahmen = (props: {
+  aktiv: boolean;
+  onBeenden: () => void;
+  children: JSX.Element;
+}) => {
+  let huelleRef: HTMLDivElement | undefined;
+  createEffect(
+    () => props.aktiv,
+    (an) => {
+      if (!an || typeof document === "undefined") return;
+      const vorher = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const navs = [...document.querySelectorAll<HTMLElement>("nav")].filter(
+        (el) => !huelleRef?.contains(el),
+      );
+      for (const el of navs) el.inert = true;
+      huelleRef?.focus();
+      const esc = (e: KeyboardEvent) => {
+        if (e.key === "Escape") props.onBeenden();
+      };
+      window.addEventListener("keydown", esc);
+      return () => {
+        window.removeEventListener("keydown", esc);
+        for (const el of navs) el.inert = false;
+        vorher?.focus();
+      };
+    },
+  );
+  return (
+    <div
+      ref={huelleRef}
+      tabindex={props.aktiv ? -1 : undefined}
+      class={cn(
+        "flex flex-col gap-5 outline-hidden",
+        props.aktiv && "fixed inset-0 z-50 overflow-auto overscroll-contain bg-background p-6",
+      )}
+    >
+      <Show when={props.aktiv}>
+        <h2 class="font-semibold text-[22px] tracking-tight">{m.nav_dienstplan()}</h2>
+      </Show>
+      {props.children}
+    </div>
+  );
+};
+
 /**
  * The plan of the sites of a business: Day/Week/Month views, color-coded shifts, Print & TV
  * Fullscreen mode, templates for planners, dialogs, and shift swap (S-504).
@@ -43,14 +89,6 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
   const [offen, setOffen] = createSignal<OffenerDialog>(null);
   const [ansage, setAnsage] = createSignal("");
   const [fehler, setFehler] = createSignal("");
-
-  const esc = (e: KeyboardEvent) => {
-    if (e.key === "Escape" && vollbild()) setVollbild(false);
-  };
-  if (typeof window !== "undefined") {
-    window.addEventListener("keydown", esc);
-    onCleanup(() => window.removeEventListener("keydown", esc));
-  }
 
   const woche = abfrage<Woche>(() => ressourcen.woche({ standortId: standortId(), tag: tag() }));
   const geladen = () => daten(woche.data);
@@ -90,15 +128,7 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
     else setTag((alt) => plusTage(alt, 7 * delta));
   };
   return (
-    <div
-      class={cn(
-        "flex flex-col gap-5",
-        vollbild() && "fixed inset-0 z-50 overflow-auto bg-background p-6",
-      )}
-    >
-      <Show when={vollbild()}>
-        <h2 class="font-semibold text-[22px] tracking-tight">{m.nav_dienstplan()}</h2>
-      </Show>
+    <VollbildRahmen aktiv={vollbild()} onBeenden={() => setVollbild(false)}>
       <PlanKopf
         woche={geladen() ?? null}
         tag={tag()}
@@ -167,6 +197,6 @@ export const Plan = (props: { standorte: Standort[]; tag?: string | undefined })
         rollen={rollen()}
         onSchliessen={() => setOffen(null)}
       />
-    </div>
+    </VollbildRahmen>
   );
 };

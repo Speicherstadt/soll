@@ -46,5 +46,9 @@ export const wendeThemaAn = (root: HTMLElement, thema: Thema): void => {
   meta.name = "theme-color";
   meta.dataset.sollThemeColor = "";
   meta.content = farbe;
-  if (!vorhanden) doc.head.append(meta);
+  if (!vorhanden) {
+    const erster = doc.head.querySelector('meta[name="theme-color"]');
+    if (erster) doc.head.insertBefore(meta, erster);
+    else doc.head.append(meta);
+  }
 };
